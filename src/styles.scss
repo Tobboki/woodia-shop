@@ -1,1 +1,159 @@
 @use "tailwindcss";
+
+@font-face {
+  font-family: 'SF Pro';
+  src: url('/assets/fonts/SF-Pro-Display-Regular.woff2') format('woff2'),
+       url('/assets/fonts/SF-Pro-Display-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SF Pro';
+  src: url('/assets/fonts/SF-Pro-Display-Medium.woff2') format('woff2'),
+       url('/assets/fonts/SF-Pro-Display-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SF Pro';
+  src: url('/assets/fonts/SF-Pro-Display-Semibold.woff2') format('woff2'),
+       url('/assets/fonts/SF-Pro-Display-Semibold.woff') format('woff');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SF Pro';
+  src: url('/assets/fonts/SF-Pro-Display-Bold.woff2') format('woff2'),
+       url('/assets/fonts/SF-Pro-Display-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SF Compact';
+  src: url('/assets/fonts/SF-Pro-Display-Regular.woff2') format('woff2'),
+       url('/assets/fonts/SF-Pro-Display-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SF Compact';
+  src: url('/assets/fonts/SF-Pro-Display-Medium.woff2') format('woff2'),
+       url('/assets/fonts/SF-Pro-Display-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SF Compact';
+  src: url('/assets/fonts/SF-Pro-Display-Semibold.woff2') format('woff2'),
+       url('/assets/fonts/SF-Pro-Display-Semibold.woff') format('woff');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SF Compact';
+  src: url('/assets/fonts/SF-Pro-Display-Bold.woff2') format('woff2'),
+       url('/assets/fonts/SF-Pro-Display-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@theme {
+  --font-heading: "SF Pro", sans-serif;
+  --font-content: "SF Compact", sans-serif;
+
+  /* Typography */
+
+  /* Heading */
+  --text-h1: 48px;
+  --text-h2: 40px;
+  --text-h3: 36px;
+  --text-h4: 28px;
+  --text-h5: 24px;
+  --text-h6: 20px;
+
+  /* Content */
+  --text-body: 16px;
+  --text-caption: 20px;
+  --text-placeholder: 20px; 
+  --text-button: 24px; 
+  --text-label : 24px; 
+  --text-helper: 20px;
+
+  /* Colors */
+  
+  /* Primary */
+  --color-primary-900: #001033;
+  --color-primary-800: #00194C;
+  --color-primary-700: #002166;
+  --color-primary-600: #00297F;
+  --color-primary-500: #003198;
+  --color-primary-400: #0042CC;
+  --color-primary-300: #0052FF;
+  --color-primary-200: #3375FF;
+  --color-primary-100: #6697FF;
+  --color-primary-50:  #99BAFF;
+
+  /* Secondary */
+  --color-secondary-900: #B29E00;
+  --color-secondary-800: #CCB400;
+  --color-secondary-700: #E5CB00;
+  --color-secondary-600: #FFE100;
+  --color-secondary-500: #FFE417;
+  --color-secondary-400: #FFE733;
+  --color-secondary-300: #FFEA4C;
+  --color-secondary-200: #FFED66;
+  --color-secondary-100: #FFF399;
+  --color-secondary-50:  #FFF6B2;
+
+  /* Neutral */
+  --color-neutral-900: #22304E;
+  --color-neutral-800: #314772;
+  --color-neutral-700: #415D95;
+  --color-neutral-600: #5474B5;
+  --color-neutral-500: #7992C5;
+  --color-neutral-400: #9BAED4;
+  --color-neutral-300: #9BAED4;
+  --color-neutral-200: #BFCBE3;
+  --color-neutral-100: #E2E8F3;
+  --color-neutral-50:  #F8F9FC;
+
+  /* Status */
+
+  /* Success */
+  --color-success-600: #009689;
+  --color-success-400: #00D5BE;
+  --color-success-100: #F0FDFA;
+  
+  /* Warning */
+  --color-warning-600: #EFB100;
+  --color-warning-400: #FFDF20;
+  --color-warning-100: #FEF9C2;
+
+  /* Error */
+  --color-error-600:   #EC003F;
+  --color-error-400:   #FF637E;
+  --color-error-100:   #FFE4E6;
+
+  /* Surface */
+  --color-surface-light: #F2F2F2;
+  --color-surface-dark: #001033;
+
+  /* Basic */
+  --color-surface-light: #FFFFFF;
+  --color-surface-dark: #000000;
+
+  /* Effects */
+  --shadow-button: 0 4px 4px rgba(0, 0, 0, 0.25);
+
+  --radius-sm: 8px;
+  --radius-lg: 12px;
+
+
+}
