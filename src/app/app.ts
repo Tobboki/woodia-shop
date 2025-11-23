@@ -1,6 +1,6 @@
 import { Component, OnInit, Renderer2, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { environment } from 'src/environments/environment.development';
+// import { environment } from 'src/environments/environment.development';
 
 @Component({
   selector: 'app-root',
@@ -16,7 +16,7 @@ export class App implements OnInit {
   constructor(private renderer: Renderer2) {}
 
   ngOnInit(): void {
-    this.setGoogleSignInClientId(environment.googleSignInClientId);
+    // this.setGoogleSignInClientId(environment.googleSignInClientId);
   }
 
   setGoogleSignInClientId(clientId: string): void {
