@@ -1,76 +1,45 @@
 @use "tailwindcss";
 
+/* SF Pro */
 @font-face {
   font-family: 'SF Pro';
-  src: url('/assets/fonts/SF-Pro-Display-Regular.woff2') format('woff2'),
-       url('/assets/fonts/SF-Pro-Display-Regular.woff') format('woff');
+  src: url('/fonts/SF-Pro-Display-Regular.woff2') format('woff2'),
+       url('/fonts/SF-Pro-Display-Regular.woff') format('woff');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'SF Pro';
-  src: url('/assets/fonts/SF-Pro-Display-Medium.woff2') format('woff2'),
-       url('/assets/fonts/SF-Pro-Display-Medium.woff') format('woff');
+  src: url('/fonts/SF-Pro-Display-Medium.woff2') format('woff2'),
+       url('/fonts/SF-Pro-Display-Medium.woff') format('woff');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'SF Pro';
-  src: url('/assets/fonts/SF-Pro-Display-Semibold.woff2') format('woff2'),
-       url('/assets/fonts/SF-Pro-Display-Semibold.woff') format('woff');
+  src: url('/fonts/SF-Pro-Display-Semibold.woff2') format('woff2'),
+       url('/fonts/SF-Pro-Display-Semibold.woff') format('woff');
   font-weight: 600;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'SF Pro';
-  src: url('/assets/fonts/SF-Pro-Display-Bold.woff2') format('woff2'),
-       url('/assets/fonts/SF-Pro-Display-Bold.woff') format('woff');
+  src: url('/fonts/SF-Pro-Display-Bold.woff2') format('woff2'),
+       url('/fonts/SF-Pro-Display-Bold.woff') format('woff');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
-@font-face {
-  font-family: 'SF Compact';
-  src: url('/assets/fonts/SF-Pro-Display-Regular.woff2') format('woff2'),
-       url('/assets/fonts/SF-Pro-Display-Regular.woff') format('woff');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'SF Compact';
-  src: url('/assets/fonts/SF-Pro-Display-Medium.woff2') format('woff2'),
-       url('/assets/fonts/SF-Pro-Display-Medium.woff') format('woff');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'SF Compact';
-  src: url('/assets/fonts/SF-Pro-Display-Semibold.woff2') format('woff2'),
-       url('/assets/fonts/SF-Pro-Display-Semibold.woff') format('woff');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'SF Compact';
-  src: url('/assets/fonts/SF-Pro-Display-Bold.woff2') format('woff2'),
-       url('/assets/fonts/SF-Pro-Display-Bold.woff') format('woff');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-@theme {
-  --font-heading: "SF Pro", sans-serif;
-  --font-content: "SF Compact", sans-serif;
 
+@theme {
+  --font-primary: "SF Pro", sans-serif;
+  
   /* Typography */
 
-  /* Heading */
+  /* Primary */
   --text-h1: 48px;
   --text-h2: 40px;
   --text-h3: 36px;
@@ -80,10 +49,12 @@
 
   /* Content */
   --text-body: 16px;
+  --text-label: 16px;
   --text-caption: 20px;
   --text-placeholder: 20px; 
   --text-button: 24px; 
-  --text-label : 24px; 
+  --text-subtitle : 24px; 
+  --text-subtitle : 24px; 
   --text-helper: 20px;
 
   /* Colors */
@@ -145,15 +116,65 @@
   --color-surface-light: #F2F2F2;
   --color-surface-dark: #001033;
 
-  /* Basic */
-  --color-surface-light: #FFFFFF;
-  --color-surface-dark: #000000;
-
   /* Effects */
   --shadow-button: 0 4px 4px rgba(0, 0, 0, 0.25);
 
   --radius-sm: 8px;
   --radius-lg: 12px;
 
+  --rounded-button: 12px;
+}
 
+@layer utilities {
+  .container-full {
+    @apply w-full h-dvh p-[16px] rounded-[12px];
+  }
+
+  .font-h1 {
+    @apply text-h1 font-primary;
+  }
+
+  .font-h2 {
+    @apply text-h2 font-primary;
+  }
+
+  .font-h3 {
+    @apply text-h3 font-primary;
+  }
+
+  .font-h4 {
+    @apply text-h4 font-primary;
+  }
+
+  .font-h5 {
+    @apply text-h5 font-primary;
+  }
+
+  .font-h6 {
+    @apply text-h6 font-primary;
+  }
+
+  .font-body {
+    @apply text-body font-primary font-medium;
+  }
+
+  .font-label {
+    @apply text-label font-primary font-medium;
+  }
+
+  .font-button {
+    @apply text-button font-primary font-semibold;
+  }
+
+  .font-placeholder {
+    @apply font-primary text-placeholder;
+  }
+
+  .font-caption {
+    @apply text-caption font-primary text-placeholder;
+  }
+}
+
+body {
+  background-color: var(--color-surface-light);
 }

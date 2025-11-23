@@ -1,12 +1,28 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, Renderer2, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { environment } from 'src/environments/environment.development';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [
+    RouterOutlet,
+  ],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App {
-  protected readonly title = signal('woodia-shop');
+export class App implements OnInit {
+  protected readonly title = signal('woodia');
+
+  constructor(private renderer: Renderer2) {}
+
+  ngOnInit(): void {
+    this.setGoogleSignInClientId(environment.googleSignInClientId);
+  }
+
+  setGoogleSignInClientId(clientId: string): void {
+    const metaTag = document.getElementById('google-signin-client-id') as HTMLMetaElement;
+    if (metaTag) {
+      this.renderer.setAttribute(metaTag, 'content', clientId);
+    }
+  }
 }

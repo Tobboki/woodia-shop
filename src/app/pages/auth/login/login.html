@@ -1,0 +1,162 @@
+<div class="h-full grid grid-cols-2 max-lg:grid-cols-1 gap-[16px]">
+    <div class="relative h-full flex flex-col justify-center">
+      <!-- Logo -->
+      <logo class="absolute top-0 left-0" />
+
+      <div class="w-[80%] max-xl:w-full max-lg:w-[60%] max-md:w-[80%] max-sm:w-full mx-auto space-y-[40px]">
+        <!-- Title -->
+        <div class="flex flex-col gap-[16px] max-lg:text-center">
+          <h3 class="font-h3 leading-1">
+            Welcome Back
+          </h3>
+          <p class="font-body">
+            Enter your Credentials to access your account
+          </p>
+        </div>
+
+        <!-- Social Login -->
+        <div class="grid grid-cols-2 max-lg:grid-cols-1 gap-[16px]">
+          <button 
+            class="bg-white text-black/50 hover:bg-white/50 font-primary text-button font-medium"
+            zFull
+            z-button
+            zType="default"
+          >
+            <img 
+              src="/icons/google-logo.svg" 
+              alt="Gradient Image" 
+              class="w-[24px] h-[24px] object-fit-cover"
+            >
+            Login with Google
+          </button>
+          <button 
+            class="w-full bg-[#1877F2] text-white hover:bg-[#1877F2]/80 font-primary text-button font-medium"
+            z-button
+            zType="default"
+          >
+            <img 
+              src="/icons/facebook-logo.svg" 
+              alt="Gradient Image" 
+              class="w-[24px] h-[24px] object-fit-cover"
+            >
+            Login with Facebook
+          </button>
+        </div>
+
+        <!-- Divider -->
+        <div class="flex flex-row flex-nowrap items-center gap-[16px]">
+          <z-divider class="bg-black/25" />
+          <p class="font-body">
+            or
+          </p>
+          <z-divider class="bg-black/25" />
+        </div>
+
+        <!-- Form -->
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6 my-[40px]">
+          <z-form-field>
+            <label
+              class="font-label"
+              z-form-label
+              zRequired
+            >
+              Email
+            </label>
+            <z-form-control>
+              <input
+                z-input
+                type="email"
+                placeholder="Enter your email"
+                formControlName="email"
+              />
+            </z-form-control>
+          </z-form-field>
+
+          <z-form-field>
+            <label
+              class="font-label"
+              z-form-label
+              zRequired
+            >
+              Password
+            </label>
+            <z-form-control>
+              <div class="relative">
+                <input
+                  z-input
+                  [type]="showPassword() ? 'text' : 'password'"
+                  placeholder="min 8 characters"
+                  formControlName="password"
+                />
+
+                <button
+                  class="absolute top-[8px] right-[4px] text-primary-300 font-heading text-body text-medium"
+                  z-button
+                  zSize="sm"
+                  zType="icon"
+                  type="button"
+                  (click)="togglePasswordVisibility()"
+                >
+                  <i
+                    class="text-black/50"
+                    z-icon
+                    zType="eye"
+                  ></i>
+                </button>
+              </div>
+            </z-form-control>
+          </z-form-field>
+
+          <div class="flex flex-row content-center justify-between">
+            <z-form-field>
+              <z-form-control class="flex flex-col justify-center">
+                <div class="flex items-center space-x-2">
+                  <z-checkbox
+                    id="rememberMe"
+                    formControlName="rememberMe"
+                    z-size="lg"
+                  />
+                  <label
+                    class="font-label text-nowrap"
+                    z-form-label
+                    for="rememberMe"
+                  >
+                    Remember me
+                  </label>
+                </div>
+              </z-form-control>
+            </z-form-field>
+
+            <button class="text-primary-300 font-label" z-button zSize="sm" zType="link">Forget Password?</button>
+          </div>
+
+          <div class="space-y-[4px]">
+            <button
+              zFull
+              z-button
+              zType="default"
+              type="submit"
+              [disabled]="loginForm.invalid"
+            >
+              Login
+            </button>
+
+            <div class="flex flex-row justify-center items-center">
+              <p class="font-body">
+                Don't have an account?
+              </p>
+              <button class="text-primary-300 font-body" z-button zSize="sm" zType="link" (click)="goToLRegister()">Sign Up</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="overflow-hidden w-full h-full rounded-[12px] max-lg:hidden">
+      <img 
+        src="/images/auth/gradient-1.jpg" 
+        alt="Gradient Image" 
+        class="w-full h-full object-fit-cover"
+      >
+    </div>
+</div>
