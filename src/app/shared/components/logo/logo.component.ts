@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input, ViewEncapsulation 
 import { mergeClasses } from '@shared/utils/merge-classes';
 import { logoVariants } from './logo.variants';
 import { ClassValue } from 'clsx';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'logo, [logo]',
@@ -10,7 +11,10 @@ import { ClassValue } from 'clsx';
   ],
   standalone: true,
   template: `
-    <div class="flex flex-row items-center gap-[4px]">
+    <div
+      class="flex flex-row items-center gap-[4px] cursor-pointer"
+      (click)="navigateToHome()"
+    >
       <div>
         <img 
           src="/images/logo.svg" 
@@ -28,6 +32,11 @@ import { ClassValue } from 'clsx';
   host: {}
 })
 export class LogoComponent {
+
+  constructor (
+    private router: Router
+  ) {}
+
   readonly zType = input<logoVariants['zType']>('default');
 
   readonly class = input<ClassValue>('');
@@ -40,4 +49,8 @@ export class LogoComponent {
       this.class(),
     ),
   );
+
+  navigateToHome() {
+    this.router.navigate(['/'])
+  }
 }

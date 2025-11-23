@@ -1,22 +1,22 @@
 <div class="h-full grid grid-cols-2 max-lg:grid-cols-1 gap-[16px]">
-  <div class="relative h-full flex flex-col justify-center">
+  <div class="h-full flex flex-col">
     <!-- Logo -->
-    <logo class="absolute top-0 left-0" />
+    <logo class="mb-[40px]" />
 
     <!-- Step 1: User Type -->
     <div
       *ngIf="registerStep() === 'userType'"
-      class="w-[80%] max-xl:w-full max-lg:w-[60%] max-md:w-[80%] max-sm:w-full mx-auto space-y-[40px]"
+      class="w-[70%] max-2xl:w-[90%] max-xl:w-full max-lg:w-[70%] max-md:w-[80%] max-sm:w-full my-auto mx-auto space-y-[40px]"
     >
       <!-- Title -->
       <h3 class="font-h3 leading-1 text-center">
         What are you here as?
       </h3>
 
-      <div class="grid grid-cols-2 gap-[24px]">
+      <div class="grid grid-cols-2 max-md:grid-cols-1  gap-[24px]">
         <div 
           [class]="userType() === 'customer' ? 'border border-[2px] border-primary-300' : ''"
-          class="flex flex-col flex-nowrap gap-[16px] p-[8px] pb-[24px] bg-white rounded-[8px]"
+          class="flex flex-col max-md:flex-row flex-nowrap gap-[16px] p-[8px] pb-[24px] max-md:pb-[8px] bg-white rounded-[8px]"
           (click)="setUserTypeCustomer()"
         >
           <div class="overflow-hidden w-full h-[184px] rounded-[12px]">
@@ -40,7 +40,7 @@
 
         <div
           [class]="userType() === 'maker' ? 'border border-[2px] border-primary-300' : ''"
-          class="flex flex-col flex-nowrap gap-[16px] p-[8px] pb-[24px] bg-white rounded-[8px]"
+          class="flex flex-col max-md:flex-row flex-nowrap gap-[16px] p-[8px] pb-[24px] max-md:pb-[8px] bg-white rounded-[8px]"
           (click)="setUserTypeMaker()"
         >
           <div class="overflow-hidden w-full h-[184px] rounded-[12px]">
@@ -81,10 +81,10 @@
     <!-- Step 2: User Credentials -->
     <div
       *ngIf="registerStep() === 'credentials'"
-      class="w-[80%] max-xl:w-full max-lg:w-[60%] max-md:w-[80%] max-sm:w-full mx-auto space-y-[40px]"
+      class="w-[80%] max-xl:w-full max-lg:w-[60%] max-md:w-[80%] max-sm:w-full my-auto mx-auto space-y-[40px]"
     >
       <!-- Title -->
-      <div class="flex flex-col gap-[16px] max-lg:text-center">
+      <div class="flex flex-col gap-[16px] max-xl:text-center">
         <h3 class="font-h3 leading-1">
           Get Started Now
         </h3>
@@ -94,7 +94,7 @@
       </div>
 
       <!-- Social Login -->
-      <div class="grid grid-cols-2 max-lg:grid-cols-1 gap-[16px]">
+      <div class="grid grid-cols-2 max-xl:grid-cols-1 gap-[16px]">
         <button 
           class="bg-white text-black/50 hover:bg-white/50 font-primary text-button font-medium"
           zFull
@@ -284,7 +284,7 @@
     <!-- Step 3 User Type -->
     <div
       *ngIf="registerStep() === 'verification'"
-      class="w-[80%] max-xl:w-full max-lg:w-[60%] max-md:w-[80%] max-sm:w-full mx-auto space-y-[40px]"
+      class="w-[80%] max-xl:w-full max-lg:w-[60%] max-md:w-[80%] max-sm:w-full my-auto mx-auto space-y-[40px]"
     >
 
       <!-- Title -->

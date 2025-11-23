@@ -112,7 +112,6 @@ export class Register implements OnInit {
       next: (response: any) => {
         console.log('Sent successfully', response);
         this.apiError.set(null);
-        this.router.navigate(['/'])
       },
       error: (err: any) => {
         console.log('Resending Confirmation failed', err);

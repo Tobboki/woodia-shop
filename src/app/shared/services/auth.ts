@@ -156,7 +156,9 @@ export class AuthService {
   resendConfirmation(email: string): any {
     return this.http.post<AuthResponse>(
       `${environment.apiUrl}${environment.endpoints.resendConfirmation}`,
-      email,
+      {
+        email
+      },
       {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' })
       }
