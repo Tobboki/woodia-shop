@@ -26,6 +26,7 @@ export class ZardButtonComponent {
   readonly zType = input<ZardButtonVariants['zType']>('default');
   readonly zSize = input<ZardButtonVariants['zSize']>('default');
   readonly zShape = input<ZardButtonVariants['zShape']>('default');
+  readonly zPosition = input<ZardButtonVariants['zPosition']>('default');
 
   readonly class = input<ClassValue>('');
 
@@ -38,6 +39,7 @@ export class ZardButtonComponent {
         zType: this.zType(),
         zSize: this.zSize(),
         zShape: this.zShape(),
+        zPosition: this.zPosition(),
         zFull: this.zFull(),
         zLoading: this.zLoading(),
       }),

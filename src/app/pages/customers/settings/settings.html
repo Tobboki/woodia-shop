@@ -1,0 +1,32 @@
+<section>
+  <z-layout class="overflow-hidden gap-[12px] rounded-md border border-black/25">
+    <z-sidebar
+      [zWidth]="'100%'"
+      class="p-0! w-[300px] max-md:w-[200px] border-black/25"
+    >
+      <nav class="flex h-full flex-col overflow-hidden gap-[8px] p-[8px]">
+          <h1 class="font-h1">Settings</h1>
+
+          @for (item of mainMenuItems; track item.label) {
+            <a
+              type="button"
+              z-button
+              zType="ghost"
+              zPosition="left"
+              class="p-[8px]"
+              routerLinkActive="active-label"
+              [routerLink]="[`/customers/settings/${item.link}`]"
+              [routerLinkActiveOptions]="{ exact: false }"
+            >
+              <z-icon [zType]="item.icon" class="size[42px]" />
+              <h4 class="font-h4 font-thin">{{ item.label }}</h4>
+            </a>
+          }
+      </nav>
+    </z-sidebar>
+
+    <z-content class="min-h-[200px]">
+      <router-outlet></router-outlet>
+    </z-content>
+  </z-layout>
+</section>

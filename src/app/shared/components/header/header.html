@@ -1,6 +1,6 @@
 <header>
   <nav class="bg-neutral-primary fixed w-full z-20 top-0 start-0 border-b border-default">
-    <div class="max-w-screen-xl flex items-center justify-between mx-auto p-4">
+    <div class="max-w-screen-xl flex items-center justify-between mx-auto py-[16px] px-[24px]">
       <!-- Logo and Title -->
       <a href="#" class="flex items-center space-x-3 rtl:space-x-reverse">
         <logo />
@@ -16,13 +16,39 @@
 
       <!-- Navigation Links -->
       <div class="hidden md:flex space-x-8">
-        <!-- <a href="#" class="py-2 px-3 text-white bg-brand rounded">Home</a>
-        <a href="#" class="py-2 px-3 text-heading hover:text-fg-brand">About</a>
-        <a href="#" class="py-2 px-3 text-heading hover:text-fg-brand">Services</a>
-        <a href="#" class="py-2 px-3 text-heading hover:text-fg-brand">Pricing</a> -->
+        <!-- Add links here if needed -->
       </div>
-      
-      <button class="text-primary-300 font-body" z-button zSize="sm" zType="link" (click)="handleLogout()">Logout</button>
+
+      <div class="relative">
+        <button z-button zType="icon" z-menu [zMenuTriggerFor]="userManager">
+          <img src="/images/auth/customer.jpg" alt="User Profile" class="w-8 h-8 rounded-full">
+          <span class="font-placeholder">
+            {{ userName }}
+          </span>
+          <z-icon zType="chevron-down" class="ml-1" />
+        </button>
+
+        <ng-template #userManager>
+          <div z-menu-content class="w-48">
+            <button 
+              z-menu-item
+              (click)="goToSettings()"
+              class="font-body"
+            >
+              <z-icon zType="settings" class="ml-1" />
+              Settings
+            </button>
+            <button
+              z-menu-item
+              (click)="handleLogout()"
+              class="font-body"
+            >
+              <z-icon zType="logout" class="ml-1" />
+              Logout
+            </button>
+          </div>
+        </ng-template>
+      </div>
     </div>
   </nav>
 </header>

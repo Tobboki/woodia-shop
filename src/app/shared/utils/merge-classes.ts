@@ -15,3 +15,7 @@ export function generateId(prefix = ''): string {
   const id = crypto.randomUUID();
   return prefix ? `${prefix}-${id}` : id;
 }
+
+export function isElementContentTruncated(element: HTMLElement): boolean {
+  return element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight;
+}

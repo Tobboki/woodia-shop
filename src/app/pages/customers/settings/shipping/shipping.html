@@ -1,0 +1,91 @@
+<section class="space-y-[24px]">
+  <div>
+    <h3 class="font-h3">
+     Shipping Details
+    </h3>
+
+    <z-divider class="bg-black/25 mt-[8px]"></z-divider>
+  </div>
+
+  <div>
+    <!-- Form -->
+    <form [formGroup]="shippingForm" (ngSubmit)="handleShippingSubmit()" class="space-y-6 my-[40px]">
+      <div class="grid grid-cols-2 gap-[20px]">
+        <!-- governorate Selector -->
+        <z-form-field>
+          <label class="font-label" z-form-label for="governorate">Governorate</label>
+          <z-form-control>
+            <z-select id="governorate" formControlName="governorate" placeholder="Select your Governorate">
+              @for (Governorate of countries; track Governorate.value) {
+                <z-select-item [zValue]="Governorate.value">{{ Governorate.label }}</z-select-item>
+              }
+            </z-select>
+          </z-form-control>
+        </z-form-field>
+
+        <z-form-field>
+          <label class="font-label" z-form-label>
+            Phone
+          </label>
+          <z-form-control>
+            <input
+              z-input
+              type="text"
+              placeholder="Your phone number"
+              formControlName="phone"
+            />
+          </z-form-control>
+        </z-form-field>
+      </div>
+      
+      <z-form-field>
+        <label class="font-label" z-form-label>
+          Address Line
+        </label>
+        <z-form-control>
+          <input
+            z-input
+            type="text"
+            placeholder="Ex: Kafr Saad, Nasr Street"
+            formControlName="addressLine"
+          />
+        </z-form-control>
+      </z-form-field>
+
+      <z-form-field>
+        <label class="font-label" z-form-label>
+          Additional Details
+        </label>
+        <z-form-control>
+          <input
+            z-input
+            type="text"
+            placeholder="Ex: Tawheed Tower by Kafr Saad's Train Station"
+            formControlName="additionalDetails"
+          />
+        </z-form-control>
+      </z-form-field>
+
+      <div class="flex flex-row justify-end gap-[12px]">
+        <button
+          z-button
+          zType="outline"
+          type="button"
+          [disabled]="!shippingForm.dirty"
+          class="py-[8px]"
+        >
+          Reset
+        </button>
+        <button
+          z-button
+          zType="default"
+          type="submit"
+          [disabled]="shippingForm.invalid"
+          class="py-[8px]"
+        >
+          Save Changes
+        </button>
+      </div>
+    </form>
+  </div>
+</section>

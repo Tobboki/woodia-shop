@@ -6,21 +6,21 @@ export const buttonVariants = cva(
     variants: {
       zType: {
         default: 'bg-primary-300 font-button text-white shadow-button hover:bg-primary-300/90 rounded-button',
-        destructive: 'bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
-        outline: 'border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50',
+        destructive: 'bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
+        outline: 'border border-primary-100 font-button text-primary-300 shadow-button hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50',
         secondary: 'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80',
-        ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
+        ghost: 'hover:bg-primary-50 dark:hover:bg-accent/50',
         link: 'text-primary underline-offset-4 hover:underline',
         icon: ''
       },
       zSize: {
-        default: 'px-[24px] py-[12px] has-[>svg]:px-3',
+        default: 'h-fit px-[24px] py-[16px] has-[>svg]:px-3',
         sm: 'h-8 rounded-md gap-1.5 px-1 has-[>svg]:px-2.5',
         lg: 'h-10 rounded-md px-6 has-[>svg]:px-4',
         icon: 'size-9',
       },
       zShape: {
-        default: 'radius-sm',
+        default: 'rounded-[12px]',
         circle: 'rounded-full',
         square: 'rounded-none',
       },
@@ -30,6 +30,11 @@ export const buttonVariants = cva(
       zLoading: {
         true: 'opacity-50 pointer-events-none',
       },
+      zPosition: {
+        default: 'justify-center',
+        left: 'justify-start',
+        right: 'justify-end',
+      }
     },
     defaultVariants: {
       zType: 'default',

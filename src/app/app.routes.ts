@@ -5,7 +5,10 @@ import { PublicLayout } from '@shared/layouts/public-layout/public-layout';
 import { appGuard, authGuard } from './core/guards/auth-guard';
 import { MainLayout } from '@shared/layouts/main-layout/main-layout';
 import { Register } from './pages/auth/register/register';
-
+import { customerGuard } from './core/guards/role-guard';
+import { Settings as CustomerSettings } from './pages/customers/settings/settings'
+import { Account as CustomerAccountSettings } from './pages/customers/settings/account/account'
+import { Shipping as CustomerShippingSettings } from './pages/customers/settings/shipping/shipping'
 export const routes: Routes = [
   { 
     path: '', 
@@ -18,6 +21,33 @@ export const routes: Routes = [
       },
     ]
   },
+  { 
+    path: 'customers', 
+    canActivate: [appGuard, customerGuard],
+    component: MainLayout,
+    children: [
+      { 
+        path: 'settings',
+        component: CustomerSettings,
+        children: [
+          { 
+            path: '', 
+            redirectTo: 'account',
+            pathMatch: 'full',
+          },
+          { 
+            path: 'account', 
+            component: CustomerAccountSettings,
+          },
+          { 
+            path: 'shipping', 
+            component: CustomerShippingSettings,
+          },
+        ]
+      },
+    ]
+  },
+  // auth
   { 
     path: 'auth', 
     component: PublicLayout,
@@ -33,4 +63,5 @@ export const routes: Routes = [
       },
     ]
   },
+  
 ];
