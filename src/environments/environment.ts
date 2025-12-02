@@ -2,8 +2,8 @@ export const environment = {
   production: true,
   apiUrl: 'https://woodia.onrender.com',
   endpoints: {
-    googleSignInClientId: process.env['googleSignInClientId'] ?? '',
-    googleAuthAppSecret: process.env['googleAuthAppSecret'] ?? '',
+    googleSignInClientId: process.env['NG_APP_GOOGLE_SIGN_IN_CLIENT_ID'] ?? '',
+    googleAuthAppSecret: process.env['NG_APP_GOOGLE_AUTH_APP_SECRET'] ?? '',
     constants: {
       governorate: '/Governorate',
     },
