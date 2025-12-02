@@ -2,13 +2,17 @@ export const environment = {
   production: true,
   apiUrl: 'https://woodia.onrender.com',
   endpoints: {
-    login: '/Auth',
-    register: '/Auth/register',
-    refreshToken: '/Auth/refresh',
-    confirmEmail: '/Auth/confirm-email',
-    resendConfirmation: '/Auth/resend-confirmation',
     constants: {
       governorate: '/Governorate',
+    },
+    auth: {
+      login: '/Auth',
+      register: '/Auth/register',
+      refreshToken: '/Auth/refresh',
+      confirmEmail: '/Auth/confirm-email',
+      resendConfirmation: '/Auth/resend-confirmation',
+      googleSignIn: '/Auth/google-signin',
+      facebookSignIn: '/Auth/facebook-signin',
     },
     customer: {
       me: '/me',

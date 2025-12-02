@@ -127,7 +127,7 @@
 
 @layer utilities {
   .container-full {
-    @apply w-full h-dvh p-[16px] rounded-[12px];
+    @apply w-full mx-auto h-dvh p-[16px] rounded-[12px];
   }
 
   .font-h1 {
@@ -177,4 +177,32 @@
 
 body {
   background-color: var(--color-surface-light);
+}
+
+
+/* Chrome, Edge */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none !important;
+}
+
+input[type="password"]::-webkit-textfield-decoration-container {
+  display: none !important;
+}
+
+input[type="password"]::-webkit-inner-spin-button,
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-password-toggle {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Safari */
+input::-webkit-textfield-decoration-container {
+  display: none !important;
+}
+
+/* Firefox (never shows reveal button, but safe) */
+input[type="password"]::-moz-password-toggle {
+  display: none !important;
 }

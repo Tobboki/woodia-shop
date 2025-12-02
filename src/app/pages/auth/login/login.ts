@@ -10,6 +10,8 @@ import { ZardIconComponent } from '@shared/components/icon/icon.component';
 import { ZardDividerComponent } from '@shared/components/divider/divider.component';
 import { LogoComponent } from '@shared/components/logo/logo.component';
 import { Router } from '@angular/router';
+import { finalize } from 'rxjs/operators';
+import { toast } from 'ngx-sonner';
 
 @Component({
   selector: 'app-login',
@@ -27,6 +29,10 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.scss'],
 })
 export class Login implements OnInit {
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   // Strongly typed form
   loginForm = new FormGroup({
@@ -35,20 +41,32 @@ export class Login implements OnInit {
     rememberMe: new FormControl<boolean>(true)
   });
 
+  get emailControl() {
+    return this.loginForm.get('email')!;
+  }
+
+  get passwordControl() {
+    return this.loginForm.get('password')!;
+  }
+
   // Signal for password visibility
   showPassword = signal<boolean>(false);
+  loginFormLoading = signal<boolean>(false);
 
-  apiError = signal<string | null>(null);
+  ngOnInit(): void {
+    this.emailControl.valueChanges.subscribe(() => {
+      this.clearBackendErrors();
+    });
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
-
-  ngOnInit(): void {}
+    this.passwordControl.valueChanges.subscribe(() => {
+      this.clearBackendErrors();
+    });
+  }
 
   onSubmit() {
     if (this.loginForm.invalid) return;
+
+    this.loginFormLoading.set(true);
 
     const credentials: LoginCredentials = {
       email: this.loginForm.value.email!,
@@ -56,14 +74,39 @@ export class Login implements OnInit {
       rememberMe: this.loginForm.value.rememberMe!
     };
 
-    // 🔥 MUST SUBSCRIBE to trigger login
-    this.authService.login(credentials).subscribe({
+    this.authService.login(credentials)
+    .pipe(
+      finalize(() => this.loginFormLoading.set(false))
+    )
+    .subscribe({
       next: (response) => {
-        this.apiError.set(null);
+        this.loginFormLoading.set(false)
         this.router.navigate(['/']);
+        toast.success('Login Successful', {
+          position: 'bottom-center',
+          duration: 2000,
+        });
       },
       error: (err) => {
-        this.apiError.set('Invalid email or password');
+        this.loginFormLoading.set(false)
+        const errors = err.error?.errors || [];
+        
+        if (errors.includes('User.InvalidCredentials') || errors.includes('Invalid email/password')) {
+          this.emailControl.setErrors({ backend: 'Invalid email or password' });
+
+          this.passwordControl.setErrors({ backend: 'Invalid email or password' });
+          this.passwordControl.markAsTouched();
+
+          return;
+        }
+
+        else {
+          toast.error('Something went wrong', {
+            description: 'There was a problem with your request.',
+          });
+          console.log('login failed: ', err)
+          this.passwordControl.markAsTouched();
+        }
       }
     });
   }
@@ -74,5 +117,24 @@ export class Login implements OnInit {
 
   goToLRegister() {
     this.router.navigate(['/auth/register'])
+  }
+
+  clearBackendErrors() {
+    const emailErrors = this.emailControl.errors;
+    const passErrors = this.passwordControl.errors;
+
+    if (emailErrors && emailErrors['backend']) {
+      delete emailErrors['backend'];
+      this.emailControl.setErrors(Object.keys(emailErrors).length ? emailErrors : null);
+    }
+
+    if (passErrors && passErrors['backend']) {
+      delete passErrors['backend'];
+      this.passwordControl.setErrors(Object.keys(passErrors).length ? passErrors : null);
+    }
+  }
+
+  handleGoogleSignIn() {
+    this.authService.googleSignIn()
   }
 }

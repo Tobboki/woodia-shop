@@ -6,7 +6,7 @@ export const inputVariants = cva('w-full', {
   variants: {
     zType: {
       default:
-        'flex rounded-[8px] border font-normal border-input border-black/25 bg-transparent font-placeholder file:border-0 file:text-foreground file:bg-transparent file:font-medium placeholder:text-black/50 disabled:cursor-not-allowed disabled:opacity-50',
+        'flex rounded-[8px] border font-normal border-black/25 bg-transparent font-placeholder file:border-0 file:text-foreground file:bg-transparent file:font-medium placeholder:text-black/50 disabled:cursor-not-allowed disabled:opacity-50 focus:ring-2 focus:ring-primary-200',
       textarea:
         'flex min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
     },
@@ -16,7 +16,7 @@ export const inputVariants = cva('w-full', {
       lg: 'h-11 py-1 file:md:py-3 file:max-md:py-2.5',
     },
     zStatus: {
-      error: 'border-destructive focus-visible:ring-destructive',
+      error: 'border-error-600 focus-visible:ring-error-600',
       warning: 'border-yellow-500 focus-visible:ring-yellow-500',
       success: 'border-green-500 focus-visible:ring-green-500',
     },

@@ -6,6 +6,7 @@ import { ZardDividerComponent } from '@shared/components/divider/divider.compone
 import { ZardFormModule } from '@shared/components/form/form.module';
 import { ZardIconComponent } from '@shared/components/icon/icon.component';
 import { ZardInputDirective } from '@shared/components/input/input.directive';
+import { CustomerSettingsService } from '@shared/services/customer-settings-service';
 
 @Component({
   selector: 'woodia-account',
@@ -21,6 +22,8 @@ import { ZardInputDirective } from '@shared/components/input/input.directive';
   styleUrl: './account.scss',
 })
 export class Account {
+  constructor(private settingsService: CustomerSettingsService) {}
+
   infoForm = new FormGroup({
     firstName: new FormControl<string>('', [Validators.required]),
     lastName: new FormControl<string>('', [Validators.required]),
@@ -31,18 +34,68 @@ export class Account {
   });
 
   passwordForm = new FormGroup({
-    password: new FormControl<string>('', [Validators.required, Validators.minLength(8)]),
+    password: new FormControl<string>('', [
+      Validators.required,
+      Validators.minLength(8),
+    ]),
   });
 
+  // ===========================================================
+  // INFO
+  // ===========================================================
   handleInfoSubmit() {
+    if (this.infoForm.invalid) {
+      this.infoForm.markAllAsTouched();
+      return;
+    }
 
+    const body = {
+      firstName: this.infoForm.value.firstName,
+      lastName: this.infoForm.value.lastName,
+    };
+
+    this.settingsService.updateInfo(body).subscribe({
+      next: (res) => console.log('Info updated:', res),
+      error: (err) => console.error('Update info error:', err),
+    });
   }
 
+  // ===========================================================
+  // CHANGE EMAIL
+  // ===========================================================
   handleEmailChange() {
+    if (this.emailForm.invalid) {
+      this.emailForm.markAllAsTouched();
+      return;
+    }
 
+    const body = {
+      newEmail: this.emailForm.value.email,
+    };
+
+    if (typeof body === 'string') {
+      this.settingsService.changeEmail(body).subscribe({
+        next: (res) => console.log('Email change request sent:', res),
+        error: (err) => console.error('Email change error:', err),
+      });
+    }
   }
 
+  // ===========================================================
+  // CHANGE PASSWORD (if your API has it)
+  // ===========================================================
   handlePasswordChange() {
+    if (this.passwordForm.invalid) {
+      this.passwordForm.markAllAsTouched();
+      return;
+    }
 
+    const body = {
+      password: this.passwordForm.value.password,
+    };
+
+    // If your API endpoint for password is /me/change-password
+    // add it in your service then call it here
+    console.log('Password change body:', body);
   }
 }

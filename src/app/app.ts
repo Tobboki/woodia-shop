@@ -1,11 +1,12 @@
-import { Component, OnInit, Renderer2, signal } from '@angular/core';
+import { Component, inject, OnInit, Renderer2, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-// import { environment } from 'src/environments/environment.development';
-
+import { ZardToastComponent } from '@shared/components/toast/toast.component';
+import { environment } from 'src/environments/environment.development';
 @Component({
   selector: 'app-root',
   imports: [
     RouterOutlet,
+    ZardToastComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss'
@@ -13,10 +14,12 @@ import { RouterOutlet } from '@angular/router';
 export class App implements OnInit {
   protected readonly title = signal('woodia');
 
-  constructor(private renderer: Renderer2) {}
+  constructor(
+    private renderer: Renderer2,
+  ) {}
 
   ngOnInit(): void {
-    // this.setGoogleSignInClientId(environment.googleSignInClientId);
+    this.setGoogleSignInClientId(environment.endpoints.googleSignInClientId);
   }
 
   setGoogleSignInClientId(clientId: string): void {

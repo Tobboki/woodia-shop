@@ -11,6 +11,9 @@ import { ZardCheckboxComponent } from '@shared/components/checkbox/checkbox.comp
 import { ZardIconComponent } from '@shared/components/icon/icon.component';
 import { ZardDividerComponent } from '@shared/components/divider/divider.component';
 import { LogoComponent } from '@shared/components/logo/logo.component';
+import { matchPasswordsValidator } from '@shared/validators/match-password-validator';
+import { passwordStrengthValidator } from '@shared/validators/password-strength-validator'; 
+import { toast } from 'ngx-sonner';
 
 @Component({
   selector: 'app-register',
@@ -35,10 +38,32 @@ export class Register implements OnInit {
     firstName: new FormControl<string>('', [Validators.required]),
     lastName: new FormControl<string>('', [Validators.required]),
     email: new FormControl<string>('', [Validators.required, Validators.email]),
-    password: new FormControl<string>('', [Validators.required, Validators.minLength(8)]),
-    confirmPassword: new FormControl<string>('', [Validators.required, Validators.minLength(8)]),
+    password: new FormControl<string>('', [Validators.required, Validators.minLength(8), passwordStrengthValidator()]),
+    confirmPassword: new FormControl<string>('', [Validators.required]),
     agreeToTerms: new FormControl<boolean>(false),
+  },{
+    validators: [
+      matchPasswordsValidator,
+    ]
   });
+
+  get firstNameControl() {
+    return this.registerForm.get('firstName')!;
+  }
+  get lastNameControl() {
+    return this.registerForm.get('lastName')!;
+  }
+  get emailControl() {
+    return this.registerForm.get('email')!;
+  }
+
+  get passwordControl() {
+    return this.registerForm.get('password')!;
+  }
+
+  get confirmPasswordControl() {
+    return this.registerForm.get('confirmPassword')!;
+  }
 
   emailVerificationForm = new FormGroup({
     code: new FormControl<string>('', [Validators.required, Validators.minLength(6)])
@@ -49,7 +74,8 @@ export class Register implements OnInit {
   userType = signal<'customer' | 'maker'>('customer');
   showPassword = signal<boolean>(false);
   showConfirmPassword = signal<boolean>(false);
-  apiError = signal<string | null>(null);
+  registerFormLoading = signal<boolean>(false)
+  codeVerificationLoading = signal<boolean>(false)
 
   constructor(
     private authService: AuthService,
@@ -60,6 +86,8 @@ export class Register implements OnInit {
 
   handleCredentialsSubmit() {
     if (this.registerForm.invalid) return;
+
+    this.registerFormLoading.set(true)
 
     const userData = {
       firstName: this.registerForm.value.firstName!,
@@ -72,19 +100,24 @@ export class Register implements OnInit {
     // Call the register method
     this.authService.register(userData).subscribe({
       next: (response) => {
-        console.log('register successful', response);
-        this.apiError.set(null);
+        toast.success('Registration Successful', {
+          position: 'bottom-center',
+          duration: 2000,
+        });
+        this.registerFormLoading.set(false);
         this.registerStep.set('verification')
       },
       error: (err) => {
+        this.registerFormLoading.set(false);
         console.log('register failed', err);
-        this.apiError.set('Registration failed. Please try again.');
       }
     });
   }
 
   handleVerificationSubmit() {
     if (this.registerForm.invalid) return;
+
+    this.codeVerificationLoading.set(true);
 
     const verificationData: IEmailVerificationData = {
       email: this.registerForm.value.email!,
@@ -93,13 +126,20 @@ export class Register implements OnInit {
 
     this.authService.confirmEmail(verificationData).subscribe({
       next: (response: any) => {
-        console.log('verification successful', response);
-        this.apiError.set(null);
+        this.codeVerificationLoading.set(false);
+        toast.success('Verification Successful', {
+          position: 'bottom-center',
+          duration: 2000,
+        });
         this.router.navigate(['/auth'])
       },
       error: (err: any) => {
+        this.codeVerificationLoading.set(false);
+        toast.success('Code does not match', {
+          position: 'bottom-center',
+          duration: 2000,
+        });
         console.log('verification failed', err);
-        this.apiError.set('Verification failed. Please try again.');
       }
     });
   }
@@ -110,12 +150,17 @@ export class Register implements OnInit {
 
     this.authService.resendConfirmation(email).subscribe({
       next: (response: any) => {
-        console.log('Sent successfully', response);
-        this.apiError.set(null);
+        toast.success('Code resent successfully', {
+          position: 'bottom-center',
+          duration: 2000,
+        });
       },
       error: (err: any) => {
+        toast.success('Resending confirmation code failed', {
+          position: 'bottom-center',
+          duration: 2000,
+        });
         console.log('Resending Confirmation failed', err);
-        this.apiError.set('Verification failed. Please try again.');
       }
     });
   }

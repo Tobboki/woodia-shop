@@ -5,7 +5,7 @@
 
       <div class="w-[80%] max-xl:w-full max-lg:w-[60%] max-md:w-[80%] max-sm:w-full my-auto mx-auto space-y-[40px]">
         <!-- Title -->
-        <div class="flex flex-col gap-[16px] max-xl:text-center">
+        <div class="flex flex-col gap-[16px] max-2xl:text-center">
           <h3 class="font-h3 leading-1">
             Welcome Back
           </h3>
@@ -15,12 +15,18 @@
         </div>
 
         <!-- Social Login -->
-        <div class="grid grid-cols-2 max-xl:grid-cols-1 gap-[16px]">
+        <div class="flex fle-row flex-nowrap items-center justify-center gap-[8px] mb-[8px]">
+          <i class="text-warning-600" z-icon zType="triangle-alert"></i>
+          <p class="font-caption text-warning-600 text-center">Social Login is currently disabled</p>
+        </div>
+        <div class="grid grid-cols-2 max-2xl:grid-cols-1 gap-[16px]">
           <button 
             class="bg-white text-black/50 hover:bg-white/50 font-primary text-button font-medium"
             zFull
             z-button
             zType="default"
+            (click)="handleGoogleSignIn()"
+            disabled
           >
             <img 
               src="/icons/google-logo.svg" 
@@ -33,6 +39,7 @@
             class="w-full bg-[#1877F2] text-white hover:bg-[#1877F2]/80 font-primary text-button font-medium"
             z-button
             zType="default"
+            disabled
           >
             <img 
               src="/icons/facebook-logo.svg" 
@@ -68,8 +75,15 @@
                 type="email"
                 placeholder="Enter your email"
                 formControlName="email"
+                [zStatus]="emailControl.invalid && emailControl.touched ? 'error' : undefined"
               />
             </z-form-control>
+
+            @if (emailControl.hasError('required') && emailControl.touched) {
+              <z-form-message class="font-caption" zType="error">Email is required.</z-form-message>
+            } @else if (emailControl.hasError('email') && emailControl.touched) {
+              <z-form-message class="font-caption" zType="error">Enter a valid email address.</z-form-message>
+            }
           </z-form-field>
 
           <z-form-field>
@@ -87,6 +101,7 @@
                   [type]="showPassword() ? 'text' : 'password'"
                   placeholder="min 8 characters"
                   formControlName="password"
+                  [zStatus]="passwordControl.invalid && passwordControl.touched ? 'error' : undefined"
                 />
 
                 <button
@@ -100,11 +115,18 @@
                   <i
                     class="text-black/50"
                     z-icon
-                    zType="eye"
+                    [zType]="showPassword() ? 'eye-off': 'eye'"
                   ></i>
                 </button>
               </div>
             </z-form-control>
+            @if (passwordControl.hasError('required') && passwordControl.touched) {
+              <z-form-message class="font-caption" zType="error">Password is required.</z-form-message>
+            } @else if (passwordControl.hasError('minlength') && passwordControl.touched) {
+              <z-form-message class="font-caption" zType="error">Password must be at least 8 characters.</z-form-message>
+            } @else if (passwordControl.hasError('backend') && passwordControl.touched) {
+              <z-form-message class="font-caption" zType="error">{{ passwordControl.getError('backend') }}</z-form-message>
+            }
           </z-form-field>
 
           <div class="flex flex-row content-center justify-between">
@@ -137,6 +159,7 @@
               zType="default"
               type="submit"
               [disabled]="loginForm.invalid"
+              [zLoading]="loginFormLoading()"
             >
               Login
             </button>

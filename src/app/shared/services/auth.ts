@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, tap, catchError, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
-// import { OAuthService } from 'angular-oauth2-oidc';
+import { OAuthService } from 'angular-oauth2-oidc';
 import { authConfig } from 'src/app/pages/auth/auth.config';
 
 export interface LoginCredentials {
@@ -37,22 +37,70 @@ export class AuthService {
   constructor(
     private http: HttpClient, 
     private router: Router,
-    // private oauthService: OAuthService,
+    private oauthService: OAuthService,
   ) {
-    // this.oauthService.configure(authConfig);
-    // this.oauthService.loadDiscoveryDocumentAndTryLogin();
+    this.oauthService.configure(authConfig);
+    this.oauthService.loadDiscoveryDocumentAndTryLogin();
+
+    this.oauthService.loadDiscoveryDocumentAndTryLogin().then(() => {
+      if (this.oauthService.hasValidIdToken()) {
+        this.sendGoogleTokenToBackend();
+      }
+    });
+
   }
 
   /**
    * Google Sign-In logic
    */
-  // googleSignIn() {
-  //   this.oauthService.initLoginFlow()
-  // }
 
-  // googleLogout() {
-  //   this.oauthService.logOut()
-  // }
+  async sendGoogleTokenToBackend() {
+    const idToken = this.oauthService.getIdToken();
+    const userType = 'Client';
+
+    this.http.post<AuthResponse>(
+      `${environment.apiUrl}${environment.endpoints.auth.googleSignIn}`,
+      { idToken, userType }
+    )
+    .subscribe({
+      next: (response) => {
+        this.storeUser(response);
+        console.log('tried', response)
+      },
+      error: (err) => console.error('Google login error:', err)
+    });
+  }
+
+  storeUser(response: AuthResponse, rememberMe: boolean = true) {
+    const storage = rememberMe ? localStorage : sessionStorage;
+
+    storage.setItem('auth_token', response.token);
+    if (response.refreshToken) storage.setItem('refresh_token', response.refreshToken);
+    if (response.refreshTokenExpiration) storage.setItem('refresh_token_expiration', response.refreshTokenExpiration);
+    storage.setItem('expires_in', response.expiresIn.toString());
+
+    const user = {
+      id: response.id,
+      email: response.email,
+      firstName: response.firstName,
+      lastName: response.lastName,
+      userType: response.userType,
+    };
+
+    storage.setItem('user', JSON.stringify(user));
+
+    this.router.navigate(['/']);
+  }
+
+  googleSignIn() {
+    this.oauthService.initLoginFlow()
+
+    this.sendGoogleTokenToBackend()
+  }
+
+  googleLogout() {
+    this.oauthService.logOut()
+  }
 
   // get googleIdentityClaims() {
   //   return this.oauthService.getIdentityClaims()
@@ -77,7 +125,7 @@ export class AuthService {
    */
   login(credentials: LoginCredentials): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(
-      `${environment.apiUrl}${environment.endpoints.login}`,
+      `${environment.apiUrl}${environment.endpoints.auth.login}`,
       {
         email: credentials.email,
         password: credentials.password,
@@ -87,26 +135,7 @@ export class AuthService {
       }
     ).pipe(
       tap(response => {
-        // Store token in localStorage or sessionStorage
-        const storage = credentials.rememberMe ? localStorage : sessionStorage;
-        storage.setItem('auth_token', response.token); // Store the auth token
-        if (response.refreshToken) {
-          storage.setItem('refresh_token', response.refreshToken); // Store the refresh token
-        }
-        if (response.refreshTokenExpiration) {
-          storage.setItem('refresh_token_expiration', response.refreshTokenExpiration); // Store the refresh token expiration
-        }
-        storage.setItem('expires_in', response.expiresIn.toString()); // Store the expires in time
-
-        // Store the entire user object
-        const user = {
-          id: response.id,
-          email: response.email,
-          firstName: response.firstName,
-          lastName: response.lastName,
-          userType: response.userType,
-        };
-        storage.setItem('user', JSON.stringify(user)); // Store the user data
+        this.storeUser(response, credentials.rememberMe);
       }),
       catchError(error => {
         console.error('Login failed:', error);
@@ -120,7 +149,7 @@ export class AuthService {
    */
   register(userData: any): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(
-      `${environment.apiUrl}${environment.endpoints.register}`,
+      `${environment.apiUrl}${environment.endpoints.auth.register}`,
       userData,
       {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -140,7 +169,7 @@ export class AuthService {
  
   confirmEmail(verificationData: IEmailVerificationData): any {
     return this.http.post<AuthResponse>(
-      `${environment.apiUrl}${environment.endpoints.confirmEmail}`,
+      `${environment.apiUrl}${environment.endpoints.auth.confirmEmail}`,
       verificationData,
       {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -155,7 +184,7 @@ export class AuthService {
  
   resendConfirmation(email: string): any {
     return this.http.post<AuthResponse>(
-      `${environment.apiUrl}${environment.endpoints.resendConfirmation}`,
+      `${environment.apiUrl}${environment.endpoints.auth.resendConfirmation}`,
       {
         email
       },
@@ -233,7 +262,7 @@ export class AuthService {
                         sessionStorage.getItem('refresh_token');
     
     return this.http.post<AuthResponse>(
-      `${environment.apiUrl}${environment.endpoints.refreshToken}`,
+      `${environment.apiUrl}${environment.endpoints.auth.refreshToken}`,
       { refreshToken },
       {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' })

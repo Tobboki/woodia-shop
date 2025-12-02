@@ -9,6 +9,8 @@ import { customerGuard } from './core/guards/role-guard';
 import { Settings as CustomerSettings } from './pages/customers/settings/settings'
 import { Account as CustomerAccountSettings } from './pages/customers/settings/account/account'
 import { Shipping as CustomerShippingSettings } from './pages/customers/settings/shipping/shipping'
+import { ErrorPage } from './pages/error-page/error-page';
+
 export const routes: Routes = [
   { 
     path: '', 
@@ -55,6 +57,11 @@ export const routes: Routes = [
     children: [
       { 
         path: '', 
+        redirectTo: 'login',
+        pathMatch: 'full',
+      },
+      { 
+        path: 'login', 
         component: Login,
       },
       { 
@@ -63,5 +70,14 @@ export const routes: Routes = [
       },
     ]
   },
-  
+  { 
+    path: '**',
+    component: MainLayout,
+    children: [
+      {
+        path: '',
+        component: ErrorPage,
+      }
+    ]
+  }
 ];
