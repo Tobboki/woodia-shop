@@ -19,7 +19,7 @@ export class App implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.setGoogleSignInClientId(environment.endpoints.googleSignInClientId);
+    this.setGoogleSignInClientId(NG_APP_GOOGLE_SIGN_IN_CLIENT_ID);
   }
 
   setGoogleSignInClientId(clientId: string): void {
