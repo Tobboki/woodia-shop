@@ -3,14 +3,12 @@ import { ZardIcon } from '@shared/components/icon/icons';
 
 import { LayoutModule } from '@angular/cdk/layout';
 import { ZardButtonComponent } from '@shared/components/button/button.component';
-import { ZardDividerComponent } from '@shared/components/divider/divider.component';
 import { ZardIconComponent } from '@shared/components/icon/icon.component';
 import { ContentComponent } from '@shared/components/layout/content.component';
 import { SidebarComponent } from '@shared/components/layout/sidebar.component';
 import { LayoutComponent } from '@shared/components/layout/layout.component';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { ZardFormModule } from '@shared/components/form/form.module';
-
+import { CommonModule } from '@angular/common';
 interface IMenuItem {
   icon: ZardIcon
   label: string
@@ -21,6 +19,7 @@ interface IMenuItem {
 @Component({
   selector: 'woodia-settings',
   imports: [
+    CommonModule,
     LayoutModule,
     LayoutComponent,
     SidebarComponent,
@@ -30,12 +29,12 @@ interface IMenuItem {
     RouterOutlet,
     RouterLink,
     RouterLinkActive,
-  ],
+],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })
 export class Settings {
-  // readonly sidebarCollapsed = signal(false);
+  readonly showMobileSettings = signal(false);
  
   mainMenuItems: IMenuItem[] = [
     {
@@ -49,4 +48,8 @@ export class Settings {
       link: 'shipping'
     },
   ];
+
+  toggleMobileSettings() {
+    this.showMobileSettings.update( val => !val)
+  }
 }

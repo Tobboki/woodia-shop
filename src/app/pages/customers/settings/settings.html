@@ -1,8 +1,42 @@
 <section>
+  @if (!showMobileSettings()) {
+    <a
+      z-button
+      zSize="sm"
+      zType="link"
+      class="text-primary-300 lg:hidden gap-[4px] mt-[8px] mb-[16px]"
+      (click)="toggleMobileSettings()"
+    >
+      <i z-icon zType="arrow-left"></i>
+      Back to settings
+    </a>
+  }
+  @if (showMobileSettings()) {
+    <nav class="lg:hidden flex h-full flex-col overflow-hidden gap-[8px] px-[8px] pb-[16px] my-[16px] rounded-md border border-black/25">
+      <h1 class="font-h1">Settings</h1>
+
+      @for (item of mainMenuItems; track item.label) {
+        <div
+          class="px-[8px] py-[4px] flex flex-nowrap items-center justify-between hover:bg-primary-50 rounded-[12px]"
+          routerLinkActive="active-label"
+          [routerLink]="[`/customers/settings/${item.link}`]"
+          [routerLinkActiveOptions]="{ exact: false }"
+          (click)="toggleMobileSettings()"
+        >
+          <div class="flex flex-nowrap items-center gap-[8px]">
+            <z-icon [zType]="item.icon" class="size[42px]" />
+            <h4 class="font-h4 font-thin">{{ item.label }}</h4>
+          </div>
+          
+          <z-icon zType="arrow-right" class="size[42px]" />
+        </div>
+      }
+    </nav>
+  }
   <z-layout class="overflow-hidden gap-[12px] rounded-md border border-black/25">
     <z-sidebar
       [zWidth]="'100%'"
-      class="p-0! w-[300px] max-md:w-[200px] border-black/25"
+      class="p-0! w-[300px] max-lg:hidden border-black/25"
     >
       <nav class="flex h-full flex-col overflow-hidden gap-[8px] p-[8px]">
           <h1 class="font-h1">Settings</h1>

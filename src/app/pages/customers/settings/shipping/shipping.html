@@ -10,7 +10,7 @@
   <div>
     <!-- Form -->
     <form [formGroup]="shippingForm" (ngSubmit)="handleShippingSubmit()" class="space-y-6 my-[40px]">
-      <div class="grid grid-cols-2 gap-[20px]">
+      <div class="grid grid-cols-2 max-sm:grid-cols-1  gap-[20px]">
         <!-- governorate Selector -->
         <z-form-field>
           <label class="font-label" z-form-label for="governorate">Governorate</label>

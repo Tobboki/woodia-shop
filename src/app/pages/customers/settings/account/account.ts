@@ -1,12 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { ZardButtonComponent } from '@shared/components/button/button.component';
 import { ZardDividerComponent } from '@shared/components/divider/divider.component';
 import { ZardFormModule } from '@shared/components/form/form.module';
 import { ZardIconComponent } from '@shared/components/icon/icon.component';
 import { ZardInputDirective } from '@shared/components/input/input.directive';
 import { CustomerSettingsService } from '@shared/services/customer-settings-service';
+import { CdkContextMenuTrigger } from "@angular/cdk/menu";
 
 @Component({
   selector: 'woodia-account',
@@ -17,7 +19,8 @@ import { CustomerSettingsService } from '@shared/services/customer-settings-serv
     ZardInputDirective,
     ZardFormModule,
     ZardButtonComponent,
-  ],
+    CdkContextMenuTrigger
+],
   templateUrl: './account.html',
   styleUrl: './account.scss',
 })

@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, Renderer2, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ZardToastComponent } from '@shared/components/toast/toast.component';
-import { environment } from 'src/environments/environment.development';
+import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-root',
   imports: [
@@ -19,7 +19,7 @@ export class App implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.setGoogleSignInClientId(process.env["NG_APP_GOOGLE_SIGN_IN_CLIENT_ID"]);
+    this.setGoogleSignInClientId(environment.googleSignInClientId);
   }
 
   setGoogleSignInClientId(clientId: string): void {

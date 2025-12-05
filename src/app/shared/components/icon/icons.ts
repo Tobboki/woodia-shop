@@ -1,5 +1,6 @@
 import {
   ArrowRight,
+  ArrowLeft,
   Ban,
   Bell,
   Bold,
@@ -106,6 +107,7 @@ export const ZARD_ICONS = {
   'chevrons-up-down': ChevronsUpDown,
   'move-right': MoveRight,
   'arrow-right': ArrowRight,
+  'arrow-left': ArrowLeft,
   folder: Folder,
   'folder-open': FolderOpen,
   'folder-plus': FolderPlus,

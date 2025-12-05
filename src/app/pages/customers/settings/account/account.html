@@ -8,8 +8,8 @@
       <z-divider class="bg-black/25 mt-[8px]"></z-divider>
     </div>
 
-    <div class="flex flex-column items-center justify-between">
-      <div class="flex flex-nowrap items-center gap-[8px]">
+    <div class="flex flex-column items-center justify-between max-md:justify-center">
+      <div class="flex max-md:flex-col flex-nowrap items-center max-md:justify-center gap-[8px]">
         <div class="overflow-hidden min-w-[128px] w-[128px] h-[128px] rounded-full">
           <img 
             src="/images/auth/customer.jpg" 
@@ -19,7 +19,7 @@
         </div>
 
 
-        <div>
+        <div class="max-md:text-center">
           <h4 class="font-button">Profile Picture</h4>
           <p class="font-caption text-black/50">
             PNG, JPEG, JPG under 10MB
@@ -31,7 +31,8 @@
         z-button
         zType="default"
         type="button"
-        class="py-[8px]"
+        class="py-[8px] max-md:hidden"
+        disabled
       >
         Change Picture
       </button>
@@ -40,7 +41,7 @@
     <div>
       <!-- Form -->
       <form [formGroup]="infoForm" (ngSubmit)="handleInfoSubmit()" class="space-y-6 my-[40px]">
-        <div class="grid grid-cols-2 gap-[20px]">
+        <div class="grid grid-cols-2 max-md:grid-cols-1 gap-[20px]">
           <z-form-field>
             <label class="font-label" z-form-label zRequired>
               First Name
