@@ -10,13 +10,12 @@
 
     <div class="flex flex-column items-center justify-between max-md:justify-center">
       <div class="flex max-md:flex-col flex-nowrap items-center max-md:justify-center gap-[8px]">
-        <div class="overflow-hidden min-w-[128px] w-[128px] h-[128px] rounded-full">
-          <img 
-            src="/images/auth/customer.jpg" 
-            alt="Profile Picture" 
-            class="w-full h-full object-cover object-center"
-          >
-        </div>
+        <z-avatar
+          zStatus="online"
+          zSrc="/images/auth/customer.jpg"
+          zAlt="Image"
+          class="size-[128px]"
+        />
 
 
         <div class="max-md:text-center">
@@ -26,6 +25,7 @@
           </p>
         </div>
       </div>
+
 
       <button
         z-button
@@ -40,7 +40,11 @@
 
     <div>
       <!-- Form -->
-      <form [formGroup]="infoForm" (ngSubmit)="handleInfoSubmit()" class="space-y-6 my-[40px]">
+      <form
+        [formGroup]="infoForm"
+        (ngSubmit)="handleInfoSubmit()"
+        class="space-y-6 my-[40px]"
+      >
         <div class="grid grid-cols-2 max-md:grid-cols-1 gap-[20px]">
           <z-form-field>
             <label class="font-label" z-form-label zRequired>
@@ -71,24 +75,25 @@
           </z-form-field>
         </div>
 
-        <div class="flex flex-row justify-end gap-[12px]">
-          <button
-            z-button
-            zType="outline"
-            type="button"
-            [disabled]="!infoForm.dirty"
-            class="py-[8px]"
-          >
-            Reset
-          </button>
+        <div class="flex flex-row max-sm:flex-col gap-[12px]">
           <button
             z-button
             zType="default"
             type="submit"
-            [disabled]="infoForm.invalid"
-            class="py-[8px]"
+            [disabled]="!infoForm.dirty"
+            [zLoading]="infoFormLoading()"
           >
             Save Changes
+          </button>
+
+          <button
+            z-button
+            zType="outline"
+            type="button"
+            [disabled]="!infoForm.dirty || infoFormLoading()"
+            (click)="infoForm.reset()"
+          >
+            Cancel
           </button>
         </div>
       </form>
@@ -105,9 +110,13 @@
     </div>
 
     <!-- Form -->
-    <form [formGroup]="emailForm" (ngSubmit)="handleEmailChange()" class="flex flex-nowrap items-end gap-[24px]">
+    <form
+      [formGroup]="emailForm"
+      (ngSubmit)="handleEmailUpdate()"
+      class="flex flex-col flex-nowrap gap-[24px]"
+    >
       <z-form-field
-        class="w-full"
+        class="w-[60%] max-sm:w-[100%]"
       >
         <label
           class="font-label"
@@ -118,27 +127,39 @@
         </label>
         <z-form-control>
           <input
-            z-input
-            type="email"
-            placeholder="Your email"
-            formControlName="email"
-          />
+              z-input
+              type="email"
+              placeholder="Your email"
+              formControlName="email"
+            />
         </z-form-control>
       </z-form-field>
 
-      <button
-        z-button
-        zType="default"
-        type="submit"
-        [disabled]="emailForm.invalid"
-        class="py-[8px]"
+      <div
+        class="w-full flex gap-[12px] max-sm:flex-col"
       >
-        Edit
-      </button>
+        <button
+          z-button
+          type="submit"
+          [disabled]="!emailForm.dirty || emailForm.invalid"
+          [zLoading]="emailFormLoading()"
+        >
+          Save Changes
+        </button>
+        <button
+          z-button
+          zType="outline"
+          type="submit"
+          [disabled]="!emailForm.dirty"
+          (click)="cancelEmailUpdate()"
+        >
+          Cancel
+        </button>
+      </div>
     </form>
 
     <!-- Form -->
-    <form [formGroup]="passwordForm" (ngSubmit)="handlePasswordChange()" class="flex flex-nowrap items-end gap-[24px]">
+    <!-- <form [formGroup]="passwordForm" (ngSubmit)="handlePasswordChange()" class="flex flex-nowrap items-end gap-[24px]">
       <z-form-field
         class="w-full"
       >
@@ -162,15 +183,15 @@
         <button
           zFull
           z-button
-          zType="default"
+          zType="link"
+          zSize="link"
           type="submit"
           [disabled]="emailForm.invalid"
-          class="py-[8px]"
         >
           Edit
         </button>
       </div>
-    </form>
+    </form> -->
   </section>
 
 </section>

@@ -12,7 +12,7 @@
     </a>
   }
   @if (showMobileSettings()) {
-    <nav class="lg:hidden flex h-full flex-col overflow-hidden gap-[8px] px-[8px] pb-[16px] my-[16px] rounded-md border border-black/25">
+    <nav class="lg:hidden flex h-full flex-col overflow-hidden gap-[8px] px-[8px] pb-[16px] my-[16px] rounded-[12px] border-[2px]">
       <h1 class="font-h1">Settings</h1>
 
       @for (item of mainMenuItems; track item.label) {
@@ -33,10 +33,10 @@
       }
     </nav>
   }
-  <z-layout class="overflow-hidden gap-[12px] rounded-md border border-black/25">
+  <z-layout class="overflow-hidden rounded-[12px] border border-[2px]">
     <z-sidebar
       [zWidth]="'100%'"
-      class="p-0! w-[300px] max-lg:hidden border-black/25"
+      class="p-0! w-[300px] max-lg:hidden"
     >
       <nav class="flex h-full flex-col overflow-hidden gap-[8px] p-[8px]">
           <h1 class="font-h1">Settings</h1>
@@ -47,7 +47,7 @@
               z-button
               zType="ghost"
               zPosition="left"
-              class="p-[8px]"
+              class="py-[8px]"
               routerLinkActive="active-label"
               [routerLink]="[`/customers/settings/${item.link}`]"
               [routerLinkActiveOptions]="{ exact: false }"
@@ -59,7 +59,7 @@
       </nav>
     </z-sidebar>
 
-    <z-content class="min-h-[200px]">
+    <z-content class="min-h-[200px] px-[24px] max-sm:px-[12px]">
       <router-outlet></router-outlet>
     </z-content>
   </z-layout>

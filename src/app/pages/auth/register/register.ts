@@ -129,7 +129,6 @@ export class Register implements OnInit {
         this.codeVerificationLoading.set(false);
         toast.success('Verification Successful', {
           position: 'bottom-center',
-          duration: 2000,
         });
         this.router.navigate(['/auth'])
       },
@@ -137,7 +136,6 @@ export class Register implements OnInit {
         this.codeVerificationLoading.set(false);
         toast.success('Code does not match', {
           position: 'bottom-center',
-          duration: 2000,
         });
         console.log('verification failed', err);
       }
@@ -152,13 +150,11 @@ export class Register implements OnInit {
       next: (response: any) => {
         toast.success('Code resent successfully', {
           position: 'bottom-center',
-          duration: 2000,
         });
       },
       error: (err: any) => {
         toast.success('Resending confirmation code failed', {
           position: 'bottom-center',
-          duration: 2000,
         });
         console.log('Resending Confirmation failed', err);
       }

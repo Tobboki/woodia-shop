@@ -5,8 +5,8 @@ export const inputGroupVariants = cva(
   {
     variants: {
       zSize: {
+        default: 'h-fit',
         sm: 'h-9',
-        default: 'h-10',
         lg: 'h-11',
       },
       zDisabled: {
@@ -22,12 +22,12 @@ export const inputGroupVariants = cva(
 );
 
 export const inputGroupAddonVariants = cva(
-  'addon inline-flex items-center justify-center whitespace-nowrap text-sm font-medium border border-input bg-muted text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  'addon inline-flex items-center justify-center whitespace-nowrap text-sm font-medium border border-black/25 bg-muted text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       zSize: {
+        default: 'h-[48px] px-3 text-sm',
         sm: 'h-9 px-3 text-xs',
-        default: 'h-10 px-3 text-sm',
         lg: 'h-11 px-4 text-base',
       },
       zPosition: {
@@ -71,12 +71,12 @@ export const inputGroupAffixVariants = cva('absolute inset-y-0 flex items-center
 });
 
 export const inputGroupInputVariants = cva(
-  'input-wrapper flex h-full w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors',
+  'flex w-full rounded-[8px] border font-normal border-black/25 bg-transparent font-placeholder file:border-0 file:text-foreground file:bg-transparent file:font-medium placeholder:text-black/50 disabled:cursor-not-allowed disabled:opacity-50 focus:ring-2 focus:ring-primary-200',
   {
     variants: {
       zSize: {
-        sm: 'h-9 px-3 py-1 text-sm',
-        default: 'h-10 px-3 py-2 text-sm',
+        default: 'h-[48px] px-[16px] py-[8px] max-sm:h-fit file:max-md:py-0',
+        sm: 'h-[48px] px-[16px] py-[8px] file:max-md:py-0',
         lg: 'h-11 px-4 py-2 text-base',
       },
       zHasPrefix: {
@@ -98,6 +98,11 @@ export const inputGroupInputVariants = cva(
       zDisabled: {
         true: 'cursor-not-allowed opacity-50',
         false: '',
+      },
+      zStatus: {
+        error: 'border-error-600 focus-visible:ring-error-600',
+        warning: 'border-yellow-500 focus-visible:ring-yellow-500',
+        success: 'border-green-500 focus-visible:ring-green-500',
       },
       zBorderless: {
         true: 'border-0 bg-transparent shadow-none',

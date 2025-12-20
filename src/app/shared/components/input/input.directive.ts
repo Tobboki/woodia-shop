@@ -20,6 +20,7 @@ export class ZardInputDirective  {
   readonly zType = input<ZardInputVariants['zType']>('default');
   readonly zSize = input<ZardInputVariants['zSize']>('default');
   readonly zStatus = input<ZardInputVariants['zStatus']>();
+  readonly zDisabled = input<ZardInputVariants['zDisabled']>();
 
 
   readonly class = input<ClassValue>('');
@@ -27,6 +28,7 @@ export class ZardInputDirective  {
   protected readonly classes = computed(() =>
     mergeClasses(inputVariants({
       zType: this.zType(),
+      zDisabled: this.zDisabled(),
       zSize: this.zSize(),
       zStatus: this.zStatus(),
       zBorderless: this.zBorderless()

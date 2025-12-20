@@ -1,6 +1,6 @@
 <header>
-  <nav class="bg-surface-light fixed w-full z-20 top-0 start-0 border-b border-default">
-    <div class="max-w-screen-xl flex items-center justify-between mx-auto py-[16px] px-[24px]">
+  <nav class="bg-surface-light fixed w-full z-999 top-0 start-0 border-b border-default">
+    <div class="max-w-screen-xl flex items-center justify-between mx-auto py-[16px] px-[24px] max-sm:px-[12px]">
       <!-- Logo and Title -->
       <a href="#" class="flex items-center space-x-3 rtl:space-x-reverse">
         <logo />
@@ -19,17 +19,28 @@
         <!-- Add links here if needed -->
       </div>
 
-      <div class="relative">
-        <button z-button zType="icon" z-menu [zMenuTriggerFor]="userManager">
-          <img src="/images/auth/customer.jpg" alt="User Profile" class="w-8 h-8 rounded-full">
-          <span class="font-placeholder">
+      <div class="relative flex items-center">
+        <button
+          z-button
+            zType="icon"
+            zSize="icon"
+            z-menu
+            [zMenuTriggerFor]="userManager"
+            zPlacement="bottomRight"
+          >
+          <z-avatar
+            zSrc="/images/auth/customer.jpg"
+            zAlt="Image"
+            class="sm"
+          />
+          <!-- <span class="font-placeholder">
             {{ userName }}
           </span>
-          <z-icon zType="chevron-down" class="ml-1" />
+          <z-icon zType="chevron-down" class="ml-1" /> -->
         </button>
 
         <ng-template #userManager>
-          <div z-menu-content class="w-48">
+          <div z-menu-content class="w-48 space-y-[8px]">
             <button 
               z-menu-item
               (click)="goToSettings()"

@@ -4,7 +4,7 @@ export const environment = {
   googleSignInClientId: process.env["NG_APP_GOOGLE_SIGN_IN_CLIENT_ID"],
   endpoints: {
     constants: {
-      governorate: '/Governorate',
+      governorate: '/api/Governorate',
     },
     auth: {
       login: '/Auth',
@@ -24,6 +24,7 @@ export const environment = {
           verifyEmail: '/me/verify-email',
         },
         shipping: {
+          getShippingDetails: '/me/contact-info',
           createShippingDetails: '/me/contact-info',
           updateShippingDetails: '/me/contact-info',
         },

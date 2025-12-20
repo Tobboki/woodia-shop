@@ -53,7 +53,6 @@ export class AuthService {
   /**
    * Google Sign-In logic
    */
-
   async sendGoogleTokenToBackend() {
     const idToken = this.oauthService.getIdToken();
     const userType = 'Client';
@@ -88,8 +87,6 @@ export class AuthService {
     };
 
     storage.setItem('user', JSON.stringify(user));
-
-    this.router.navigate(['/']);
   }
 
   googleSignIn() {
@@ -213,10 +210,17 @@ export class AuthService {
   }
 
   /**
-   * Get stored auth token
+   * Get stored access token
    */
   getToken(): string | null {
     return localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
+  }
+
+  /**
+   * Get stored refresh token
+   */
+  getRefreshToken(): string | null {
+    return localStorage.getItem('refresh_token') || sessionStorage.getItem('refresh_token');
   }
 
 
@@ -258,19 +262,18 @@ export class AuthService {
    * Refresh authentication token
    */
   refreshToken(): Observable<AuthResponse> {
-    const refreshToken = localStorage.getItem('refresh_token') || 
-                        sessionStorage.getItem('refresh_token');
+    const token = this.getToken()
+    const refreshToken = this.getRefreshToken();
     
     return this.http.post<AuthResponse>(
       `${environment.apiUrl}${environment.endpoints.auth.refreshToken}`,
-      { refreshToken },
       {
-        headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-      }
+        token,
+        refreshToken
+      },
     ).pipe(
       tap(response => {
-        const storage = localStorage.getItem('auth_token') ? localStorage : sessionStorage;
-        storage.setItem('auth_token', response.token);
+        this.storeUser(response);
       }),
       catchError(error => {
         this.logout();

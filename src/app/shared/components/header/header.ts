@@ -10,6 +10,7 @@ import { ZardMenuDirective } from '../menu/menu.directive';
 import { CustomerSettingsService } from '@shared/services/customer-settings-service';
 import { ZardButtonComponent } from '../button/button.component';
 import { ZardIconComponent } from '../icon/icon.component';
+import { ZardAvatarComponent } from '../avatar/avatar.component';
 
 @Component({
   selector: 'woodia-header',
@@ -21,6 +22,7 @@ import { ZardIconComponent } from '../icon/icon.component';
     ZardIconComponent,
     ZardMenuModule,
     ZardMenuModule,
+    ZardAvatarComponent,
   ],
   templateUrl: './header.html',
   styleUrl: './header.scss',

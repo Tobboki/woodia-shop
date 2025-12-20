@@ -9,15 +9,15 @@
 
   <div>
     <!-- Form -->
-    <form [formGroup]="shippingForm" (ngSubmit)="handleShippingSubmit()" class="space-y-6 my-[40px]">
-      <div class="grid grid-cols-2 max-sm:grid-cols-1  gap-[20px]">
+    <form [formGroup]="shippingForm" (ngSubmit)="handleShippingSubmit()" class="space-y-[24px] my-[40px]">
+      <div class="grid grid-cols-2 max-sm:grid-cols-1 gap-[20px]">
         <!-- governorate Selector -->
         <z-form-field>
           <label class="font-label" z-form-label for="governorate">Governorate</label>
           <z-form-control>
             <z-select id="governorate" formControlName="governorate" placeholder="Select your Governorate">
-              @for (Governorate of countries; track Governorate.value) {
-                <z-select-item [zValue]="Governorate.value">{{ Governorate.label }}</z-select-item>
+              @for (Governorate of Governorates(); track Governorate) {
+                <z-select-item [zValue]="Governorate.id.toString()">{{ Governorate.nameEn }}</z-select-item>
               }
             </z-select>
           </z-form-control>
@@ -72,7 +72,6 @@
           zType="outline"
           type="button"
           [disabled]="!shippingForm.dirty"
-          class="py-[8px]"
         >
           Reset
         </button>
@@ -81,7 +80,6 @@
           zType="default"
           type="submit"
           [disabled]="shippingForm.invalid"
-          class="py-[8px]"
         >
           Save Changes
         </button>

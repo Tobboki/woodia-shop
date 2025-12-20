@@ -23,6 +23,15 @@ export class CustomerSettingsService {
   }
 
   // ================================
+  //            /Governorate (GET)
+  // ================================
+  getGovernorate(): Observable<any> {
+    return this.http
+      .get(`${environment.apiUrl}${environment.endpoints.constants.governorate}`, this.headers)
+      .pipe(catchError(err => throwError(() => err)));
+  }
+
+  // ================================
   //            /me (GET)
   // ================================
   getMe(): Observable<any> {
@@ -79,9 +88,9 @@ export class CustomerSettingsService {
   // ================================
   //   /me/contact-info/{Id} (GET)
   // ================================
-  getContactInfo(id: string): Observable<any> {
+  getContactInfo(): Observable<any> {
     return this.http
-      .get(`${environment.apiUrl}/me/contact-info/${id}`, this.headers)
+      .get(`${environment.apiUrl}${environment.endpoints.customer.settings.shipping.getShippingDetails}/3`, this.headers)
       .pipe(catchError(err => throwError(() => err)));
   }
 
