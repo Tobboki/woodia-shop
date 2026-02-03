@@ -59,7 +59,9 @@ export const routes: Routes = [
 
       {
         path: 'designs/:id',
-        component: DesignConfigurator
+        loadComponent: () => 
+          import('./core/customer/pages/design-configurator/design-configurator')
+            .then(m => m.DesignConfigurator)
       },
 
       // Settings
