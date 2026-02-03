@@ -51,10 +51,10 @@
   --text-body: 16px;
   --text-label: 16px;
   --text-caption: 20px;
-  --text-placeholder: 20px; 
+  --text-placeholder: 20px;
   --text-button: 24px; 
-  --text-subtitle : 24px; 
-  --text-subtitle : 24px; 
+  --text-subtitle : 24px;
+  --text-link : 24px;
   --text-helper: 20px;
 
   /* Colors */
@@ -172,6 +172,10 @@
 
   .font-caption {
     @apply text-caption font-primary text-placeholder;
+  }
+
+  .font-link {
+    @apply font-primary text-link font-medium;
   }
 }
 

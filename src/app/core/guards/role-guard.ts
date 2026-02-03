@@ -7,7 +7,7 @@ export const customerGuard: CanActivateFn = (route, state) => {
 
   const auth = inject(AuthService);
 
-  if (auth.getCurrentUser().userType === 'Client') {
+  if (auth.getCurrentUser()?.userType === 'Client') {
     return true;
   }
   
@@ -18,7 +18,7 @@ export const makerGuard: CanActivateFn = (route, state) => {
 
   const auth = inject(AuthService);
 
-  if (auth.getCurrentUser().type === 'MAKER') {
+  if (auth.getCurrentUser()?.userType === 'MAKER') {
     return true;
   }
   

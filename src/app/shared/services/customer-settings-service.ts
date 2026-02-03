@@ -4,6 +4,11 @@ import { Observable, catchError, tap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { AuthService } from './auth';
 
+export interface IEmailVerificationData {
+  email: string;
+  code: string
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -52,7 +57,7 @@ export class CustomerSettingsService {
   // ================================
   //     /me/change-email (POST)
   // ================================
-  changeEmail(body: { newEmail: string }): Observable<any> {
+  changeEmail(body: { email: string }): Observable<any> {
     return this.http
       .post(`${environment.apiUrl}/me/change-email`, body, this.headers)
       .pipe(catchError(err => throwError(() => err)));
@@ -61,18 +66,18 @@ export class CustomerSettingsService {
   // ================================
   //     /me/resend-email (POST)
   // ================================
-  resendEmail(body?: any): Observable<any> {
+  resendEmailVerificationCode(email: string): Observable<any> {
     return this.http
-      .post(`${environment.apiUrl}/me/resend-email`, body ?? {}, this.headers)
+      .post(`${environment.apiUrl}/me/resend-email`, email ?? {}, this.headers)
       .pipe(catchError(err => throwError(() => err)));
   }
 
   // ================================
   //     /me/verify-email (POST)
   // ================================
-  verifyEmail(body: { token: string }): Observable<any> {
+  verifyEmail(verificationData: IEmailVerificationData): Observable<any> {
     return this.http
-      .post(`${environment.apiUrl}/me/verify-email`, body, this.headers)
+      .post(`${environment.apiUrl}/me/verify-email`, verificationData, this.headers)
       .pipe(catchError(err => throwError(() => err)));
   }
 
@@ -90,16 +95,16 @@ export class CustomerSettingsService {
   // ================================
   getContactInfo(): Observable<any> {
     return this.http
-      .get(`${environment.apiUrl}${environment.endpoints.customer.settings.shipping.getShippingDetails}/3`, this.headers)
+      .get(`${environment.apiUrl}${environment.endpoints.customer.settings.shipping.getShippingDetails}`, this.headers)
       .pipe(catchError(err => throwError(() => err)));
   }
 
   // ================================
-  //   /me/contact-info/{Id} (PUT)
+  //   /me/contact-info (PUT)
   // ================================
-  updateContactInfo(id: string, body: any): Observable<any> {
+  updateContactInfo(body: any): Observable<any> {
     return this.http
-      .put(`${environment.apiUrl}/me/contact-info/${id}`, body, this.headers)
+      .put(`${environment.apiUrl}/me/contact-info`, body, this.headers)
       .pipe(catchError(err => throwError(() => err)));
   }
 }

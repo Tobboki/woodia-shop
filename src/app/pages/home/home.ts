@@ -1,25 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '@shared/services/auth';
+import { HeroSection } from './sections/hero-section/hero-section';
 
 @Component({
   selector: 'app-home',
-  imports: [],
+  imports: [
+    HeroSection,
+  ],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
-export class Home implements OnInit {
+export class Home {
 
 
   user: any;
   userName: string | undefined;
 
-  constructor(private authService: AuthService) {}
+  // constructor(private authService: AuthService) {}
 
-  ngOnInit(): void {
-    this.user = this.authService.getCurrentUser();
-    if (this.user) {
-      this.userName = this.user.firstName;
-    }
-  }
+  // ngOnInit(): void {
+  // }
 
 }

@@ -11,6 +11,7 @@ import { ZardFormModule } from '@shared/components/form/form.module';
 import { ZardIconComponent } from '@shared/components/icon/icon.component';
 import { ZardInputGroupComponent } from '@shared/components/input-group/input-group.component';
 import { ZardInputDirective } from '@shared/components/input/input.directive';
+import { ZardLoaderComponent } from '@shared/components/loader/loader.component';
 import { AuthService } from '@shared/services/auth';
 import { CustomerSettingsService } from '@shared/services/customer-settings-service';
 import { toast } from 'ngx-sonner';
@@ -90,7 +91,7 @@ export class VerifyEmailChangeDialog {
   codeVerificationLoading = signal<boolean>(false)
 
   constructor(
-    private authService: AuthService,
+    private settingsService: CustomerSettingsService,
   ) {}
  
   verifyEmailChangeForm = new FormGroup({
@@ -98,7 +99,7 @@ export class VerifyEmailChangeDialog {
   })
  
   get codeControl() {
-    return this.verifyEmailChangeForm.get('password')!;
+    return this.verifyEmailChangeForm.get('code')!;
   }
 
   handleVerificationSubmit() {
@@ -109,9 +110,10 @@ export class VerifyEmailChangeDialog {
         code: this.verifyEmailChangeForm.value.code!,
       };
   
-      this.authService.confirmEmail(verificationData).subscribe({
+      this.settingsService.verifyEmail(verificationData).subscribe({
         next: (response: any) => {
           this.codeVerificationLoading.set(false);
+
           toast.success('Email changed successfully', {
             position: 'bottom-center',
             duration: 2000,
@@ -119,10 +121,15 @@ export class VerifyEmailChangeDialog {
         },
         error: (err: any) => {
           this.codeVerificationLoading.set(false);
+
+          //! fix
+          // this.userDataHolder.email = this.infoForm.value.email!
+
           toast.success('Code does not match', {
             position: 'bottom-center',
             duration: 2000,
           });
+
           console.log('verification failed', err);
         }
       });
@@ -132,7 +139,7 @@ export class VerifyEmailChangeDialog {
   
       const email = this.zData.email!;
   
-      this.authService.resendConfirmation(email).subscribe({
+      this.settingsService.resendEmailVerificationCode(email).subscribe({
         next: (response: any) => {
           toast.success('Code resent successfully', {
             position: 'bottom-center',
@@ -161,9 +168,10 @@ export class VerifyEmailChangeDialog {
     ZardFormModule,
     ZardButtonComponent,
     ZardAvatarComponent,
+    ZardLoaderComponent,
     // ZardDialogComponent,
     // ZardInputGroupComponent,
-    // ZardIconComponent,
+    ZardIconComponent,
 ],
   templateUrl: './account.html',
   styleUrl: './account.scss',
@@ -173,7 +181,6 @@ export class Account implements OnInit {
 
   constructor(
     private settingsService: CustomerSettingsService,
-    private authService: AuthService,
     private dialogService: ZardDialogService
   ) {}
 
@@ -204,15 +211,21 @@ export class Account implements OnInit {
           firstName: userData.firstName,
           lastName: userData.lastName,
         });
+
         this.emailForm.patchValue({
           email: userData.email
         })
+        
+        this.infoLoading.set(false)
       },
       error: (err) => {
         toast.error('Error fetching user data', {
           position: 'bottom-center',
         });
+
         console.error('Error fetching user data', err)
+
+        this.infoLoading.set(false)
       },
     });
   }
@@ -221,6 +234,8 @@ export class Account implements OnInit {
   // ===========================================================
   // INFO
   // ===========================================================
+
+  infoLoading = signal<boolean>(true)
   infoFormLoading = signal<boolean>(false)
 
   handleInfoSubmit() {
@@ -243,6 +258,9 @@ export class Account implements OnInit {
         toast.success('Name updated successful', {
           position: 'bottom-center',
         });
+
+        this.userDataHolder.firstName = this.infoForm.value.firstName!
+        this.userDataHolder.lastName = this.infoForm.value.lastName!
 
         this.infoForm.markAsPristine()
       },
@@ -297,7 +315,7 @@ export class Account implements OnInit {
     }
 
     const body = {
-      newEmail: this.emailForm.value.email!,
+      email: this.emailForm.value.email!,
     };
 
     this.emailFormLoading.set(true);

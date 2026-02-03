@@ -1,0 +1,26 @@
+<div
+  class="carousel"
+  (touchstart)="onTouchStart($event)"
+  (touchend)="onTouchEnd($event)"
+>
+  @for (slide of slides; track slide.image; let i = $index) {
+    <div
+      #slideEl
+      class="slide"
+      [class.active]="i === activeIndex"
+      (click)="setActive(i)"
+      [style.backgroundImage]="'url(' + slide.image + ')'"
+    >
+      <div class="overlay">
+        <span class="index">{{ slide.label }}</span>
+
+        @if (i === activeIndex) {
+          <div class="content">
+            <h2>{{ slide.title }}</h2>
+            <p>{{ slide.description }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

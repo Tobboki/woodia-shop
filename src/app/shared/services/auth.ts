@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, tap, catchError, throwError } from 'rxjs';
+import { Observable, tap, catchError, throwError, firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -24,6 +24,16 @@ export interface AuthResponse {
   userType: string;
 }
 
+export type TUserType = 'Client' | 'MAKER'
+
+export interface IUserData {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  userType: TUserType
+}
+
 export interface IEmailVerificationData {
   email: string;
   code: string
@@ -40,33 +50,22 @@ export class AuthService {
     private oauthService: OAuthService,
   ) {
     this.oauthService.configure(authConfig);
-    this.oauthService.loadDiscoveryDocumentAndTryLogin();
-
-    this.oauthService.loadDiscoveryDocumentAndTryLogin().then(() => {
-      if (this.oauthService.hasValidIdToken()) {
-        this.sendGoogleTokenToBackend();
-      }
-    });
-
   }
 
   /**
    * Google Sign-In logic
    */
-  async sendGoogleTokenToBackend() {
+  sendGoogleTokenToBackend(): Promise<void> {
     const idToken = this.oauthService.getIdToken();
     const userType = 'Client';
 
-    this.http.post<AuthResponse>(
-      `${environment.apiUrl}${environment.endpoints.auth.googleSignIn}`,
-      { idToken, userType }
-    )
-    .subscribe({
-      next: (response) => {
-        this.storeUser(response);
-        console.log('tried', response)
-      },
-      error: (err) => console.error('Google login error:', err)
+    return firstValueFrom(
+      this.http.post<AuthResponse>(
+        `${environment.apiUrl}${environment.endpoints.auth.googleSignIn}`,
+        { idToken, userType }
+      )
+    ).then(response => {
+      this.storeUser(response);
     });
   }
 
@@ -206,7 +205,7 @@ export class AuthService {
     sessionStorage.removeItem('auth_token');
     sessionStorage.removeItem('refresh_token');
     sessionStorage.removeItem('user');
-    this.router.navigate(['/auth']);
+    this.router.navigate(['/']);
   }
 
   /**
@@ -214,6 +213,26 @@ export class AuthService {
    */
   getToken(): string | null {
     return localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
+  }
+
+  getExpirationDate(): string | Date | null {
+    return localStorage.getItem('refresh_token_expiration')
+  }
+
+  getAccessTokenExpiration(): number | null {
+    const exp =
+      localStorage.getItem('expires_at') ||
+      sessionStorage.getItem('expires_at');
+
+    return exp ? Number(exp) : null;
+  }
+
+  isAccessTokenExpired(): boolean {
+    const exp = this.getAccessTokenExpiration();
+    if (!exp) return true;
+
+    // refresh 1 minute early
+    return Date.now() > exp - 60_000;
   }
 
   /**
@@ -227,7 +246,7 @@ export class AuthService {
   /**
    * Get current user from storage
    */
-  getCurrentUser(): any {
+  getCurrentUser(): IUserData | null {
     const userStr = localStorage.getItem('user') || sessionStorage.getItem('user');
 
     if (!userStr) return null;
@@ -255,7 +274,7 @@ export class AuthService {
    * Check if user is authenticated
    */
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    return !!this.getToken() && !this.isAccessTokenExpired();
   }
 
   /**

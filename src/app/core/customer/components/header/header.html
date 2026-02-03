@@ -1,0 +1,122 @@
+<header id="app-header" class="container mx-auto">
+  <nav class="bg-surface-light mt-[24px] border-[2px] rounded-[12px] px-[24px]">
+    <div
+      class="max-w-screen-2xl flex items-center justify-between mx-auto py-[16px] max-sm:px-[12px]"
+    >
+      <!-- Logo and Title -->
+      <a href="#" class="flex items-center space-x-3 rtl:space-x-reverse">
+        <logo />
+      </a>
+
+      <!-- Mobile Menu Toggle -->
+      <button class="inline-flex items-center p-2 md:hidden">
+        <span class="sr-only">Open main menu</span>
+        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-width="2" d="M5 7h14M5 12h14M5 17h14"/>
+        </svg>
+      </button>
+
+      <!-- Navigation Links -->
+      <div class="hidden md:flex items-center content-center space-x-8">
+
+        <a
+          class="font-medium text-[24px] "
+          routerLink="/customers/designs"
+          routerLinkActive="active-nav"
+          [routerLinkActiveOptions]="{ exact: false }"
+        >
+          Designs
+        </a>
+        
+        <a
+          class="font-medium text-[24px] "
+          routerLink="/customers/makers"
+          routerLinkActive="active-nav"
+          [routerLinkActiveOptions]="{ exact: false }"
+        >
+          makers
+        </a>
+
+        <a
+          class="font-medium text-[24px] "
+          routerLink="/customers/requests"
+          routerLinkActive="active-nav"
+          [routerLinkActiveOptions]="{ exact: false }"
+        >
+          Requests
+        </a>
+      </div>
+
+      <div class="flex flex-nowrap gap-[8px]">
+        <button
+          z-button
+          zType="icon"
+          zSize="icon"
+          zPlacement="bottomRight"
+        >
+          <i z-icon zType="bell"></i>
+        </button>
+
+        <button
+          z-button
+          zType="icon"
+          zSize="icon"
+          zPlacement="bottomRight"
+        >
+          <i z-icon zType="heart"></i>
+        </button>
+
+        <button
+          z-button
+          zType="icon"
+          zSize="icon"
+          zPlacement="bottomRight"
+        >
+          <i z-icon zType="messages"></i>
+        </button>
+
+        <div class="relative flex items-center">
+          <button
+            z-button
+              zType="icon"
+              zSize="icon"
+              z-menu
+              [zMenuTriggerFor]="userManager"
+              zPlacement="bottomRight"
+            >
+            <z-avatar
+              zSrc="/images/auth/customer.jpg"
+              zAlt="Image"
+              class="sm"
+            />
+            <!-- <span class="font-placeholder">
+              {{ userName }}
+            </span>
+            <z-icon zType="chevron-down" class="ml-1" /> -->
+          </button>
+
+          <ng-template #userManager>
+            <div z-menu-content class="w-48 space-y-[8px]">
+              <button 
+                z-menu-item
+                (click)="goToSettings()"
+                class="font-body"
+              >
+                <z-icon zType="settings" class="ml-1" />
+                Settings
+              </button>
+              <button
+                z-menu-item
+                (click)="handleLogout()"
+                class="font-body"
+              >
+                <z-icon zType="logout" />
+                Logout
+              </button>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>

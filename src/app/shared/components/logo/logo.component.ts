@@ -22,9 +22,9 @@ import { Router } from '@angular/router';
           class="w-[64px] h-[32px] object-contain"
         >
       </div>
-      <span class="font-h3">
+      <!-- <span class="font-h3">
         Woodia
-      </span>
+      </span> -->
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

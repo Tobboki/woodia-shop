@@ -1,0 +1,58 @@
+.carousel {
+  display: flex;
+  gap: 16px;
+  height: 520px;
+
+  @media (max-width: 768px) {
+    height: 380px;
+  }
+}
+
+.slide {
+  flex: 1;
+  border-radius: 28px;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  filter: brightness(0.6);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.index {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+}
+
+.content {
+  color: white;
+  max-width: 60%;
+
+  h2 {
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+
+  p {
+    opacity: 0.9;
+  }
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
+}

@@ -81,7 +81,10 @@ export class Login implements OnInit {
     .subscribe({
       next: (response) => {
         this.loginFormLoading.set(false)
-        this.router.navigate(['/']);
+        if(this.authService.getCurrentUser()?.userType === 'Client')
+          this.router.navigate(['/customers']);
+        if(this.authService.getCurrentUser()?.userType === 'Client')
+          this.router.navigate(['/customers']);
         toast.success('Login Successful', {
           position: 'bottom-center',
           duration: 2000,
