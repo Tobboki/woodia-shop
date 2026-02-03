@@ -1,4 +1,4 @@
-interface IOriginPoint {
+export interface IOriginPoint {
   x: number
   y: number
   z: number

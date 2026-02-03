@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { IOriginPoint } from '../types'
 
 export class Blank {
   // Point 1
