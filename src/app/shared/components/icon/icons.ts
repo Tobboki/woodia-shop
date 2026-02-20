@@ -75,6 +75,7 @@ import {
   ShoppingBag,
   MessagesSquare,
   LogIn,
+  CircleSmall,
 } from 'lucide-angular';
 
 export const ZARD_ICONS = {
@@ -152,7 +153,8 @@ export const ZARD_ICONS = {
   'eye-off': EyeOff,
   'shopping-bag': ShoppingBag,
   messages: MessagesSquare,
-  login: LogIn
+  login: LogIn,
+  'circle-small': CircleSmall,
 } as const satisfies Record<string, LucideIconData>;
 
 export declare type ZardIcon = keyof typeof ZARD_ICONS | LucideIconData;

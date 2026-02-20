@@ -1,14 +1,259 @@
-<div class="h-[calc(100vh-128px)] w-full  grid grid-cols-4 max-lg:grid-cols-1">
+<div class="design-configurator-root">
   <!-- Model -->
-  <div class="col-span-3 h-full">
+  <div class="design-configurator-canvas-wrap">
     @if(designLoading()) {
       <z-loader zSize="lg" />
     }
-    <canvas #designConfiguratorCanvas></canvas>
+    <canvas #designConfiguratorCanvas class="block w-full h-full"></canvas>
+    <div
+      class="design-configurator-dimension-overlay"
+      [class.dimension-overlay-visible]="showDimensions()"
+      aria-hidden="true"
+    >
+      <z-dimension-overlay
+        [lines]="dimensionLines()"
+        [labels]="dimensionLabels()"
+        [width]="dimensionOverlayWidth()"
+        [height]="dimensionOverlayHeight()"
+      />
+    </div>
   </div>
 
-  <!-- Controls -->
-  <div class="bg-white border-2 rounded-[12px]">
-    
+  <!-- Controls: fixed width, scrollable content, never taller than view -->
+  <div class="design-configurator-controls">
+    <div class="design-configurator-controls-scroll">
+    <h4 class="font-h4">Design controls</h4>
+
+    @if (modelType() === 'Bookcase') {
+      <!-- Bookcase custom inputs -->
+      <div class="space-y-3">
+        <h5 class="font-label text-black/60">Color</h5>
+        <z-form-field>
+          <label class="font-label" z-form-label>Color</label>
+          <z-form-control>
+            <input z-input type="color" class="w-full h-[40px] p-0 border-none bg-transparent"
+              [value]="shelfColor()" (input)="onShelfColorInputChange($any($event.target).value)" />
+          </z-form-control>
+        </z-form-field>
+      </div>
+      <div class="space-y-4">
+        <h5 class="font-label text-black/60">Dimensions (cm)</h5>
+        <z-form-field>
+          <label class="font-label" z-form-label>Width ({{ shelfWidthCm() }} cm)</label>
+          <z-form-control>
+            <z-slider [zMin]="30" [zMax]="450" [zDefault]="shelfWidthCm()" [zValue]="shelfWidthCm()" [zStep]="1" (zSlideIndexChange)="onShelfWidthChange($event)"></z-slider>
+          </z-form-control>
+        </z-form-field>
+        <z-form-field>
+          <label class="font-label" z-form-label>Height ({{ totalHeightCm() }} cm)</label>
+          <z-form-control>
+            <z-slider [zMin]="38" [zMax]="200" [zDefault]="shelfHeightCm()" [zValue]="shelfHeightCm()" [zStep]="1" (zSlideIndexChange)="onShelfHeightChange($event)"></z-slider>
+          </z-form-control>
+        </z-form-field>
+        <z-form-field>
+          <label class="font-label" z-form-label>Depth ({{ shelfDepthCm() }} cm)</label>
+          <z-form-control>
+            <z-slider [zMin]="20" [zMax]="45" [zDefault]="shelfDepthCm()" [zValue]="shelfDepthCm()" [zStep]="1" (zSlideIndexChange)="onShelfDepthChange($event)"></z-slider>
+          </z-form-control>
+        </z-form-field>
+      </div>
+      <div class="space-y-2">
+        <h5 class="font-label text-black/60">Style</h5>
+        <z-form-field>
+          <z-form-control>
+            <z-select [zPlaceholder]="'Style'" [zValue]="shelfStyle()" (zSelectionChange)="onStyleChange($any($event))">
+              @for (style of styleOptions; track style) {
+                <z-select-item [zValue]="style">{{ style }}</z-select-item>
+              }
+            </z-select>
+          </z-form-control>
+        </z-form-field>
+      </div>
+      <div class="space-y-2">
+        <h5 class="font-label text-black/60">Density ({{ shelfDensity() }}%)</h5>
+        <z-form-field>
+          <z-form-control>
+            <z-slider [zMin]="0" [zMax]="100" [zDefault]="shelfDensity()" [zValue]="shelfDensity()" [zStep]="1" (zSlideIndexChange)="onDensityChange($event)"></z-slider>
+          </z-form-control>
+        </z-form-field>
+      </div>
+      @if (rowCount() > 0) {
+        <div class="space-y-4">
+          <h5 class="font-label text-black/60">Row settings</h5>
+          <z-form-field>
+            <label class="font-label" z-form-label>Row</label>
+            <z-form-control>
+              <z-select [zPlaceholder]="'Select row'" [zValue]="selectedRowIndex() + ''" (zSelectionChange)="onRowSelect($event)">
+                @for (idx of rowIndices(); track idx) {
+                  <z-select-item [zValue]="idx + ''">Row {{ idx + 1 }}</z-select-item>
+                }
+              </z-select>
+            </z-form-control>
+          </z-form-field>
+          @let rowCfg = selectedRowConfig();
+          @if (rowCfg) {
+            <z-form-field>
+              <label class="font-label" z-form-label>Row height</label>
+              <z-form-control>
+                <z-select [zPlaceholder]="'Height'" [zValue]="rowCfg.height" (zSelectionChange)="onRowHeightChange($event)">
+                  <z-select-item zValue="sm">Small</z-select-item>
+                  <z-select-item zValue="md">Medium</z-select-item>
+                  <z-select-item zValue="lg">Large</z-select-item>
+                </z-select>
+              </z-form-control>
+            </z-form-field>
+            <z-form-field>
+              <label class="font-label" z-form-label>Doors</label>
+              <z-form-control>
+                <z-select [zPlaceholder]="'Doors'" [zValue]="rowCfg.doors" (zSelectionChange)="onRowDoorsChange($event)">
+                  <z-select-item zValue="none">None</z-select-item>
+                  <z-select-item zValue="some">Some</z-select-item>
+                  <z-select-item zValue="all">Max</z-select-item>
+                </z-select>
+              </z-form-control>
+            </z-form-field>
+            <z-form-field>
+              <label class="font-label" z-form-label>Drawers</label>
+              <z-form-control>
+                <z-select [zPlaceholder]="'Drawers'" [zValue]="rowCfg.drawers" (zSelectionChange)="onRowDrawersChange($event)">
+                  <z-select-item zValue="none">None</z-select-item>
+                  <z-select-item zValue="some">Some</z-select-item>
+                  <z-select-item zValue="all">Max</z-select-item>
+                </z-select>
+              </z-form-control>
+            </z-form-field>
+          }
+        </div>
+      }
+      <div class="space-y-2">
+        <h5 class="font-label text-black/60">Top storage</h5>
+        <z-form-field>
+          <z-form-control>
+            <z-select [zPlaceholder]="'Top storage'" [zValue]="topStorageValue()" (zSelectionChange)="onTopStorageChange($event)">
+              <z-select-item zValue="none">None</z-select-item>
+              <z-select-item zValue="sm">Small</z-select-item>
+              <z-select-item zValue="md">Medium</z-select-item>
+              <z-select-item zValue="lg">Large</z-select-item>
+            </z-select>
+          </z-form-control>
+        </z-form-field>
+      </div>
+      <div class="space-y-2">
+        <h5 class="font-label text-black/60">Bottom storage</h5>
+        <z-form-field>
+          <z-form-control>
+            <z-select [zPlaceholder]="'Bottom storage'" [zValue]="bottomStorageValue()" (zSelectionChange)="onBottomStorageChange($event)">
+              <z-select-item zValue="none">None</z-select-item>
+              <z-select-item zValue="sm">Small</z-select-item>
+              <z-select-item zValue="md">Medium</z-select-item>
+              <z-select-item zValue="lg">Large</z-select-item>
+            </z-select>
+          </z-form-control>
+        </z-form-field>
+      </div>
+      <z-form-field>
+        <z-form-control class="flex items-center">
+          <z-checkbox [ngModel]="withBack()" (ngModelChange)="onBackPanelToggle($event)" zShape="circle" zSize="lg">Back panel</z-checkbox>
+        </z-form-control>
+      </z-form-field>
+    }
+
+    @if (modelType() === 'Desk') {
+      <!-- Desk custom inputs -->
+      <div class="space-y-3">
+        <h5 class="font-label text-black/60">Color</h5>
+        <z-form-field>
+          <label class="font-label" z-form-label>Color</label>
+          <z-form-control>
+            <input z-input type="color" class="w-full h-[40px] p-0 border-none bg-transparent"
+              [value]="deskColor()" (input)="onColorInputChange($any($event.target).value)" />
+          </z-form-control>
+        </z-form-field>
+      </div>
+      <div class="space-y-4">
+        <h5 class="font-label text-black/60">Dimensions (cm)</h5>
+        <z-form-field>
+          <label class="font-label" z-form-label>Width ({{ deskWidthCm() }} cm)</label>
+          <z-form-control>
+            <z-slider [zMin]="100" [zMax]="500" [zDefault]="deskWidthCm()" [zValue]="deskWidthCm()" [zStep]="1" (zSlideIndexChange)="onWidthChange($event)"></z-slider>
+          </z-form-control>
+        </z-form-field>
+        <z-form-field>
+          <label class="font-label" z-form-label>Height ({{ deskHeightCm() }} cm)</label>
+          <z-form-control>
+            <z-slider [zMin]="60" [zMax]="90" [zDefault]="deskHeightCm()" [zValue]="deskHeightCm()" [zStep]="1" (zSlideIndexChange)="onHeightChange($event)"></z-slider>
+          </z-form-control>
+        </z-form-field>
+        <z-form-field>
+          <label class="font-label" z-form-label>Depth ({{ deskDepthCm() }} cm)</label>
+          <z-form-control>
+            <z-slider [zMin]="50" [zMax]="70" [zDefault]="deskDepthCm()" [zValue]="deskDepthCm()" [zStep]="1" (zSlideIndexChange)="onDepthChange($event)"></z-slider>
+          </z-form-control>
+        </z-form-field>
+        <z-form-field>
+          <label class="font-label" z-form-label>Legroom Position</label>
+          <z-form-control>
+            <z-slider [zMin]="0" [zMax]="columnCount()" [zDefault]="legroomPosition()" [zValue]="legroomPosition()" [zStep]="1" (zSlideIndexChange)="onLegroomPositionChange($event)"></z-slider>
+          </z-form-control>
+          <p class="font-caption text-black/50 mt-1">Position of the empty legroom space (0 = leftmost, {{ columnCount() }} = rightmost).</p>
+        </z-form-field>
+      </div>
+      @if (columnCount() > 0) {
+        <div class="space-y-4">
+          <h5 class="font-label text-black/60">Column settings</h5>
+          <z-form-field>
+            <label class="font-label" z-form-label>Column</label>
+            <z-form-control>
+              <z-select [zPlaceholder]="'Select column'" [zValue]="selectedColumnIndex() + ''" (zSelectionChange)="onColumnSelect($event)">
+                @for (idx of columnIndices(); track idx) {
+                  <z-select-item [zValue]="idx + ''">Column {{ idx + 1 }}</z-select-item>
+                }
+              </z-select>
+            </z-form-control>
+          </z-form-field>
+          @let cfg = selectedColumnConfig();
+          @if (cfg) {
+            <z-form-field>
+              <label class="font-label" z-form-label>Doors</label>
+              <z-form-control>
+                <z-select [zPlaceholder]="'Doors'" [zValue]="cfg.doors" (zSelectionChange)="onColumnDoorsChange($event)">
+                  <z-select-item zValue="none">None</z-select-item>
+                  <z-select-item zValue="some">Some</z-select-item>
+                  <z-select-item zValue="all">Max</z-select-item>
+                </z-select>
+              </z-form-control>
+              <p class="font-caption text-black/50 mt-1">Max doors cannot be combined with max drawers.</p>
+            </z-form-field>
+            <z-form-field>
+              <label class="font-label" z-form-label>Drawers</label>
+              <z-form-control>
+                <z-select [zPlaceholder]="'Drawers'" [zValue]="cfg.drawers" (zSelectionChange)="onColumnDrawersChange($event)">
+                  <z-select-item zValue="none">None</z-select-item>
+                  <z-select-item zValue="some">Some</z-select-item>
+                  <z-select-item zValue="all">Max</z-select-item>
+                </z-select>
+              </z-form-control>
+            </z-form-field>
+          }
+        </div>
+      }
+    }
+
+    <!-- Show dimensions (shared) -->
+    <div class="space-y-2">
+      <z-form-field>
+        <z-form-control class="flex items-center">
+          <z-checkbox
+            [ngModel]="showDimensions()"
+            (ngModelChange)="showDimensions.set($event)"
+            zShape="circle"
+            zSize="lg"
+          >
+            Show dimensions
+          </z-checkbox>
+        </z-form-control>
+      </z-form-field>
+    </div>
+    </div>
   </div>
 </div>

@@ -1,0 +1,56 @@
+:host {
+  display: block;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.dimension-overlay-root {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.dimension-overlay-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: #374151;
+}
+
+.dimension-line {
+  stroke: currentColor;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.dimension-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.dimension-ellipse {
+  /* Pill/oval: full border-radius gives ellipse shape */
+  border-radius: 9999px;
+}
+
+.dimension-label-total {
+  background: rgba(0, 0, 0, 0.72);
+  color: #fff;
+  font-size: 13px;
+  padding: 4px 12px;
+}
+
+.dimension-label-cell {
+  background: rgba(100, 100, 100, 0.88);
+  color: #fff;
+  font-size: 11px;
+  padding: 2px 8px;
+}

@@ -6,6 +6,9 @@ export const environment = {
     constants: {
       governorate: '/api/Governorate',
     },
+    product: {
+      getById: (id: number) => `/api/Product/${id}`,
+    },
     auth: {
       login: '/Auth',
       register: '/Auth/register',
