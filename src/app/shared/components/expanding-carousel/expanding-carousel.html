@@ -1,0 +1,46 @@
+<div
+  class="flex h-[600px] gap-[16px]"
+  (mouseenter)="stop()"
+  (mouseleave)="start()"
+>
+
+  @for (slide of slides; track slide.image; let i = $index) {
+
+    <div
+      (click)="setActive(i)"
+      (transitionend)="onExpandEnd($event, contentEl, i)"
+      class="relative cursor-pointer overflow-hidden rounded-3xl
+             transition-[flex] duration-700 ease-in-out flex"
+      [class.flex-[5]]="i === activeIndex()"
+      [class.flex-1]="i !== activeIndex()"
+      [style.backgroundImage]="'url(' + slide.image + ')'"
+      style="background-size: cover; background-position: center;"
+    >
+
+      <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+
+      <div class="absolute top-5 left-5 z-10
+                  w-14 h-14 rounded-full
+                  border border-white/40
+                  flex items-center justify-center
+                  text-white font-semibold
+                  backdrop-blur bg-white/10 select-none">
+        {{ slide.label }}
+      </div>
+
+      <div
+        #contentEl
+        class="relative z-10 mt-auto p-8 text-white"
+        [style.display]="i === activeIndex() ? 'block' : 'none'"
+      >
+        <h2 class="font-h1 mb-3 select-none">{{ slide.title }}</h2>
+        <p class="font-caption text-white/80 leading-relaxed select-none">
+          {{ slide.description }}
+        </p>
+      </div>
+
+    </div>
+
+  }
+
+</div>

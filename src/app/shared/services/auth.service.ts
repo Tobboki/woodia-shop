@@ -4,7 +4,6 @@ import { Observable, tap, catchError, throwError, firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { authConfig } from 'src/app/pages/auth/auth.config';
 
 export interface LoginCredentials {
   email: string;
@@ -45,30 +44,12 @@ export interface IEmailVerificationData {
 export class AuthService {
 
   constructor(
-    private http: HttpClient, 
+    private http: HttpClient,
     private router: Router,
     private oauthService: OAuthService,
-  ) {
-    this.oauthService.configure(authConfig);
-  }
+  ) { }
 
-  /**
-   * Google Sign-In logic
-   */
-  sendGoogleTokenToBackend(): Promise<void> {
-    const idToken = this.oauthService.getIdToken();
-    const userType = 'Client';
-
-    return firstValueFrom(
-      this.http.post<AuthResponse>(
-        `${environment.apiUrl}${environment.endpoints.auth.googleSignIn}`,
-        { idToken, userType }
-      )
-    ).then(response => {
-      this.storeUser(response);
-    });
-  }
-
+  // Helpers
   storeUser(response: AuthResponse, rememberMe: boolean = true) {
     const storage = rememberMe ? localStorage : sessionStorage;
 
@@ -88,33 +69,55 @@ export class AuthService {
     storage.setItem('user', JSON.stringify(user));
   }
 
+  /**
+   * Google Login logic
+   */
+  async sendGoogleTokenToBackend(idToken: string): Promise<void> {
+    return firstValueFrom(
+      this.http.post<AuthResponse>(
+        `${environment.apiUrl}${environment.endpoints.auth.googleSignIn}`,
+        { idToken }
+      )
+    ).then(response => {
+      this.storeUser(response);
+    });
+  }
+
   googleSignIn() {
     this.oauthService.initLoginFlow()
+  }
 
-    this.sendGoogleTokenToBackend()
+  async processGoogleLoginCallback() {
+    const result = await this.oauthService.loadDiscoveryDocumentAndTryLogin();
+    if (!this.oauthService.hasValidIdToken())
+      return null
+
+    const idToken = this.oauthService.getIdToken()
+
+    return this.sendGoogleTokenToBackend(idToken)
   }
 
   googleLogout() {
     this.oauthService.logOut()
   }
 
-  // get googleIdentityClaims() {
-  //   return this.oauthService.getIdentityClaims()
-  // }
+  get googleIdentityClaims() {
+    return this.oauthService.getIdentityClaims()
+  }
 
-  // get googleAccessToken() {
-  //   return this.oauthService.getAccessToken()
-  // }
+  get googleAccessToken() {
+    return this.oauthService.getAccessToken()
+  }
 
-  // get googleUserProfile() {
-  //   const url = 'https://www.googleapis.com/oauth2/v2/userinfor'
+  get googleUserProfile() {
+    const url = 'https://www.googleapis.com/oauth2/v2/userinfor'
 
-  //   return this.http.get(url, {
-  //     headers: {
-  //       Authorization: `Bearer ${this.googleAccessToken}`
-  //     }
-  //   })
-  // }
+    return this.http.get(url, {
+      headers: {
+        Authorization: `Bearer ${this.googleAccessToken}`
+      }
+    })
+  }
 
   /**
    * Login user with credentials
@@ -162,7 +165,7 @@ export class AuthService {
   /**
    * Confirm user email
   */
- 
+
   confirmEmail(verificationData: IEmailVerificationData): any {
     return this.http.post<AuthResponse>(
       `${environment.apiUrl}${environment.endpoints.auth.confirmEmail}`,
@@ -177,7 +180,7 @@ export class AuthService {
       })
     );
   }
- 
+
   resendConfirmation(email: string): any {
     return this.http.post<AuthResponse>(
       `${environment.apiUrl}${environment.endpoints.auth.resendConfirmation}`,
@@ -270,9 +273,9 @@ export class AuthService {
   }
 
 
-    /**
-   * Check if user is authenticated
-   */
+  /**
+ * Check if user is authenticated
+ */
   isAuthenticated(): boolean {
     return !!this.getToken() && !this.isAccessTokenExpired();
   }
@@ -283,7 +286,7 @@ export class AuthService {
   refreshToken(): Observable<AuthResponse> {
     const token = this.getToken()
     const refreshToken = this.getRefreshToken();
-    
+
     return this.http.post<AuthResponse>(
       `${environment.apiUrl}${environment.endpoints.auth.refreshToken}`,
       {

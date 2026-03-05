@@ -2,6 +2,8 @@ import {
   AfterViewInit,
   ChangeDetectorRef,
   Component,
+  computed,
+  effect,
   ElementRef,
   OnDestroy,
   signal,
@@ -29,7 +31,6 @@ import {
   type CellDimensionOverlay,
   type DeskColumnConfig,
   type DeskModelConfig,
-  type DimensionOverlayData,
   type Product,
   type ProductCategory,
   type RowFill,
@@ -39,6 +40,9 @@ import {
   type StorageSectionConfig,
 } from '../../../furniture'
 import { ProductService } from '@shared/services/product.service'
+import { ZardCarouselImports } from '@shared/components/carousel'
+import { ZardCarouselComponent } from '@shared/components/carousel/carousel.component'
+import { ZardIconComponent } from '@shared/components/icon/icon.component'
 
 @Component({
   selector: 'woodia-design-configurator',
@@ -53,6 +57,8 @@ import { ProductService } from '@shared/services/product.service'
     ZardSelectItemComponent,
     ZardSliderComponent,
     DimensionOverlayComponent,
+    ZardCarouselImports,
+    ZardIconComponent,
   ],
   styleUrl: './design-configurator.scss',
 })
@@ -60,11 +66,23 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
   @ViewChild('designConfiguratorCanvas', { static: false })
   designConfiguratorCanvas!: ElementRef<HTMLCanvasElement>
 
+  @ViewChild('styleCarousel') styleCarouselRef?: ZardCarouselComponent
+
+  readonly styleCarouselIndex = computed(() => {
+    const idx = this.styleOptions.indexOf(this.shelfStyle())
+    return idx >= 0 ? idx : 0
+  })
+
   constructor(
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute,
     private productService: ProductService
-  ) {}
+  ) {
+    effect(() => {
+      const idx = this.styleCarouselIndex()
+      this.styleCarouselRef?.scrollToIndex(idx)
+    })
+  }
 
   private resizeObserver!: ResizeObserver
   private renderer!: THREE.WebGLRenderer
@@ -107,6 +125,8 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
   private cameraUpdateTimeout: number | null = null
   private readonly cameraDebounceMs = 350
   designLoading = signal(false)
+  /** True when the 3D model has been created and is ready to display (skeleton hides). */
+  modelLoaded = signal(false)
 
   private readonly baseDeskWidthCm = 180
   private readonly baseDeskHeightCm = 75
@@ -303,6 +323,7 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
 
   /** Create the 3D model based on current modelType. */
   private createModel(): void {
+    this.modelLoaded.set(false)
     if (this.modelType() === 'Bookcase') {
       this.createShelf()
       this.updateCameraForShelf()
@@ -310,6 +331,10 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
       this.createDesk()
       this.updateCameraForDesk()
     }
+    // Mark model ready after first paint (skeleton hides)
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => this.modelLoaded.set(true))
+    })
   }
 
   private createShelf(options?: { withBack?: boolean; color?: string }) {
@@ -717,16 +742,19 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
     const idParam = this.route.snapshot.paramMap.get('id')
     const id = idParam != null ? parseInt(idParam, 10) : null
     if (id != null && !Number.isNaN(id)) {
+      this.designLoading.set(true)
       this.productService.getById(id).subscribe({
         next: (product) => {
           this.product.set(product)
           this.applyProductConfig(product)
           this.createModel()
+          this.designLoading.set(false)
           this.cdr.detectChanges()
         },
         error: () => {
           this.modelType.set('Desk')
           this.createModel()
+          this.designLoading.set(false)
         },
       })
     } else {

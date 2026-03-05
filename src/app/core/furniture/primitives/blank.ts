@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import type { IOriginPoint } from '../types'
+import type { IOriginPoint } from '@shared/typse/product'
 
 export class Blank {
   private x1: number

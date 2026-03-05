@@ -6,6 +6,7 @@ export function isTemplateRef<T>(value: TemplateRef<T> | unknown): value is Temp
 
 @Directive({
   selector: '[zStringTemplateOutlet]',
+  standalone: true,
   exportAs: 'zStringTemplateOutlet',
 })
 export class ZardStringTemplateOutletDirective<_T = unknown> implements OnChanges {

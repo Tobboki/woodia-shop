@@ -1,0 +1,59 @@
+<div class="flex flex-col gap-[40px] items-center">
+
+  <!-- Header -->
+  <div class="flex flex-col items-center text-center max-w-[720px] gap-2">
+    <h1 class="font-h1">
+      Become a maker
+    </h1>
+
+    <span class="font-caption text-black/60">
+      Have a talent or love making furniture? Join our elite force and
+      showcase your skills and connect with clients who value custom craftsmanship.
+    </span>
+  </div>
+
+  <!-- Cards -->
+  <div class="flex flex-wrap justify-center gap-8">
+
+    <!-- Makers Cards -->
+    @for (maker of makers; track maker.id) {
+      <z-card
+        class="relative w-[320px] h-[420px] overflow-hidden rounded-2xl group cursor-pointer bg-white"
+      >
+        <!-- Background Image -->
+        <img
+          [src]="maker.imgPath"
+          [alt]="maker.name"
+          class="absolute inset-0 w-full h-full object-cover grayscale"
+        />
+
+        <!-- Gradient Overlay -->
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"
+        ></div>
+
+        <!-- Content -->
+        <div class="absolute bottom-6 left-0 right-0 text-center text-white px-6">
+          <z-badge>
+            Maker
+          </z-badge>
+
+          <h3 class="font-h3 font-semibold">
+            {{ maker.name }}
+          </h3>
+
+          <p class="font-caption text-white/80 line-clamp-2">
+            {{ maker.quote }}
+          </p>
+        </div>
+      </z-card>
+    }
+
+  </div>
+
+  <!-- CTA Button -->
+  <z-button size="lg" class="px-8" (click)="navigateToAuth()">
+    Join Now
+  </z-button>
+
+</div>

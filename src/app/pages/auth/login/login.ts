@@ -1,6 +1,6 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, signal, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AuthService, LoginCredentials } from '@shared/services/auth';
+import { AuthService, LoginCredentials } from '@shared/services/auth.service';
 
 import { ZardButtonComponent } from '../../../shared/components/button/button.component';
 import { ZardInputDirective } from '../../../shared/components/input/input.directive';
@@ -28,11 +28,38 @@ import { toast } from 'ngx-sonner';
   templateUrl: './login.html',
   styleUrls: ['./login.scss'],
 })
-export class Login implements OnInit {
+export class Login implements OnInit, AfterViewInit {
   constructor(
     private authService: AuthService,
     private router: Router
   ) {}
+
+  @ViewChild('videoPlayer') videoRef!: ElementRef<HTMLVideoElement>;
+  
+  // panels
+  panels: string[] = [
+    '/videos/auth/customer-panel-1.mp4',
+    '/videos/auth/customer-panel-2.mp4',
+    '/videos/auth/customer-panel-3.mp4',
+    '/videos/auth/customer-panel-4.mp4',
+  ];
+
+  currentIndex = 0;
+  currentVideo = this.panels[this.currentIndex];
+
+  ngAfterViewInit() {
+    this.videoRef.nativeElement.play();
+  }
+
+  playNext() {
+    this.currentIndex = (this.currentIndex + 1) % this.panels.length;
+    this.currentVideo = this.panels[this.currentIndex];
+
+    // small timeout ensures src updates before playing
+    setTimeout(() => {
+      this.videoRef.nativeElement.play();
+    });
+  }
 
   // Strongly typed form
   loginForm = new FormGroup({

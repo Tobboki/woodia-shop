@@ -26,6 +26,41 @@
   height: 100%;
 }
 
+.design-configurator-loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.design-configurator-skeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 0%,
+    #f0f0f0 40%,
+    #e8e8e8 50%,
+    #f0f0f0 60%,
+    #f0f0f0 100%
+  );
+  background-size: 200% 100%;
+  animation: design-configurator-skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes design-configurator-skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 canvas {
   display: block;
   width: 100%;

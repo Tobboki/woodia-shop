@@ -1,6 +1,6 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { AuthService } from '@shared/services/auth';
+import { AuthService } from '@shared/services/auth.service';
 import { switchMap, throwError, catchError, of } from 'rxjs';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
@@ -9,8 +9,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = authService.getToken();
 
   let authReq = req;
-  
-  if (token) {
+
+  if (token && !req.url.includes('accounts.google.com')) {
     authReq = req.clone({
       setHeaders: { Authorization: `Bearer ${token}` },
     });

@@ -12,7 +12,7 @@ import { ZardIconComponent } from '@shared/components/icon/icon.component';
 import { ZardInputGroupComponent } from '@shared/components/input-group/input-group.component';
 import { ZardInputDirective } from '@shared/components/input/input.directive';
 import { ZardLoaderComponent } from '@shared/components/loader/loader.component';
-import { AuthService } from '@shared/services/auth';
+import { AuthService } from '@shared/services/auth.service';
 import { CustomerSettingsService } from '@shared/services/customer-settings-service';
 import { toast } from 'ngx-sonner';
 

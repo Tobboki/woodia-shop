@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { gsap } from 'gsap'
 
 import { LogoComponent } from '@shared/components/logo/logo.component';
-import { AuthService } from '@shared/services/auth';
+import { AuthService } from '@shared/services/auth.service';
 import { ZardMenuModule } from '../menu/menu.module';
 import { ZardButtonComponent } from '../button/button.component';
 import { Subscription } from 'rxjs';

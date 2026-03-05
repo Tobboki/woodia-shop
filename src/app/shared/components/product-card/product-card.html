@@ -1,0 +1,45 @@
+<div
+  class="relative w-[360px] h-[460px] p-[8px] border-2 bg-white rounded-[16px]
+         flex flex-col gap-[8px] overflow-hidden group"
+>
+
+  <!-- Image Section -->
+  <div
+    class="relative flex items-center justify-center overflow-hidden rounded-[12px]"
+  >
+
+    <!-- Default Image -->
+    <img
+      [src]="isImagePath(product.thumbnailImage) ?  product.thumbnailImage : '/images/placeholders/product-placeholder.png'"
+      [alt]="product.productLine"
+      height="372"
+      width="372"
+      class="object-contain"
+      [class]="isImagePath(product.hoverImage) && isImagePath(product.thumbnailImage) ? 'transition-opacity duration-300
+             group-hover:opacity-0' : ''"
+    />
+
+    <!-- Hover Image -->
+    @if (isImagePath(product.hoverImage) && isImagePath(product.thumbnailImage)) {
+      <img
+        [src]="product.hoverImage"
+        [alt]="product.productLine"
+        height="372"
+        width="372"
+        class="object-contain absolute inset-0
+               opacity-0 transition-opacity duration-300
+               group-hover:opacity-100"
+      />
+    }
+
+  </div>
+
+  <!-- Content -->
+  <div class="flex flex-col gap-[8px] py-[16px]">
+    <h6 class="font-h6 select-none">{{ product.productLine }}</h6>
+    <p class="font-caption text-black/50 line-clamp-2 select-none">
+      {{ product.description }}
+    </p>
+  </div>
+
+</div>

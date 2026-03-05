@@ -2,7 +2,10 @@
   <!-- Model -->
   <div class="design-configurator-canvas-wrap">
     @if(designLoading()) {
-      <z-loader zSize="lg" />
+      <z-loader zSize="lg" class="design-configurator-loading-overlay" />
+    }
+    @if(!modelLoaded()) {
+      <div class="design-configurator-skeleton" aria-hidden="true"></div>
     }
     <canvas #designConfiguratorCanvas class="block w-full h-full"></canvas>
     <div
@@ -27,11 +30,10 @@
     @if (modelType() === 'Bookcase') {
       <!-- Bookcase custom inputs -->
       <div class="space-y-3">
-        <h5 class="font-label text-black/60">Color</h5>
         <z-form-field>
           <label class="font-label" z-form-label>Color</label>
           <z-form-control>
-            <input z-input type="color" class="w-full h-[40px] p-0 border-none bg-transparent"
+            <input z-input zType="color" type="color" zSize="none"
               [value]="shelfColor()" (input)="onShelfColorInputChange($any($event.target).value)" />
           </z-form-control>
         </z-form-field>
@@ -57,17 +59,34 @@
           </z-form-control>
         </z-form-field>
       </div>
-      <div class="space-y-2">
+      <div class="space-y-3">
         <h5 class="font-label text-black/60">Style</h5>
-        <z-form-field>
-          <z-form-control>
-            <z-select [zPlaceholder]="'Style'" [zValue]="shelfStyle()" (zSelectionChange)="onStyleChange($any($event))">
-              @for (style of styleOptions; track style) {
-                <z-select-item [zValue]="style">{{ style }}</z-select-item>
-              }
-            </z-select>
-          </z-form-control>
-        </z-form-field>
+        <z-carousel
+          #styleCarousel
+          zControls="none"
+          [zSelectedIndex]="styleCarouselIndex()"
+          [zOptions]="{ align: 'start', containScroll: 'trimSnaps' }"
+          class="w-full"
+        >
+          <z-carousel-content class="-ml-2">
+            @for (style of styleOptions; track style) {
+              <z-carousel-item class="!basis-[88px] !min-w-0 !shrink-0 !grow-0 pl-2">
+                <button
+                  type="button"
+                  class="flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-black/50 p-2.5 transition-colors min-h-[72px] w-full"
+                  [class.border-border]="shelfStyle() !== style"
+                  [class.bg-muted/50]="shelfStyle() !== style"
+                  [class.border-primary]="shelfStyle() === style"
+                  [class.bg-primary/15]="shelfStyle() === style"
+                  (click)="onStyleChange(style)"
+                >
+                  <z-icon zType="layout-dashboard" class="size-6" [class.text-primary]="shelfStyle() === style" />
+                  <span class="font-label text-xs capitalize" [class.text-primary]="shelfStyle() === style">{{ style }}</span>
+                </button>
+              </z-carousel-item>
+            }
+          </z-carousel-content>
+        </z-carousel>
       </div>
       <div class="space-y-2">
         <h5 class="font-label text-black/60">Density ({{ shelfDensity() }}%)</h5>

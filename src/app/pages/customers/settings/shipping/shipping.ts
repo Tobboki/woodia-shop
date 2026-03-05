@@ -9,7 +9,7 @@ import { ZardInputDirective } from '@shared/components/input/input.directive';
 import { ZardLoaderComponent } from '@shared/components/loader/loader.component';
 import { ZardSelectItemComponent } from '@shared/components/select/select-item.component';
 import { ZardSelectComponent } from '@shared/components/select/select.component';
-import { AuthService } from '@shared/services/auth';
+import { AuthService } from '@shared/services/auth.service';
 import { CustomerSettingsService } from '@shared/services/customer-settings-service';
 import { toast } from 'ngx-sonner';
 

@@ -4,27 +4,20 @@
     <logo class="mb-[40px]" />
 
     <!-- Step 1: User Type -->
+    @if(registerStep() === 'userType') {
     <div
-      *ngIf="registerStep() === 'userType'"
-      class="w-[70%] max-2xl:w-[90%] max-xl:w-full max-lg:w-[70%] max-md:w-[80%] max-sm:w-full my-auto mx-auto space-y-[40px]"
-    >
+      class="w-[70%] max-2xl:w-[90%] max-xl:w-full max-lg:w-[70%] max-md:w-[80%] max-sm:w-full my-auto mx-auto space-y-[40px]">
       <!-- Title -->
       <h3 class="font-h3 leading-1 text-center">
         What are you here as?
       </h3>
 
       <div class="grid grid-cols-2 max-md:grid-cols-1  gap-[24px]">
-        <div 
-          [class]="userType() === 'customer' ? 'border border-[2px] border-primary-300' : ''"
+        <div [class]="userType() === 'customer' ? 'border border-[2px] border-primary-300' : ''"
           class="flex flex-col max-md:flex-row flex-nowrap gap-[16px] p-[8px] pb-[24px] max-md:pb-[8px] bg-white rounded-[8px]"
-          (click)="setUserTypeCustomer()"
-        >
+          (click)="setUserTypeCustomer()">
           <div class="overflow-hidden w-full h-[184px] rounded-[12px]">
-            <img 
-              src="/images/auth/customer.jpg" 
-              alt="Gradient Image" 
-              class="w-full h-full object-fit-cover"
-            />
+            <img src="/images/auth/customer.jpg" alt="Gradient Image" class="w-full h-full object-fit-cover" />
           </div>
 
           <div class="flex flex-col gap-[16px]">
@@ -38,17 +31,11 @@
           </div>
         </div>
 
-        <div
-          [class]="userType() === 'maker' ? 'border border-[2px] border-primary-300' : ''"
+        <div [class]="userType() === 'maker' ? 'border border-[2px] border-primary-300' : ''"
           class="flex flex-col max-md:flex-row flex-nowrap gap-[16px] p-[8px] pb-[24px] max-md:pb-[8px] bg-white rounded-[8px]"
-          (click)="setUserTypeMaker()"
-        >
+          (click)="setUserTypeMaker()">
           <div class="overflow-hidden w-full h-[184px] rounded-[12px]">
-            <img 
-              src="/images/auth/maker.jpg" 
-              alt="Gradient Image" 
-              class="w-full h-full object-fit-cover"
-            />
+            <img src="/images/auth/maker.jpg" alt="Gradient Image" class="w-full h-full object-fit-cover" />
           </div>
 
           <div class="flex flex-col gap-[16px]">
@@ -63,26 +50,18 @@
         </div>
       </div>
 
-      <button
-        zFull
-        z-button
-        zType="default"
-        type="button"
-        (click)="setStepCredentials()"
-      >
-        Continue as a  {{ userType() }} 
-        <img 
-          src="/icons/arrow-right.svg" 
-          class="w-[36px] h-[20px] object-fit-cover"
-        >
+      <button zFull z-button zType="default" type="button" (click)="setStepCredentials()">
+        Continue as a {{ userType() }}
+        <img src="/icons/arrow-right.svg" class="w-[36px] h-[20px] object-fit-cover">
       </button>
     </div>
+    }
+
+
 
     <!-- Step 2: User Credentials -->
-    <div
-      *ngIf="registerStep() === 'credentials'"
-      class="w-[80%] max-xl:w-full max-lg:w-[60%] max-md:w-[80%] max-sm:w-full my-auto mx-auto space-y-[40px]"
-    >
+    <div *ngIf="registerStep() === 'credentials'"
+      class="w-[80%] max-xl:w-full max-lg:w-[60%] max-md:w-[80%] max-sm:w-full my-auto mx-auto space-y-[40px]">
       <!-- Title -->
       <div class="flex flex-col gap-[16px] max-xl:text-center">
         <h3 class="font-h3 leading-1">
@@ -94,39 +73,11 @@
       </div>
 
       <!-- Social Register -->
-      <div class="flex fle-row flex-nowrap items-center justify-center gap-[8px] mb-[8px]">
-        <i class="text-warning-600" z-icon zType="triangle-alert"></i>
-        <p class="font-caption text-warning-600 text-center">Social register is currently disabled</p>
-      </div>
-      <div class="grid grid-cols-2 max-2xl:grid-cols-1 gap-[16px]">
-        <button 
-          class="bg-white text-black/50 hover:bg-white/50 font-primary text-button font-medium"
-          zFull
-          z-button
-          zType="default"
-          disabled
-        >
-          <img 
-            src="/icons/google-logo.svg" 
-            alt="Google Logo" 
-            class="w-[24px] h-[24px] object-fit-cover"
-          >
-          Sign Up with Google
-        </button>
-        <button 
-          class="w-full bg-[#1877F2] text-white hover:bg-[#1877F2]/80 font-primary text-button font-medium"
-          z-button
-          zType="default"
-          disabled
-        >
-          <img 
-            src="/icons/facebook-logo.svg" 
-            alt="Facebook Logo" 
-            class="w-[24px] h-[24px] object-fit-cover"
-          >
-          Sign Up with Facebook
-        </button>
-      </div>
+      <button class="bg-white text-black hover:bg-black/5 font-primary text-button font-medium" zFull z-button
+        zType="default" (click)="handleGoogleSignIn()">
+        <img src="/icons/google-logo.svg" alt="Google Logo" class="w-[24px] h-[24px] object-fit-cover">
+        Sign Up with Google
+      </button>
 
       <!-- Divider -->
       <div class="flex flex-row flex-nowrap items-center gap-[16px]">
@@ -145,16 +96,11 @@
               First Name
             </label>
             <z-form-control>
-              <input
-                z-input
-                type="text"
-                placeholder="Enter your first name"
-                formControlName="firstName"
-                [zStatus]="firstNameControl.invalid && firstNameControl.touched ? 'error' : undefined"
-              />
+              <input z-input type="text" placeholder="Enter your first name" formControlName="firstName"
+                [zStatus]="firstNameControl.invalid && firstNameControl.touched ? 'error' : undefined" />
             </z-form-control>
             @if (firstNameControl.hasError('required') && firstNameControl.touched) {
-              <z-form-message class="font-caption" zType="error">Email is required.</z-form-message>
+            <z-form-message class="font-caption" zType="error">Email is required.</z-form-message>
             }
           </z-form-field>
 
@@ -163,16 +109,11 @@
               Last Name
             </label>
             <z-form-control>
-              <input
-                z-input
-                type="text"
-                placeholder="Enter your last name"
-                formControlName="lastName"
-                [zStatus]="lastNameControl.invalid && lastNameControl.touched ? 'error' : undefined"
-              />
+              <input z-input type="text" placeholder="Enter your last name" formControlName="lastName"
+                [zStatus]="lastNameControl.invalid && lastNameControl.touched ? 'error' : undefined" />
             </z-form-control>
             @if (lastNameControl.hasError('required') && lastNameControl.touched) {
-              <z-form-message class="font-caption" zType="error">Email is required.</z-form-message>
+            <z-form-message class="font-caption" zType="error">Email is required.</z-form-message>
             }
           </z-form-field>
         </div>
@@ -182,18 +123,13 @@
             Email
           </label>
           <z-form-control>
-            <input
-              z-input
-              type="email"
-              placeholder="Enter your email"
-              formControlName="email"
-              [zStatus]="emailControl.invalid && emailControl.touched ? 'error' : undefined"
-            />
+            <input z-input type="email" placeholder="Enter your email" formControlName="email"
+              [zStatus]="emailControl.invalid && emailControl.touched ? 'error' : undefined" />
           </z-form-control>
           @if (emailControl.hasError('required') && emailControl.touched) {
-            <z-form-message class="font-caption" zType="error">Email is required.</z-form-message>
+          <z-form-message class="font-caption" zType="error">Email is required.</z-form-message>
           } @else if (emailControl.hasError('email') && emailControl.touched) {
-            <z-form-message class="font-caption" zType="error">Enter a valid email address.</z-form-message>
+          <z-form-message class="font-caption" zType="error">Enter a valid email address.</z-form-message>
           }
         </z-form-field>
 
@@ -204,38 +140,28 @@
             </label>
             <z-form-control>
               <div class="relative">
-                <input
-                  z-input
-                  [type]="showPassword() ? 'text' : 'password'"
-                  placeholder="min 8 characters"
+                <input z-input [type]="showPassword() ? 'text' : 'password'" placeholder="min 8 characters"
                   formControlName="password"
-                  [zStatus]="passwordControl.invalid && passwordControl.touched ? 'error' : undefined"
-                />
+                  [zStatus]="passwordControl.invalid && passwordControl.touched ? 'error' : undefined" />
 
-                <button
-                  class="absolute top-[8px] right-[4px] text-primary-300 font-heading text-body text-medium"
-                  z-button
-                  zSize="sm"
-                  zType="icon"
-                  type="button"
-                  (click)="togglePasswordVisibility()"
-                >
+                <button class="absolute top-[8px] right-[4px] text-primary-300 font-heading text-body text-medium"
+                  z-button zSize="sm" zType="icon" type="button" (click)="togglePasswordVisibility()">
                   <i class="text-black/50" z-icon zType="eye"></i>
                 </button>
               </div>
             </z-form-control>
             @if (passwordControl.hasError('required') && passwordControl.touched) {
-              <z-form-message class="font-caption" zType="error">Password is required.</z-form-message>
+            <z-form-message class="font-caption" zType="error">Password is required.</z-form-message>
             } @else if (passwordControl.hasError('minlength') && passwordControl.touched) {
-              <z-form-message class="font-caption" zType="error">Minimum 8 characters.</z-form-message>
+            <z-form-message class="font-caption" zType="error">Minimum 8 characters.</z-form-message>
             } @else if (passwordControl.hasError('passwordStrength') && passwordControl.touched) {
-              <z-form-message class="font-caption" zType="error">
-                <ng-container *ngIf="passwordControl.getError('passwordStrength') as err">
-                  <div *ngIf="!err.hasUpper">• Must include an uppercase letter</div>
-                  <div *ngIf="!err.hasLower">• Must include a lowercase letter</div>
-                  <div *ngIf="!err.hasSpecial">• Must include a special character</div>
-                </ng-container>
-              </z-form-message>
+            <z-form-message class="font-caption" zType="error">
+              <ng-container *ngIf="passwordControl.getError('passwordStrength') as err">
+                <div *ngIf="!err.hasUpper">• Must include an uppercase letter</div>
+                <div *ngIf="!err.hasLower">• Must include a lowercase letter</div>
+                <div *ngIf="!err.hasSpecial">• Must include a special character</div>
+              </ng-container>
+            </z-form-message>
             }
           </z-form-field>
 
@@ -245,30 +171,20 @@
             </label>
             <z-form-control>
               <div class="relative">
-                <input
-                  z-input
-                  [type]="showConfirmPassword() ? 'text' : 'password'"
-                  placeholder="min 8 characters"
+                <input z-input [type]="showConfirmPassword() ? 'text' : 'password'" placeholder="min 8 characters"
                   formControlName="confirmPassword"
-                  [zStatus]="confirmPasswordControl.invalid && confirmPasswordControl.touched ? 'error' : undefined"
-                />
+                  [zStatus]="confirmPasswordControl.invalid && confirmPasswordControl.touched ? 'error' : undefined" />
 
-                <button
-                  class="absolute top-[8px] right-[4px] text-primary-300 font-heading text-body text-medium"
-                  z-button
-                  zSize="sm"
-                  zType="icon"
-                  type="button"
-                  (click)="toggleConfirmPasswordVisibility()"
-                >
+                <button class="absolute top-[8px] right-[4px] text-primary-300 font-heading text-body text-medium"
+                  z-button zSize="sm" zType="icon" type="button" (click)="toggleConfirmPasswordVisibility()">
                   <i class="text-black/50" z-icon zType="eye"></i>
                 </button>
               </div>
             </z-form-control>
             @if (confirmPasswordControl.hasError('required') && confirmPasswordControl.touched) {
-              <z-form-message class="font-caption" zType="error">Password is required.</z-form-message>
+            <z-form-message class="font-caption" zType="error">Password is required.</z-form-message>
             } @else if (registerForm.hasError('passwordMismatch') && confirmPasswordControl.touched) {
-              <z-form-message class="font-caption" zType="error">Passwords do not match.</z-form-message>
+            <z-form-message class="font-caption" zType="error">Passwords do not match.</z-form-message>
             }
           </z-form-field>
         </div>
@@ -276,31 +192,17 @@
         <z-form-field>
           <z-form-control class="flex flex-col justify-center">
             <div class="flex items-center space-x-2">
-              <z-checkbox
-                id="agreeToTerms"
-                formControlName="agreeToTerms"
-                z-size="lg"
-              />
-              <label
-                class="font-label text-nowrap"
-                z-form-label
-                for="agreeToTerms"
-              >
-                I agree to the Terms & Policy 
+              <z-checkbox id="agreeToTerms" formControlName="agreeToTerms" z-size="lg" />
+              <label class="font-label text-nowrap" z-form-label for="agreeToTerms">
+                I agree to the Terms & Policy
               </label>
             </div>
           </z-form-control>
         </z-form-field>
 
         <div class="space-y-[4px]">
-          <button
-            zFull
-            z-button
-            zType="default"
-            type="submit"
-            [disabled]="registerForm.invalid"
-            [zLoading]="registerFormLoading()"
-          >
+          <button zFull z-button zType="default" type="submit" [disabled]="registerForm.invalid"
+            [zLoading]="registerFormLoading()">
             Register
           </button>
 
@@ -308,13 +210,7 @@
             <p class="font-body">
               Already have an account?
             </p>
-            <button 
-              class="text-primary-300 font-body" 
-              z-button 
-              zSize="sm" 
-              zType="link"
-              (click)="goToLogin()"
-            >
+            <button class="text-primary-300 font-body" z-button zSize="sm" zType="link" (click)="goToLogin()">
               Login
             </button>
           </div>
@@ -323,10 +219,8 @@
     </div>
 
     <!-- Step 3 User Type -->
-    <div
-      *ngIf="registerStep() === 'verification'"
-      class="w-[80%] max-xl:w-full max-lg:w-[60%] max-md:w-[80%] max-sm:w-full my-auto mx-auto space-y-[40px]"
-    >
+    <div *ngIf="registerStep() === 'verification'"
+      class="w-[80%] max-xl:w-full max-lg:w-[60%] max-md:w-[80%] max-sm:w-full my-auto mx-auto space-y-[40px]">
 
       <!-- Title -->
       <div class="flex flex-col gap-[16px] text-center">
@@ -342,43 +236,26 @@
       </div>
 
       <form [formGroup]="emailVerificationForm" (ngSubmit)="handleVerificationSubmit()" class="space-y-6 my-[40px]">
-          <z-form-field>
-            <label class="font-label" z-form-label zRequired>
-              Code
-            </label>
-            <z-form-control>
-              <input
-                z-input
-                type="text"
-                placeholder="max 6 chars or digits"
-                formControlName="code"
-              />
-            </z-form-control>
-          </z-form-field>
+        <z-form-field>
+          <label class="font-label" z-form-label zRequired>
+            Code
+          </label>
+          <z-form-control>
+            <input z-input type="text" placeholder="max 6 chars or digits" formControlName="code" />
+          </z-form-control>
+        </z-form-field>
 
-          <button
-            zFull
-            z-button
-            zType="default"
-            type="submit"
-            [disabled]="emailVerificationForm.invalid"
-            [zLoading]="codeVerificationLoading()"
-          >
-            Verify Account
-          </button>
+        <button zFull z-button zType="default" type="submit" [disabled]="emailVerificationForm.invalid"
+          [zLoading]="codeVerificationLoading()">
+          Verify Account
+        </button>
       </form>
-      
+
       <div class="flex flex-row justify-center items-center gap-[4px]">
         <p class="font-body">
           Didn't receive code?
         </p>
-        <button 
-          class="text-primary-300 font-body" 
-          z-button 
-          zSize="sm" 
-          zType="link"
-          (click)="resendConfirmation()"
-        >
+        <button class="text-primary-300 font-body" z-button zSize="sm" zType="link" (click)="resendConfirmation()">
           Resend
         </button>
       </div>
@@ -387,10 +264,15 @@
   </div>
 
   <div class="overflow-hidden w-full h-full rounded-[12px] max-lg:hidden">
-    <img 
-      src="/images/auth/gradient-2.jpg" 
-      alt="Gradient Image" 
-      class="w-full h-full object-fit-cover"
-    />
+    <video
+      #videoPlayer
+      class="w-full h-full object-cover"
+      [src]="currentVideo"
+      autoplay
+      muted
+      playsinline
+      preload="auto"
+      (ended)="playNext()"
+    ></video>
   </div>
 </div>

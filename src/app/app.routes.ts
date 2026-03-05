@@ -11,55 +11,62 @@ import { Settings as CustomerSettings } from './pages/customers/settings/setting
 import { Account as CustomerAccountSettings } from './pages/customers/settings/account/account'
 import { Shipping as CustomerShippingSettings } from './pages/customers/settings/shipping/shipping'
 import { ErrorPage } from './pages/error-page/error-page';
-import { Designs } from './core/customer/pages/designs/designs';
-import { DesignConfigurator } from './core/customer/pages/design-configurator/design-configurator';
+import { Designs as LandingDesigns } from './pages/designs/designs';
+import { OurStory } from './pages/our-story/our-story';
 
 export const routes: Routes = [
-  { 
-    path: '', 
-    canActivate: [],
+  {
+    // Landing
+    path: '',
+    canActivate: [authGuard],
     component: MainLayout,
     children: [
-      { 
-        path: '', 
+      // (Default)
+      {
+        path: '',
         component: Home,
       },
-      { 
-        path: 'designs', 
-        component: Home,
+      {
+        path: 'designs',
+        redirectTo: 'designs/all',
+        pathMatch: 'full'
       },
-      { 
-        path: 'makers', 
-        redirectTo: 'customers'
+      {
+        path: 'designs/:category',
+        component: LandingDesigns,
       },
-      { 
-        path: 'story', 
-        component: Home,
+      {
+        path: 'our-story',
+        component: OurStory,
       },
     ]
   },
   // Customer
-  { 
-    path: 'customers', 
+  {
+    path: 'customers',
     canActivate: [customerGuard],
     component: CustomerMainLayout,
     children: [
       // (Default)
       {
         path: '',
-        redirectTo: 'designs',
+        redirectTo: 'designs/all',
         pathMatch: 'full',
       },
 
       // Designs
       {
         path: 'designs',
-        component: Designs,
+        redirectTo: 'designs/all',
+        pathMatch: 'full'
       },
-
       {
-        path: 'designs/:id',
-        loadComponent: () => 
+        path: 'designs/:category',
+        component: LandingDesigns,
+      },
+      {
+        path: 'designs/model/:id',
+        loadComponent: () =>
           import('./core/customer/pages/design-configurator/design-configurator')
             .then(m => m.DesignConfigurator)
       },
@@ -69,17 +76,17 @@ export const routes: Routes = [
         path: 'settings',
         component: CustomerSettings,
         children: [
-          { 
-            path: '', 
+          {
+            path: '',
             redirectTo: 'account',
             pathMatch: 'full',
           },
-          { 
-            path: 'account', 
+          {
+            path: 'account',
             component: CustomerAccountSettings,
           },
-          { 
-            path: 'shipping', 
+          {
+            path: 'shipping',
             component: CustomerShippingSettings,
           },
         ]
@@ -87,28 +94,32 @@ export const routes: Routes = [
     ]
   },
   // auth
-  { 
-    path: 'auth', 
+  {
+    path: 'auth',
     component: PublicLayout,
     canActivate: [authGuard],
     children: [
-      { 
-        path: '', 
+      {
+        path: '',
         redirectTo: 'login',
         pathMatch: 'full',
       },
-      { 
-        path: 'login', 
+      {
+        path: 'login',
         component: Login,
       },
-      { 
-        path: 'register', 
+      {
+        path: 'register',
         component: Register,
       },
+      {
+        path: 'google-callback',
+        loadComponent: () => import('./pages/auth/callback/callback').then(m => m.Callback)
+      }
     ]
   },
   // Error
-  { 
+  {
     path: '**',
     component: MainLayout,
     children: [

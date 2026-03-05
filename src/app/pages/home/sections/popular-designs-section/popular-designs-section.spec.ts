@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ExpandCarousel } from './expand-carousel';
+import { PopularDesignsSection } from './popular-designs-section';
 
-describe('ExpandCarousel', () => {
-  let component: ExpandCarousel;
-  let fixture: ComponentFixture<ExpandCarousel>;
+describe('PopularDesignsSection', () => {
+  let component: PopularDesignsSection;
+  let fixture: ComponentFixture<PopularDesignsSection>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ExpandCarousel]
+      imports: [PopularDesignsSection]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ExpandCarousel);
+    fixture = TestBed.createComponent(PopularDesignsSection);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

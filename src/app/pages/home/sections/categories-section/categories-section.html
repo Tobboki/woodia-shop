@@ -1,0 +1,39 @@
+<div class="flex flex-col gap-[16px] items-center">
+  <div class="flex flex-col items-center text-center">
+    <span class="text-[32px] uppercase text-black/50">
+      The future of furniture
+    </span>
+    <h1 class="font-h1">
+      Made to fit. Made to stay. Made simple.Customize yours.
+    </h1>
+  </div>
+
+  <div class="flex flex-row flex-wrap gap-[16px]">
+    @if (categories().length) {
+      <div class="flex flex-wrap justify-center gap-3">
+
+        @for (category of categories(); track category.id) {
+          <!-- Parent Category -->
+          <z-button
+            type="button"
+            (click)="navigateToCategory(category.slug)"
+            class="rounded-[200px] font-h3 px-[48px] py-[16px]"
+          >
+            {{ category.name }}
+          </z-button>
+
+          <!-- Child Categories -->
+          @for (childCategory of category.childCategory; track childCategory.id) {
+            <z-button
+              type="button"
+              (click)="navigateToCategory(childCategory.slug)"
+              class="rounded-[200px] font-h3 px-[48px] py-[16px]"
+            >
+              {{ childCategory.name }}
+            </z-button>
+          }
+        }
+      </div>
+    }
+  </div>
+</div>

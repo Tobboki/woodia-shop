@@ -1,8 +1,8 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AuthService, IEmailVerificationData } from '@shared/services/auth';
-import { Router } from '@angular/router';
+import { AuthService, IEmailVerificationData } from '@shared/services/auth.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { ZardButtonComponent } from '@shared/components/button/button.component';
 import { ZardInputDirective } from '@shared/components/input/input.directive';
@@ -12,7 +12,7 @@ import { ZardIconComponent } from '@shared/components/icon/icon.component';
 import { ZardDividerComponent } from '@shared/components/divider/divider.component';
 import { LogoComponent } from '@shared/components/logo/logo.component';
 import { matchPasswordsValidator } from '@shared/validators/match-password-validator';
-import { passwordStrengthValidator } from '@shared/validators/password-strength-validator'; 
+import { passwordStrengthValidator } from '@shared/validators/password-strength-validator';
 import { toast } from 'ngx-sonner';
 
 @Component({
@@ -31,7 +31,67 @@ import { toast } from 'ngx-sonner';
   templateUrl: './register.html',
   styleUrls: ['./register.scss'],
 })
-export class Register implements OnInit {
+export class Register implements OnInit, AfterViewInit {
+
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) { }
+
+  @ViewChild('videoPlayer') videoRef!: ElementRef<HTMLVideoElement>;
+  
+  // panels
+  customerPanels: string[] = [
+    '/videos/auth/customer-panel-1.mp4',
+    '/videos/auth/customer-panel-2.mp4',
+    '/videos/auth/customer-panel-3.mp4',
+    '/videos/auth/customer-panel-4.mp4',
+  ];
+
+  makerPanels: string[] = [
+    '/videos/auth/maker-panel-1.mp4',
+    '/videos/auth/maker-panel-2.mp4',
+    '/videos/auth/maker-panel-3.mp4',
+    '/videos/auth/maker-panel-4.mp4',
+  ];
+
+  panels: string[] = [];
+
+  currentIndex = 0;
+  currentVideo = this.panels[this.currentIndex];
+
+  ngAfterViewInit() {
+    const video = this.videoRef.nativeElement;
+    video.muted = true;
+    video.play().catch(() => {});
+  }
+
+  playNext() {
+    this.currentIndex = (this.currentIndex + 1) % this.panels.length;
+    this.currentVideo = this.panels[this.currentIndex];
+
+    // small timeout ensures src updates before playing
+    setTimeout(() => {
+      this.videoRef.nativeElement.play();
+    });
+  }
+
+  resetVideoLoop() {
+    this.currentIndex = 0;
+    this.currentVideo = this.panels[0];
+
+    if (this.videoRef) {
+      const video = this.videoRef.nativeElement;
+      video.pause();
+      video.muted = true;
+      video.load();
+
+      setTimeout(() => {
+        video.play().catch(() => {});
+      });
+    }
+  }
 
   // Strongly typed registration form
   registerForm = new FormGroup({
@@ -41,7 +101,7 @@ export class Register implements OnInit {
     password: new FormControl<string>('', [Validators.required, Validators.minLength(8), passwordStrengthValidator()]),
     confirmPassword: new FormControl<string>('', [Validators.required]),
     agreeToTerms: new FormControl<boolean>(false),
-  },{
+  }, {
     validators: [
       matchPasswordsValidator,
     ]
@@ -77,12 +137,21 @@ export class Register implements OnInit {
   registerFormLoading = signal<boolean>(false)
   codeVerificationLoading = signal<boolean>(false)
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  ngOnInit(): void {
+  this.route.queryParamMap.subscribe(params => {
+      const type = params.get('type');
 
-  ngOnInit(): void {}
+      if (type === 'maker') {
+        this.userType.set('maker');
+        this.panels = this.makerPanels;
+      } else {
+        this.userType.set('customer');
+        this.panels = this.customerPanels;
+      }
+
+      this.resetVideoLoop();
+    });
+  }
 
   handleCredentialsSubmit() {
     if (this.registerForm.invalid) return;
@@ -142,6 +211,10 @@ export class Register implements OnInit {
     });
   }
 
+  handleGoogleSignIn() {
+    this.authService.googleSignIn()
+  }
+
   resendConfirmation() {
 
     const email = this.registerForm.value.email!;
@@ -174,11 +247,19 @@ export class Register implements OnInit {
   }
 
   setUserTypeCustomer() {
-    this.userType.set('customer')
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { type: 'customer' },
+      queryParamsHandling: 'merge'
+    });
   }
 
   setUserTypeMaker() {
-    this.userType.set('maker')
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { type: 'maker' },
+      queryParamsHandling: 'merge'
+    });
   }
 
   setStepCredentials() {

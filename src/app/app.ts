@@ -1,10 +1,11 @@
-import { Component, inject, OnInit, Renderer2, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, OnInit, Renderer2, signal } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
 import { ZardToastComponent } from '@shared/components/toast/toast.component';
-import { AuthService } from '@shared/services/auth';
+import { AuthService } from '@shared/services/auth.service';
 import { toast } from 'ngx-sonner';
-import { environment } from 'src/environments/environment';
 import { timer } from 'rxjs';
+import { OAuthService } from 'angular-oauth2-oidc';
+import { authConfig } from './pages/auth/google-auth.config';
 
 @Component({
   selector: 'app-root',
@@ -20,13 +21,59 @@ export class App implements OnInit {
 
   constructor(
     private renderer: Renderer2,
-    private authService: AuthService
-  ) {}
+    private authService: AuthService,
+    private oauthService: OAuthService,
+    private router: Router
+  ) { }
 
-  ngOnInit() {
-    this.setGoogleSignInClientId(environment.googleSignInClientId);
-    this.tryRefreshTokenIfNeeded();
-    this.scheduleAutoRefresh();
+  async ngOnInit() {
+    this.oauthService.configure(authConfig);
+
+    this.oauthService.events.subscribe(async (e) => {
+      if (e.type === 'token_received') {
+        this.processGoogleToken();
+      }
+    });
+
+    await this.oauthService.loadDiscoveryDocument();
+
+    const hash = window.location.hash;
+    if (hash) {
+      await this.oauthService.tryLogin({ customHashFragment: hash });
+    } else {
+      await this.oauthService.tryLogin();
+    }
+
+    // Fallback if the event was already fired or missed
+    if (this.oauthService.hasValidIdToken() && !this.authService.isAuthenticated()) {
+      this.processGoogleToken();
+    }
+  }
+
+  private async processGoogleToken() {
+    const idToken = this.oauthService.getIdToken();
+    if (idToken) {
+      try {
+        await this.authService.sendGoogleTokenToBackend(idToken);
+        toast.success('Login Successful', {
+          position: 'bottom-center',
+          duration: 2000,
+        });
+
+        // Let's clear Google's session storage ID token so we don't trigger this infinitely on page reloads
+        this.oauthService.logOut();
+
+        if (this.authService.getCurrentUser()?.userType === 'Client') {
+          this.router.navigate(['/customers']);
+        }
+      } catch (error) {
+        toast.error('Google Sign-In failed', {
+          description: 'There was a problem with your request.',
+          position: 'bottom-center',
+        });
+        console.error('sendGoogleTokenToBackend error', error);
+      }
+    }
   }
 
   setGoogleSignInClientId(clientId: string): void {

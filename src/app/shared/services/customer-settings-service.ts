@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, tap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { AuthService } from './auth';
+import { AuthService } from './auth.service';
 
 export interface IEmailVerificationData {
   email: string;

@@ -15,18 +15,12 @@
         </div>
 
         <!-- Social Login -->
-        <div class="flex fle-row flex-nowrap items-center justify-center gap-[8px] mb-[8px]">
-          <i class="text-warning-600" z-icon zType="triangle-alert"></i>
-          <p class="font-caption text-warning-600 text-center">Social Login is currently disabled</p>
-        </div>
-        <div class="grid grid-cols-2 max-2xl:grid-cols-1 gap-[16px]">
-          <button 
+        <button 
             class="bg-white text-black/50 hover:bg-white/50 font-primary text-button font-medium"
             zFull
             z-button
             zType="default"
             (click)="handleGoogleSignIn()"
-            disabled
           >
             <img 
               src="/icons/google-logo.svg" 
@@ -35,20 +29,6 @@
             >
             Login with Google
           </button>
-          <button 
-            class="w-full bg-[#1877F2] text-white hover:bg-[#1877F2]/80 font-primary text-button font-medium"
-            z-button
-            zType="default"
-            disabled
-          >
-            <img 
-              src="/icons/facebook-logo.svg" 
-              alt="Gradient Image" 
-              class="w-[24px] h-[24px] object-fit-cover"
-            >
-            Login with Facebook
-          </button>
-        </div>
 
         <!-- Divider -->
         <div class="flex flex-row flex-nowrap items-center gap-[16px]">
@@ -176,10 +156,15 @@
     </div>
 
     <div class="overflow-hidden w-full h-full rounded-[12px] max-lg:hidden">
-      <img 
-        src="/images/auth/gradient-1.jpg" 
-        alt="Gradient Image" 
-        class="w-full h-full object-fit-cover"
-      >
+      <video
+        #videoPlayer
+        class="w-full h-full object-cover"
+        [src]="currentVideo"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto"
+      ></video>
     </div>
 </div>

@@ -6,17 +6,14 @@ export const environment = {
     constants: {
       governorate: '/api/Governorate',
     },
-    product: {
-      getById: (id: number) => `/api/Product/${id}`,
-    },
     auth: {
       login: '/Auth',
       register: '/Auth/register',
       refreshToken: '/Auth/refresh',
       confirmEmail: '/Auth/confirm-email',
       resendConfirmation: '/Auth/resend-confirmation',
-      googleSignIn: '/Auth/google-signin',
-      facebookSignIn: '/Auth/facebook-signin',
+      googleSignIn: '/Auth/google-login',
+      googleSignUp: '/Auth/google-Signup',
     },
     customer: {
       me: '/me',
@@ -31,6 +28,16 @@ export const environment = {
           createShippingDetails: '/me/contact-info',
           updateShippingDetails: '/me/contact-info',
         },
+      },
+      category: {
+        getAll: '/api/Category',
+        getBySlug: (slug: string) => `/api/Category/${slug}`,
+        getParentCategories: '/api/Category/Parent',
+      },
+      product: {
+        getAll: '/api/Product',
+        getById: (id: number) => `/api/Product/${id}`,
+        getByCategorySlug: (slug: string) => `/api/Category/${slug}/Products`,
       },
     },
   },

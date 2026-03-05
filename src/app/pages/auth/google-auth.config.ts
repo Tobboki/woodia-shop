@@ -3,10 +3,14 @@ import { environment } from "src/environments/environment";
 
 export const authConfig: AuthConfig = {
   issuer: 'https://accounts.google.com',
-  redirectUri: window.location.origin,
+  redirectUri: window.location.origin + '/auth/google-callback',
   clientId: environment.googleSignInClientId,
   strictDiscoveryDocumentValidation: false,
   scope: 'openid profile email',
-  responseType: 'code',
+  customQueryParams: {
+    prompt: 'select_account',
+  },
+  responseType: 'id_token token',
   useSilentRefresh: false,
+  showDebugInformation: true,
 }
