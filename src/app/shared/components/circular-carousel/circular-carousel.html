@@ -1,0 +1,15 @@
+<div class="carousel">
+
+  @for (item of items; track $index) {
+
+    <div #card class="card-wrapper">
+
+      <ng-container
+        *ngTemplateOutlet="itemTemplate; context: { $implicit: item }"
+      ></ng-container>
+
+    </div>
+
+  }
+
+</div>

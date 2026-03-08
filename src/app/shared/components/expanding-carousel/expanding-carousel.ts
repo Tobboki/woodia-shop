@@ -4,6 +4,10 @@ import {
   OnInit,
   OnDestroy,
   signal,
+  ViewChildren,
+  QueryList,
+  ElementRef,
+  AfterViewInit,
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
@@ -23,7 +27,9 @@ export interface ExpandSlide {
   templateUrl: './expanding-carousel.html',
   styleUrl: './expanding-carousel.scss',
 })
-export class ExpandingCarousel implements OnInit, OnDestroy {
+export class ExpandingCarousel implements OnInit, OnDestroy, AfterViewInit {
+
+  @ViewChildren('contentEl') contents!: QueryList<ElementRef<HTMLElement>>;
 
   @Input() slides: ExpandSlide[] = [];
   @Input() autoPlay = true;
@@ -43,6 +49,13 @@ export class ExpandingCarousel implements OnInit, OnDestroy {
     }
   }
 
+  ngAfterViewInit() {
+    const first = this.contents.get(0)?.nativeElement;
+    if (first) {
+      this.animateContent(first, true);
+    }
+  }
+
   ngOnDestroy() {
     this.stop();
   }
@@ -52,7 +65,16 @@ export class ExpandingCarousel implements OnInit, OnDestroy {
   // ============================
 
   setActive(index: number) {
-    if (index === this.activeIndex()) return;
+  const current = this.activeIndex();
+
+  if (index === current) return;
+
+  // Immediately hide previous panel text
+  const prevEl = this.contents.get(current)?.nativeElement;
+    if (prevEl) {
+      gsap.killTweensOf(prevEl);
+      gsap.set(prevEl, { opacity: 0, y: 20 });
+    }
 
     this.activeIndex.set(index);
   }
@@ -62,6 +84,7 @@ export class ExpandingCarousel implements OnInit, OnDestroy {
   // ============================
 
   onExpandEnd(event: TransitionEvent, contentEl: HTMLElement, index: number) {
+    if (event.target !== event.currentTarget) return;
     if (!event.propertyName.includes('flex')) return;
 
     const isNowActive = index === this.activeIndex();
@@ -82,22 +105,19 @@ export class ExpandingCarousel implements OnInit, OnDestroy {
     gsap.killTweensOf(el);
 
     if (!isActive) {
-      // Non-active → make sure it's really invisible right away
       gsap.set(el, { opacity: 0, y: 20 });
       return;
     }
 
-    // Only animate when it IS the active one
-    // Small delay so it feels timed with expansion finish
     gsap.fromTo(
       el,
       { opacity: 0, y: 40 },
       {
         opacity: 1,
         y: 0,
-        duration: 0.65,
+        duration: 0.5,
         ease: "power3.out",
-        delay: 0.15,           // ← tweak this (0.1–0.3) to sync with expand feel
+        delay: 0.1,
       }
     );
   }
@@ -113,7 +133,7 @@ export class ExpandingCarousel implements OnInit, OnDestroy {
       const next =
         (this.activeIndex() + 1) % this.slides.length;
 
-      this.activeIndex.set(next);
+      this.setActive(next);
     }, this.interval);
   }
 

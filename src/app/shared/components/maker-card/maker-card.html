@@ -1,0 +1,36 @@
+<z-card
+   class="relative w-[70vw] sm:w-[320px] md:w-[360px] lg:w-[400px] aspect-[2/3] overflow-hidden rounded-2xl group cursor-pointer bg-white select-none"
+>
+  <!-- Background Image -->
+  <img
+    [src]="maker.imgPath"
+    [alt]="maker.name"
+    class="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.05] tranision-all duration-500 ease-out"
+  />
+
+  <!-- Gradient Overlay -->
+  <div
+    class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"
+  ></div>
+
+  <div class="absolute top-6 left-0 right-0 text-center text-white px-[24px]">
+    <z-badge class="font-h4 font-thin">
+      <span class="font-semibold me-2">
+        Woodia
+      </span>
+        Maker
+    </z-badge>
+  </div>
+
+  <!-- Content -->
+  <div class="absolute bottom-6 left-0 right-0 text-white text-center px-6">
+
+    <h3 class="font-h3 font-semibold">
+      {{ maker.name }}
+    </h3>
+
+    <p class="font-caption text-white/80 line-clamp-2">
+      {{ maker.quote }}
+    </p>
+  </div>
+</z-card>

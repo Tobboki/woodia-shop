@@ -1,31 +1,64 @@
-<div class="mb-[24px] bg-surface-light flex-col gap-[16px] border-2 container mx-auto p-[24px] rounded-[24px]">
+<div
+  class="mb-[24px] bg-surface-light flex-col gap-[16px] border-2 container mx-auto p-[24px] rounded-[24px]"
+>
   <div class="grid grid-cols-5 gap-[16px] max-w-screen-xl mx-auto">
+    
+    <!-- Logo -->
     <div class="col-span-1 flex items-center">
       <logo />
     </div>
-  
+
+    <!-- Links -->
     <div
       class="flex gap-[16px] col-span-4 justify-between max-md:grid max-md:grid-cols-2"
     >
+      
+      <!-- Main Menu -->
+      <div class="flex flex-col gap-[16px]">
+        <h2 class="font-link font-bold">
+          Woodia
+        </h2>
+
+        <div class="flex flex-col gap-[8px]">
+          @for (menuItem of menu; track menuItem.id) {
+            <a
+              [routerLink]="menuItem.path"
+              class="font-link hover:text-primary-300"
+            >
+              {{ menuItem.label }}
+            </a>
+          }
+        </div>
+      </div>
+
+      <!-- Dynamic Link Groups -->
       @for (linkGroup of linkGroups; track linkGroup.name) {
         <div class="flex flex-col gap-[16px]">
-          <h4 class="font-h4">{{ linkGroup.name }}</h4>
+          
+          <h2 class="font-link font-bold">
+            {{ linkGroup.name }}
+          </h2>
 
           <div class="flex flex-col gap-[8px]">
-            @for (link of linkGroup.links; track link.link) {
-              <a [routerLink]="link.link" class="font-caption">
-                {{ link.name }}
+            @for (link of linkGroup.links; track link.id) {
+              <a
+                [routerLink]="link.path"
+                class="font-link hover:text-primary-300"
+              >
+                {{ link.label }}
               </a>
             }
           </div>
+
         </div>
       }
+
     </div>
   </div>
 
   <z-divider class="h-[2px]" />
 
-  <p class="font-caption text-center">
+  <p class="font-link text-center">
     @ 2026 Woodia. All right reserved.
   </p>
 </div>

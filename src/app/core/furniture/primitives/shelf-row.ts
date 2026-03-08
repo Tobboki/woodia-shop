@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { Blank } from './blank'
-import type { ShelfRowConfig } from '@shared/typse/product'
+import type { ShelfRowConfig } from '@shared/types/product'
 
 export class ShelfRow {
   readonly group = new THREE.Group()

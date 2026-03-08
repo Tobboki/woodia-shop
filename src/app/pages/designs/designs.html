@@ -4,7 +4,7 @@
   } @else {
     <z-breadcrumb zWrap="wrap" zAlign="start">
       <z-breadcrumb-item [routerLink]="['/designs']">
-        All Products
+        All Designs
       </z-breadcrumb-item>
       @if (currentCategory() !== 'all') {
         <z-breadcrumb-item [routerLink]="[`/designs/${currentCategory().toLowerCase()}`]">

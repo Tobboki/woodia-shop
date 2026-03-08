@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { Blank } from './blank'
-import type { IOriginPoint } from '@shared/typse/product'
+import type { IOriginPoint } from '@shared/types/product'
 
 export class Drawer {
   private parts: Blank[] = []

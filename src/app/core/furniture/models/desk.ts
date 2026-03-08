@@ -1,14 +1,14 @@
 import * as THREE from 'three'
 import { Blank } from '../primitives/blank'
 import { Drawer } from '../primitives/drawer'
-import { CM } from '@shared/typse/product'
+import { CM } from '@shared/types/product'
 import type {
   DeskConfigJson,
   DimensionOverlayData,
   CellDimensionOverlay,
   RowFill,
   DeskColumnConfig,
-} from '@shared/typse/product'
+} from '@shared/types/product'
 import {
   DESK_COLUMN_WIDTH_MIN,
   DESK_COLUMN_WIDTH_MAX,

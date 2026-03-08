@@ -17,7 +17,7 @@
           <z-button
             type="button"
             (click)="navigateToCategory(category.slug)"
-            class="rounded-[200px] font-h3 px-[48px] py-[16px]"
+            class="rounded-[200px] font-h3 max-md:font-button px-[48px] max-md:px-[24px] py-[16px] max-md:py-[8px] flex items-center gap-2"
           >
             {{ category.name }}
           </z-button>
@@ -27,7 +27,7 @@
             <z-button
               type="button"
               (click)="navigateToCategory(childCategory.slug)"
-              class="rounded-[200px] font-h3 px-[48px] py-[16px]"
+              class="rounded-[200px] font-h3 max-md:font-button px-[48px] max-md:px-[24px] py-[16px] max-md:py-[8px] flex items-center gap-2"
             >
               {{ childCategory.name }}
             </z-button>

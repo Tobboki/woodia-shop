@@ -9,7 +9,7 @@
     <z-carousel [zOptions]="zardCarouselOptions" zControls="none">
       <z-carousel-content>
         @for (product of products; track product.id) {
-          <z-carousel-item class="!basis-auto flex-shrink-0">
+          <z-carousel-item class="basis-auto flex-shrink-0">
             <woodia-product-card
               [product]="product"
             ></woodia-product-card>

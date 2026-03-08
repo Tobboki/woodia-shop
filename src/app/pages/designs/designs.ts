@@ -6,8 +6,8 @@ import { ZardLoaderComponent } from '@shared/components/loader/loader.component'
 import { ProductCard } from '@shared/components/product-card/product-card';
 import { CategoryService } from '@shared/services/category.service';
 import { ProductService } from '@shared/services/product.service';
-import { ICategoryCard, IChildCategoryResponse } from '@shared/typse/category';
-import { IProductCard } from '@shared/typse/product';
+import { ICategoryCard, IChildCategoryResponse } from '@shared/types/category';
+import { IProductCard } from '@shared/types/product';
 import { toast } from 'ngx-sonner';
 
 @Component({

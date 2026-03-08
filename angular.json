@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "woodia-shop": {
+    "woodia": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -68,10 +68,10 @@
           "builder": "@ngx-env/builder:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "woodia-shop:build:production"
+              "buildTarget": "woodia:build:production"
             },
             "development": {
-              "buildTarget": "woodia-shop:build:development"
+              "buildTarget": "woodia:build:development"
             }
           },
           "defaultConfiguration": "development",
@@ -99,8 +99,9 @@
               {
                 "glob": "**/*",
                 "input": "src/assets",
-                "output": "/assets"
-              }
+                "output": "assets" 
+              },
+              "projects/woodia-shop/src/assets"
             ],
             "styles": [
               "src/styles.scss"

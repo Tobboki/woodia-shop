@@ -1,8 +1,8 @@
 import * as THREE from 'three'
 import { Blank } from '../primitives/blank'
 import { ShelfRow } from '../primitives/shelf-row'
-import { CM, ROW_HEIGHT_MAP } from '@shared/typse/product'
-import type { ShelfRowConfig, ShelfStyle } from '@shared/typse/product'
+import { CM, ROW_HEIGHT_MAP } from '@shared/types/product'
+import type { ShelfRowConfig, ShelfStyle } from '@shared/types/product'
 
 const ROW_ANIMATION_SPEED = 0.06
 

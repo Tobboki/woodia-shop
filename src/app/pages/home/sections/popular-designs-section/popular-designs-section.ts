@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ZardCarouselComponent, ZardCarouselContentComponent, ZardCarouselItemComponent } from '@shared/components/carousel';
 import { ProductCard } from "@shared/components/product-card/product-card";
-import { IProductCard } from '@shared/typse/product';
+import { IProductCard } from '@shared/types/product';
 
 export interface Product {
   id: number;

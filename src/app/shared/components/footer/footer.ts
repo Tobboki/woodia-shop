@@ -1,16 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, Input, signal } from '@angular/core';
 import { LogoComponent } from '../logo/logo.component';
 import { RouterLink } from '@angular/router';
 import { ZardDividerComponent } from "../divider/divider.component";
+import { IMenuItem } from '@shared/types/app.types';
 
-interface ILink {
-  name: string
-  link: string
-}
 
-interface ILinkGroup {
+interface IFooterMenuItem {
   name: string
-  links: ILink[]
+  links: IMenuItem[]
 }
 
 @Component({
@@ -25,63 +22,51 @@ interface ILinkGroup {
 })
 
 export class Footer {
-  linkGroups: ILinkGroup[] = [
-    {
-      name: 'Woodia',
-      links: [
-        {
-          name: 'Home',
-          link: '/'
-        },
-        {
-          name: 'Designs',
-          link: '/designs'
-        },
-        {
-          name: 'Our Story',
-          link: '/our-story'
-        },
-        {
-          name: 'Contact Us',
-          link: '/designs'
-        },
-      ]
-    },
+  @Input() menu: IMenuItem[] = []
+
+  linkGroups: IFooterMenuItem[] = [
     {
       name: 'Information',
       links: [
         {
-          name: 'FAQ',
-          link: '/designs'
+          id: 'faq',
+          label: 'FAQ',
+          path: '/home'
         },
         {
-          name: 'Terms & Conditions',
-          link: '/designs'
+          id: 'terms-conditions',
+          label: 'Terms & Conditions',
+          path: '/home'
         },
         {
-          name: 'Privacy Policy',
-          link: '/designs'
+          id: 'privacy-policy',
+          label: 'Privacy Policy',
+          path: '/home'
         },
       ]
     },
     {
-      name: 'Media',
+      name: 'Follow Us',
       links: [
         {
-          name: 'Facebook',
-          link: '/designs'
+          id: 'facebook',
+          label: 'Facebook',
+          path: 'https://www.facebook.com'
         },
         {
-          name: 'Instagram',
-          link: '/designs'
+          id: 'instagram',
+          label: 'Instagram',
+          path: 'https://www.instagram.com'
         },
         {
-          name: 'Pinterest',
-          link: '/designs'
+          id: 'pinterest',
+          label: 'Pinterest',
+          path: 'https://www.pinterest.com'
         },
         {
-          name: 'Tiktok',
-          link: '/designs'
+          id: 'tiktok',
+          label: 'Tiktok',
+          path: 'https://www.tiktok.com'
         },
       ]
     },
@@ -89,8 +74,9 @@ export class Footer {
       name: 'Resources',
       links: [
         {
-          name: 'Media Kit',
-          link: '/designs'
+          id: 'media-kit',
+          label: 'Media Kit',
+          path: 'https://drive.google.com/drive/folders/1ZLbLmXqowOd0HifAsK0BAFE6pqkUwkXQ?usp=drive_link'
         },
       ]
     },

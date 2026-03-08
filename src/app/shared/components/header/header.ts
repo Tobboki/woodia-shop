@@ -1,109 +1,122 @@
-import { AfterViewInit, Component, effect, OnDestroy, OnInit, signal } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { gsap } from 'gsap'
+import {
+  Component,
+  Input,
+  ElementRef,
+  ViewChild,
+  signal,
+  HostListener,
+  OnInit,
+  inject
+} from '@angular/core';
 
-import { LogoComponent } from '@shared/components/logo/logo.component';
-import { AuthService } from '@shared/services/auth.service';
-import { ZardMenuModule } from '../menu/menu.module';
+import { Router, NavigationEnd, RouterLink, RouterLinkActive } from '@angular/router';
+import { filter } from 'rxjs';
+
+import { gsap } from 'gsap';
+
+import { IMenuItem } from '@shared/types/app.types';
+import { LogoComponent } from '../logo/logo.component';
 import { ZardButtonComponent } from '../button/button.component';
-import { Subscription } from 'rxjs';
+import { ZardMenuDirective } from '../menu/menu.directive';
+import { ZardMenuItemDirective } from '../menu/menu-item.directive';
+import { ZardMenuContentDirective } from '../menu/menu-content.directive';
+import { ZardIconComponent } from '../icon/icon.component';
 
 @Component({
   selector: 'woodia-header',
   imports: [
-    CommonModule,
     LogoComponent,
-    ZardMenuModule,
-    ZardButtonComponent,
     RouterLink,
     RouterLinkActive,
-],
+    ZardButtonComponent,
+    ZardMenuDirective,
+    ZardMenuItemDirective,
+    ZardMenuContentDirective,
+    ZardIconComponent
+  ],
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })
 export class Header implements OnInit {
-  isMenuOpen = false;
-  userData: any;
 
-  constructor (
-    private router: Router,
-    private authService: AuthService,
-    // private userService: CustomerSettingsService,
-  ) {
-    // effect(() => {
-    //   const newY = this.currentScrollY()
-    //   const lastY = this.lastScrollY()
+  @Input() menu: IMenuItem[] = [];
 
-    //   if (newY === 0) {
-    //     this.isNavVisible.set(true)
-    //   } else if (newY > lastY) {
-    //     this.isNavVisible.set(false)
-    //   } else if (newY < lastY) {
-    //     this.isNavVisible.set(true)
-    //   }
+  router = inject(Router)
 
-    //   this.lastScrollY.set(newY)
-    // })
-    
-    // effect(() => {
-    //   const visible = this.isNavVisible()
+  @ViewChild('mobileMenu') mobileMenu!: ElementRef
 
-    //   gsap.to('#app-header', {
-    //     y: visible ? 0 : -100,
-    //     opacity: visible ? 1 : 0,
-    //     duration: 0.2,
-    //     ease: 'power1.out',
-    //   })
-    // })
+  isMenuOpen = signal(false)
+
+  ngOnInit() {
+
+    /** Auto close menu on route change */
+    this.router.events
+      .pipe(filter(e => e instanceof NavigationEnd))
+      .subscribe(() => this.closeMenu())
+
   }
 
-  user: any;
-  userName: string | undefined;
+  /** Toggle mobile menu */
+  toggleMenu() {
 
-  ngOnInit(): void {
-    // this.userData = this.userService.me();
-    // console.log('user data', this.userData)
+    this.isMenuOpen.update(v => !v)
 
-    this.user = this.authService.getCurrentUser();
-    if (this.user) {
-      this.userName = this.user.firstName + ' ' + this.user.lastName;
+    const menu = this.mobileMenu.nativeElement
+
+    if (this.isMenuOpen()) {
+
+      gsap.to(menu, {
+        height: "auto",
+        duration: 0.35,
+        ease: "power2.out"
+      })
+
+    } else {
+
+      gsap.to(menu, {
+        height: 0,
+        duration: 0.25,
+        ease: "power2.in"
+      })
+
     }
 
   }
 
-  currentScrollY = signal(0)
-  lastScrollY = signal(0)
-  isNavVisible = signal(true)
+  /** Close menu */
+  closeMenu() {
 
-  private scrollSub!: Subscription
+    if (!this.isMenuOpen()) return
 
-  // ngAfterViewInit() {
-  //   this.initScrollListener()
-  // }
+    this.isMenuOpen.set(false)
 
-  // ngOnDestroy() {
-  //   this.scrollSub?.unsubscribe()
-  // }
+    const menu = this.mobileMenu?.nativeElement
 
-  // private initScrollListener() {
-  //   this.scrollSub = fromEvent(window, 'scroll').subscribe(() => {
-  //     this.currentScrollY.set(window.scrollY || 0)
-  //   })
-  // }
+    if (menu) {
+      gsap.to(menu, {
+        height: 0,
+        duration: 0.25,
+        ease: "power2.in"
+      })
+    }
 
+  }
 
+  /** Close on outside click */
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: MouseEvent) {
+
+    const target = event.target as HTMLElement
+    const header = document.getElementById('app-header')
+
+    if (!header?.contains(target)) {
+      this.closeMenu()
+    }
+
+  }
 
   navigateToAuth() {
     this.router.navigate(['/auth'])
-  }
-
-  toggleMenu() {
-    this.isMenuOpen = !this.isMenuOpen;
-  }
-
-  goToSettings() {
-    this.router.navigate(['/customers/settings/'])
   }
 
 }

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
 import { environment } from 'src/environments/environment'
 import type { Product } from '@core/furniture'
-import { IProductsResponse } from '@shared/typse/product'
+import { IProductsResponse } from '@shared/types/product'
 
 @Injectable({
   providedIn: 'root',

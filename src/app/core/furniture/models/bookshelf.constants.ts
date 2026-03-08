@@ -1,5 +1,5 @@
-import { CM } from '@shared/typse/product'
-import type { RowHeight, ShelfRowConfig } from '@shared/typse/product'
+import { CM } from '@shared/types/product'
+import type { RowHeight, ShelfRowConfig } from '@shared/types/product'
 
 export const CELL_WIDTH_MIN = 30 * CM
 export const CELL_WIDTH_MAX = 60 * CM

@@ -2,14 +2,15 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { ZardButtonComponent } from '@shared/components/button/button.component';
-import { ICategory } from '@shared/typse/category';
+import { ICategory } from '@shared/types/category';
 import { environment } from 'src/environments/environment';
+import { ZardIconComponent } from "@shared/components/icon/icon.component";
 
 @Component({
   selector: 'woodia-categories-section',
   imports: [
     ZardButtonComponent,
-  ],
+],
   standalone: true,
   templateUrl: './categories-section.html',
 })

@@ -1,5 +1,5 @@
-import { CM } from '@shared/typse/product'
-import type { DeskColumnConfig } from '@shared/typse/product'
+import { CM } from '@shared/types/product'
+import type { DeskColumnConfig } from '@shared/types/product'
 
 export const DESK_COLUMN_WIDTH_MIN = 40 * CM
 export const DESK_COLUMN_WIDTH_MAX = 80 * CM

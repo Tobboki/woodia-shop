@@ -22,10 +22,18 @@ export const routes: Routes = [
     component: MainLayout,
     children: [
       // (Default)
+
       {
         path: '',
+        redirectTo: 'home',
+        pathMatch: 'full',
+      },
+      {
+        path: 'home',
         component: Home,
       },
+
+      // designs
       {
         path: 'designs',
         redirectTo: 'designs/all',
@@ -35,6 +43,13 @@ export const routes: Routes = [
         path: 'designs/:category',
         component: LandingDesigns,
       },
+      {
+        path: 'designs/model/:id',
+        loadComponent: () =>
+          import('./core/customer/pages/design-configurator/design-configurator')
+            .then(m => m.DesignConfigurator)
+      },
+      
       {
         path: 'our-story',
         component: OurStory,

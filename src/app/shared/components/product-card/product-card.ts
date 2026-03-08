@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IProductCard } from '@shared/typse/product';
+import { IProductCard } from '@shared/types/product';
 
 import { isImagePath } from '@shared/utils/is-image-path';
 

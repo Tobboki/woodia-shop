@@ -20,5 +20,5 @@ export type {
   DimensionOverlayData,
   CellDimensionOverlay,
   DimensionLineSegment3D,
-} from '@shared/typse/product'
-export { CM, MM, M, ROW_HEIGHT_MAP } from '@shared/typse/product'
+} from '@shared/types/product'
+export { CM, MM, M, ROW_HEIGHT_MAP } from '@shared/types/product'

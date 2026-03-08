@@ -1,58 +1,159 @@
-<header id="app-header" class="container mx-auto">
+<header id="app-header" class="container mx-auto relative">
+
   <nav class="bg-surface-light mt-[24px] border-[2px] rounded-[12px] px-[16px]">
-    <div
-      class="max-w-screen-xl flex items-center justify-between mx-auto py-[12px] max-sm:px-[12px]"
-    >
-      <!-- Logo and Title -->
-      <a href="#" class="flex items-center space-x-3 rtl:space-x-reverse">
-        <logo />
-      </a>
 
-      <!-- Mobile Menu Toggle -->
-      <button class="inline-flex items-center p-2 md:hidden">
-        <span class="sr-only">Open main menu</span>
-        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <path stroke="currentColor" stroke-width="2" d="M5 7h14M5 12h14M5 17h14"/>
-        </svg>
-      </button>
+    <div class="max-w-screen-xl flex items-center justify-between mx-auto py-[12px] max-sm:px-[12px]">
 
-      <!-- Navigation Links -->
-      <div class="hidden md:flex items-center content-center space-x-8">
-        <a
-          class="font-link"
-          routerLink="/"
-          routerLinkActive="active-nav"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
-          Home
-        </a>
+      <logo />
 
-        <a
-          class="font-link"
-          routerLink="/designs"
-          routerLinkActive="active-nav"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
-          Designs
-        </a>
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex items-center space-x-8">
 
-        <a
-          class="font-link"
-          routerLink="/our-story"
-          routerLinkActive="active-nav"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
-          Our Story
-        </a>
+        @for (menuItem of menu; track menuItem.id) {
+          @if (menuItem.children) {
+            <div class="relative">
+
+              <a
+                class="font-link hover:text-primary-300 flex flex-nowrap items-center justify-center gap-[8px]"
+                [routerLink]="menuItem.path"
+                routerLinkActive="text-primary-300"
+                [routerLinkActiveOptions]="{ exact: false }"
+                z-menu
+                zPlacement="bottomCenter"
+                zTrigger="hover"
+                [zMenuTriggerFor]="designsCategories"
+              >
+                {{ menuItem.label }}
+                <z-icon zType="chevron-down" />
+              </a>
+  
+              <ng-template #designsCategories>
+                <div z-menu-content>
+                  @for (menuItemChild of menuItem.children; track menuItemChild.id) {
+                    @if(menuItemChild.children) {
+                      <a
+                        class="font-link hover:text-primary-300"
+                        [routerLink]="menuItemChild.path"
+                        routerLinkActive="text-primary-300"
+                        [routerLinkActiveOptions]="{ exact: false }"
+                        z-menu-item 
+                      >
+                        {{ menuItemChild.label }}
+                      </a>
+
+                      <ul class="pl-6">
+                        @for (menuItemChild of menuItemChild.children; track menuItemChild.id) {
+                          <li>
+                            <a
+                              class="font-link hover:text-primary-300"
+                              [routerLink]="menuItemChild.path"
+                              routerLinkActive="text-primary-300"
+                              [routerLinkActiveOptions]="{ exact: false }"
+                              z-menu-item 
+                            >
+                              {{ menuItemChild.label }}
+                            </a>
+                          </li>
+                        }
+                      </ul>
+                    } @else {
+                      <a
+                        class="font-link hover:text-primary-300"
+                        [routerLink]="menuItemChild.path"
+                        routerLinkActive="text-primary-300"
+                        [routerLinkActiveOptions]="{ exact: false }"
+                        z-menu-item
+                      >
+                        {{ menuItemChild.label }}
+                      </a>
+                    }
+                  }
+                </div>
+              </ng-template>
+            </div>
+          } @else {
+            <a
+              class="font-link hover:text-primary-300"
+              [routerLink]="menuItem.path"
+              routerLinkActive="text-primary-300"
+              [routerLinkActiveOptions]="{ exact: false }"
+            >
+              {{ menuItem.label }}
+            </a>
+          }
+        }
+
       </div>
 
+      <!-- Desktop Button -->
       <button
         (click)="navigateToAuth()"
-        class="font-body"
+        class="font-body max-md:hidden"
         z-button
       >
         Join Now
       </button>
+
+      <!-- Mobile Hamburger -->
+      <button
+        (click)="toggleMenu()"
+        class="md:hidden relative w-8 h-8 flex flex-col justify-center items-center gap-[6px]"
+      >
+
+        <span
+          class="block w-6 h-[2px] bg-black transition-all duration-300"
+          [class.rotate-45]="isMenuOpen()"
+          [class.translate-y-[8px]]="isMenuOpen()"
+        ></span>
+
+        <span
+          class="block w-6 h-[2px] bg-black transition-all duration-300"
+          [class.opacity-0]="isMenuOpen()"
+        ></span>
+
+        <span
+          class="block w-6 h-[2px] bg-black transition-all duration-300"
+          [class.-rotate-45]="isMenuOpen()"
+          [class.-translate-y-[8px]]="isMenuOpen()"
+        ></span>
+
+      </button>
+
     </div>
+
+    <!-- Mobile Menu -->
+    <div
+      #mobileMenu
+      class="md:hidden overflow-hidden"
+      style="height:0"
+    >
+
+      <div class="flex flex-col gap-4 py-4 border-t">
+
+        @for (menuItem of menu; track menuItem.id) {
+          <a
+            class="font-link hover:text-primary-300"
+            [routerLink]="menuItem.path"
+            routerLinkActive="text-primary-300"
+            [routerLinkActiveOptions]="{ exact: false }"
+            (click)="closeMenu()"
+          >
+            {{ menuItem.label }}
+          </a>
+        }
+
+        <button
+          (click)="navigateToAuth(); closeMenu()"
+          class="font-body w-full"
+          z-button
+        >
+          Join Now
+        </button>
+
+      </div>
+
+    </div>
+
   </nav>
+
 </header>

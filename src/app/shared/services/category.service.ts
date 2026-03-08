@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
-import { ICategory, ICategoryCard, IChildCategoryResponse } from '@shared/typse/category'
+import { ICategory, ICategoryCard, IChildCategoryResponse } from '@shared/types/category'
 import { Observable } from 'rxjs'
 import { environment } from 'src/environments/environment'
 

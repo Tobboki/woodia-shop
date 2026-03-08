@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { Blank } from '../primitives/blank'
 import { Drawer } from '../primitives/drawer'
-import { CM, ROW_HEIGHT_MAP } from '@shared/typse/product'
+import { CM, ROW_HEIGHT_MAP } from '@shared/types/product'
 import type {
   BookShelfConfigJson,
   DimensionOverlayData,
@@ -9,7 +9,7 @@ import type {
   RowHeight,
   ShelfRowConfig,
   StorageSectionConfig,
-} from '@shared/typse/product'
+} from '@shared/types/product'
 import {
   CELL_WIDTH_MIN,
   CELL_WIDTH_MAX,
