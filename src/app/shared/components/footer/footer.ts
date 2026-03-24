@@ -1,8 +1,11 @@
 import { Component, Input, signal } from '@angular/core';
-import { LogoComponent } from '../logo/logo.component';
+import { LogoComponent } from '../custom/logo/logo.component';
 import { RouterLink } from '@angular/router';
-import { ZardDividerComponent } from "../divider/divider.component";
+import { ZardDividerComponent } from "@shared/components/divider/divider.component";
 import { IMenuItem } from '@shared/types/app.types';
+import {ZardAccordionImports} from '@shared/components/accordion';
+import {ZardButtonComponent} from '@shared/components/button';
+import {ZardIconComponent} from '@shared/components/icon/icon.component';
 
 
 interface IFooterMenuItem {
@@ -13,10 +16,11 @@ interface IFooterMenuItem {
 @Component({
   selector: 'woodia-footer',
   imports: [
-    LogoComponent,
+    ZardAccordionImports,
     RouterLink,
-    ZardDividerComponent
-],
+    ZardDividerComponent,
+    ZardButtonComponent,
+  ],
   templateUrl: './footer.html',
   styleUrl: './footer.scss',
 })

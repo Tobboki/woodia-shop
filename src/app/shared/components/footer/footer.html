@@ -1,59 +1,90 @@
 <div
-  class="mb-[24px] bg-surface-light flex-col gap-[16px] border-2 container mx-auto p-[24px] rounded-[24px]"
+  class="bg-background flex-col gap-[16px] border-2 container mx-auto p-[24px] rounded-[24px]"
 >
-  <div class="grid grid-cols-5 gap-[16px] max-w-screen-xl mx-auto">
-    
-    <!-- Logo -->
-    <div class="col-span-1 flex items-center">
-      <logo />
+  <!-- Links: Desktop  -->
+  <div
+    class="flex gap-[16px] col-span-4 justify-between max-md:grid max-md:grid-cols-2 max-md:hidden"
+  >
+
+    <!-- Main Menu-->
+    <div class="flex flex-col gap-[16px]">
+      <h2 class="font-link font-bold">
+        Woodia
+      </h2>
+
+      <div class="flex flex-col gap-[8px]">
+        @for (menuItem of menu; track menuItem.id) {
+          <a
+            [routerLink]="menuItem.path"
+            class="font-link hover:text-primary"
+          >
+            {{ menuItem.label }}
+          </a>
+        }
+      </div>
     </div>
 
-    <!-- Links -->
-    <div
-      class="flex gap-[16px] col-span-4 justify-between max-md:grid max-md:grid-cols-2"
-    >
-      
-      <!-- Main Menu -->
+    <!-- Dynamic Link Groups -->
+    @for (linkGroup of linkGroups; track linkGroup.name) {
       <div class="flex flex-col gap-[16px]">
         <h2 class="font-link font-bold">
-          Woodia
+          {{ linkGroup.name }}
         </h2>
 
         <div class="flex flex-col gap-[8px]">
+          @for (link of linkGroup.links; track link.id) {
+            <a
+              [routerLink]="link.path"
+              class="font-link hover:text-primary"
+            >
+              {{ link.label }}
+            </a>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Links: Mobile -->
+  <div class="hidden max-md:block">
+    <z-accordion>
+      <!-- Navigation Menu -->
+      <z-accordion-item zTitle="Woodia" zTitleIcon="link">
+        <div class="flex flex-col gap-2">
           @for (menuItem of menu; track menuItem.id) {
             <a
+              z-button
+              zType="ghost"
+              zSize="lg"
               [routerLink]="menuItem.path"
-              class="font-link hover:text-primary-300"
+              class="justify-start ps-6"
             >
               {{ menuItem.label }}
             </a>
           }
         </div>
-      </div>
+      </z-accordion-item>
 
       <!-- Dynamic Link Groups -->
       @for (linkGroup of linkGroups; track linkGroup.name) {
-        <div class="flex flex-col gap-[16px]">
-          
-          <h2 class="font-link font-bold">
-            {{ linkGroup.name }}
-          </h2>
-
-          <div class="flex flex-col gap-[8px]">
+        <z-accordion-item [zTitle]="linkGroup.name" zTitleIcon="link">
+          <div class="flex flex-col gap-2">
             @for (link of linkGroup.links; track link.id) {
               <a
+                z-button
+                zType="ghost"
+                zSize="lg"
                 [routerLink]="link.path"
-                class="font-link hover:text-primary-300"
+                class="justify-start ps-6"
               >
                 {{ link.label }}
               </a>
             }
           </div>
-
-        </div>
+        </z-accordion-item>
       }
 
-    </div>
+    </z-accordion>
   </div>
 
   <z-divider class="h-[2px]" />

@@ -1,22 +1,22 @@
-<header id="app-header" class="container mx-auto relative">
+<header id="app-header" class="container mx-auto relative" *transloco="let t">
+  <nav class="relative bg-background border border-border rounded-[12px] px-[16px] max-md:flex max-md:items-center justify-between py-[12px] max-sm:px-[12px]">
 
-  <nav class="bg-surface-light mt-[24px] border-[2px] rounded-[12px] px-[16px]">
+    <logo class="md:hidden mr-4"/>
 
-    <div class="max-w-screen-xl flex items-center justify-between mx-auto py-[12px] max-sm:px-[12px]">
-
-      <logo />
-
+    <!-- Desktop Menu -->
+    <div class="max-md:hidden max-w-screen-xl flex items-center justify-between mx-auto">
       <!-- Desktop Navigation -->
-      <div class="hidden md:flex items-center space-x-8">
+      <div class="flex items-center">
+        <logo class="mr-4"/>
 
         @for (menuItem of menu; track menuItem.id) {
           @if (menuItem.children) {
             <div class="relative">
-
               <a
-                class="font-link hover:text-primary-300 flex flex-nowrap items-center justify-center gap-[8px]"
+                z-button
+                zType="ghost"
                 [routerLink]="menuItem.path"
-                routerLinkActive="text-primary-300"
+                routerLinkActive="text-primary"
                 [routerLinkActiveOptions]="{ exact: false }"
                 z-menu
                 zPlacement="bottomCenter"
@@ -24,32 +24,29 @@
                 [zMenuTriggerFor]="designsCategories"
               >
                 {{ menuItem.label }}
-                <z-icon zType="chevron-down" />
+                <z-icon zType="chevron-down" zSize="lg"/>
               </a>
-  
+
               <ng-template #designsCategories>
                 <div z-menu-content>
                   @for (menuItemChild of menuItem.children; track menuItemChild.id) {
-                    @if(menuItemChild.children) {
+                    @if (menuItemChild.children) {
                       <a
-                        class="font-link hover:text-primary-300"
+                        z-menu-item
                         [routerLink]="menuItemChild.path"
-                        routerLinkActive="text-primary-300"
+                        routerLinkActive="text-primary"
                         [routerLinkActiveOptions]="{ exact: false }"
-                        z-menu-item 
                       >
                         {{ menuItemChild.label }}
                       </a>
 
                       <ul class="pl-6">
                         @for (menuItemChild of menuItemChild.children; track menuItemChild.id) {
-                          <li>
+                          <li z-menu-item>
                             <a
-                              class="font-link hover:text-primary-300"
                               [routerLink]="menuItemChild.path"
-                              routerLinkActive="text-primary-300"
+                              routerLinkActive="text-primary"
                               [routerLinkActiveOptions]="{ exact: false }"
-                              z-menu-item 
                             >
                               {{ menuItemChild.label }}
                             </a>
@@ -58,11 +55,10 @@
                       </ul>
                     } @else {
                       <a
-                        class="font-link hover:text-primary-300"
-                        [routerLink]="menuItemChild.path"
-                        routerLinkActive="text-primary-300"
-                        [routerLinkActiveOptions]="{ exact: false }"
                         z-menu-item
+                        [routerLink]="menuItemChild.path"
+                        routerLinkActive="text-primary"
+                        [routerLinkActiveOptions]="{ exact: false }"
                       >
                         {{ menuItemChild.label }}
                       </a>
@@ -73,87 +69,686 @@
             </div>
           } @else {
             <a
-              class="font-link hover:text-primary-300"
+              z-button
+              zType="ghost"
               [routerLink]="menuItem.path"
-              routerLinkActive="text-primary-300"
+              routerLinkActive="text-primary"
               [routerLinkActiveOptions]="{ exact: false }"
             >
               {{ menuItem.label }}
             </a>
           }
         }
-
       </div>
 
-      <!-- Desktop Button -->
-      <button
-        (click)="navigateToAuth()"
-        class="font-body max-md:hidden"
-        z-button
-      >
-        Join Now
-      </button>
+      <!-- Actions -->
+      <ng-container *ngTemplateOutlet="currentActions()"></ng-container>
+      <!-- Landing Actions -->
+      <ng-template #landingActions>
+        <div class="flex items-center gap-1">
+          <!-- Managers -->
+          <div class="flex gap-2">
+            <!-- Theme Manager -->
+            <div class="relative">
+              <button type="button" z-button zType="ghost" z-menu zTrigger="click" [zMenuTriggerFor]="themeMenu">
+                <z-icon zSize="lg" [zType]="themeService.icon()"/>
+              </button>
 
-      <!-- Mobile Hamburger -->
-      <button
-        (click)="toggleMenu()"
-        class="md:hidden relative w-8 h-8 flex flex-col justify-center items-center gap-[6px]"
-      >
+              <ng-template #themeMenu>
+                <div z-menu-content>
+                  <button
+                    type="button"
+                    z-menu-item
+                    (click)="setThemeMode('light')"
+                    class="flex gap-2 items-center"
+                    [class.text-primary]="themeService.mode() === 'light'"
+                  >
+                    <z-icon zSize="lg" zType="sun"/>
+                    <span>
+                  {{ t('themeMode.light') }}
+                </span>
+                  </button>
 
-        <span
-          class="block w-6 h-[2px] bg-black transition-all duration-300"
-          [class.rotate-45]="isMenuOpen()"
-          [class.translate-y-[8px]]="isMenuOpen()"
-        ></span>
+                  <button
+                    type="button"
+                    z-menu-item
+                    (click)="setThemeMode('dark')"
+                    class="flex gap-2 items-center"
+                    [class.text-primary]="themeService.mode() === 'dark'"
+                  >
+                    <z-icon zSize="lg" zType="moon"/>
+                    <span>
+                  {{ t('themeMode.dark') }}
+                </span>
+                  </button>
 
-        <span
-          class="block w-6 h-[2px] bg-black transition-all duration-300"
-          [class.opacity-0]="isMenuOpen()"
-        ></span>
+                  <button
+                    type="button"
+                    z-menu-item
+                    (click)="setThemeMode('system')"
+                    class="flex gap-2 items-center"
+                    [class.text-primary]="themeService.mode() === 'system'"
+                  >
+                    <z-icon zSize="lg" zType="monitor"/>
+                    <span>
+                  {{ t('themeMode.system') }}
+                </span>
+                  </button>
+                </div>
+              </ng-template>
+            </div>
 
-        <span
-          class="block w-6 h-[2px] bg-black transition-all duration-300"
-          [class.-rotate-45]="isMenuOpen()"
-          [class.-translate-y-[8px]]="isMenuOpen()"
-        ></span>
+            <!-- Language Manager -->
+            <div class="relative">
+              <button type="button" z-button zType="ghost" z-menu zTrigger="click" [zMenuTriggerFor]="languageMEnu">
+                <z-icon zSize="lg" zType="languages"/>
+                {{ langService.label() }}
+              </button>
 
-      </button>
+              <ng-template #languageMEnu>
+                <div z-menu-content>
+                  <button
+                    type="button"
+                    z-menu-item
+                    (click)="langService.setLanguage('en')"
+                    [class.text-primary]="langService.lang() === 'en'"
+                  >
+                <span>
+                  English
+                </span>
+                  </button>
 
+                  <button
+                    type="button"
+                    z-menu-item
+                    (click)="langService.setLanguage('ar')"
+                    [class.text-primary]="langService.lang() === 'ar'"
+                  >
+                <span>
+                  العربية
+                </span>
+                  </button>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+
+          <z-divider zOrientation="vertical" class="h-8"/>
+
+          <!-- Desktop Menu Button -->
+          <a
+            class="max-md:hidden"
+            z-button
+            zSize="lg"
+            [routerLink]="['/auth']"
+          >
+            Join Now
+          </a>
+        </div>
+      </ng-template>
+
+      <!-- Customer Actions -->
+      <ng-template #customerActions>
+        <div class="flex items-center gap-1">
+          <!-- Notification Button -->
+          <button
+            z-button
+            zType="ghost"
+            zSize="icon"
+          >
+            <z-icon zType="bell"></z-icon>
+          </button>
+
+          <button
+            z-button
+            zType="ghost"
+            zSize="icon"
+          >
+            <z-icon zType="messages"></z-icon>
+          </button>
+
+          <z-divider zOrientation="vertical" class="h-8"/>
+
+          <!-- Managers -->
+          <div class="relative flex items-center">
+            <button
+              z-menu
+              [zMenuTriggerFor]="userManager"
+              zPlacement="bottomRight"
+            >
+              <z-avatar
+                zSrc="/images/auth/customer.jpg"
+                zAlt="Image"
+                zSize="sm"
+              />
+            </button>
+
+            <ng-template #userManager>
+              <div z-menu-content>
+                <a
+                  z-menu-item
+                  [routerLink]="['/customers/settings']"
+                >
+                  <z-icon zType="settings" zSize="lg"/>
+                  <span>
+                    Settings
+                  </span>
+                </a>
+                <!-- Theme Manager -->
+                <div class="relative">
+                  <button
+                    z-menu-item
+                    z-menu
+                    zTrigger="click"
+                    [zMenuTriggerFor]="themeMenu"
+                    [zPlacement]="langService.lang() === 'ar' ? 'rightTop' : 'leftTop'"
+                  >
+                    <z-icon zSize="lg" [zType]="themeService.icon()"/>
+                    <span>
+                      {{ t('themeMode.title') }}: {{ t(`themeMode.${themeService.mode()}`) }}
+                    </span>
+                    <z-icon zSize="lg" zType="chevron-down" class="ml-1"/>
+                  </button>
+
+                  <ng-template #themeMenu>
+                    <div z-menu-content>
+                      <button
+                        type="button"
+                        z-menu-item
+                        (click)="setThemeMode('light')"
+                        class="flex gap-2 items-center"
+                        [class.text-primary]="themeService.mode() === 'light'"
+                      >
+                        <z-icon zSize="lg" zType="sun"/>
+                        <span>
+                          {{ t('themeMode.light') }}
+                        </span>
+                      </button>
+
+                      <button
+                        type="button"
+                        z-menu-item
+                        (click)="setThemeMode('dark')"
+                        class="flex gap-2 items-center"
+                        [class.text-primary]="themeService.mode() === 'dark'"
+                      >
+                        <z-icon zSize="lg" zType="moon"/>
+                        <span>
+                          {{ t('themeMode.dark') }}
+                        </span>
+                      </button>
+
+                      <button
+                        type="button"
+                        z-menu-item
+                        (click)="setThemeMode('system')"
+                        class="flex gap-2 items-center"
+                        [class.text-primary]="themeService.mode() === 'system'"
+                      >
+                        <z-icon zSize="lg" zType="monitor"/>
+                        <span>
+                          {{ t('themeMode.system') }}
+                        </span>
+                      </button>
+                    </div>
+                  </ng-template>
+                </div>
+
+                <!-- Language Manager -->
+                <div class="relative">
+                  <button
+                    z-menu-item
+                    z-menu
+                    zTrigger="click"
+                    [zMenuTriggerFor]="languageMEnu"
+                    [zPlacement]="langService.lang() === 'ar' ? 'rightTop' : 'leftTop'"
+                  >
+                    <z-icon zSize="lg" zType="languages"/>
+                    <span>
+                      {{ langService.label() }}
+                    </span>
+                    <z-icon zSize="lg" zType="chevron-down" class="ml-1"/>
+                  </button>
+
+                  <ng-template #languageMEnu>
+                    <div z-menu-content>
+                      <button
+                        type="button"
+                        z-menu-item
+                        (click)="langService.setLanguage('en')"
+                        [class.text-primary]="langService.lang() === 'en'"
+                      >
+                        <span>
+                          English
+                        </span>
+                      </button>
+
+                      <button
+                        type="button"
+                        z-menu-item
+                        (click)="langService.setLanguage('ar')"
+                        [class.text-primary]="langService.lang() === 'ar'"
+                      >
+                        <span>
+                          العربية
+                        </span>
+                      </button>
+                    </div>
+                  </ng-template>
+                </div>
+
+                <!-- Logout Button -->
+                <button
+                  z-menu-item
+                  zType="destructive"
+                  (click)="handleLogout()"
+                >
+                  <z-icon zType="logout" zSize="lg"/>
+                  <span>
+                    Logout
+                  </span>
+                </button>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </ng-template>
     </div>
+
+    <!-- Mobile Hamburger -->
+    <button
+      z-button
+      zType="ghost"
+      zSize="icon-lg"
+      class="md:hidden"
+      (click)="isMenuOpen.set(true)"
+    >
+      <z-icon [zType]=" isMenuOpen() ? 'x' : 'menu'" zSize="xl"/>
+    </button>
 
     <!-- Mobile Menu -->
-    <div
-      #mobileMenu
-      class="md:hidden overflow-hidden"
-      style="height:0"
+    <aside
+      class="fixed top-0 z-50 h-full !w-full max-sm:w-48 bg-sidebar transform md:hidden"
+      [ngClass]="mobileSidebarClasses()"
+      [class.translate-x-0]="isMenuOpen()"
+      [class.opacity-0]="!isMenuOpen()"
+      [class.-translate-x-full]="!isMenuOpen()"
     >
-
-      <div class="flex flex-col gap-4 py-4 border-t">
-
-        @for (menuItem of menu; track menuItem.id) {
-          <a
-            class="font-link hover:text-primary-300"
-            [routerLink]="menuItem.path"
-            routerLinkActive="text-primary-300"
-            [routerLinkActiveOptions]="{ exact: false }"
-            (click)="closeMenu()"
-          >
-            {{ menuItem.label }}
-          </a>
-        }
+      <!-- Header -->
+      <div class="flex items-center justify-between px-4 py-2 py-[12px]">
+        <logo></logo>
 
         <button
-          (click)="navigateToAuth(); closeMenu()"
-          class="font-body w-full"
+          type="button"
           z-button
+          zType="ghost"
+          zSize="icon-lg"
+          (click)="isMenuOpen.set(false)"
         >
-          Join Now
+          <z-icon zType="x" zSize="xl"></z-icon>
         </button>
-
       </div>
 
-    </div>
+      <!-- Mobile Menu Content -->
+      <ng-container *ngTemplateOutlet="currentMobileMenu()"></ng-container>
 
+      <!-- Landing Mobile Menu -->
+      <ng-template #landingMobileMenu >
+        <z-accordion class="px-4  [&_[z-button]]:mt-2">
+          <!-- Navigation -->
+          @for (menuItem of menu; track menuItem.id) {
+            @if (menuItem.children) {
+              <z-accordion-item [zTitle]="menuItem.label" zTitleIcon="link">
+                @for (menuItem of menuItem.children; track menuItem.id) {
+                  @if (menuItem.children) {
+                    <z-accordion-item
+                      [zTitle]="menuItem.label"
+                      zTitleIcon="link"
+                      class="!border-none ps-6"
+                    >
+                      @for (menuItem of menuItem.children; track menuItem.id) {
+                        <a
+                          z-button
+                          zType="ghost"
+                          zSize="xl"
+                          zFull
+                          class="justify-start px-1 ps-6"
+                          [routerLink]="menuItem.path"
+                          routerLinkActive="text-primary"
+                          [routerLinkActiveOptions]="{ exact: false }"
+                          (click)="isMenuOpen.set(false)"
+                        >
+                          <z-icon zType="link-2" zSize="lg" />
+                          {{ menuItem.label }}
+                        </a>
+                      }
+                    </z-accordion-item>
+                  } @else {
+                    <a
+                      z-button
+                      zType="ghost"
+                      zSize="xl"
+                      class="justify-start px-1"
+                      [routerLink]="menuItem.path"
+                      routerLinkActive="text-primary"
+                      [routerLinkActiveOptions]="{ exact: false }"
+                      (click)="isMenuOpen.set(false)"
+                    >
+                      <z-icon zType="link" zSize="lg" />
+                      {{ menuItem.label }}
+                    </a>
+                  }
+                }
+              </z-accordion-item>
+            } @else {
+              <a
+                z-button
+                zType="ghost"
+                zSize="xl"
+                class="justify-start px-1"
+                [routerLink]="menuItem.path"
+                routerLinkActive="text-primary"
+                [routerLinkActiveOptions]="{ exact: false }"
+                (click)="isMenuOpen.set(false)"
+              >
+                <z-icon zType="link" zSize="lg" />
+                {{ menuItem.label }}
+              </a>
+            }
+          }
+
+          <!-- Theme Manager -->
+          <z-accordion-item zTitle="Theme" [zTitleIcon]="themeService.icon()" class="px-1">
+            <div class="flex flex-col gap-1">
+              <button
+                z-button
+                zType="ghost"
+                zSize="xl"
+                (click)="setThemeMode('light')"
+                [class.text-primary]="themeService.mode() === 'light'"
+                class="ps-6 justify-start"
+              >
+                <z-icon zSize="lg" zType="sun"/>
+                <span>
+                    {{ t('themeMode.light') }}
+                  </span>
+              </button>
+
+              <button
+                z-button
+                zType="ghost"
+                zSize="xl"
+                (click)="setThemeMode('dark')"
+                [class.text-primary]="themeService.mode() === 'dark'"
+                class="ps-6 justify-start"
+              >
+                <z-icon zSize="lg" zType="moon"/>
+                <span>
+                    {{ t('themeMode.dark') }}
+                  </span>
+              </button>
+
+              <button
+                z-button
+                zType="ghost"
+                zSize="xl"
+                (click)="setThemeMode('system')"
+                [class.text-primary]="themeService.mode() === 'system'"
+                class="ps-6 justify-start"
+              >
+                <z-icon zSize="lg" zType="monitor"/>
+                <span>
+                    {{ t('themeMode.system') }}
+                  </span>
+              </button>
+            </div>
+          </z-accordion-item>
+
+          <!-- Language Manager -->
+          <z-accordion-item zTitle="Language" zTitleIcon="globe" class="px-1">
+            <div class="flex flex-col gap-1">
+              <button
+                z-button
+                zType="ghost"
+                zSize="xl"
+                lang="en"
+                dir="ltr"
+                (click)="langService.setLanguage('en')"
+                [class.text-primary]="langService.lang() === 'en'"
+                class="justify-start px-1 py-4"
+              >
+                <span>
+                  English
+                </span>
+              </button>
+
+              <button
+                z-button
+                zType="ghost"
+                zSize="xl"
+                lang="ar"
+                dir="rtl"
+                (click)="langService.setLanguage('ar')"
+                [class.text-primary]="langService.lang() === 'ar'"
+                class="justify-start px-1 py-4"
+              >
+                <span>
+                  العربية
+                </span>
+              </button>
+            </div>
+          </z-accordion-item>
+
+          <a
+            z-button
+            [routerLink]="['/auth']"
+            (click)="isMenuOpen.set(false)"
+            zSize="xl"
+          >
+            Join Now
+          </a>
+        </z-accordion>
+      </ng-template>
+
+      <!-- Customer Mobile Menu -->
+      <ng-template #customerMobileMenu>
+        <z-accordion class="px-4  [&_[z-button]]:mt-2">
+          <!-- Navigation -->
+          @for (menuItem of menu; track menuItem.id) {
+            @if (menuItem.children) {
+              <z-accordion-item [zTitle]="menuItem.label" zTitleIcon="link">
+                @for (menuItem of menuItem.children; track menuItem.id) {
+                  @if (menuItem.children) {
+                    <z-accordion-item
+                      [zTitle]="menuItem.label"
+                      zTitleIcon="link"
+                      class="!border-none ps-6"
+                    >
+                      @for (menuItem of menuItem.children; track menuItem.id) {
+                        <a
+                          z-button
+                          zType="ghost"
+                          zSize="xl"
+                          zFull
+                          class="justify-start px-1 ps-6"
+                          [routerLink]="menuItem.path"
+                          routerLinkActive="text-primary"
+                          [routerLinkActiveOptions]="{ exact: false }"
+                          (click)="isMenuOpen.set(false)"
+                        >
+                          <z-icon zType="link-2" zSize="lg" />
+                          {{ menuItem.label }}
+                        </a>
+                      }
+                    </z-accordion-item>
+                  } @else {
+                    <a
+                      z-button
+                      zType="ghost"
+                      zSize="xl"
+                      class="justify-start px-1"
+                      [routerLink]="menuItem.path"
+                      routerLinkActive="text-primary"
+                      [routerLinkActiveOptions]="{ exact: false }"
+                      (click)="isMenuOpen.set(false)"
+                    >
+                      <z-icon zType="link" zSize="lg" />
+                      {{ menuItem.label }}
+                    </a>
+                  }
+                }
+              </z-accordion-item>
+            } @else {
+              <a
+                z-button
+                zType="ghost"
+                zSize="xl"
+                class="justify-start px-1"
+                [routerLink]="menuItem.path"
+                routerLinkActive="text-primary"
+                [routerLinkActiveOptions]="{ exact: false }"
+                (click)="isMenuOpen.set(false)"
+              >
+                <z-icon zType="link" zSize="lg" />
+                {{ menuItem.label }}
+              </a>
+            }
+          }
+
+          <!-- Messages Button -->
+          <button
+            z-button
+            zSize="xl"
+            zType="ghost"
+            class="justify-start px-1 py-4"
+            (click)="handleLogout()"
+          >
+            <z-icon zType="messages" zSize="lg"/>
+              Messages
+          </button>
+
+          <!-- Notification Button -->
+          <button
+            z-button
+            zType="ghost"
+            zSize="xl"
+            class="justify-start px-1 py-4"
+          >
+            <z-icon zType="bell" zSize="lg"></z-icon>
+            Notifications
+          </button>
+
+          <!-- Theme Manager -->
+          <z-accordion-item zTitle="Theme" [zTitleIcon]="themeService.icon()" class="px-1">
+            <div class="flex flex-col gap-1">
+              <button
+                z-button
+                zType="ghost"
+                zSize="xl"
+                (click)="setThemeMode('light')"
+                [class.text-primary]="themeService.mode() === 'light'"
+                class="ps-6 justify-start"
+              >
+                <z-icon zSize="lg" zType="sun"/>
+                <span>
+                    {{ t('themeMode.light') }}
+                  </span>
+              </button>
+
+              <button
+                z-button
+                zType="ghost"
+                zSize="xl"
+                (click)="setThemeMode('dark')"
+                [class.text-primary]="themeService.mode() === 'dark'"
+                class="ps-6 justify-start"
+              >
+                <z-icon zSize="lg" zType="moon"/>
+                <span>
+                    {{ t('themeMode.dark') }}
+                  </span>
+              </button>
+
+              <button
+                z-button
+                zType="ghost"
+                zSize="xl"
+                (click)="setThemeMode('system')"
+                [class.text-primary]="themeService.mode() === 'system'"
+                class="ps-6 justify-start"
+              >
+                <z-icon zSize="lg" zType="monitor"/>
+                <span>
+                    {{ t('themeMode.system') }}
+                  </span>
+              </button>
+            </div>
+          </z-accordion-item>
+
+          <!-- Language Manager -->
+          <z-accordion-item zTitle="Language" zTitleIcon="globe" class="px-1">
+            <div class="flex flex-col gap-1">
+              <button
+                z-button
+                zType="ghost"
+                zSize="xl"
+                lang="en"
+                dir="ltr"
+                (click)="langService.setLanguage('en')"
+                [class.text-primary]="langService.lang() === 'en'"
+                class="justify-start px-1 py-4"
+              >
+                <span>
+                  English
+                </span>
+              </button>
+
+              <button
+                z-button
+                zType="ghost"
+                zSize="xl"
+                lang="ar"
+                dir="rtl"
+                (click)="langService.setLanguage('ar')"
+                [class.text-primary]="langService.lang() === 'ar'"
+                class="justify-start px-1 py-4"
+              >
+                <span>
+                  العربية
+                </span>
+              </button>
+            </div>
+          </z-accordion-item>
+
+          <!-- Logout Button -->
+          <a
+            z-button
+            zSize="xl"
+            zType="ghost"
+            class="justify-start px-1 py-4"
+            [routerLink]="['/customers/settings']"
+          >
+            <z-icon zType="settings" zSize="lg"/>
+            <span>
+              Settings
+            </span>
+          </a>
+
+          <!-- Logout Button -->
+          <button
+            z-button
+            zSize="xl"
+            zType="ghost"
+            class="hover:text-destructive justify-start px-1 py-4"
+            (click)="handleLogout()"
+          >
+            <z-icon zType="logout" zSize="lg"/>
+            <span>
+                Logout
+              </span>
+          </button>
+        </z-accordion>
+      </ng-template>
+    </aside>
   </nav>
-
 </header>

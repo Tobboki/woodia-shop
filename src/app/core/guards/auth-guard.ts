@@ -1,18 +1,24 @@
 import { inject } from '@angular/core';
-import { CanActivateFn } from '@angular/router';
-import { AuthService } from '@shared/services/auth.service';
+import {CanActivateFn, Router} from '@angular/router';
+import { AuthService } from '@core/services/auth.service';
 
 export const authGuard: CanActivateFn = (route, state) => {
 
-  const auth = inject(AuthService);
+  const authService = inject(AuthService);
+  const router = inject(Router);
 
   // Bypass for Google OAuth landing
   if (window.location.hash.includes('id_token=') || window.location.hash.includes('access_token=')) {
     return true;
   }
 
-  if (!auth.isAuthenticated())
-    return true;
+  const user = authService.getCurrentUser();
+  if (authService.isAuthenticated()) {
+    if (user?.userType === 'Client' && !state.url.startsWith('/customers')) {
+      return router.parseUrl('/customers');
+    }
+    // Add similar logic for MAKER
+  }
 
-  return false;
+  return !authService.isAuthenticated();
 };

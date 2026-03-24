@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 export const selectVariants = cva('relative inline-block w-full');
 
 export const selectTriggerVariants = cva(
-  'flex w-full justify-between gap-2 font-placeholder rounded-[8px] border border-black/25 bg-transparent px-3 shadow-xs transition-[color,box-shadow] outline-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 data-placeholder:text-black/50 [&_svg:not([class*="text-"])]:text-muted-foreground dark:bg-input/30 dark:hover:bg-input/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*="size-"])]:size-4',
+  'flex w-full justify-between gap-2 font-placeholder rounded-[8px] border border-black/25 bg-transparent px-3 shadow-xs transition-[color,box-shadow] outline-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 data-placeholder:text-foreground/50 [&_svg:not([class*="text-"])]:text-muted-foreground dark:bg-input/30 dark:hover:bg-input/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*="size-"])]:size-4',
   {
     variants: {
       zSize: {

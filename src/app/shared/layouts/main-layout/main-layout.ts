@@ -1,54 +1,128 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, signal } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import {
+  Component,
+  computed,
+  OnInit,
+  signal,
+  effect
+} from '@angular/core';
+import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { Footer } from '@shared/components/footer/footer';
 import { Header } from '@shared/components/header/header';
-import { IMenuItem } from '@shared/types/app.types';
+import {
+  IMenuItem,
+  TLayoutVariant,
+  TMenuKey
+} from '@shared/types/app.types';
 import { ICategory } from '@shared/types/category';
 import { environment } from 'src/environments/environment';
+import { CommonModule } from '@angular/common';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'woodia-main-layout',
-  imports: [
-    RouterOutlet,
-    Header,
-    Footer,
-  ],
+  imports: [RouterOutlet, Header, Footer, CommonModule],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss',
 })
-export class MainLayout {
-  menu: IMenuItem[] = [
-    {
-      id: 'home',
-      label: 'Home',
-      path: '/home',
-    },
-    {
-      id: 'designs',
-      label: 'Designs',
-      path: '/designs',
-      children: []
-    },
-    {
-      id: 'our-story',
-      label: 'Our Story',
-      path: '/our-story',
-    },
-  ];
+export class MainLayout implements OnInit {
+  // ---------------------------
+  // Static Menus
+  // ---------------------------
+  menus: Record<TMenuKey, IMenuItem[]> = {
+    landing: [
+      {
+        id: 'home',
+        label: 'Home',
+        path: '/home',
+      },
+      {
+        id: 'designs',
+        label: 'Designs',
+        path: '/designs',
+        children: [],
+      },
+      {
+        id: 'our-story',
+        label: 'Our Story',
+        path: '/our-story',
+      },
+    ],
+    customer: [
+      {
+        id: 'designs',
+        label: 'Designs',
+        path: '/customers/designs',
+      },
+      {
+        id: 'requests',
+        label: 'Requests',
+        path: '/customer/requests',
+      },
+    ],
+    maker: [],
+  };
 
+  // ---------------------------
+  // Signals
+  // ---------------------------
+  layoutVariant = signal<TLayoutVariant>('default');
+  categories = signal<ICategory[]>([]);
   loading = signal<boolean>(false);
-  error = signal<string | null>(null);
+
+  // ---------------------------
+  // Computed Menu
+  // ---------------------------
+  menu = computed<IMenuItem[]>(() => {
+    const isAuthenticated = this.authService.isAuthenticated();
+
+    const baseMenu = isAuthenticated
+      ? this.menus['customer']
+      : this.menus['landing'];
+
+    return baseMenu.map(item => {
+      if (item.id !== 'designs') return item;
+
+      return {
+        ...item,
+        children: this.categories().map(cat => ({
+          id: cat.slug,
+          label: cat.name,
+          path: `/designs/${cat.slug}`,
+          children:
+            cat.childCategory?.map(child => ({
+              id: child.slug,
+              label: child.name,
+              path: `/designs/${child.slug}`,
+            })) || [],
+        })),
+      };
+    });
+  });
 
   constructor(
     private http: HttpClient,
-    private router: Router,
-  ) {}
+    private route: ActivatedRoute,
+    private authService: AuthService
+  ) {
+    // React to route changes properly
+    effect(() => {
+      const variant =
+        this.route.snapshot.data['layoutVariant'] ?? 'default';
+      this.layoutVariant.set(variant);
+    });
+  }
 
+  // ---------------------------
+  // Lifecycle
+  // ---------------------------
   ngOnInit(): void {
     this.fetchCategories();
   }
 
+  // ---------------------------
+  // API
+  // ---------------------------
   fetchCategories() {
     this.loading.set(true);
 
@@ -58,33 +132,13 @@ export class MainLayout {
       )
       .subscribe({
         next: (data) => {
-
-          // Inject categories into Designs menu
-          const designsMenu = this.menu.find(m => m.id === 'designs');
-
-          if (designsMenu) {
-            designsMenu.children = data.map(cat => ({
-              id: cat.slug,
-              label: cat.name,
-              path: `/designs/${cat.slug}`,
-              children: cat.childCategory?.map(childCat => ({
-                id: childCat.slug,
-                label: childCat.name,
-                path: `/designs/${childCat.slug}`,
-              })) || []
-            }));
-          }
-
+          this.categories.set(data);
           this.loading.set(false);
         },
         error: (err) => {
           console.error('Failed to load categories', err);
           this.loading.set(false);
-        }
+        },
       });
-  }
-
-  navigateToCategory(slug: string) {
-    this.router.navigate(['/designs', slug])
   }
 }

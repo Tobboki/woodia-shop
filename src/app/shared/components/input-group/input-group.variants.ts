@@ -71,7 +71,7 @@ export const inputGroupAffixVariants = cva('absolute inset-y-0 flex items-center
 });
 
 export const inputGroupInputVariants = cva(
-  'flex w-full rounded-[8px] border font-normal border-black/25 bg-transparent font-placeholder file:border-0 file:text-foreground file:bg-transparent file:font-medium placeholder:text-black/50 disabled:cursor-not-allowed disabled:opacity-50 focus:ring-2 focus:ring-primary-200',
+  'flex w-full rounded-[8px] border font-normal border-border bg-transparent font-placeholder file:border-0 file:text-foreground file:bg-transparent file:font-medium placeholder:text-foreground/50 disabled:cursor-not-allowed disabled:opacity-50 focus:ring-2 focus:ring-primary-200',
   {
     variants: {
       zSize: {

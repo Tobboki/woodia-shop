@@ -8,6 +8,7 @@ import {
   OnDestroy,
   signal,
   ViewChild,
+  Input,
 } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { FormsModule } from '@angular/forms'
@@ -23,7 +24,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { DimensionOverlayComponent } from '@shared/components/dimension-overlay'
 import type { DimensionLabel2D, DimensionLine2D } from '@shared/components/dimension-overlay'
 import {
-  BookShelf,
+  Bookcase,
   Desk,
   CM,
   M,
@@ -39,10 +40,11 @@ import {
   type ShelfRowConfig,
   type StorageSectionConfig,
 } from '../../../furniture'
-import { ProductService } from '@shared/services/product.service'
+import { ProductService } from '@core/services/product.service'
 import { ZardCarouselImports } from '@shared/components/carousel'
 import { ZardCarouselComponent } from '@shared/components/carousel/carousel.component'
 import { ZardIconComponent } from '@shared/components/icon/icon.component'
+import {ZardButtonComponent} from '@shared/components/button';
 
 @Component({
   selector: 'woodia-design-configurator',
@@ -51,7 +53,6 @@ import { ZardIconComponent } from '@shared/components/icon/icon.component'
     FormsModule,
     ZardLoaderComponent,
     ZardFormModule,
-    ZardInputDirective,
     ZardCheckboxComponent,
     ZardSelectComponent,
     ZardSelectItemComponent,
@@ -59,6 +60,7 @@ import { ZardIconComponent } from '@shared/components/icon/icon.component'
     DimensionOverlayComponent,
     ZardCarouselImports,
     ZardIconComponent,
+    ZardButtonComponent,
   ],
   styleUrl: './design-configurator.scss',
 })
@@ -69,7 +71,7 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
   @ViewChild('styleCarousel') styleCarouselRef?: ZardCarouselComponent
 
   readonly styleCarouselIndex = computed(() => {
-    const idx = this.styleOptions.indexOf(this.shelfStyle())
+    const idx = this.styleOptions.indexOf(this.bookcaseStyle())
     return idx >= 0 ? idx : 0
   })
 
@@ -92,13 +94,51 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
 
   private controls!: OrbitControls
 
-  /** Product loaded from /api/Product/{id}; determines modelType and initial config. */
-  product = signal<Product | null>(null)
-  /** Which model to show and which custom inputs to display. */
-  modelType = signal<ProductCategory>('Desk')
+  @Input() compactLayout = false
 
-  private shelf!: BookShelf
-  private shelfWrapper!: THREE.Group
+  readonly FURNITURE_COLORS = [
+    { name: 'Pine', value: '#d2b48c' },
+    { name: 'Oak', value: '#b58e65' },
+    { name: 'Walnut', value: '#5c4033' },
+    { name: 'Mahogany', value: '#4b2e2b' },
+    { name: 'Black', value: '#1a1a1a' },
+    { name: 'White', value: '#f5f5f5' },
+    { name: 'Ash Grey', value: '#8a9a99' },
+    { name: 'Navy Blue', value: '#243b55' },
+    { name: 'Sage Green', value: '#8f9779' },
+    { name: 'Cream', value: '#fffdd0' },
+    { name: 'Terracotta', value: '#e2725b' },
+    { name: 'Espresso', value: '#362a26' },
+    { name: 'Cherry', value: '#5c221e' },
+    { name: 'Maple', value: '#e0c9a3' },
+    { name: 'Forest', value: '#1b3b27' }
+  ]
+
+  /** Controls whether to show the configurator side panel inputs. */
+  showControls = signal(true)
+  @Input('showControls') set _showControls(val: boolean) { this.showControls.set(val) }
+
+  /** Tab selection for mobile viewing */
+  activeControlTab = signal<string>('width')
+  setControlTab(tab: string) {
+    this.activeControlTab.set(tab)
+  }
+
+  /** Product loaded from API or passed as input */
+  product = signal<Product | null>(null)
+  @Input('product') set _product(val: Product | null) {
+    this.product.set(val)
+    if (val) this.applyProductConfig(val)
+  }
+
+  /** Which model to show */
+  modelType = signal<ProductCategory>('Desk')
+  @Input('modelType') set _modelType(val: ProductCategory) {
+    this.modelType.set(val)
+  }
+
+  private bookcase!: Bookcase
+  private bookcaseWrapper!: THREE.Group
   private desk!: Desk
   private deskWrapper!: THREE.Group
 
@@ -135,18 +175,18 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
   private readonly baseCameraDistance = 4 * M
 
   // ——— Bookcase state ———
-  shelfWidthCm = signal(120)
-  shelfHeightCm = signal(180)
-  shelfDepthCm = signal(35)
-  shelfColor = signal('#d2b48c')
-  shelfStyle = signal<RowStyle>('grid')
-  shelfDensity = signal(50)
+  bookcaseWidthCm = signal(120)
+  bookcaseHeightCm = signal(180)
+  bookcaseDepthCm = signal(35)
+  bookcaseColor = signal('#d2b48c')
+  bookcaseStyle = signal<RowStyle>('grid')
+  bookcaseDensity = signal(50)
   withBack = signal(true)
   topStorageConfig = signal<StorageSectionConfig | null>(null)
   bottomStorageConfig = signal<StorageSectionConfig | null>(null)
   selectedRowIndex = signal(0)
   rowCount = signal(0)
-  readonly styleOptions: RowStyle[] = ['pattern', 'grid', 'slant', 'stagger', 'gradient', 'pixel', 'mosaic']
+  readonly styleOptions: RowStyle[] = ['grid', 'slant', 'stagger', 'gradient', 'mosaic']
 
   // ——— Desk state ———
   deskWidthCm = signal(180)
@@ -175,25 +215,27 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
     gradient.addColorStop(0.9, 'rgba(255,255,255,0.4)')
     gradient.addColorStop(1, 'rgba(0,0,0,0)')
     ctx.fillStyle = gradient
-    ctx.fillRect(0, 0, size, 1)
+    ctx.fillRect(0, 0, size, 2)
     const texture = new THREE.CanvasTexture(canvas)
     texture.wrapS = THREE.ClampToEdgeWrapping
     texture.wrapT = THREE.ClampToEdgeWrapping
     return texture
   }
 
-  private updateCameraForDesk() {
-    if (!this.desk || !this.camera || !this.renderer || !this.deskWrapper) return
+  private updateCameraForModel() {
+    const activeWrapper = this.modelType() === 'Bookcase' ? this.bookcaseWrapper : this.deskWrapper;
+    if (!activeWrapper || !this.camera || !this.renderer) return;
 
-    const box = new THREE.Box3().setFromObject(this.deskWrapper)
+    const box = new THREE.Box3().setFromObject(activeWrapper)
     const size = new THREE.Vector3()
     const center = new THREE.Vector3()
     box.getSize(size)
     box.getCenter(center)
 
-    // When height is less than default (75 cm), keep target Y at default center so the view doesn't drop.
-    const defaultHeightCenterY = DesignConfigurator.FLOOR_Y + (this.baseDeskHeightCm * CM) / 2
-    if (size.y < this.baseDeskHeightCm * CM) {
+    // Keep camera view from dropping below the default model height
+    const baseH = this.modelType() === 'Bookcase' ? this.baseShelfHeightCm : this.baseDeskHeightCm;
+    const defaultHeightCenterY = DesignConfigurator.FLOOR_Y + (baseH * CM) / 2
+    if (size.y < baseH * CM) {
       center.y = Math.max(center.y, defaultHeightCenterY)
     }
 
@@ -202,10 +244,11 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
     const furtherBack = 1.18
 
     const vFov = THREE.MathUtils.degToRad(this.camera.fov)
-    const aspect =
-      this.camera.aspect ||
-      this.renderer.domElement.clientWidth / this.renderer.domElement.clientHeight ||
-      1
+    const canvasW = this.renderer.domElement.clientWidth
+    const canvasH = this.renderer.domElement.clientHeight
+    const aspect = canvasW > 0 && canvasH > 0
+      ? canvasW / canvasH
+      : this.camera.aspect || 1
 
     const distForHeight = size.y / (2 * targetFill * Math.tan(vFov / 2))
     const hFov = 2 * Math.atan(Math.tan(vFov / 2) * aspect)
@@ -213,9 +256,9 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
 
     const idealDistance = Math.max(distForHeight, distForWidth) * safety * furtherBack
 
-    // Minimum distance = camera distance for default desk size so smaller models don't get closer.
-    const refW = this.baseDeskWidthCm * CM
-    const refH = this.baseDeskHeightCm * CM
+    // Minimum distance so smaller models don't get zoomed in excessively
+    const refW = this.modelType() === 'Bookcase' ? this.baseShelfWidthCm * CM : this.baseDeskWidthCm * CM
+    const refH = baseH * CM
     const minDistForHeight = refH / (2 * targetFill * Math.tan(vFov / 2))
     const minDistForWidth = refW / (2 * targetFill * Math.tan(hFov / 2))
     const minCameraDistance = Math.max(minDistForHeight, minDistForWidth) * safety * furtherBack
@@ -225,8 +268,7 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
     if (this.controls) {
       const currentTarget = this.controls.target.clone()
       const direction = this.camera.position.clone().sub(currentTarget)
-      const len = direction.length()
-      if (len > 0.001) {
+      if (direction.length() > 0.001) {
         direction.normalize()
         this.camera.position.copy(center).add(direction.multiplyScalar(distance))
       } else {
@@ -249,15 +291,14 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
     if (this.cameraUpdateTimeout !== null) clearTimeout(this.cameraUpdateTimeout)
     this.cameraUpdateTimeout = window.setTimeout(() => {
       this.cameraUpdateTimeout = null
-      if (this.modelType() === 'Bookcase') this.updateCameraForShelf()
-      else this.updateCameraForDesk()
+      this.updateCameraForModel()
     }, this.cameraDebounceMs)
   }
 
   private createDesk(options?: { color?: string }) {
     if (!this.scene) return
     if (this.deskWrapper) this.scene.remove(this.deskWrapper)
-    if (this.shelfWrapper) this.scene.remove(this.shelfWrapper)
+    if (this.bookcaseWrapper) this.scene.remove(this.bookcaseWrapper)
 
     const colorHex = options?.color ?? this.deskColor()
     const material = new THREE.MeshStandardMaterial({ color: new THREE.Color(colorHex) })
@@ -300,12 +341,12 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
     const cfg = product.modelConfig
     if (product.category === 'Bookcase') {
       const c = cfg as BookcaseModelConfig
-      this.shelfWidthCm.set(c.widthCm)
-      this.shelfHeightCm.set(c.heightCm)
-      this.shelfDepthCm.set(c.depthCm)
-      this.shelfColor.set(c.color)
-      this.shelfStyle.set(c.style as RowStyle)
-      this.shelfDensity.set(c.density)
+      this.bookcaseWidthCm.set(c.widthCm)
+      this.bookcaseHeightCm.set(c.heightCm)
+      this.bookcaseDepthCm.set(c.depthCm)
+      this.bookcaseColor.set(c.color)
+      this.bookcaseStyle.set(c.style as RowStyle)
+      this.bookcaseDensity.set(c.density)
       this.withBack.set(c.withBack)
       this.topStorageConfig.set(c.topStorage)
       this.bottomStorageConfig.set(c.bottomStorage)
@@ -325,11 +366,11 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
   private createModel(): void {
     this.modelLoaded.set(false)
     if (this.modelType() === 'Bookcase') {
-      this.createShelf()
-      this.updateCameraForShelf()
+      this.createBookcase()
+      this.updateCameraForModel()
     } else {
       this.createDesk()
-      this.updateCameraForDesk()
+      this.updateCameraForModel()
     }
     // Mark model ready after first paint (skeleton hides)
     requestAnimationFrame(() => {
@@ -337,83 +378,41 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
     })
   }
 
-  private createShelf(options?: { withBack?: boolean; color?: string }) {
+  private createBookcase(options?: { withBack?: boolean; color?: string }) {
     if (!this.scene) return
-    if (this.shelfWrapper) this.scene.remove(this.shelfWrapper)
+    if (this.bookcaseWrapper) this.scene.remove(this.bookcaseWrapper)
     if (this.deskWrapper) this.scene.remove(this.deskWrapper)
 
-    const colorHex = options?.color ?? this.shelfColor()
+    const colorHex = options?.color ?? this.bookcaseColor()
     const material = new THREE.MeshStandardMaterial({ color: new THREE.Color(colorHex) })
-    const shelf = new BookShelf(
-      this.shelfWidthCm() * CM,
-      this.shelfHeightCm() * CM,
-      this.shelfDepthCm() * CM,
+    const bookcase = new Bookcase(
+      this.bookcaseWidthCm() * CM,
+      this.bookcaseHeightCm() * CM,
+      this.bookcaseDepthCm() * CM,
       2 * CM,
       { x: 0, y: 0, z: 0 },
       material,
       300,
       options?.withBack ?? this.withBack()
     )
-    this.shelf = shelf
-    this.shelf.setRowStyle(this.shelfStyle())
-    this.shelf.setDensity(this.shelfDensity())
-    this.shelf.setTopStorage(this.topStorageConfig())
-    this.shelf.setBottomStorage(this.bottomStorageConfig())
+    this.bookcase = bookcase
+    this.bookcase.setRowStyle(this.bookcaseStyle())
+    this.bookcase.setDensity(this.bookcaseDensity())
+    this.bookcase.setTopStorage(this.topStorageConfig())
+    this.bookcase.setBottomStorage(this.bottomStorageConfig())
     const productVal = this.product()
     if (this.modelType() === 'Bookcase' && productVal?.category === 'Bookcase' && productVal.modelConfig) {
       const c = productVal.modelConfig as BookcaseModelConfig
-      c.rowConfigs.forEach((rc, i) => this.shelf.setRowConfig(i, rc))
+      c.rowConfigs.forEach((rc, i) => this.bookcase.setRowConfig(i, rc))
     }
-    this.shelfWrapper = new THREE.Group()
-    this.shelfWrapper.position.set(0, DesignConfigurator.FLOOR_Y, this.wallZ + this.wallMargin)
-    this.shelfWrapper.add(this.shelf.build())
-    this.scene.add(this.shelfWrapper)
-    this.rowCount.set(this.shelf.getRows())
+    this.bookcaseWrapper = new THREE.Group()
+    this.bookcaseWrapper.position.set(0, DesignConfigurator.FLOOR_Y, this.wallZ + this.wallMargin)
+    this.bookcaseWrapper.add(this.bookcase.build())
+    this.scene.add(this.bookcaseWrapper)
+    this.rowCount.set(this.bookcase.getRows())
   }
 
-  private updateCameraForShelf() {
-    if (!this.shelf || !this.camera || !this.renderer || !this.shelfWrapper) return
-    const box = new THREE.Box3().setFromObject(this.shelfWrapper)
-    const size = new THREE.Vector3()
-    const center = new THREE.Vector3()
-    box.getSize(size)
-    box.getCenter(center)
-    const defaultHeightCenterY = DesignConfigurator.FLOOR_Y + (this.baseShelfHeightCm * CM) / 2
-    if (size.y < this.baseShelfHeightCm * CM) center.y = Math.max(center.y, defaultHeightCenterY)
-    const targetFill = 0.88
-    const safety = 1.02
-    const furtherBack = 1.18
-    const vFov = THREE.MathUtils.degToRad(this.camera.fov)
-    const aspect = this.camera.aspect || this.renderer.domElement.clientWidth / this.renderer.domElement.clientHeight || 1
-    const distForHeight = size.y / (2 * targetFill * Math.tan(vFov / 2))
-    const hFov = 2 * Math.atan(Math.tan(vFov / 2) * aspect)
-    const distForWidth = size.x / (2 * targetFill * Math.tan(hFov / 2))
-    const idealDistance = Math.max(distForHeight, distForWidth) * safety * furtherBack
-    const refW = this.baseShelfWidthCm * CM
-    const refH = this.baseShelfHeightCm * CM
-    const minDistForHeight = refH / (2 * targetFill * Math.tan(vFov / 2))
-    const minDistForWidth = refW / (2 * targetFill * Math.tan(hFov / 2))
-    const minCameraDistance = Math.max(minDistForHeight, minDistForWidth) * safety * furtherBack
-    const distance = Math.max(idealDistance, minCameraDistance)
-    if (this.controls) {
-      const currentTarget = this.controls.target.clone()
-      const direction = this.camera.position.clone().sub(currentTarget)
-      if (direction.length() > 0.001) {
-        direction.normalize()
-        this.camera.position.copy(center).add(direction.multiplyScalar(distance))
-      } else {
-        this.camera.position.set(center.x, center.y, center.z + distance)
-      }
-      this.controls.target.copy(center)
-      this.controls.minDistance = distance
-      this.controls.maxDistance = distance
-      this.controls.update()
-    } else {
-      this.camera.position.set(center.x, center.y, center.z + distance)
-    }
-    this.desiredCameraPosition.copy(this.camera.position)
-    this.desiredTarget.copy(center)
-  }
+
 
   // ——— Desk handlers ———
   onWidthChange(value: number) {
@@ -446,13 +445,7 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
   onColorInputChange(value: string) {
     this.deskColor.set(value)
     if (!this.desk) return
-    const group = this.desk.build()
-    const color = new THREE.Color(value)
-    group.traverse(obj => {
-      if ((obj as THREE.Mesh).isMesh) {
-        ((obj as THREE.Mesh).material as THREE.MeshStandardMaterial).color = color
-      }
-    })
+    this.desk.setColor(value)
   }
 
   onLegroomPositionChange(value: number) {
@@ -504,56 +497,50 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
   }
 
   // ——— Bookcase handlers ———
-  onShelfWidthChange(value: number) {
-    this.shelfWidthCm.set(value)
-    if (this.shelf) this.shelf.setWidth(value * CM)
+  onBookcaseWidthChange(value: number) {
+    this.bookcaseWidthCm.set(value)
+    if (this.bookcase) this.bookcase.setWidth(value * CM)
     this.scheduleCameraUpdate()
   }
 
-  onShelfHeightChange(value: number) {
-    this.shelfHeightCm.set(value)
-    if (this.shelf) {
-      this.shelf.setHeight(value * CM)
-      const n = this.shelf.getRows()
+  onBookcaseHeightChange(value: number) {
+    this.bookcaseHeightCm.set(value)
+    if (this.bookcase) {
+      this.bookcase.setHeight(value * CM)
+      const n = this.bookcase.getRows()
       this.rowCount.set(n)
       if (this.selectedRowIndex() >= n) this.selectedRowIndex.set(Math.max(0, n - 1))
     }
     this.scheduleCameraUpdate()
   }
 
-  onShelfDepthChange(value: number) {
-    this.shelfDepthCm.set(value)
-    if (this.shelf) this.shelf.setDepth(value * CM)
+  onBookcaseDepthChange(value: number) {
+    this.bookcaseDepthCm.set(value)
+    if (this.bookcase) this.bookcase.setDepth(value * CM)
     this.scheduleCameraUpdate()
   }
 
-  onShelfColorInputChange(value: string) {
-    this.shelfColor.set(value)
-    if (!this.shelf) return
-    const group = this.shelf.build()
-    const color = new THREE.Color(value)
-    group.traverse(obj => {
-      if ((obj as THREE.Mesh).isMesh) {
-        ((obj as THREE.Mesh).material as THREE.MeshStandardMaterial).color = color
-      }
-    })
+  onBookcaseColorInputChange(value: string) {
+    this.bookcaseColor.set(value)
+    if (!this.bookcase) return
+    this.bookcase.setColor(value)
   }
 
   onStyleChange(value: string | string[] | RowStyle) {
     const style = (Array.isArray(value) ? value[0] : value) as RowStyle
     if (!this.styleOptions.includes(style)) return
-    this.shelfStyle.set(style)
-    if (this.shelf) this.shelf.setRowStyle(style)
+    this.bookcaseStyle.set(style)
+    if (this.bookcase) this.bookcase.setRowStyle(style)
   }
 
   onDensityChange(value: number) {
-    this.shelfDensity.set(value)
-    if (this.shelf) this.shelf.setDensity(value)
+    this.bookcaseDensity.set(value)
+    if (this.bookcase) this.bookcase.setDensity(value)
   }
 
   onBackPanelToggle(enabled: boolean) {
     this.withBack.set(enabled)
-    this.createShelf({ withBack: enabled })
+    this.createBookcase({ withBack: enabled })
   }
 
   topStorageValue(): string {
@@ -571,8 +558,8 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
     const next: StorageSectionConfig | null = v === 'none' ? null : { height: v as RowHeight }
     if (next && next.height !== 'sm' && next.height !== 'md' && next.height !== 'lg') return
     this.topStorageConfig.set(next)
-    if (this.shelf) {
-      this.shelf.setTopStorage(next)
+    if (this.bookcase) {
+      this.bookcase.setTopStorage(next)
       this.scheduleCameraUpdate()
     }
   }
@@ -582,15 +569,15 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
     const next: StorageSectionConfig | null = v === 'none' ? null : { height: v as RowHeight }
     if (next && next.height !== 'sm' && next.height !== 'md' && next.height !== 'lg') return
     this.bottomStorageConfig.set(next)
-    if (this.shelf) {
-      this.shelf.setBottomStorage(next)
+    if (this.bookcase) {
+      this.bookcase.setBottomStorage(next)
       this.scheduleCameraUpdate()
     }
   }
 
   totalHeightCm(): number {
-    if (!this.shelf) return this.shelfHeightCm()
-    return Math.round(this.shelf.getTotalHeight() / CM)
+    if (!this.bookcase) return this.bookcaseHeightCm()
+    return Math.round(this.bookcase.getTotalHeight() / CM)
   }
 
   rowIndices(): number[] {
@@ -598,10 +585,10 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
   }
 
   selectedRowConfig(): ShelfRowConfig | null {
-    if (!this.shelf) return null
+    if (!this.bookcase) return null
     const r = this.selectedRowIndex()
-    if (r < 0 || r >= this.shelf.getRows()) return null
-    return this.shelf.getRowConfig(r)
+    if (r < 0 || r >= this.bookcase.getRows()) return null
+    return this.bookcase.getRowConfig(r)
   }
 
   onRowSelect(value: string | string[]) {
@@ -612,28 +599,28 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
 
   onRowHeightChange(value: string | string[]) {
     const v = (Array.isArray(value) ? value[0] : value) as RowHeight
-    if (!this.shelf || (v !== 'sm' && v !== 'md' && v !== 'lg')) return
-    this.shelf.setRowConfig(this.selectedRowIndex(), { height: v })
+    if (!this.bookcase || (v !== 'sm' && v !== 'md' && v !== 'lg')) return
+    this.bookcase.setRowConfig(this.selectedRowIndex(), { height: v })
   }
 
   onRowDoorsChange(value: string | string[]) {
     const v = (Array.isArray(value) ? value[0] : value) as RowFill
-    if (!this.shelf || (v !== 'none' && v !== 'some' && v !== 'all')) return
+    if (!this.bookcase || (v !== 'none' && v !== 'some' && v !== 'all')) return
     const r = this.selectedRowIndex()
-    const cur = this.shelf.getRowConfig(r)
+    const cur = this.bookcase.getRowConfig(r)
     const next: Partial<ShelfRowConfig> = { doors: v }
     if (v === 'all') next.drawers = 'none'
-    this.shelf.setRowConfig(r, { ...cur, ...next })
+    this.bookcase.setRowConfig(r, { ...cur, ...next })
   }
 
   onRowDrawersChange(value: string | string[]) {
     const v = (Array.isArray(value) ? value[0] : value) as RowFill
-    if (!this.shelf || (v !== 'none' && v !== 'some' && v !== 'all')) return
+    if (!this.bookcase || (v !== 'none' && v !== 'some' && v !== 'all')) return
     const r = this.selectedRowIndex()
-    const cur = this.shelf.getRowConfig(r)
+    const cur = this.bookcase.getRowConfig(r)
     const next: Partial<ShelfRowConfig> = { drawers: v }
     if (v === 'all') next.doors = 'none'
-    this.shelf.setRowConfig(r, { ...cur, ...next })
+    this.bookcase.setRowConfig(r, { ...cur, ...next })
   }
 
   ngAfterViewInit(): void {
@@ -651,9 +638,9 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
       this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
       this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
 
-      if (this.modelType() === 'Bookcase' && this.shelf) {
+      if (this.modelType() === 'Bookcase' && this.bookcase) {
         this.raycaster.setFromCamera(this.mouse, this.camera)
-        this.shelf.handleHover(this.raycaster)
+        this.bookcase.handleHover(this.raycaster)
       } else if (this.modelType() === 'Desk' && this.desk) {
         this.raycaster.setFromCamera(this.mouse, this.camera)
         this.desk.handleHover(this.raycaster)
@@ -672,6 +659,8 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
       transparent: true,
       alphaMap: edgeFadeTexture,
       side: THREE.FrontSide,
+      roughness: 0.9,
+      metalness: 0.0,
     })
     const wall = new THREE.Mesh(wallGeometry, wallMaterial)
     wall.position.set(0, 0, -0.5 * CM)
@@ -687,6 +676,8 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
       transparent: true,
       alphaMap: edgeFadeTexture,
       side: THREE.DoubleSide,
+      roughness: 0.92,
+      metalness: 0,
     })
     const floor = new THREE.Mesh(floorGeometry, floorMaterial)
     floor.position.set(0, -90 * CM, 0)
@@ -702,15 +693,15 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
 
     const ambient = new THREE.AmbientLight(0xffffff, 0.8)
     this.scene.add(ambient)
-    ;[
-      [5, 5, 5],
-      [-5, 5, 5],
-      [0, 0, 5],
-    ].forEach(([x, y, z]) => {
-      const light = new THREE.DirectionalLight(0xffffff, 0.5)
-      light.position.set(x, y, z)
-      this.scene.add(light)
-    })
+      ;[
+        [5, 5, 5],
+        [-5, 5, 5],
+        [0, 0, 5],
+      ].forEach(([x, y, z]) => {
+        const light = new THREE.DirectionalLight(0xffffff, 0.5)
+        light.position.set(x, y, z)
+        this.scene.add(light)
+      })
 
     const controls = new OrbitControls(this.camera, this.renderer.domElement)
     this.controls = controls
@@ -775,6 +766,7 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
         this.renderer.setSize(width, height, false)
         this.camera.aspect = width / height
         this.camera.updateProjectionMatrix()
+        this.scheduleCameraUpdate()
 
         this.isResizing = false
       }, 5)
@@ -791,7 +783,7 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
           controls.target.lerp(this.desiredTarget, returnStrength)
         }
 
-        if (this.modelType() === 'Bookcase' && this.shelf) this.shelf.update()
+        if (this.modelType() === 'Bookcase' && this.bookcase) this.bookcase.update()
         else if (this.modelType() === 'Desk' && this.desk) this.desk.update()
 
         controls.update()
@@ -807,7 +799,7 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
 
   /** Project model group local position to overlay pixel coordinates; returns null if behind camera. */
   private projectDimensionPoint(localPoint: { x: number; y: number; z: number }): { left: number; top: number } | null {
-    const group = this.modelType() === 'Bookcase' ? this.shelf?.build() : this.desk?.build()
+    const group = this.modelType() === 'Bookcase' ? this.bookcase?.build() : this.desk?.build()
     if (!group || !this.camera || !this.renderer) return null
     this.scene.updateMatrixWorld(true)
     this.dimensionProjectionVec.set(localPoint.x, localPoint.y, localPoint.z)
@@ -824,7 +816,7 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
   private updateDimensionOverlay(): void {
     const data =
       this.modelType() === 'Bookcase'
-        ? this.shelf?.getDimensionData() ?? null
+        ? this.bookcase?.getDimensionData() ?? null
         : this.desk?.getDimensionData() ?? null
     if (!data || !this.renderer) return
     if (!data) return

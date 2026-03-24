@@ -1,0 +1,64 @@
+<div class="flex flex-col gap-[24px]">
+  <div class="flex flex-col">
+    <p class="font-caption text-foreground/50">
+      Create in just a few clicks
+    </p>
+
+    <h1 class="font-h1">
+      Design once, love forever
+    </h1>
+  </div>
+
+
+  <woodia-expanding-carousel
+    [slides]="slides"
+    [autoPlay]="true"
+    [interval]="5000"
+    class="max-md:hidden"
+    >
+  </woodia-expanding-carousel>
+
+  <div class="max-md:block hidden mx-auto w-full">
+    <z-carousel [zOptions]="zardCarouselOptions" zControls="none">
+      <z-carousel-content>
+
+        @for (slide of slides; track slide.image) {
+          <z-carousel-item class="basis-8/9">
+              <div
+                class="relative h-[600px] w-full bg-cover bg-center rounded-3xl"
+                [style.backgroundImage]="'url(' + slide.image + ')'"
+              >
+
+                <!-- Gradient -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+
+                <!-- Label -->
+                <div
+                  class="absolute top-6 left-6 z-10
+                        w-14 h-14 rounded-full
+                        border border-white/40
+                        flex items-center justify-center
+                        text-white font-semibold
+                        backdrop-blur bg-white/10 select-none">
+                  {{ slide.label }}
+                </div>
+
+                <!-- Content -->
+                <div class="absolute bottom-0 left-0 z-10 p-10 text-white max-w-xl select-none">
+                  <h2 class="font-h1 mb-[8px]">
+                    {{ slide.title }}
+                  </h2>
+
+                  <p class="font-caption text-white/80 leading-relaxed select-none">
+                    {{ slide.description }}
+                  </p>
+                </div>
+
+              </div>
+          </z-carousel-item>
+        }
+
+      </z-carousel-content>
+    </z-carousel>
+  </div>
+</div>

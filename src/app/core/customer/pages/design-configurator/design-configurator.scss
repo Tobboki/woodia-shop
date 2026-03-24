@@ -1,8 +1,7 @@
 /* Root: fit viewport height and max width, grid so canvas and controls share space */
 .design-configurator-root {
   --configurator-controls-width: 320px;
-  height: calc(100vh - 128px);
-  max-height: 100vh;
+  height: 100%;
   width: 100%;
   max-width: 100vw;
   display: grid;
@@ -14,6 +13,21 @@
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
     grid-template-rows: 1fr auto;
+  }
+}
+
+.design-configurator-root.is-compact {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr auto;
+
+  .design-configurator-controls {
+    width: 100%;
+    min-width: 0;
+    max-height: 50vh;
+    margin: 0;
+    border: none;
+    border-top: 2px solid var(--color-border, #e5e7eb);
+    border-radius: 0;
   }
 }
 
@@ -40,14 +54,12 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(
-    90deg,
-    #f0f0f0 0%,
-    #f0f0f0 40%,
-    #e8e8e8 50%,
-    #f0f0f0 60%,
-    #f0f0f0 100%
-  );
+  background: linear-gradient(90deg,
+      #f0f0f0 0%,
+      #f0f0f0 40%,
+      #e8e8e8 50%,
+      #f0f0f0 60%,
+      #f0f0f0 100%);
   background-size: 200% 100%;
   animation: design-configurator-skeleton-shimmer 1.5s ease-in-out infinite;
 }
@@ -56,6 +68,7 @@
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
@@ -89,10 +102,7 @@ canvas {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  background: white;
-  border: 2px solid var(--color-border, #e5e7eb);
-  border-radius: 12px;
-  margin: 0 12px 12px 0;
+  border-radius: 0 12px 12px 0;
   overflow: hidden;
 
   @media (max-width: 1024px) {
@@ -114,3 +124,20 @@ canvas {
   gap: 1.5rem;
 }
 
+@media (min-width: 768px) {
+  .design-configurator-root.is-compact {
+    .md\:hidden {
+      display: block !important;
+
+      &.flex {
+        display: flex !important;
+      }
+    }
+
+    .md\:block {
+      &.hidden {
+        display: none !important;
+      }
+    }
+  }
+}

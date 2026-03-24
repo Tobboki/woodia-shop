@@ -6,7 +6,7 @@ export const inputVariants = cva('w-full', {
   variants: {
     zType: {
       default:
-        'flex rounded-[8px] border font-normal border-black/25 bg-transparent font-placeholder file:border-0 file:text-foreground file:bg-transparent file:font-medium placeholder:text-black/50 disabled:cursor-not-allowed disabled:opacity-50 focus:ring-2 focus:ring-primary-200',
+        'flex rounded-[8px] border-2 font-medium border-border bg-transparent file:border-0 file:text-foreground file:bg-transparent file:font-medium placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 focus:ring-2 focus:ring-primary',
       textarea:
         'flex min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
       color: 'w-full p-0 border-2 bg-transparent rounded-[8px] cursor-pointer',

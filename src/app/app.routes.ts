@@ -1,18 +1,17 @@
 import { Routes } from '@angular/router';
-import { Login } from './pages/auth/login/login';
-import { Home } from './pages/home/home';
+import { Login } from '@features/auth/login/login';
+import { Home } from '@features/home/home';
 import { PublicLayout } from '@shared/layouts/public-layout/public-layout';
-import { authGuard } from './core/guards/auth-guard';
+import { authGuard } from '@core/guards/auth-guard';
 import { MainLayout } from '@shared/layouts/main-layout/main-layout';
-import { MainLayout as CustomerMainLayout } from './core/customer/layouts/main-layout/main-layout';
-import { Register } from './pages/auth/register/register';
-import { customerGuard } from './core/guards/role-guard';
-import { Settings as CustomerSettings } from './pages/customers/settings/settings'
-import { Account as CustomerAccountSettings } from './pages/customers/settings/account/account'
-import { Shipping as CustomerShippingSettings } from './pages/customers/settings/shipping/shipping'
-import { ErrorPage } from './pages/error-page/error-page';
-import { Designs as LandingDesigns } from './pages/designs/designs';
-import { OurStory } from './pages/our-story/our-story';
+import { Register } from '@features/auth/register/register';
+import { customerGuard } from '@core/guards/role-guard';
+import { Settings as CustomerSettings } from '@features/customers/settings/settings'
+import { Account as CustomerAccountSettings } from '@features/customers/settings/account/account'
+import { Shipping as CustomerShippingSettings } from '@features/customers/settings/shipping/shipping'
+import { ErrorPage } from '@features/error-page/error-page';
+import { Designs } from '@features/designs/designs';
+import { OurStory } from '@features/our-story/our-story';
 
 export const routes: Routes = [
   {
@@ -20,13 +19,14 @@ export const routes: Routes = [
     path: '',
     canActivate: [authGuard],
     component: MainLayout,
+    data: { layoutVariant: 'default' },
     children: [
       // (Default)
-
       {
         path: '',
         redirectTo: 'home',
         pathMatch: 'full',
+        title: 'Home',
       },
       {
         path: 'home',
@@ -41,15 +41,15 @@ export const routes: Routes = [
       },
       {
         path: 'designs/:category',
-        component: LandingDesigns,
+        component: Designs,
       },
       {
         path: 'designs/model/:id',
         loadComponent: () =>
-          import('./core/customer/pages/design-configurator/design-configurator')
-            .then(m => m.DesignConfigurator)
+          import('./features/design-studio/design-studio')
+            .then(m => m.DesignStudio)
       },
-      
+
       {
         path: 'our-story',
         component: OurStory,
@@ -60,7 +60,8 @@ export const routes: Routes = [
   {
     path: 'customers',
     canActivate: [customerGuard],
-    component: CustomerMainLayout,
+    component: MainLayout,
+    data: { layoutVariant: 'plain' },
     children: [
       // (Default)
       {
@@ -77,13 +78,13 @@ export const routes: Routes = [
       },
       {
         path: 'designs/:category',
-        component: LandingDesigns,
+        component: Designs,
       },
       {
         path: 'designs/model/:id',
         loadComponent: () =>
-          import('./core/customer/pages/design-configurator/design-configurator')
-            .then(m => m.DesignConfigurator)
+          import('./features/design-studio/design-studio')
+            .then(m => m.DesignStudio)
       },
 
       // Settings
@@ -129,7 +130,7 @@ export const routes: Routes = [
       },
       {
         path: 'google-callback',
-        loadComponent: () => import('./pages/auth/callback/callback').then(m => m.Callback)
+        loadComponent: () => import('./features/auth/callback/callback').then(m => m.Callback)
       }
     ]
   },

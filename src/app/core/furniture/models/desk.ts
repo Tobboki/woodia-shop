@@ -49,6 +49,7 @@ export class Desk {
   private hoveredDoor: { col: number; cell: number } | null = null
   private hoveredDrawer: { col: number; cell: number } | null = null
   private columnConfigs: DeskColumnConfig[] = []
+  private invisibleHitboxMaterial: THREE.MeshBasicMaterial
   private legroomPosition: number = 0 // Index where legroom is placed (0 = leftmost)
   private dimensionOverlayData: DimensionOverlayData | null = null
 
@@ -72,6 +73,7 @@ export class Desk {
     this.origin = origin
     this.material = material
     this.meshIdStart = meshIdStart
+    this.invisibleHitboxMaterial = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })
     this.legroomPosition = legroomPosition
     const desiredWidth = Math.max(width, DESK_COLUMN_WIDTH_MIN + DESK_LEGROOM_WIDTH_MIN)
     const desiredHeight = Math.max(height, DESK_HEIGHT_MIN)
@@ -155,6 +157,20 @@ export class Desk {
 
   setDepth(value: number) {
     this.targetDepth = this.clamp(value, DESK_DEPTH_MIN, DESK_DEPTH_MAX)
+  }
+
+  setColor(hex: string) {
+    if (this.material instanceof THREE.MeshStandardMaterial) {
+      this.material.color.set(hex)
+    } else {
+      (this.material as any).color = new THREE.Color(hex)
+    }
+    this.group.traverse((obj) => {
+      if ((obj as THREE.Mesh).isMesh && obj.name !== 'invisible-hitbox') {
+        const mat = (obj as THREE.Mesh).material as THREE.MeshStandardMaterial
+        if (mat.color) mat.color.set(hex)
+      }
+    })
   }
 
   getWidth(): number {
@@ -415,6 +431,22 @@ export class Desk {
         drawerFill !== 'none' &&
         (bothSet ? cell % 2 !== 0 : drawerFill === 'all' || (drawerFill === 'some' && cell % 2 !== 0))
 
+      const hitbox = new Blank(
+        x + thickness,
+        yBottom,
+        0,
+        x + width - thickness,
+        yTop,
+        depth,
+        origin,
+        this.invisibleHitboxMaterial,
+        idRef.id++
+      ).build()
+      hitbox.userData['columnIndex'] = colIndex
+      hitbox.userData['cellIndex'] = cell
+      hitbox.name = 'invisible-hitbox'
+      columnGroup.add(hitbox)
+
       if (addDoor && doorW > 0 && doorH > 0) {
         const doorThickness = thickness * 0.5
         const doorGroup = new THREE.Group()
@@ -549,13 +581,15 @@ export class Desk {
   private setColumnHighlight(col: number | null, active: boolean) {
     if (col === null) return
     this.columnsGroup[col]?.traverse((obj) => {
-      if ((obj as THREE.Mesh).isMesh) {
+      if ((obj as THREE.Mesh).isMesh && obj.name !== 'invisible-hitbox') {
         const mat = (obj as THREE.Mesh).material as THREE.MeshStandardMaterial
-        mat.emissive.set(active ? 0xaa0000 : 0x000000)
-        mat.emissiveIntensity = active ? 0.6 : 0
-        mat.polygonOffset = active
-        mat.polygonOffsetFactor = active ? -1 : 0
-        mat.polygonOffsetUnits = active ? -4 : 0
+        if (mat && mat.emissive) {
+          mat.emissive.set(active ? 0xaa0000 : 0x000000)
+          mat.emissiveIntensity = active ? 0.6 : 0
+          mat.polygonOffset = active
+          mat.polygonOffsetFactor = active ? -1 : 0
+          mat.polygonOffsetUnits = active ? -4 : 0
+        }
       }
     })
   }

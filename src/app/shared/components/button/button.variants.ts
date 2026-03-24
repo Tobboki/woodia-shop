@@ -1,27 +1,43 @@
-import { cva, VariantProps } from 'class-variance-authority';
+import { cva, type VariantProps } from 'class-variance-authority';
+
+import { mergeClasses } from 'src/app/shared/utils/merge-classes';
 
 export const buttonVariants = cva(
-  "cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[] font-button font-medium transition-all active:scale-95 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  mergeClasses(
+    'focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40',
+    'aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-lg border border-transparent bg-clip-padding',
+    "text-sm font-medium focus-visible:ring-3 aria-invalid:ring-3 [&_svg:not([class*='size-'])]:size-4 inline-flex items-center",
+    'justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none',
+    'shrink-0 [&_svg]:shrink-0 outline-none group/button select-none',
+  ),
   {
     variants: {
       zType: {
-        default: 'bg-primary-300 text-white shadow-button hover:bg-primary-300/90',
-        destructive: 'bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
-        outline: 'border border-primary-100 font-button text-primary-300 shadow-button hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50',
-        secondary: 'bg-secondary text-secondary-foreground shadow-button hover:bg-secondary/80',
-        ghost: 'hover:bg-primary-50 dark:hover:bg-accent/50',
-        link: 'font-body text-primary-300 underline-offset-4 hover:underline',
-        icon: ''
+        default: 'bg-primary text-primary-foreground hover:bg-primary/80',
+        destructive:
+          'bg-destructive/10 hover:bg-destructive/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/20 text-destructive focus-visible:border-destructive/40 dark:hover:bg-destructive/30',
+        outline:
+          'border-border bg-background hover:bg-muted hover:text-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 aria-expanded:bg-muted aria-expanded:text-foreground',
+        secondary:
+          'bg-secondary text-secondary-foreground hover:bg-secondary/80 aria-expanded:bg-secondary aria-expanded:text-secondary-foreground',
+        ghost:
+          'hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground',
+        link: 'text-primary underline-offset-4 hover:underline',
       },
       zSize: {
-        default: 'h-fit px-[24px] py-[12px] has-[>svg]:px-[24px]',
-        sm: 'h-8 rounded-md gap-1.5 has-[>svg]:px-2.5',
-        lg: 'h-10 rounded-md px-6 has-[>svg]:px-4',
-        link: '',
-        icon: 'size-9',
+        default: 'h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2',
+        xs: "h-6 gap-1 rounded-[min(var(--radius-md),10px)] px-2 text-xs in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
+        sm: "h-7 gap-1 rounded-[min(var(--radius-md),12px)] px-2.5 text-[0.8rem] in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
+        lg: 'h-9 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3 text-lg',
+        xl: 'h-12 gap-1.5 px-4 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3 text-xl',
+        icon: 'size-8',
+        'icon-xs':
+          "size-6 rounded-[min(var(--radius-md),10px)] in-data-[slot=button-group]:rounded-lg [&_svg:not([class*='size-'])]:size-3",
+        'icon-sm': 'size-7 rounded-[min(var(--radius-md),12px)] in-data-[slot=button-group]:rounded-lg',
+        'icon-lg': 'size-9',
       },
       zShape: {
-        default: 'rounded-[8px]',
+        default: 'rounded-md',
         circle: 'rounded-full',
         square: 'rounded-none',
       },
@@ -29,13 +45,11 @@ export const buttonVariants = cva(
         true: 'w-full',
       },
       zLoading: {
-        true: 'opacity-50 pointer-events-none',
+        true: 'pointer-events-none opacity-50',
       },
-      zPosition: {
-        default: 'justify-center',
-        left: 'justify-start',
-        right: 'justify-end',
-      }
+      zDisabled: {
+        true: 'pointer-events-none opacity-50',
+      },
     },
     defaultVariants: {
       zType: 'default',
@@ -44,4 +58,6 @@ export const buttonVariants = cva(
     },
   },
 );
-export type ZardButtonVariants = VariantProps<typeof buttonVariants>;
+export type ZardButtonShapeVariants = NonNullable<VariantProps<typeof buttonVariants>['zShape']>;
+export type ZardButtonSizeVariants = NonNullable<VariantProps<typeof buttonVariants>['zSize']>;
+export type ZardButtonTypeVariants = NonNullable<VariantProps<typeof buttonVariants>['zType']>;

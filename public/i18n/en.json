@@ -1,0 +1,19 @@
+{
+  "app": {
+    "appTitle": "Woodia",
+    "footer": {
+      "message": "All Rights Reserved."
+    },
+    "errorPage": {
+      "errorMessage": "This page does not exist.",
+      "callbackMessage": " please return to the homepage and try again.",
+      "callbackButton": "Go To Homepage"
+    }
+  },
+  "themeMode": {
+    "title": "Theme",
+    "light": "light",
+    "dark": "Dark",
+    "system": "System"
+  }
+}

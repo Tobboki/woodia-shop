@@ -9,7 +9,7 @@ export class Blank {
   private y2: number
   private z2: number
   private originPoint: IOriginPoint
-  material: THREE.Material
+  material: THREE.Material | THREE.Material[]
   meshId: number
 
   constructor(
@@ -20,7 +20,10 @@ export class Blank {
     y2: number,
     z2: number,
     originPoint: IOriginPoint = { x: 0, y: 0, z: 0 },
-    material: THREE.Material = new THREE.MeshBasicMaterial(),
+    material: THREE.Material | THREE.Material[] = new THREE.MeshStandardMaterial({
+      roughness: 0.7,
+      metalness: 0.0,
+    }),
     meshId: number
   ) {
     this.x1 = x1

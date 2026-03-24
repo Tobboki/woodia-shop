@@ -20,6 +20,6 @@ export function isElementContentTruncated(element: HTMLElement): boolean {
   return element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight;
 }
 
-export function noopFun(): void {
+export function noopFn(): void {
   // No operation, does nothing
 }

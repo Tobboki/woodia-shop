@@ -1,11 +1,13 @@
 import { Component, OnInit, Renderer2, signal } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { ZardToastComponent } from '@shared/components/toast/toast.component';
-import { AuthService } from '@shared/services/auth.service';
+import { AuthService } from '@core/services/auth.service';
 import { toast } from 'ngx-sonner';
 import { timer } from 'rxjs';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { authConfig } from './pages/auth/google-auth.config';
+import { authConfig } from './features/auth/google-auth.config';
+import {ThemeService} from '@core/services/theme.service';
+import {LanguageService} from '@core/services/language.service';
 
 @Component({
   selector: 'app-root',
@@ -23,10 +25,15 @@ export class App implements OnInit {
     private renderer: Renderer2,
     private authService: AuthService,
     private oauthService: OAuthService,
-    private router: Router
+    private router: Router,
+    private themeService: ThemeService,
+    private langService: LanguageService,
   ) { }
 
   async ngOnInit() {
+    this.themeService.init()
+    this.langService.init()
+
     this.oauthService.configure(authConfig);
 
     this.oauthService.events.subscribe(async (e) => {

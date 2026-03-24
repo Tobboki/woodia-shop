@@ -1,0 +1,80 @@
+<!-- Full-page loading skeleton when product is being fetched -->
+@if (productLoading()) {
+<div class="flex flex-col h-screen w-full">
+  <!-- Configurator skeleton -->
+  <div class="flex-1 min-h-0 flex">
+    <div class="flex-1 bg-muted animate-pulse rounded-lg m-4"></div>
+    <div class="w-[320px] bg-muted/60 animate-pulse rounded-lg m-4 ml-0"></div>
+  </div>
+  <!-- Gallery skeleton -->
+  <div class="p-6 grid grid-cols-3 gap-2" style="grid-template-rows: 240px 160px">
+    <div class="row-span-2 bg-muted animate-pulse rounded-lg"></div>
+    <div class="col-span-1 bg-muted/70 animate-pulse rounded-lg"></div>
+    <div class="col-span-1 bg-muted/70 animate-pulse rounded-lg"></div>
+    <div class="col-span-2 bg-muted/50 animate-pulse rounded-lg"></div>
+  </div>
+</div>
+} @else if (productError()) {
+<!-- Product load failure -->
+<div class="flex flex-col items-center justify-center h-screen gap-6 text-center px-4">
+  <div class="size-20 rounded-full bg-muted flex items-center justify-center">
+    <z-icon zType="triangle-alert" class="size-10 text-muted-foreground" />
+  </div>
+  <div class="space-y-2">
+    <h2 class="font-h3 text-foreground">Product not found</h2>
+    <p class="font-body text-muted-foreground max-w-sm">
+      We couldn't load this product. It may have been removed or the link is incorrect.
+    </p>
+  </div>
+  <a routerLink="/designs/Bookcase"
+    class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-full font-medium text-sm hover:opacity-90 transition-opacity">
+    <z-icon zType="arrow-left" class="size-4" />
+    Browse all designs
+  </a>
+</div>
+} @else {
+<!-- Design Configurator — full viewport height -->
+<div class="h-[calc(100vh-92px)] min-h-0 overflow-hidden">
+  <woodia-design-configurator [product]="product()" [modelType]="modelType()" class="block h-full" />
+</div>
+
+<!-- Inspiration Gallery -->
+<section class="p-6 pt-8 pb-12 max-w-7xl mx-auto">
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold text-foreground">In the room</h1>
+    <p class="font-body text-muted-foreground mt-1">See how it looks in real spaces</p>
+  </div>
+
+  @if (images.length === 0) {
+  <!-- Empty state -->
+  <div
+    class="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border bg-muted/30 py-20 gap-4 text-center">
+    <div class="size-16 rounded-full bg-muted flex items-center justify-center">
+      <z-icon zType="image" class="size-8 text-muted-foreground" />
+    </div>
+    <div class="space-y-1">
+      <p class="font-label text-foreground">No photos yet</p>
+      <p class="font-caption text-muted-foreground">Inspiration images will appear here once available</p>
+    </div>
+  </div>
+  } @else {
+  <!-- Masonry-style gallery matching the reference layout -->
+  <div class="gallery-grid">
+    @for (img of images.slice(0, 10); track img; let i = $index) {
+    <div class="gallery-cell gallery-cell-{{ i }} overflow-hidden rounded-lg bg-muted relative group">
+      @if (!imageErrors()[i]) {
+      <img [src]="img" [alt]="'Product photo ' + (i + 1)" (error)="onImageError(i)"
+        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+      } @else {
+      <!-- Per-image error state -->
+      <div class="w-full h-full flex flex-col items-center justify-center gap-2 text-muted-foreground">
+        <z-icon zType="image-off" class="size-8" />
+        <span class="text-xs font-medium">Image unavailable</span>
+      </div>
+      }
+    </div>
+    }
+  </div>
+  }
+</section>
+}

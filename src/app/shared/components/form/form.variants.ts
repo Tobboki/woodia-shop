@@ -16,9 +16,9 @@ export const formMessageVariants = cva('text-sm', {
   variants: {
     zType: {
       default: 'text-muted-foreground',
-      error: 'text-error-600',
-      success: 'text-green-500',
-      warning: 'text-yellow-500',
+      error: 'text-red-300',
+      success: 'text-green-300',
+      warning: 'text-yellow-300',
     },
   },
   defaultVariants: {

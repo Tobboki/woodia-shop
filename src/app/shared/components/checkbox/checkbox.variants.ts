@@ -5,7 +5,7 @@ export const checkboxVariants = cva(
   {
     variants: {
       zType: {
-        default: 'border-black/50 checked:bg-primary-300',
+        default: 'border-borde checked:bg-primary',
         destructive: 'border-destructive checked:bg-destructive',
       },
       zSize: {

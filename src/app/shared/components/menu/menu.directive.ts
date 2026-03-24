@@ -2,7 +2,21 @@ import type { BooleanInput } from '@angular/cdk/coercion';
 import { CdkMenuTrigger } from '@angular/cdk/menu';
 import type { ConnectedPosition } from '@angular/cdk/overlay';
 import { isPlatformBrowser } from '@angular/common';
-import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input, type OnDestroy, type OnInit, PLATFORM_ID, untracked } from '@angular/core';
+import {
+  booleanAttribute,
+  computed,
+  Directive,
+  DOCUMENT,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  type OnDestroy,
+  type OnInit,
+  PLATFORM_ID,
+  type TemplateRef,
+  untracked,
+} from '@angular/core';
 
 import { ZardMenuManagerService } from './menu-manager.service';
 import { MENU_POSITIONS_MAP, type ZardMenuPlacement } from './menu-positions';
@@ -11,34 +25,35 @@ export type ZardMenuTrigger = 'click' | 'hover';
 
 @Directive({
   selector: '[z-menu]',
-  standalone: true,
-  hostDirectives: [
-    {
-      directive: CdkMenuTrigger,
-      inputs: ['cdkMenuTriggerFor: zMenuTriggerFor'],
-    },
-  ],
   host: {
     role: 'button',
+    '[attr.tabindex]': "'0'",
     '[attr.aria-haspopup]': "'menu'",
     '[attr.aria-expanded]': 'cdkTrigger.isOpen()',
     '[attr.data-state]': "cdkTrigger.isOpen() ? 'open': 'closed'",
     '[attr.data-disabled]': "zDisabled() ? '' : undefined",
     '[style.cursor]': "'pointer'",
   },
+  hostDirectives: [
+    {
+      directive: CdkMenuTrigger,
+      inputs: ['cdkMenuTriggerFor: zMenuTriggerFor'],
+    },
+  ],
 })
 export class ZardMenuDirective implements OnInit, OnDestroy {
   private static readonly MENU_CONTENT_SELECTOR = '.cdk-overlay-pane [z-menu-content]';
 
   protected readonly cdkTrigger = inject(CdkMenuTrigger, { host: true });
-  private readonly elementRef = inject(ElementRef);
+  private readonly document = inject(DOCUMENT);
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly menuManager = inject(ZardMenuManagerService);
   private readonly platformId = inject(PLATFORM_ID);
 
   private closeTimeout: ReturnType<typeof setTimeout> | null = null;
   private readonly cleanupFunctions: Array<() => void> = [];
 
-  readonly zMenuTriggerFor = input.required();
+  readonly zMenuTriggerFor = input.required<TemplateRef<void>>();
   readonly zDisabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
   readonly zTrigger = input<ZardMenuTrigger>('click');
   readonly zHoverDelay = input<number>(100);
@@ -90,8 +105,11 @@ export class ZardMenuDirective implements OnInit, OnDestroy {
     const element = this.elementRef.nativeElement;
 
     this.addEventListenerWithCleanup(element, 'mouseenter', () => {
-      if (this.zDisabled()) return;
+      if (this.zDisabled()) {
+        return;
+      }
 
+      element.focus({ preventScroll: true });
       this.cancelScheduledClose();
       this.menuManager.registerHoverMenu(this);
       this.cdkTrigger.open();
@@ -116,11 +134,15 @@ export class ZardMenuDirective implements OnInit, OnDestroy {
   }
 
   private setupMenuContentListeners(): void {
-    const menuContent = document.querySelector(ZardMenuDirective.MENU_CONTENT_SELECTOR);
-    if (!menuContent) return;
+    const menuContent = this.document.querySelector(ZardMenuDirective.MENU_CONTENT_SELECTOR);
+    if (!menuContent) {
+      return;
+    }
 
     this.addEventListenerWithCleanup(menuContent, 'mouseenter', () => this.cancelScheduledClose());
-    this.addEventListenerWithCleanup(menuContent, 'mouseleave', event => this.scheduleCloseIfNeeded(event as MouseEvent));
+    this.addEventListenerWithCleanup(menuContent, 'mouseleave', event =>
+      this.scheduleCloseIfNeeded(event as MouseEvent),
+    );
   }
 
   private cancelScheduledClose(): void {
@@ -139,11 +161,14 @@ export class ZardMenuDirective implements OnInit, OnDestroy {
   }
 
   private shouldKeepMenuOpen(relatedTarget: Element | null): boolean {
-    if (!relatedTarget) return false;
+    if (!relatedTarget) {
+      return false;
+    }
 
     const isMovingToTrigger = this.elementRef.nativeElement.contains(relatedTarget);
     const isMovingToMenu = relatedTarget.closest(ZardMenuDirective.MENU_CONTENT_SELECTOR);
-    const isMovingToOtherTrigger = relatedTarget.matches('[z-menu]') && !this.elementRef.nativeElement.contains(relatedTarget);
+    const isMovingToOtherTrigger =
+      relatedTarget.matches('[z-menu]') && !this.elementRef.nativeElement.contains(relatedTarget);
 
     if (isMovingToOtherTrigger) {
       return false;
@@ -158,7 +183,12 @@ export class ZardMenuDirective implements OnInit, OnDestroy {
     }, this.zHoverDelay());
   }
 
-  private addEventListenerWithCleanup(element: Element, eventType: string, handler: (event: MouseEvent | Event) => void, options?: AddEventListenerOptions): void {
+  private addEventListenerWithCleanup(
+    element: Element,
+    eventType: string,
+    handler: (event: MouseEvent | Event) => void,
+    options?: AddEventListenerOptions,
+  ): void {
     if (isPlatformBrowser(this.platformId)) {
       element.addEventListener(eventType, handler, options);
       this.cleanupFunctions.push(() => element.removeEventListener(eventType, handler, options));
@@ -170,7 +200,12 @@ export class ZardMenuDirective implements OnInit, OnDestroy {
       return false; // Default to desktop behavior on server
     }
 
-    // Check for touch support
+    const window = this.document.defaultView;
+    if (!window) {
+      return false;
+    }
+
+    const { navigator } = window;
     const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
     // Check for mobile user agent

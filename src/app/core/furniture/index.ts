@@ -1,6 +1,5 @@
-export { BookShelf } from './models/bookshelf'
-export type { RowStyle } from './models/bookshelf.constants'
 export { Bookcase } from './models/bookcase'
+export type { RowStyle } from './models/bookcase.constants'
 export { Desk } from './models/desk'
 export type {
   IOriginPoint,
@@ -9,7 +8,7 @@ export type {
   RowHeight,
   RowFill,
   StorageSectionConfig,
-  BookShelfConfigJson,
+  BookcaseConfigJson,
   DeskColumnConfig,
   DeskConfigJson,
   BookcaseModelConfig,

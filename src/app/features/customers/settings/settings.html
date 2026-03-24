@@ -1,0 +1,66 @@
+<section>
+  @if (!showMobileSettings()) {
+    <a
+      z-button
+      zSize="sm"
+      zType="link"
+      class="text-primary lg:hidden gap-[4px] mt-[8px] mb-[16px]"
+      (click)="toggleMobileSettings()"
+    >
+      <i z-icon zType="arrow-left"></i>
+      Back to settings
+    </a>
+  }
+  @if (showMobileSettings()) {
+    <nav class="lg:hidden flex h-full flex-col overflow-hidden gap-[8px] px-[8px] pb-[16px] my-[16px] rounded-[12px] border">
+      <h1 class="font-h1">Settings</h1>
+
+      @for (item of mainMenuItems; track item.label) {
+        <div
+          class="px-[8px] py-[4px] flex flex-nowrap items-center justify-between hover:bg-primary-50 rounded-[12px]"
+          routerLinkActive="active-label"
+          [routerLink]="[`/customers/settings/${item.link}`]"
+          [routerLinkActiveOptions]="{ exact: false }"
+          (click)="toggleMobileSettings()"
+        >
+          <div class="flex flex-nowrap items-center gap-[8px]">
+            <z-icon [zType]="item.icon" class="size[42px]" />
+            <h4 class="font-h4 font-thin">{{ item.label }}</h4>
+          </div>
+
+          <z-icon zType="arrow-right" class="size[42px]" />
+        </div>
+      }
+    </nav>
+  }
+  <z-layout class="overflow-hidden rounded-[12px] border">
+    <z-sidebar
+      [zWidth]="'100%'"
+      class="p-0! w-[300px] max-lg:hidden"
+    >
+      <nav class="flex h-full flex-col overflow-hidden gap-[8px] p-[8px]">
+          <h1 class="font-h1">Settings</h1>
+
+          @for (item of mainMenuItems; track item.label) {
+            <a
+              type="button"
+              z-button
+              zType="ghost"
+              zPosition="left"
+              class="py-[8px]"
+              routerLinkActive="active-label"
+              [routerLink]="[`/customers/settings/${item.link}`]"
+              [routerLinkActiveOptions]="{ exact: false }"
+            >
+              <z-icon [zType]="item.icon" class="size[42px]" />
+              <h4 class="font-h4 font-thin">{{ item.label }}</h4>
+            </a>
+          }
+      </nav>
+    </z-sidebar>
+
+    <z-content class="min-h-[200px] px-[24px] max-sm:px-[12px]">
+      <router-outlet></router-outlet>
+    </z-content>
+  </z-layout>
+</section>

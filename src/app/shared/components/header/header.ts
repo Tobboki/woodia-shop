@@ -6,7 +6,9 @@ import {
   signal,
   HostListener,
   OnInit,
-  inject
+  TemplateRef,
+  computed,
+  viewChild,
 } from '@angular/core';
 
 import { Router, NavigationEnd, RouterLink, RouterLinkActive } from '@angular/router';
@@ -14,13 +16,19 @@ import { filter } from 'rxjs';
 
 import { gsap } from 'gsap';
 
-import { IMenuItem } from '@shared/types/app.types';
-import { LogoComponent } from '../logo/logo.component';
-import { ZardButtonComponent } from '../button/button.component';
-import { ZardMenuDirective } from '../menu/menu.directive';
-import { ZardMenuItemDirective } from '../menu/menu-item.directive';
-import { ZardMenuContentDirective } from '../menu/menu-content.directive';
+import {IMenuItem, TThemeMode} from '@shared/types/app.types';
+import { LogoComponent } from '../custom/logo/logo.component';
+import { ZardButtonComponent } from '@shared/components/button';
 import { ZardIconComponent } from '../icon/icon.component';
+import {LanguageService} from '@core/services/language.service';
+import {ThemeService} from '@core/services/theme.service';
+import {CommonModule} from '@angular/common';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {ZardMenuImports} from '@shared/components/menu';
+import {ZardDividerComponent} from '@shared/components/divider/divider.component';
+import {ZardAvatarComponent} from '@shared/components/avatar/avatar.component';
+import {AuthService} from '@core/services/auth.service';
+import {ZardAccordionImports} from '@shared/components/accordion';
 
 @Component({
   selector: 'woodia-header',
@@ -29,94 +37,65 @@ import { ZardIconComponent } from '../icon/icon.component';
     RouterLink,
     RouterLinkActive,
     ZardButtonComponent,
-    ZardMenuDirective,
-    ZardMenuItemDirective,
-    ZardMenuContentDirective,
-    ZardIconComponent
+    ZardIconComponent,
+    ZardMenuImports,
+    TranslocoDirective,
+    CommonModule,
+    ZardDividerComponent,
+    CommonModule,
+    ZardAvatarComponent,
+    ZardAccordionImports,
   ],
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })
-export class Header implements OnInit {
+export class Header {
 
   @Input() menu: IMenuItem[] = [];
 
-  router = inject(Router)
+  constructor(
+    public themeService: ThemeService,
+    public langService: LanguageService,
+    public authService: AuthService,
+  ) {}
+  readonly isRtl = computed(() => this.langService.lang() === 'ar');
 
-  @ViewChild('mobileMenu') mobileMenu!: ElementRef
+  readonly landingRef = viewChild<TemplateRef<any>>('landingActions');
+  readonly customerRef = viewChild<TemplateRef<any>>('customerActions');
+  readonly currentActions = computed(() => {
+    const isAuthenticated = this.authService.isAuthenticated()
+    return isAuthenticated ? this.customerRef() : this.landingRef();
+  });
 
   isMenuOpen = signal(false)
+  readonly landingMobileMeniRef = viewChild<TemplateRef<any>>('landingMobileMenu');
+  readonly customerMobileMenuRef = viewChild<TemplateRef<any>>('customerMobileMenu');
+  readonly currentMobileMenu = computed(() => {
+    const isAuthenticated = this.authService.isAuthenticated()
+    return isAuthenticated ? this.customerMobileMenuRef() : this.landingMobileMeniRef();
 
-  ngOnInit() {
+  })
 
-    /** Auto close menu on route change */
-    this.router.events
-      .pipe(filter(e => e instanceof NavigationEnd))
-      .subscribe(() => this.closeMenu())
+  mobileSidebarClasses() {
+    const open = this.isMenuOpen();
+    const rtl = this.isRtl();
 
+    const position = rtl ? 'left-0' : 'right-0';
+    const transform = open
+      ? 'translate-x-0'
+      : rtl
+        ? '-translate-x-full'
+        : 'translate-x-full';
+
+    return `${position} ${transform} transform transition-transform duration-300`;
   }
 
-  /** Toggle mobile menu */
-  toggleMenu() {
-
-    this.isMenuOpen.update(v => !v)
-
-    const menu = this.mobileMenu.nativeElement
-
-    if (this.isMenuOpen()) {
-
-      gsap.to(menu, {
-        height: "auto",
-        duration: 0.35,
-        ease: "power2.out"
-      })
-
-    } else {
-
-      gsap.to(menu, {
-        height: 0,
-        duration: 0.25,
-        ease: "power2.in"
-      })
-
-    }
-
+  setThemeMode(mode: TThemeMode) {
+    this.themeService.setMode(mode)
   }
 
-  /** Close menu */
-  closeMenu() {
-
-    if (!this.isMenuOpen()) return
-
-    this.isMenuOpen.set(false)
-
-    const menu = this.mobileMenu?.nativeElement
-
-    if (menu) {
-      gsap.to(menu, {
-        height: 0,
-        duration: 0.25,
-        ease: "power2.in"
-      })
-    }
-
-  }
-
-  /** Close on outside click */
-  @HostListener('document:click', ['$event'])
-  onClickOutside(event: MouseEvent) {
-
-    const target = event.target as HTMLElement
-    const header = document.getElementById('app-header')
-
-    if (!header?.contains(target)) {
-      this.closeMenu()
-    }
-
-  }
-
-  navigateToAuth() {
-    this.router.navigate(['/auth'])
+  handleLogout() {
+    this.authService.logout()
   }
 
 }

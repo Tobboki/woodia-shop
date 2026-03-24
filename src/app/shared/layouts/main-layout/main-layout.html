@@ -1,23 +1,25 @@
 <div
-  class="
-    relative
-    bg-[url('/images/app-abstraction.jpg')]
-    bg-cover bg-center
-    before:content-['']
-    before:absolute
-    before:inset-0
-    before:bg-[#F2F2F2]
-    before:opacity-80
-    before:pointer-events-none
-  "
+  [ngClass]="[
+    layoutVariant() === 'default'
+      ? 'relative bg-[url(/images/app-abstraction.webp)] dark:bg-[url(/images/app-abstraction-dark.webp)] bg-cover bg-center before:content-[\'\'] before:absolute before:inset-0 before:bg-background before:opacity-80 dark:before:opacity-70 before:pointer-events-none'
+      : ''
+  ]"
 >
-  <woodia-header [menu]="menu" ></woodia-header>
+  <woodia-header [menu]="menu()"></woodia-header>
 
   <div
-    class="relative z-10 container mx-auto py-[72px] px-[24px] max-sm:px-[12px]"
+    [ngClass]="[
+      'relative z-10 container mx-auto',
+      layoutVariant() === 'default'
+        ? 'py-[72px] px-[24px] max-sm:px-[12px]'
+        : 'py-[16px] max-w-screen-2xl max-sm:px-[12px]'
+    ]"
   >
     <router-outlet></router-outlet>
   </div>
 
-  <woodia-footer [menu]="menu" class="relative z-10" />
+  <woodia-footer
+    [menu]="menu()"
+    class="relative z-10"
+  />
 </div>

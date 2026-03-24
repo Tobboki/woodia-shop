@@ -41,6 +41,8 @@ export interface CellDimensionOverlay {
   col: number
   widthCm: number
   heightCm: number
+  baseWidthCm?: number
+  baseHeightCm?: number
   /** Center of cell front face in shelf group local space (for projection to screen). */
   localX: number
   localY: number
@@ -65,8 +67,8 @@ export interface DimensionOverlayData {
   cells: CellDimensionOverlay[]
 }
 
-/** JSON-serializable config for a bookshelf (e.g. for API or persistence). Lengths in cm. */
-export interface BookShelfConfigJson {
+/** JSON-serializable config for a bookcase (e.g. for API or persistence). Lengths in cm. */
+export interface BookcaseConfigJson {
   widthCm: number
   heightCm: number
   depthCm: number

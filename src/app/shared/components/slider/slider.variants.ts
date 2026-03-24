@@ -23,7 +23,7 @@ export const sliderVariants = cva(
 export type SliderVariants = VariantProps<typeof sliderVariants>;
 
 export const sliderTrackVariants = cva(
-  'flex bg-black/50 relative grow overflow-hidden rounded-full data-[orientation=horizontal]:h-1.5 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5',
+  'flex bg-muted relative grow overflow-hidden rounded-full data-[orientation=horizontal]:h-1.5 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5',
   {
     variants: {
       zOrientation: {
@@ -40,7 +40,7 @@ export const sliderTrackVariants = cva(
 export type SliderTrackVariants = VariantProps<typeof sliderTrackVariants>;
 
 export const sliderRangeVariants = cva(
-  'bg-primary-300 absolute data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full',
+  'bg-primary absolute data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full',
   {
     variants: {
       zOrientation: {
@@ -57,12 +57,12 @@ export const sliderRangeVariants = cva(
 export type SliderRangeVariants = VariantProps<typeof sliderRangeVariants>;
 
 export const sliderThumbVariants = cva(
-  'border-primary bg-surface-light ring-ring/50 block size-5 shrink-0 rounded-full border-2 shadow-sm transition-[color,box-shadow] focus-visible:ring-2 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50',
+  'border-primary bg-background ring-ring/50 block size-4 shrink-0 rounded-full border shadow-sm transition-[color,box-shadow] focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       disabled: {
         true: '',
-        false: 'hover:ring-2',
+        false: 'hover:ring-4',
       },
     },
   },
