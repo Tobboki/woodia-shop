@@ -8,12 +8,12 @@ export const inputVariants = cva('w-full', {
       default:
         'flex rounded-[8px] border-2 font-medium border-border bg-transparent file:border-0 file:text-foreground file:bg-transparent file:font-medium placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 focus:ring-2 focus:ring-primary',
       textarea:
-        'flex min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
+        'flex min-h-24 rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
       color: 'w-full p-0 border-2 bg-transparent rounded-[8px] cursor-pointer',
     },
     zSize: {
-      default: 'h-[48px] px-[16px] py-[8px] file:max-md:py-0',
       sm: 'h-9 file:md:py-2 file:max-md:py-1.5',
+      default: 'h-12 px-[16px] py-[8px] file:max-md:py-0',
       lg: 'h-11 py-1 file:md:py-3 file:max-md:py-2.5',
       none: 'h-[48px]',
     },

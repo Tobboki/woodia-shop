@@ -5,7 +5,7 @@ import { AuthService } from '@core/services/auth.service';
 import { toast } from 'ngx-sonner';
 import { timer } from 'rxjs';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { authConfig } from './features/auth/google-auth.config';
+import { authConfig } from '@features/auth/google-auth.config';
 import {ThemeService} from '@core/services/theme.service';
 import {LanguageService} from '@core/services/language.service';
 
