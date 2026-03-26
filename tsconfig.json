@@ -18,7 +18,12 @@
     "paths": {
       "@shared/*": ["src/app/shared/*"],
       "@core/*": ["src/app/core/*"],
-      "@features/*": ["src/app/features/*"],
+      "@features/*": [
+        "src/app/features/*"
+      ],
+      "shared-lib": [
+        "./dist/shared-lib"
+      ],
     }
   },
   "angularCompilerOptions": {
@@ -35,6 +40,12 @@
     },
     {
       "path": "./tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/shared-lib/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/shared-lib/tsconfig.spec.json"
     }
   ]
 }
