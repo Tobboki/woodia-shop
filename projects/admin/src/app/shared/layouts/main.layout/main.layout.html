@@ -1,0 +1,249 @@
+<z-layout class="overflow-hidden" *transloco="let t">
+
+  <!-- ================= DESKTOP SIDEBAR ================= -->
+  <z-sidebar
+    class="!p-0 hidden md:block"
+    [zWidth]="256"
+    [zCollapsible]="true"
+    [zCollapsed]="sidebarCollapsed()"
+    [zCollapsedWidth]="72"
+    (zCollapsedChange)="onCollapsedChange($event)"
+  >
+    <ng-container *ngTemplateOutlet="sidebarNav; context:{ collapsed: sidebarCollapsed() }"></ng-container>
+  </z-sidebar>
+
+  <!-- ================= MOBILE SHEET ================= -->
+   @if(mobileNavOpen()) {
+    <div
+      class="fixed inset-0 z-50 bg-black/50 md:hidden transition-opacity duration-300"
+      (click)="mobileNavOpen.set(false)"
+    ></div>
+   }
+
+  <aside
+    class="fixed top-0 z-50 h-full w-64 max-sm:w-48 bg-sidebar shadow-lg transform md:hidden"
+    [ngClass]="mobileSidebarClasses()"
+    [class.translate-x-0]="mobileNavOpen()"
+    [class.opacity-0]="!mobileNavOpen()"
+    [class.-translate-x-full]="!mobileNavOpen()"
+  >
+    <!-- Header -->
+    <div class="flex items-center justify-between p-4 border-b">
+      <logo></logo>
+      <button type="button" z-button zType="ghost" zSize="lg" (click)="mobileNavOpen.set(false)">
+        <ng-icon name="lucideX" />
+      </button>
+    </div>
+
+    <!-- Sidebar Nav -->
+    <ng-container *ngTemplateOutlet="sidebarNav; context:{ collapsed: false }"></ng-container>
+  </aside>
+
+  <!-- ================= SIDEBAR NAV TEMPLATE ================= -->
+  <ng-template #sidebarNav let-collapsed="collapsed">
+    <nav [class]="'flex h-full flex-col overflow-hidden ' + (collapsed ? 'gap-1 p-1 pt-4' : 'gap-4 p-4')">
+      <logo class="max-md:hidden"/>
+      <z-sidebar-group>
+        @for (item of navGroups; track item.label) {
+            @if (item.submenu) {
+              <a
+                type="button"
+                z-button
+                zType="ghost"
+                zSize="lg"
+                z-menu
+                [zMenuTriggerFor]="submenu"
+                zTrigger="hover"
+                zPlacement="rightTop"
+                [class]="collapsed ? 'justify-center' : 'justify-start'"
+                [zTooltip]="collapsed ? item.label : null"
+                zPosition="right"
+              >
+                @if (item.icon) {
+                  <ng-icon
+                    [name]="item.icon ? item.icon : 'circle'"
+                    [class]="collapsed ? '' : 'mr-2'"
+                  />
+                }
+                @if (!collapsed) {
+                  <span class="flex-1 text-left">
+                    {{ t(`navigation.${item.label}`) }}
+                  </span>
+                  <ng-icon name="lucideChevronRight" />
+                }
+              </a>
+
+              <ng-template #submenu>
+                <div z-menu-content class="w-48">
+                  @for (subitem of item.submenu; track subitem.label) {
+                    <a
+                      z-menu-item
+                      [routerLink]="subitem.route ?? null"
+                      routerLinkActive="text-primary"
+                      [routerLinkActiveOptions]="{ exact: false }"
+                    >
+                      {{ t(`navigation.${subitem.label}`) }}
+                    </a>
+                  }
+                </div>
+              </ng-template>
+            } @else {
+              <a
+                type="button"
+                z-button
+                zType="ghost"
+                zSize="lg"
+                [class]="collapsed ? 'justify-center' : 'justify-start'"
+                [zTooltip]="collapsed ? item.label : ''"
+                [routerLink]="item.route ?? null"
+                routerLinkActive="text-primary"
+                [routerLinkActiveOptions]="{ exact: false }"
+              >
+                @if (item.icon) {
+                  <ng-icon
+                    [name]="item.icon ? item.icon : 'circle'"
+                    [class]="collapsed ? '' : 'mr-2'"
+                  />
+                }
+                  @if (!collapsed) {
+                    <span>{{ t(`navigation.${item.label}`) }}</span>
+                  }
+              </a>
+            }
+          }
+      </z-sidebar-group>
+    </nav>
+  </ng-template>
+
+  <!-- ================= MAIN AREA ================= -->
+  <z-layout>
+
+    <!-- Header -->
+    <z-header class="justify-between">
+      <button
+        type="button"
+        z-button
+        zType="ghost"
+        zSize="lg"
+        class="-ml-2 max-md:hidden"
+        (click)="toggleSidebar()"
+      >
+        <ng-icon name="lucidePanelLeft" />
+      </button>
+
+      <!-- ================= MOBILE NAV BUTTON ================= -->
+      <button
+        type="button"
+        z-button
+        zType="ghost"
+        zSize="lg"
+        class="-ml-2 md:hidden"
+        (click)="mobileNavOpen.set(true)"
+      >
+        <ng-icon name="lucideMenu" />
+      </button>
+
+      <div class="flex gap-4">
+        <!-- Theme Manager -->
+        <div class="relative">
+          <button type="button" z-button zType="ghost" z-menu zTrigger="click" [zMenuTriggerFor]="themeMenu">
+            <ng-icon [name]="themeService.icon()"/>
+          </button>
+
+          <ng-template #themeMenu>
+            <div z-menu-content>
+              <button
+                type="button"
+                z-menu-item
+                (click)="setThemeMode('light')"
+                class="flex gap-2 items-center"
+                [class.text-primary]="themeService.mode() === 'light'"
+              >
+                <ng-icon name="lucideSun" />
+                <span>
+                  {{ t('themeMode.light') }}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                z-menu-item
+                (click)="setThemeMode('dark')"
+                class="flex gap-2 items-center"
+                [class.text-primary]="themeService.mode() === 'dark'"
+              >
+                <ng-icon name="lucideMoon" />
+                <span>
+                  {{ t('themeMode.dark') }}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                z-menu-item
+                (click)="setThemeMode('system')"
+                class="flex gap-2 items-center"
+                [class.text-primary]="themeService.mode() === 'system'"
+              >
+                <ng-icon name="lucideMonitor" />
+                <span>
+                  {{ t('themeMode.system') }}
+                </span>
+              </button>
+            </div>
+          </ng-template>
+        </div>
+
+        <!-- Language Manager -->
+        <div class="relative">
+          <button type="button" z-button zType="ghost" z-menu zTrigger="click" [zMenuTriggerFor]="languageMEnu">
+            <ng-icon name="lucideLanguages" />
+            {{ langService.label() }}
+          </button>
+
+          <ng-template #languageMEnu>
+            <div z-menu-content>
+              <button
+                type="button"
+                z-menu-item
+                (click)="langService.setLanguage('en')"
+                [class.text-primary]="langService.lang() === 'en'"
+              >
+                <span>
+                  English
+                </span>
+              </button>
+
+              <button
+                type="button"
+                z-menu-item
+                (click)="langService.setLanguage('ar')"
+                [class.text-primary]="langService.lang() === 'ar'"
+              >
+                <span>
+                  العربية
+                </span>
+              </button>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </z-header>
+
+    <!-- Content -->
+    <z-content>
+      <router-outlet></router-outlet>
+    </z-content>
+
+    <!-- Footer -->
+    <z-footer class="gap-1 justify-center">
+      <span>{{ t('app.footer.message') }}</span>
+      <span dir="ltr">&#64; 2026</span>
+      <a z-button zType="link" href="https://woodia-shop.vercel.app/home" class="px-0">
+        {{ t('app.footer.company') }}
+      </a>
+    </z-footer>
+
+  </z-layout>
+
+</z-layout>

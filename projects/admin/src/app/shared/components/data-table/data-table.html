@@ -1,0 +1,28 @@
+<div class="overflow-hidden rounded-lg border">
+  <table z-table [zSize]="density" zRounded="sm">
+
+    <!-- HEADER -->
+    <thead z-table-header>
+      <tr z-table-row>
+        @for (header of headers; track header.key) {
+          <th z-table-head class="font-bold">
+            {{ header.title }}
+          </th>
+        }
+      </tr>
+    </thead>
+
+    <!-- BODY -->
+    <tbody z-table-body>
+      @for (item of items; track $index) {
+        <tr z-table-row class="border-t">
+            @for (header of headers; track header.key) {
+              <td z-table-cell>
+                {{ item[header.key] }}
+              </td>
+            }
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

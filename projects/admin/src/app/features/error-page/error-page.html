@@ -1,0 +1,22 @@
+<div
+*transloco="let t"
+  class="w-full min-h-[calc(100vh-200px)] flex flex-col flex-nowrap items-center justify-center gap-[48px]"
+>
+  <div>
+    <h1 class="text-[128px] text-center leading-[132px]">404</h1>
+    <p class="font-caption text-center">
+      {{ t('app.errorPage.errorMessage') }}
+      <br>
+      {{ t('app.errorPage.callbackMessage') }}
+    </p>
+  </div>
+
+  <button
+    z-button
+    zType="outline"
+    type="button"
+    [routerLink]="['/']"
+  >
+    {{ t('app.errorPage.callbackButton') }}
+  </button>
+</div>

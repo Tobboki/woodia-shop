@@ -1,0 +1,390 @@
+<div class="design-configurator-root" [class.is-compact]="compactLayout">
+  <!-- Model -->
+  <div class="design-configurator-canvas-wrap select-none">
+    @if(designLoading()) {
+    <z-loader zSize="lg" class="design-configurator-loading-overlay" />
+    }
+    @if(!modelLoaded()) {
+    <div class="design-configurator-skeleton" aria-hidden="true"></div>
+    }
+    <canvas #designConfiguratorCanvas class="block w-full h-full"></canvas>
+    <div class="design-configurator-dimension-overlay" [class.dimension-overlay-visible]="showDimensions()"
+      aria-hidden="true">
+      <z-dimension-overlay [lines]="dimensionLines()" [labels]="dimensionLabels()" [width]="dimensionOverlayWidth()"
+        [height]="dimensionOverlayHeight()" />
+    </div>
+    <div class="absolute bottom-4 left-4 z-10">
+      <button
+        z-button
+        zType="outline"
+        (click)="showDimensions.set(!showDimensions())"
+        class="rounded-full"
+      >
+        <ng-icon [name]="showDimensions() ? 'lucideEyeOff' : 'lucideEye'" class="size-4" />
+        {{ showDimensions() ? 'Hide dimensions' : 'Show dimensions' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Controls: fixed width, scrollable content, never taller than view -->
+  <div class="design-configurator-controls !bg-background">
+    <div class="design-configurator-controls-scroll">
+      <h4 class="font-h4 hidden md:block">Design controls</h4>
+
+      @if (showControls()) {
+      <!-- Mobile Tabs List -->
+      <div class="flex md:hidden overflow-x-auto gap-2 pb-2 snap-x no-scrollbar">
+        @if (modelType() === 'Bookcase') {
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'color'" [class.text-white]="activeControlTab() === 'color'"
+          (click)="setControlTab('color')">Color</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'width'" [class.text-white]="activeControlTab() === 'width'"
+          (click)="setControlTab('width')">Width</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'height'" [class.text-white]="activeControlTab() === 'height'"
+          (click)="setControlTab('height')">Height</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'depth'" [class.text-white]="activeControlTab() === 'depth'"
+          (click)="setControlTab('depth')">Depth</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'style'" [class.text-white]="activeControlTab() === 'style'"
+          (click)="setControlTab('style')">Style</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'density'" [class.text-white]="activeControlTab() === 'density'"
+          (click)="setControlTab('density')">Density</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'rows'" [class.text-white]="activeControlTab() === 'rows'"
+          (click)="setControlTab('rows')">Row Settings</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'storage'" [class.text-white]="activeControlTab() === 'storage'"
+          (click)="setControlTab('storage')">Storage</button>
+        }
+        @if (modelType() === 'Desk') {
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'color'" [class.text-white]="activeControlTab() === 'color'"
+          (click)="setControlTab('color')">Color</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'width'" [class.text-white]="activeControlTab() === 'width'"
+          (click)="setControlTab('width')">Width</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'height'" [class.text-white]="activeControlTab() === 'height'"
+          (click)="setControlTab('height')">Height</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'depth'" [class.text-white]="activeControlTab() === 'depth'"
+          (click)="setControlTab('depth')">Depth</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'legroom'" [class.text-white]="activeControlTab() === 'legroom'"
+          (click)="setControlTab('legroom')">Legroom</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'columns'" [class.text-white]="activeControlTab() === 'columns'"
+          (click)="setControlTab('columns')">Column Settings</button>
+        }
+      </div>
+
+      @if (modelType() === 'Bookcase') {
+      <!-- Bookcase custom inputs -->
+      <div class="space-y-6">
+        <div [class.hidden]="activeControlTab() !== 'color'" class="md:block space-y-3">
+          <z-form-field>
+            <label class="font-label" z-form-label>Color</label>
+            <div class="flex flex-wrap gap-2 pt-1">
+              @for (c of FURNITURE_COLORS; track c.name) {
+              <button type="button" class="size-8 rounded-full border-2 transition-transform shadow-sm"
+                [class.border-foreground]="bookcaseColor() === c.value"
+                [class.border-transparent]="bookcaseColor() !== c.value" [class.scale-110]="bookcaseColor() === c.value"
+                [style.background-color]="c.value" (click)="onBookcaseColorInputChange(c.value)"
+                [title]="c.name"></button>
+              }
+            </div>
+          </z-form-field>
+        </div>
+
+        <div [class.hidden]="!['width', 'height', 'depth'].includes(activeControlTab())" class="md:block space-y-4">
+          <h5 class="font-label text-foreground/60 hidden md:block">Dimensions (cm)</h5>
+          <div [class.hidden]="activeControlTab() !== 'width'" class="md:block">
+            <z-form-field>
+              <label class="font-label" z-form-label>Width ({{ bookcaseWidthCm() }} cm)</label>
+              <z-form-control>
+                <z-slider [zMin]="30" [zMax]="450" [zDefault]="bookcaseWidthCm()" [zValue]="bookcaseWidthCm()"
+                  [zStep]="1" (zSlideIndexChange)="onBookcaseWidthChange($event)"></z-slider>
+              </z-form-control>
+            </z-form-field>
+          </div>
+          <div [class.hidden]="activeControlTab() !== 'height'" class="md:block">
+            <z-form-field>
+              <label class="font-label" z-form-label>Height ({{ totalHeightCm() }} cm)</label>
+              <z-form-control>
+                <z-slider [zMin]="38" [zMax]="200" [zDefault]="bookcaseHeightCm()" [zValue]="bookcaseHeightCm()"
+                  [zStep]="1" (zSlideIndexChange)="onBookcaseHeightChange($event)"></z-slider>
+              </z-form-control>
+            </z-form-field>
+          </div>
+          <div [class.hidden]="activeControlTab() !== 'depth'" class="md:block">
+            <z-form-field>
+              <label class="font-label" z-form-label>Depth ({{ bookcaseDepthCm() }} cm)</label>
+              <z-form-control>
+                <z-slider [zMin]="20" [zMax]="45" [zDefault]="bookcaseDepthCm()" [zValue]="bookcaseDepthCm()"
+                  [zStep]="1" (zSlideIndexChange)="onBookcaseDepthChange($event)"></z-slider>
+              </z-form-control>
+            </z-form-field>
+          </div>
+        </div>
+
+        <div [class.hidden]="activeControlTab() !== 'style'" class="md:block space-y-3">
+          <h5 class="font-label text-foreground/60 hidden md:block">Style</h5>
+          <z-carousel #styleCarousel zControls="none" [zSelectedIndex]="styleCarouselIndex()"
+            [zOptions]="{ align: 'start', containScroll: 'trimSnaps' }" class="w-full">
+            <z-carousel-content class="-ml-2">
+              @for (style of styleOptions; track style) {
+              <z-carousel-item class="!basis-[88px] !min-w-0 !shrink-0 !grow-0 pl-2">
+                <button
+                  type="button"
+                  class="flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-black/50 p-2.5 transition-colors min-h-[72px] w-full"
+                  [class.border-border]="bookcaseStyle() !== style"
+                  [class.bg-muted]="bookcaseStyle() !== style"
+                  [class.border-primary]="bookcaseStyle() === style"
+                  [class.bg-primary]="bookcaseStyle() === style"
+                  (click)="onStyleChange(style)">
+                  <ng-icon
+                    name="lucideBlocks"
+                    class="size-6"
+                    [class.text-primary]="bookcaseStyle() === style"
+                  />
+                  <span
+                    class="font-label text-xs capitalize"
+                    [class.text-primary]="bookcaseStyle() === style">
+                    {{ style }}
+                  </span>
+                </button>
+              </z-carousel-item>
+              }
+            </z-carousel-content>
+          </z-carousel>
+        </div>
+
+        <div [class.hidden]="activeControlTab() !== 'density'" class="md:block space-y-2">
+          <h5 class="font-label text-foreground/60 hidden md:block">Density ({{ bookcaseDensity() }}%)</h5>
+          <z-form-field>
+            <label class="font-label md:hidden" z-form-label>Density ({{ bookcaseDensity() }}%)</label>
+            <z-form-control>
+              <z-slider [zMin]="0" [zMax]="100" [zDefault]="bookcaseDensity()" [zValue]="bookcaseDensity()" [zStep]="1"
+                (zSlideIndexChange)="onDensityChange($event)"></z-slider>
+            </z-form-control>
+          </z-form-field>
+        </div>
+
+        @if (rowCount() > 0) {
+        <div [class.hidden]="activeControlTab() !== 'rows'" class="md:block space-y-4">
+          <h5 class="font-label text-foreground/60 hidden md:block">Row settings</h5>
+          <z-form-field>
+            <label class="font-label" z-form-label>Row</label>
+            <z-form-control>
+              <z-select [zPlaceholder]="'Select row'" [zValue]="selectedRowIndex() + ''"
+                (zSelectionChange)="onRowSelect($event)">
+                @for (idx of rowIndices(); track idx) {
+                <z-select-item [zValue]="idx + ''">Row {{ idx + 1 }}</z-select-item>
+                }
+              </z-select>
+            </z-form-control>
+          </z-form-field>
+          @let rowCfg = selectedRowConfig();
+          @if (rowCfg) {
+          <z-form-field>
+            <label class="font-label" z-form-label>Row height</label>
+            <z-form-control>
+              <z-select [zPlaceholder]="'Height'" [zValue]="rowCfg.height"
+                (zSelectionChange)="onRowHeightChange($event)">
+                <z-select-item zValue="sm">Small</z-select-item>
+                <z-select-item zValue="md">Medium</z-select-item>
+                <z-select-item zValue="lg">Large</z-select-item>
+              </z-select>
+            </z-form-control>
+          </z-form-field>
+          <z-form-field>
+            <label class="font-label" z-form-label>Doors</label>
+            <z-form-control>
+              <z-select [zPlaceholder]="'Doors'" [zValue]="rowCfg.doors" (zSelectionChange)="onRowDoorsChange($event)">
+                <z-select-item zValue="none">None</z-select-item>
+                <z-select-item zValue="some">Some</z-select-item>
+                <z-select-item zValue="all">Max</z-select-item>
+              </z-select>
+            </z-form-control>
+          </z-form-field>
+          <z-form-field>
+            <label class="font-label" z-form-label>Drawers</label>
+            <z-form-control>
+              <z-select [zPlaceholder]="'Drawers'" [zValue]="rowCfg.drawers"
+                (zSelectionChange)="onRowDrawersChange($event)">
+                <z-select-item zValue="none">None</z-select-item>
+                <z-select-item zValue="some">Some</z-select-item>
+                <z-select-item zValue="all">Max</z-select-item>
+              </z-select>
+            </z-form-control>
+          </z-form-field>
+          }
+        </div>
+        }
+
+        <div [class.hidden]="activeControlTab() !== 'storage'" class="md:block space-y-4">
+          <h5 class="font-label text-foreground/60 hidden md:block">Storage Options</h5>
+          <div class="space-y-2 bg-background">
+            <z-form-field>
+              <label class="font-label md:hidden" z-form-label>Top storage</label>
+              <z-form-control>
+                <z-select [zPlaceholder]="'Top storage'" [zValue]="topStorageValue()"
+                  (zSelectionChange)="onTopStorageChange($event)">
+                  <z-select-item zValue="none">None</z-select-item>
+                  <z-select-item zValue="sm">Small</z-select-item>
+                  <z-select-item zValue="md">Medium</z-select-item>
+                  <z-select-item zValue="lg">Large</z-select-item>
+                </z-select>
+              </z-form-control>
+            </z-form-field>
+          </div>
+          <div class="space-y-2">
+            <z-form-field>
+              <label class="font-label md:hidden" z-form-label>Bottom storage</label>
+              <z-form-control>
+                <z-select [zPlaceholder]="'Bottom storage'" [zValue]="bottomStorageValue()"
+                  (zSelectionChange)="onBottomStorageChange($event)">
+                  <z-select-item zValue="none">None</z-select-item>
+                  <z-select-item zValue="sm">Small</z-select-item>
+                  <z-select-item zValue="md">Medium</z-select-item>
+                  <z-select-item zValue="lg">Large</z-select-item>
+                </z-select>
+              </z-form-control>
+            </z-form-field>
+          </div>
+          <z-form-field>
+            <z-form-control class="flex items-center">
+              <z-checkbox [ngModel]="withBack()" (ngModelChange)="onBackPanelToggle($event)" zShape="circle"
+                zSize="lg">Back panel</z-checkbox>
+            </z-form-control>
+          </z-form-field>
+        </div>
+      </div>
+      }
+
+      @if (modelType() === 'Desk') {
+      <!-- Desk custom inputs -->
+      <div class="space-y-6">
+        <div [class.hidden]="activeControlTab() !== 'color'" class="md:block space-y-3">
+          <h5 class="font-label text-foreground/60 hidden md:block">Color</h5>
+          <z-form-field>
+            <label class="font-label md:hidden" z-form-label>Color</label>
+            <div class="flex flex-wrap gap-2 pt-1">
+              @for (c of FURNITURE_COLORS; track c.name) {
+              <button type="button" class="size-8 rounded-full border-2 transition-transform shadow-sm"
+                [class.border-primary]="deskColor() === c.value" [class.border-transparent]="deskColor() !== c.value"
+                [class.scale-110]="deskColor() === c.value" [style.background-color]="c.value"
+                (click)="onColorInputChange(c.value)" [title]="c.name"></button>
+              }
+            </div>
+          </z-form-field>
+        </div>
+
+        <div [class.hidden]="!['width', 'height', 'depth'].includes(activeControlTab())" class="md:block space-y-4">
+          <h5 class="font-label text-foreground/60 hidden md:block">Dimensions (cm)</h5>
+          <div [class.hidden]="activeControlTab() !== 'width'" class="md:block">
+            <z-form-field>
+              <label class="font-label" z-form-label>Width ({{ deskWidthCm() }} cm)</label>
+              <z-form-control>
+                <z-slider [zMin]="100" [zMax]="500" [zDefault]="deskWidthCm()" [zValue]="deskWidthCm()" [zStep]="1"
+                  (zSlideIndexChange)="onWidthChange($event)"></z-slider>
+              </z-form-control>
+            </z-form-field>
+          </div>
+          <div [class.hidden]="activeControlTab() !== 'height'" class="md:block">
+            <z-form-field>
+              <label class="font-label" z-form-label>Height ({{ deskHeightCm() }} cm)</label>
+              <z-form-control>
+                <z-slider [zMin]="60" [zMax]="90" [zDefault]="deskHeightCm()" [zValue]="deskHeightCm()" [zStep]="1"
+                  (zSlideIndexChange)="onHeightChange($event)"></z-slider>
+              </z-form-control>
+            </z-form-field>
+          </div>
+          <div [class.hidden]="activeControlTab() !== 'depth'" class="md:block">
+            <z-form-field>
+              <label class="font-label" z-form-label>Depth ({{ deskDepthCm() }} cm)</label>
+              <z-form-control>
+                <z-slider [zMin]="50" [zMax]="70" [zDefault]="deskDepthCm()" [zValue]="deskDepthCm()" [zStep]="1"
+                  (zSlideIndexChange)="onDepthChange($event)"></z-slider>
+              </z-form-control>
+            </z-form-field>
+          </div>
+        </div>
+
+        <div [class.hidden]="activeControlTab() !== 'legroom'" class="md:block space-y-4">
+          <z-form-field>
+            <label class="font-label" z-form-label>Legroom Position</label>
+            <z-form-control>
+              <z-slider [zMin]="0" [zMax]="columnCount()" [zDefault]="legroomPosition()" [zValue]="legroomPosition()"
+                [zStep]="1" (zSlideIndexChange)="onLegroomPositionChange($event)"></z-slider>
+            </z-form-control>
+            <p class="font-caption text-foreground/50 mt-1">Position of the empty legroom space (0 = leftmost, {{
+              columnCount() }} = rightmost).</p>
+          </z-form-field>
+        </div>
+
+        @if (columnCount() > 0) {
+        <div [class.hidden]="activeControlTab() !== 'columns'" class="md:block space-y-4">
+          <h5 class="font-label text-foreground/60 hidden md:block">Column settings</h5>
+          <z-form-field>
+            <label class="font-label" z-form-label>Column</label>
+            <z-form-control>
+              <z-select [zPlaceholder]="'Select column'" [zValue]="selectedColumnIndex() + ''"
+                (zSelectionChange)="onColumnSelect($event)">
+                @for (idx of columnIndices(); track idx) {
+                <z-select-item [zValue]="idx + ''">Column {{ idx + 1 }}</z-select-item>
+                }
+              </z-select>
+            </z-form-control>
+          </z-form-field>
+          @let cfg = selectedColumnConfig();
+          @if (cfg) {
+          <z-form-field>
+            <label class="font-label" z-form-label>Doors</label>
+            <z-form-control>
+              <z-select [zPlaceholder]="'Doors'" [zValue]="cfg.doors" (zSelectionChange)="onColumnDoorsChange($event)">
+                <z-select-item zValue="none">None</z-select-item>
+                <z-select-item zValue="some">Some</z-select-item>
+                <z-select-item zValue="all">Max</z-select-item>
+              </z-select>
+            </z-form-control>
+            <p class="font-caption text-foreground/50 mt-1">Max doors cannot be combined with max drawers.</p>
+          </z-form-field>
+          <z-form-field>
+            <label class="font-label" z-form-label>Drawers</label>
+            <z-form-control>
+              <z-select [zPlaceholder]="'Drawers'" [zValue]="cfg.drawers"
+                (zSelectionChange)="onColumnDrawersChange($event)">
+                <z-select-item zValue="none">None</z-select-item>
+                <z-select-item zValue="some">Some</z-select-item>
+                <z-select-item zValue="all">Max</z-select-item>
+              </z-select>
+            </z-form-control>
+          </z-form-field>
+          }
+        </div>
+        }
+      </div>
+      }
+      }
+    </div>
+  </div>
+</div>

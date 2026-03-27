@@ -42,7 +42,7 @@ __screenshots__/
 .DS_Store
 Thumbs.db
 
-/src/environments/environment.development.ts
+/projects/woodia/src/environments/environment.development.ts
 
 videos
 

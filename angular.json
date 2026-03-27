@@ -14,24 +14,24 @@
           "style": "scss"
         }
       },
-      "root": "",
-      "sourceRoot": "src",
+      "root": "projects/woodia",
+      "sourceRoot": "projects/woodia/src",
       "prefix": "woodia",
       "architect": {
         "build": {
           "builder": "@ngx-env/builder:application",
           "options": {
-            "browser": "src/main.ts",
-            "tsConfig": "tsconfig.app.json",
+            "browser": "projects/woodia/src/main.ts",
+            "tsConfig": "projects/woodia/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
+                "input": "projects/woodia/public"
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "projects/woodia/src/styles.scss"
             ]
           },
           "configurations": {
@@ -56,8 +56,8 @@
               "sourceMap": true,
               "fileReplacements": [
                 {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.development.ts"
+                  "replace": "projects/woodia/src/environments/environment.ts",
+                  "with": "projects/woodia/src/environments/environment.development.ts"
                 }
               ]
             }
@@ -88,18 +88,17 @@
         "test": {
           "builder": "@ngx-env/builder:karma",
           "options": {
-            "tsConfig": "tsconfig.spec.json",
+            "tsConfig": "projects/woodia/tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public",
+                "input": "projects/woodia/public",
                 "output": "/"
-              },
-              "projects/woodia-shop/src/assets"
+              }
             ],
             "styles": [
-              "src/styles.scss"
+              "projects/woodia/src/styles.scss"
             ]
           }
         }
@@ -127,6 +126,90 @@
           "builder": "@angular/build:karma",
           "options": {
             "tsConfig": "projects/shared-lib/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "admin": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/admin",
+      "sourceRoot": "projects/admin/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "projects/admin/src/main.ts",
+            "tsConfig": "projects/admin/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/admin/public"
+              }
+            ],
+            "styles": [
+              "projects/admin/src/styles.scss"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "admin:build:production"
+            },
+            "development": {
+              "buildTarget": "admin:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n"
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "tsConfig": "projects/admin/tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/admin/public"
+              }
+            ],
+            "styles": [
+              "projects/admin/src/styles.scss"
+            ]
           }
         }
       }

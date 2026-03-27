@@ -1,0 +1,26 @@
+{
+  "app": {
+    "footer": {
+      "message": "جميع حقوق الطبع والنشر محفوظة",
+      "company": "ووديا"
+    },
+    "errorPage": {
+      "errorMessage": "الصفحة غير موجودة!",
+      "callbackMessage": "رجاءاَ ارجع للصفحه الرئيسية و حاول مره أخري",
+      "callbackButton": "العودة للصفحه الرئيسية"
+    }
+  },
+  "modules": {
+    
+  },
+  "themeMode": {
+    "light": "مضيئ",
+    "dark": "داكن",
+    "system": "النظام"
+  },
+  "navigation": {
+    "dashboard": "اللوحة الرئيسية",
+    "design": "التصاميم",
+    "category": "الأنواع"
+  }
+}

@@ -16,14 +16,28 @@
     "module": "preserve",
     "baseUrl": "./",
     "paths": {
-      "@shared/*": ["src/app/shared/*"],
-      "@core/*": ["src/app/core/*"],
-      "@features/*": [
-        "src/app/features/*"
-      ],
-      "shared-lib": [
-        "./dist/shared-lib"
-      ],
+      /* shared-lib */
+      "shared-lib": ["projects/shared-lib/src/public-api.ts"],
+      "shared-lib/*": ["projects/shared-lib/src/lib/*"],
+
+      "@shared-components/*": ["projects/shared-lib/src/lib/components/*"],
+      "@shared-utils/*": ["projects/shared-lib/src/lib/utils/*"],
+      "@shared-types/*": ["projects/shared-lib/src/lib/types/*"],
+      "@shared-directives/*": ["projects/shared-lib/src/lib/directives/*"],
+
+      /* woodia */
+      "@woodia-core/*": ["projects/woodia/src/app/core/*"],
+      "@woodia-features/*": ["projects/woodia/src/app/features/*"],
+      "@woodia-shared/*": ["projects/woodia/src/app/shared/*"],
+      "@woodia-types/*": ["projects/woodia/src/app/shared/types/*"],
+      "@woodia-environments/*": ["projects/woodia/src/environments/*"],
+
+      /* admin */
+      "@admin-core/*": ["projects/admin/src/app/core/*"],
+      "@admin-features/*": ["projects/admin/src/app/features/*"],
+      "@admin-shared/*": ["projects/admin/src/app/shared/*"],
+      "@admin-types/*": ["projects/admin/src/app/shared/types/*"],
+      "@admin-environments/*": ["projects/admin/src/environments/*"]
     }
   },
   "angularCompilerOptions": {
@@ -39,13 +53,19 @@
       "path": "./tsconfig.app.json"
     },
     {
-      "path": "./tsconfig.spec.json"
+      "path": "./projects/woodia/tsconfig.spec.json"
     },
     {
       "path": "./projects/shared-lib/tsconfig.lib.json"
     },
     {
       "path": "./projects/shared-lib/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/admin/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/admin/tsconfig.spec.json"
     }
   ]
 }

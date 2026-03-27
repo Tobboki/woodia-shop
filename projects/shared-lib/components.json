@@ -1,0 +1,14 @@
+{
+  "$schema": "https://zardui.com/schema.json",
+  "style": "css",
+  "packageManager": "pnpm",
+  "tailwind": {
+    "css": "src/styles.scss",
+    "baseColor": "neutral",
+    "cssVariables": true
+  },
+  "aliases": {
+    "components": "projects/shared-lib/src/lib/components",
+    "utils": "projects/shared-lib/src/lib/utils"
+  }
+}

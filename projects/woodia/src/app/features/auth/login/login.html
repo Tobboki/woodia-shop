@@ -1,0 +1,168 @@
+<div class="h-[100dvh] grid grid-cols-2 max-lg:grid-cols-1 gap-[16px]">
+    <div class="h-full flex flex-col">
+      <!-- Logo -->
+      <logo class="mb-[40px]" />
+
+      <div class="w-[80%] max-xl:w-full max-lg:w-[60%] max-md:w-[80%] max-sm:w-full my-auto mx-auto space-y-[40px]">
+        <!-- Title -->
+        <div class="flex flex-col gap-[16px] max-2xl:text-center">
+          <h3 class="font-h3 leading-1">
+            Welcome Back
+          </h3>
+          <p class="font-body">
+            Enter your Credentials to access your account
+          </p>
+        </div>
+
+        <!-- Social Login -->
+        <button
+            class="bg-white text-foreground/50"
+            zFull
+            z-button
+            zType="outline"
+            zSize="xl"
+            (click)="handleGoogleSignIn()"
+          >
+            <img
+              src="/icons/google-logo.svg"
+              alt="Google logo"
+              class="size-[24px] object-fit-cover"
+            >
+            Login with Google
+          </button>
+
+        <!-- Divider -->
+        <div class="flex flex-row flex-nowrap items-center gap-[16px]">
+          <z-divider  />
+          <p class="font-body">
+            or
+          </p>
+          <z-divider />
+        </div>
+
+        <!-- Form -->
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6 my-[40px]">
+          <!-- Email Control -->
+          <z-form-field>
+            <label
+              class="font-label"
+              z-form-label
+              zRequired
+            >
+              Email
+            </label>
+            <z-form-control>
+              <input
+                z-input
+                type="email"
+                placeholder="Enter your email"
+                formControlName="email"
+                [zStatus]="emailControl.invalid && emailControl.touched ? 'error' : undefined"
+              />
+            </z-form-control>
+
+            @if (emailControl.hasError('required') && emailControl.touched) {
+              <z-form-message class="font-caption" zType="error">Email is required.</z-form-message>
+            } @else if (emailControl.hasError('email') && emailControl.touched) {
+              <z-form-message class="font-caption" zType="error">Enter a valid email address.</z-form-message>
+            }
+          </z-form-field>
+
+          <!-- Password Control -->
+          <z-form-field>
+            <label
+              class="font-label"
+              z-form-label
+              zRequired
+            >
+              Password
+            </label>
+            <z-form-control>
+                <z-input-group [zAddOnAfter]="showPasswordIcon" class="mb-4">
+                  <input
+                    z-input
+                    [type]="showPassword() ? 'text' : 'password'"
+                    placeholder="min 8 characters"
+                    formControlName="password"
+                    [zStatus]="passwordControl.invalid && passwordControl.touched ? 'error' : undefined"
+                  />
+                </z-input-group>
+
+                <ng-template #showPasswordIcon>
+                  <ng-icon
+                    class="text-foreground/50"
+                    [name]="showPassword() ? 'eye-off': 'eye'"
+                    (click)="togglePasswordVisibility()"
+                  />
+                </ng-template>
+            </z-form-control>
+            @if (passwordControl.hasError('required') && passwordControl.touched) {
+              <z-form-message class="font-caption" zType="error">Password is required.</z-form-message>
+            } @else if (passwordControl.hasError('minlength') && passwordControl.touched) {
+              <z-form-message class="font-caption" zType="error">Password must be at least 8 characters.</z-form-message>
+            } @else if (passwordControl.hasError('backend') && passwordControl.touched) {
+              <z-form-message class="font-caption" zType="error">{{ passwordControl.getError('backend') }}</z-form-message>
+            }
+          </z-form-field>
+
+          <div class="flex flex-row content-center justify-between">
+            <z-form-field>
+              <z-form-control class="flex flex-col justify-center">
+                <div class="flex items-center space-x-2">
+                  <z-checkbox
+                    id="rememberMe"
+                    formControlName="rememberMe"
+                    zSize="lg"
+                  />
+                  <label
+                    class="font-label text-nowrap"
+                    z-form-label
+                    for="rememberMe"
+                  >
+                    Remember me
+                  </label>
+                </div>
+              </z-form-control>
+            </z-form-field>
+
+            <button class="text-primary font-label" z-button zSize="sm" zType="link">Forget Password?</button>
+          </div>
+
+          <div class="space-y-[4px]">
+            <button
+              zFull
+              z-button
+              zType="default"
+              zSize="xl"
+              type="submit"
+              [disabled]="loginForm.invalid"
+              [zLoading]="loginFormLoading()"
+              class="h-12"
+            >
+              Login
+            </button>
+
+            <div class="flex flex-row justify-center items-center">
+              <p>
+                Don't have an account?
+              </p>
+              <button class="text-primary font-body" z-button zSize="sm" zType="link" (click)="goToLRegister()">Sign Up</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="overflow-hidden w-full h-full rounded-xl max-lg:hidden">
+      <video
+        #videoPlayer
+        class="w-full h-full object-cover"
+        [src]="currentVideo"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto"
+      ></video>
+    </div>
+</div>

@@ -9,6 +9,6 @@
     ]
   },
   "include": [
-    "src/**/*.ts"
+    "projects/woodia/src/**/*.ts"
   ]
 }
