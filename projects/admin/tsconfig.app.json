@@ -6,13 +6,6 @@
     "outDir": "../../out-tsc/app",
     "types": []
   },
-  "paths": {
-    "@shared/*": ["src/app/shared/*"],
-    "@core/*": ["src/app/core/*"],
-    "@features/*": [
-      "src/app/features/*"
-    ]
-  },
   "include": [
     "src/**/*.ts"
   ],

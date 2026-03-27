@@ -1,8 +1,6 @@
 @use "tailwindcss";
-
 @layer ng-icon, theme, base, components, utilities;
 @plugin "tailwindcss-animate";
-
 @custom-variant dark (&:is(.dark *));
 
 /* SF Pro */

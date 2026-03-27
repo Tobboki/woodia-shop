@@ -5,17 +5,17 @@ import { IMenuItem } from "../types/app.types";
 export default [
   {
     label: 'dashboard',
-    icon: 'house',
+    icon: 'lucideHouse',
     route: '/home',
   },
   {
     label: 'design',
-    icon: 'box',
+    icon: 'lucideArmchair',
     route: '/designs',
   },
   {
     label: 'category',
-    icon: 'layout-grid',
+    icon: 'lucideLayoutGrid',
     route: '/category',
   },
 ] as IMenuItem[]

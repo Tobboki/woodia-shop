@@ -1,5 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core'
 import { TThemeMode } from '../types/data-table.types'
+import type {IconType} from '@ng-icons/core';
 
 const STORAGE_KEY = 'theme-mode'
 
@@ -10,14 +11,14 @@ export class ThemeService {
 
   mode = signal<TThemeMode>('system')
 
-  icon = computed(() => {
+  icon = computed<IconType>(() => {
     switch (this.mode()) {
       case 'light':
-        return 'sun'
+        return 'lucideSun'
       case 'dark':
-        return 'moon'
+        return 'lucideMoon'
       default:
-        return 'monitor'
+        return 'lucideMonitor'
     }
   })
 
