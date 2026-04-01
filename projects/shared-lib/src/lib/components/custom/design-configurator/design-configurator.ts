@@ -25,12 +25,21 @@ import type { DimensionLabel2D, DimensionLine2D } from '../../dimension-overlay'
 import {
   Bookcase,
   Desk,
+  TvStand,
+  ShoeRack,
+  BedsideTable,
   CM,
   M,
   type BookcaseModelConfig,
   type CellDimensionOverlay,
   type DeskColumnConfig,
   type DeskModelConfig,
+  type TvStandModelConfig,
+  type TvColumnConfig,
+  type ShoeRackModelConfig,
+  type ShoeColumnConfig,
+  type BedsideTableModelConfig,
+  type BedsideColumnConfig,
   type Product,
   type ProductCategory,
   type RowFill,
@@ -38,6 +47,8 @@ import {
   type RowStyle,
   type ShelfRowConfig,
   type StorageSectionConfig,
+  type ProductModelConfig,
+  DEFAULT_MODEL_CONFIGS,
 } from '../../../furniture'
 import { ZardCarouselImports } from '../../carousel'
 import { ZardCarouselComponent } from '@shared-components/carousel/carousel.component'
@@ -110,6 +121,9 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
     { name: 'Forest', value: '#1b3b27' }
   ]
 
+  /** TV Stand specific style options (column-width effects only). */
+  readonly TV_STAND_STYLES: RowStyle[] = ['grid', 'gradient', 'stagger']
+
   /** Controls whether to show the configurator side panel inputs. */
   showControls = signal(true)
   @Input('showControls') set _showControls(val: boolean) { this.showControls.set(val) }
@@ -118,6 +132,12 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
   activeControlTab = signal<string>('width')
   setControlTab(tab: string) {
     this.activeControlTab.set(tab)
+  }
+
+  /** Top-level tab: 'model' | 'rows' | 'columns' */
+  activeMainTab = signal<string>('model')
+  setMainTab(tab: string) {
+    this.activeMainTab.set(tab)
   }
 
   /** Product loaded from API or passed as input */
@@ -131,12 +151,36 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
   modelType = signal<ProductCategory>('Desk')
   @Input('modelType') set _modelType(val: ProductCategory) {
     this.modelType.set(val)
+    
+    // If we're not loading a specific product, apply the defaults for this model type
+    if (!this.product()) {
+      this.applyConfig(val, DEFAULT_MODEL_CONFIGS[val])
+    }
+    
+    if (this.scene) {
+      this.createModel()
+    }
   }
 
   private bookcase!: Bookcase
   private bookcaseWrapper!: THREE.Group
   private desk!: Desk
   private deskWrapper!: THREE.Group
+  private tvStand!: TvStand
+  private tvStandWrapper!: THREE.Group
+  private shoeRack!: ShoeRack
+  private shoeRackWrapper!: THREE.Group
+  private bedsideTable!: BedsideTable
+  private bedsideTableWrapper!: THREE.Group
+
+  /** Remove every model wrapper from the scene — called at the start of every createX method. */
+  private removeAllModelWrappers() {
+    if (this.bookcaseWrapper) this.scene.remove(this.bookcaseWrapper)
+    if (this.deskWrapper) this.scene.remove(this.deskWrapper)
+    if (this.tvStandWrapper) this.scene.remove(this.tvStandWrapper)
+    if (this.shoeRackWrapper) this.scene.remove(this.shoeRackWrapper)
+    if (this.bedsideTableWrapper) this.scene.remove(this.bedsideTableWrapper)
+  }
 
   /** Floor plane Y so the model bottom sits on it. Must match floor mesh position. */
   private static readonly FLOOR_Y = -90 * CM
@@ -189,9 +233,40 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
   deskHeightCm = signal(75)
   deskDepthCm = signal(60)
   deskColor = signal('#d2b48c')
+  deskTopOverhangCm = signal(0)
   legroomPosition = signal(0)
   selectedColumnIndex = signal(0)
   columnCount = signal(0)
+
+  // ——— TvStand state ———
+  tvStandWidthCm = signal(150)
+  tvStandHeightCm = signal(60)
+  tvStandDepthCm = signal(40)
+  tvStandColor = signal('#d2b48c')
+  tvStandWithBack = signal(true)
+  tvStandStyle = signal<RowStyle>('grid')
+  selectedTvColumnIndex = signal(0)
+  tvColumnCount = signal(0)
+
+  // ——— ShoeRack state ———
+  shoeRackWidthCm = signal(120)
+  shoeRackDepthCm = signal(30)
+  shoeRackDefaultHeightCm = signal(60)
+  shoeRackColor = signal('#d2b48c')
+  shoeRackWithBack = signal(true)
+  selectedShoeColumnIndex = signal(0)
+  shoeColumnCount = signal(0)
+
+  // ——— BedsideTable state ———
+  bedsideWidthCm = signal(45)
+  bedsideHeightCm = signal(60)
+  bedsideDepthCm = signal(40)
+  bedsideDensity = signal(50)
+  bedsideTopOverhangCm = signal(Math.round(1.5))
+  bedsideColor = signal('#d2b48c')
+  bedsideWithBack = signal(true)
+  selectedBedsideColumnIndex = signal(0)
+  bedsideColumnCount = signal(0)
 
   /** When true, overlay dimension labels (overall + per-cell) on the 3D view. */
   showDimensions = signal(false)
@@ -219,7 +294,12 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
   }
 
   private updateCameraForModel() {
-    const activeWrapper = this.modelType() === 'Bookcase' ? this.bookcaseWrapper : this.deskWrapper;
+    const activeWrapper =
+      this.modelType() === 'Bookcase' ? this.bookcaseWrapper
+      : this.modelType() === 'TvStand' ? this.tvStandWrapper
+      : this.modelType() === 'ShoeRack' ? this.shoeRackWrapper
+      : this.modelType() === 'BedsideTable' ? this.bedsideTableWrapper
+      : this.deskWrapper;
     if (!activeWrapper || !this.camera || !this.renderer) return;
 
     const box = new THREE.Box3().setFromObject(activeWrapper)
@@ -229,7 +309,15 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
     box.getCenter(center)
 
     // Keep camera view from dropping below the default model height
-    const baseH = this.modelType() === 'Bookcase' ? this.baseShelfHeightCm : this.baseDeskHeightCm;
+    const baseH = this.modelType() === 'Bookcase'
+      ? this.baseShelfHeightCm
+      : this.modelType() === 'TvStand'
+      ? this.tvStandHeightCm()
+      : this.modelType() === 'ShoeRack'
+      ? this.shoeRackDefaultHeightCm()
+      : this.modelType() === 'BedsideTable'
+      ? this.bedsideHeightCm()
+      : this.baseDeskHeightCm;
     const defaultHeightCenterY = DesignConfigurator.FLOOR_Y + (baseH * CM) / 2
     if (size.y < baseH * CM) {
       center.y = Math.max(center.y, defaultHeightCenterY)
@@ -237,7 +325,8 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
 
     const targetFill = 0.88
     const safety = 1.02
-    const furtherBack = 1.18
+    // BedsideTable is small so pull camera further back to avoid it feeling too close
+    const furtherBack = this.modelType() === 'BedsideTable' ? 1.8 : 1.18
 
     const vFov = THREE.MathUtils.degToRad(this.camera.fov)
     const canvasW = this.renderer.domElement.clientWidth
@@ -253,7 +342,11 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
     const idealDistance = Math.max(distForHeight, distForWidth) * safety * furtherBack
 
     // Minimum distance so smaller models don't get zoomed in excessively
-    const refW = this.modelType() === 'Bookcase' ? this.baseShelfWidthCm * CM : this.baseDeskWidthCm * CM
+    const refW = this.modelType() === 'Bookcase' ? this.baseShelfWidthCm * CM
+      : this.modelType() === 'TvStand' ? this.tvStandWidthCm() * CM
+      : this.modelType() === 'ShoeRack' ? this.shoeRackWidthCm() * CM
+      : this.modelType() === 'BedsideTable' ? this.bedsideWidthCm() * CM
+      : this.baseDeskWidthCm * CM
     const refH = baseH * CM
     const minDistForHeight = refH / (2 * targetFill * Math.tan(vFov / 2))
     const minDistForWidth = refW / (2 * targetFill * Math.tan(hFov / 2))
@@ -293,8 +386,7 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
 
   private createDesk(options?: { color?: string }) {
     if (!this.scene) return
-    if (this.deskWrapper) this.scene.remove(this.deskWrapper)
-    if (this.bookcaseWrapper) this.scene.remove(this.bookcaseWrapper)
+    this.removeAllModelWrappers()
 
     const colorHex = options?.color ?? this.deskColor()
     const material = new THREE.MeshStandardMaterial({ color: new THREE.Color(colorHex) })
@@ -334,9 +426,17 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
   /** Apply product from API to component state; then call createModel(). */
   private applyProductConfig(product: Product): void {
     this.modelType.set(product.category)
-    const cfg = product.modelConfig
-    if (product.category === 'Bookcase') {
-      const c = cfg as BookcaseModelConfig
+    this.applyConfig(product.category, product.modelConfig)
+  }
+
+  /**
+   * Applies a model configuration to the component's internal state (signals).
+   * Note: complex nested configs like rowConfigs/columnConfigs are handled 
+   * during model building (createBookcase/createDesk).
+   */
+  private applyConfig(category: ProductCategory, config: BookcaseModelConfig | DeskModelConfig | TvStandModelConfig | ShoeRackModelConfig | BedsideTableModelConfig): void {
+    if (category === 'Bookcase') {
+      const c = config as BookcaseModelConfig
       this.bookcaseWidthCm.set(c.widthCm)
       this.bookcaseHeightCm.set(c.heightCm)
       this.bookcaseDepthCm.set(c.depthCm)
@@ -346,15 +446,35 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
       this.withBack.set(c.withBack)
       this.topStorageConfig.set(c.topStorage)
       this.bottomStorageConfig.set(c.bottomStorage)
-      // rowConfigs applied when building shelf
+    } else if (category === 'TvStand') {
+      const c = config as TvStandModelConfig
+      this.tvStandWidthCm.set(c.widthCm)
+      this.tvStandHeightCm.set(c.heightCm)
+      this.tvStandDepthCm.set(c.depthCm)
+      this.tvStandColor.set(c.color)
+      this.tvStandWithBack.set(c.withBack)
+      this.tvStandStyle.set(c.style as RowStyle)
+    } else if (category === 'ShoeRack') {
+      const c = config as ShoeRackModelConfig
+      this.shoeRackWidthCm.set(c.widthCm)
+      this.shoeRackDepthCm.set(c.depthCm)
+      this.shoeRackColor.set(c.color)
+      this.shoeRackWithBack.set(c.withBack)
+    } else if (category === 'BedsideTable') {
+      const c = config as BedsideTableModelConfig
+      this.bedsideWidthCm.set(c.widthCm)
+      this.bedsideHeightCm.set(c.heightCm)
+      this.bedsideDepthCm.set(c.depthCm)
+      this.bedsideColor.set(c.color)
+      this.bedsideWithBack.set(c.withBack)
+      this.bedsideDensity.set(c.density)
     } else {
-      const c = cfg as DeskModelConfig
+      const c = config as DeskModelConfig
       this.deskWidthCm.set(c.widthCm)
       this.deskHeightCm.set(c.heightCm)
       this.deskDepthCm.set(c.depthCm)
       this.deskColor.set(c.color)
       this.legroomPosition.set(c.legroomPosition)
-      // columnConfigs applied when building desk
     }
   }
 
@@ -363,12 +483,16 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
     this.modelLoaded.set(false)
     if (this.modelType() === 'Bookcase') {
       this.createBookcase()
-      this.updateCameraForModel()
+    } else if (this.modelType() === 'TvStand') {
+      this.createTvStand()
+    } else if (this.modelType() === 'ShoeRack') {
+      this.createShoeRack()
+    } else if (this.modelType() === 'BedsideTable') {
+      this.createBedsideTable()
     } else {
       this.createDesk()
-      this.updateCameraForModel()
     }
-    // Mark model ready after first paint (skeleton hides)
+    this.updateCameraForModel()
     requestAnimationFrame(() => {
       requestAnimationFrame(() => this.modelLoaded.set(true))
     })
@@ -376,8 +500,7 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
 
   private createBookcase(options?: { withBack?: boolean; color?: string }) {
     if (!this.scene) return
-    if (this.bookcaseWrapper) this.scene.remove(this.bookcaseWrapper)
-    if (this.deskWrapper) this.scene.remove(this.deskWrapper)
+    this.removeAllModelWrappers()
 
     const colorHex = options?.color ?? this.bookcaseColor()
     const material = new THREE.MeshStandardMaterial({ color: new THREE.Color(colorHex) })
@@ -409,6 +532,97 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
   }
 
 
+
+  private createTvStand(options?: { withBack?: boolean; color?: string }) {
+    if (!this.scene) return
+    this.removeAllModelWrappers()
+
+    const colorHex = options?.color ?? this.tvStandColor()
+    const material = new THREE.MeshStandardMaterial({ color: new THREE.Color(colorHex) })
+    const tvStand = new TvStand(
+      this.tvStandWidthCm() * CM,
+      this.tvStandHeightCm() * CM,
+      this.tvStandDepthCm() * CM,
+      2 * CM,
+      { x: 0, y: 0, z: 0 },
+      material,
+      600,
+      options?.withBack ?? this.tvStandWithBack()
+    )
+    this.tvStand = tvStand
+    this.tvStand.setRowStyle(this.tvStandStyle())
+    const productVal = this.product()
+    if (this.modelType() === 'TvStand' && productVal?.category === 'TvStand' && productVal.modelConfig) {
+      const c = productVal.modelConfig as TvStandModelConfig
+      c.columnConfigs.forEach((cc, i) => this.tvStand.setColumnConfig(i, cc))
+    }
+    this.tvStandWrapper = new THREE.Group()
+    this.tvStandWrapper.position.set(0, DesignConfigurator.FLOOR_Y, this.wallZ + this.wallMargin)
+    this.tvStandWrapper.add(this.tvStand.build())
+    this.scene.add(this.tvStandWrapper)
+    this.tvColumnCount.set(this.tvStand.getColumns())
+  }
+
+  private createShoeRack(options?: { withBack?: boolean; color?: string }) {
+    if (!this.scene) return
+    this.removeAllModelWrappers()
+
+    const colorHex = options?.color ?? this.shoeRackColor()
+    const material = new THREE.MeshStandardMaterial({ color: new THREE.Color(colorHex) })
+    const shoeRack = new ShoeRack(
+      this.shoeRackWidthCm() * CM,
+      this.shoeRackDepthCm() * CM,
+      2 * CM,
+      { x: 0, y: 0, z: 0 },
+      material,
+      900,
+      options?.withBack ?? this.shoeRackWithBack()
+    )
+    this.shoeRack = shoeRack
+    const productVal = this.product()
+    if (this.modelType() === 'ShoeRack' && productVal?.category === 'ShoeRack' && productVal.modelConfig) {
+      const c = productVal.modelConfig as ShoeRackModelConfig
+      c.columnConfigs.forEach((cc, i) => this.shoeRack.setColumnConfig(i, cc))
+    } else {
+      // Apply current default height to all columns
+      this.shoeRack.setAllColumnsHeight(this.shoeRackDefaultHeightCm())
+    }
+    this.shoeRackWrapper = new THREE.Group()
+    this.shoeRackWrapper.position.set(0, DesignConfigurator.FLOOR_Y, this.wallZ + this.wallMargin)
+    this.shoeRackWrapper.add(this.shoeRack.build())
+    this.scene.add(this.shoeRackWrapper)
+    this.shoeColumnCount.set(this.shoeRack.getColumns())
+  }
+
+  private createBedsideTable(options?: { withBack?: boolean; color?: string }) {
+    if (!this.scene) return
+    this.removeAllModelWrappers()
+
+    const colorHex = options?.color ?? this.bedsideColor()
+    const material = new THREE.MeshStandardMaterial({ color: new THREE.Color(colorHex) })
+    const bedsideTable = new BedsideTable(
+      this.bedsideWidthCm() * CM,
+      this.bedsideHeightCm() * CM,
+      this.bedsideDepthCm() * CM,
+      2 * CM,
+      { x: 0, y: 0, z: 0 },
+      material,
+      1200,
+      options?.withBack ?? this.bedsideWithBack(),
+      this.bedsideDensity()
+    )
+    this.bedsideTable = bedsideTable
+    const productVal = this.product()
+    if (this.modelType() === 'BedsideTable' && productVal?.category === 'BedsideTable' && productVal.modelConfig) {
+      const c = productVal.modelConfig as BedsideTableModelConfig
+      c.columnConfigs.forEach((cc, i) => this.bedsideTable.setColumnConfig(i, cc))
+    }
+    this.bedsideTableWrapper = new THREE.Group()
+    this.bedsideTableWrapper.position.set(0, DesignConfigurator.FLOOR_Y, this.wallZ + this.wallMargin)
+    this.bedsideTableWrapper.add(this.bedsideTable.build())
+    this.scene.add(this.bedsideTableWrapper)
+    this.bedsideColumnCount.set(this.bedsideTable.getColumns())
+  }
 
   // ——— Desk handlers ———
   onWidthChange(value: number) {
@@ -442,6 +656,12 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
     this.deskColor.set(value)
     if (!this.desk) return
     this.desk.setColor(value)
+  }
+
+  onDeskTopOverhangChange(value: number) {
+    this.deskTopOverhangCm.set(value)
+    if (this.desk) this.desk.setTopOverhang(value)
+    this.scheduleCameraUpdate()
   }
 
   onLegroomPositionChange(value: number) {
@@ -619,6 +839,349 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
     this.bookcase.setRowConfig(r, { ...cur, ...next })
   }
 
+  // ——— TvStand handlers ———
+  onTvStandWidthChange(value: number) {
+    this.tvStandWidthCm.set(value)
+    if (this.tvStand) {
+      this.tvStand.setWidth(value * CM)
+      const newCount = this.tvStand.getColumns()
+      this.tvColumnCount.set(newCount)
+      if (this.selectedTvColumnIndex() >= newCount) this.selectedTvColumnIndex.set(Math.max(0, newCount - 1))
+    }
+    this.scheduleCameraUpdate()
+  }
+
+  onTvStandHeightChange(value: number) {
+    this.tvStandHeightCm.set(value)
+    if (this.tvStand) this.tvStand.setHeight(value * CM)
+    this.scheduleCameraUpdate()
+  }
+
+  onTvStandDepthChange(value: number) {
+    this.tvStandDepthCm.set(value)
+    if (this.tvStand) this.tvStand.setDepth(value * CM)
+    this.scheduleCameraUpdate()
+  }
+
+  onTvStandColorChange(value: string) {
+    this.tvStandColor.set(value)
+    if (this.tvStand) this.tvStand.setColor(value)
+  }
+
+  onTvStandBackPanelToggle(enabled: boolean) {
+    this.tvStandWithBack.set(enabled)
+    this.createTvStand({ withBack: enabled })
+  }
+
+  onTvStandStyleChange(value: string | string[] | RowStyle) {
+    const style = (Array.isArray(value) ? value[0] : value) as RowStyle
+    if (!this.TV_STAND_STYLES.includes(style)) return
+    this.tvStandStyle.set(style)
+    if (this.tvStand) this.tvStand.setRowStyle(style)
+  }
+
+  tvColumnIndices(): number[] {
+    const n = this.tvColumnCount()
+    return Array.from({ length: n }, (_, i) => i)
+  }
+
+  selectedTvColumnConfig(): TvColumnConfig | null {
+    if (!this.tvStand) return null
+    const c = this.selectedTvColumnIndex()
+    if (c < 0 || c >= this.tvStand.getColumns()) return null
+    return this.tvStand.getColumnConfig(c)
+  }
+
+  onTvColumnSelect(value: string | string[]) {
+    const v = Array.isArray(value) ? value[0] : value
+    const idx = parseInt(v, 10)
+    if (!Number.isNaN(idx)) this.selectedTvColumnIndex.set(idx)
+  }
+
+  onTvColumnHugeCellChange(enabled: boolean) {
+    if (!this.tvStand) return
+    const c = this.selectedTvColumnIndex()
+    const cur = this.tvStand.getColumnConfig(c)
+    this.tvStand.setColumnConfig(c, { ...cur, hugeCell: enabled })
+  }
+
+  onTvColumnDoorsChange(value: string | string[]) {
+    const v = (Array.isArray(value) ? value[0] : value) as RowFill
+    if (!this.tvStand || (v !== 'none' && v !== 'some' && v !== 'all')) return
+    const c = this.selectedTvColumnIndex()
+    const cur = this.tvStand.getColumnConfig(c)
+    const next: Partial<TvColumnConfig> = { doors: v }
+    if (v === 'all') next.drawers = 'none'
+    this.tvStand.setColumnConfig(c, { ...cur, ...next })
+  }
+
+  onTvColumnDrawersChange(value: string | string[]) {
+    const v = (Array.isArray(value) ? value[0] : value) as RowFill
+    if (!this.tvStand || (v !== 'none' && v !== 'some' && v !== 'all')) return
+    const c = this.selectedTvColumnIndex()
+    const cur = this.tvStand.getColumnConfig(c)
+    const next: Partial<TvColumnConfig> = { drawers: v }
+    if (v === 'all') next.doors = 'none'
+    this.tvStand.setColumnConfig(c, { ...cur, ...next })
+  }
+
+  // ——— ShoeRack handlers ———
+  onShoeRackWidthChange(value: number) {
+    this.shoeRackWidthCm.set(value)
+    if (this.shoeRack) {
+      this.shoeRack.setWidth(value * CM)
+      const newCount = this.shoeRack.getColumns()
+      this.shoeColumnCount.set(newCount)
+      if (this.selectedShoeColumnIndex() >= newCount)
+        this.selectedShoeColumnIndex.set(Math.max(0, newCount - 1))
+    }
+    this.scheduleCameraUpdate()
+  }
+
+  onShoeRackDepthChange(value: number) {
+    this.shoeRackDepthCm.set(value)
+    if (this.shoeRack) this.shoeRack.setDepth(value * CM)
+    this.scheduleCameraUpdate()
+  }
+
+  onShoeRackColorChange(value: string) {
+    this.shoeRackColor.set(value)
+    if (this.shoeRack) this.shoeRack.setColor(value)
+  }
+
+  onShoeRackBackPanelToggle(enabled: boolean) {
+    this.shoeRackWithBack.set(enabled)
+    this.createShoeRack({ withBack: enabled })
+  }
+
+  shoeColumnIndices(): number[] {
+    const n = this.shoeColumnCount()
+    return Array.from({ length: n }, (_, i) => i)
+  }
+
+  selectedShoeColumnConfig(): ShoeColumnConfig | null {
+    if (!this.shoeRack) return null
+    const c = this.selectedShoeColumnIndex()
+    if (c < 0 || c >= this.shoeRack.getColumns()) return null
+    return this.shoeRack.getColumnConfig(c)
+  }
+
+  onShoeColumnSelect(value: string | string[]) {
+    const v = Array.isArray(value) ? value[0] : value
+    const idx = parseInt(v, 10)
+    if (!Number.isNaN(idx)) this.selectedShoeColumnIndex.set(idx)
+  }
+
+  onShoeColumnHeightChange(value: number) {
+    if (!this.shoeRack) return
+    const c = this.selectedShoeColumnIndex()
+    const cur = this.shoeRack.getColumnConfig(c)
+    this.shoeRack.setColumnConfig(c, { ...cur, heightCm: value })
+    this.scheduleCameraUpdate()
+  }
+
+  onShoeColumnHugeCellChange(enabled: boolean) {
+    if (!this.shoeRack) return
+    const c = this.selectedShoeColumnIndex()
+    const cur = this.shoeRack.getColumnConfig(c)
+    this.shoeRack.setColumnConfig(c, { ...cur, hugeCell: enabled })
+  }
+
+  onShoeColumnDoorsChange(value: string | string[]) {
+    const v = (Array.isArray(value) ? value[0] : value) as RowFill
+    if (!this.shoeRack || (v !== 'none' && v !== 'some' && v !== 'all')) return
+    const c = this.selectedShoeColumnIndex()
+    const cur = this.shoeRack.getColumnConfig(c)
+    const next: Partial<ShoeColumnConfig> = { doors: v }
+    if (v === 'all') next.drawers = 'none'
+    this.shoeRack.setColumnConfig(c, { ...cur, ...next })
+  }
+
+  onShoeColumnDrawersChange(value: string | string[]) {
+    const v = (Array.isArray(value) ? value[0] : value) as RowFill
+    if (!this.shoeRack || (v !== 'none' && v !== 'some' && v !== 'all')) return
+    const c = this.selectedShoeColumnIndex()
+    const cur = this.shoeRack.getColumnConfig(c)
+    const next: Partial<ShoeColumnConfig> = { drawers: v }
+    if (v === 'all') next.doors = 'none'
+    this.shoeRack.setColumnConfig(c, { ...cur, ...next })
+  }
+
+  onShoeRackDefaultHeightChange(value: number) {
+    this.shoeRackDefaultHeightCm.set(value)
+    if (this.shoeRack) this.shoeRack.setAllColumnsHeight(value)
+    this.scheduleCameraUpdate()
+  }
+
+
+  // ——— BedsideTable handlers ———
+  onBedsideWidthChange(value: number) {
+    this.bedsideWidthCm.set(value)
+    if (this.bedsideTable) {
+      this.bedsideTable.setWidth(value * CM)
+      const newCount = this.bedsideTable.getColumns()
+      this.bedsideColumnCount.set(newCount)
+      if (this.selectedBedsideColumnIndex() >= newCount)
+        this.selectedBedsideColumnIndex.set(Math.max(0, newCount - 1))
+    }
+    this.scheduleCameraUpdate()
+  }
+
+  onBedsideHeightChange(value: number) {
+    this.bedsideHeightCm.set(value)
+    if (this.bedsideTable) this.bedsideTable.setHeight(value * CM)
+    this.scheduleCameraUpdate()
+  }
+
+  onBedsideDepthChange(value: number) {
+    this.bedsideDepthCm.set(value)
+    if (this.bedsideTable) this.bedsideTable.setDepth(value * CM)
+    this.scheduleCameraUpdate()
+  }
+
+  onBedsideDensityChange(value: number) {
+    this.bedsideDensity.set(value)
+    if (this.bedsideTable) this.bedsideTable.setDensity(value)
+  }
+
+  onBedsideTopOverhangChange(value: number) {
+    this.bedsideTopOverhangCm.set(value)
+    if (this.bedsideTable) this.bedsideTable.setTopOverhang(value)
+    this.scheduleCameraUpdate()
+  }
+
+  onBedsideColorChange(value: string) {
+    this.bedsideColor.set(value)
+    if (this.bedsideTable) this.bedsideTable.setColor(value)
+  }
+
+  onBedsideBackPanelToggle(enabled: boolean) {
+    this.bedsideWithBack.set(enabled)
+    this.createBedsideTable({ withBack: enabled })
+  }
+
+  bedsideColumnIndices(): number[] {
+    const n = this.bedsideColumnCount()
+    return Array.from({ length: n }, (_, i) => i)
+  }
+
+  selectedBedsideColumnConfig(): BedsideColumnConfig | null {
+    if (!this.bedsideTable) return null
+    const c = this.selectedBedsideColumnIndex()
+    if (c < 0 || c >= this.bedsideTable.getColumns()) return null
+    return this.bedsideTable.getColumnConfig(c)
+  }
+
+  onBedsideColumnSelect(value: string | string[]) {
+    const v = Array.isArray(value) ? value[0] : value
+    const idx = parseInt(v, 10)
+    if (!Number.isNaN(idx)) this.selectedBedsideColumnIndex.set(idx)
+  }
+
+  onBedsideColumnHugeCellChange(enabled: boolean) {
+    if (!this.bedsideTable) return
+    const c = this.selectedBedsideColumnIndex()
+    const cur = this.bedsideTable.getColumnConfig(c)
+    this.bedsideTable.setColumnConfig(c, { ...cur, hugeCell: enabled })
+  }
+
+  onBedsideColumnDoorsChange(value: string | string[]) {
+    const v = (Array.isArray(value) ? value[0] : value) as RowFill
+    if (!this.bedsideTable || (v !== 'none' && v !== 'some' && v !== 'all')) return
+    const c = this.selectedBedsideColumnIndex()
+    const cur = this.bedsideTable.getColumnConfig(c)
+    const next: Partial<BedsideColumnConfig> = { doors: v }
+    if (v === 'all') next.drawers = 'none'
+    this.bedsideTable.setColumnConfig(c, { ...cur, ...next })
+  }
+
+  onBedsideColumnDrawersChange(value: string | string[]) {
+    const v = (Array.isArray(value) ? value[0] : value) as RowFill
+    if (!this.bedsideTable || (v !== 'none' && v !== 'some' && v !== 'all')) return
+    const c = this.selectedBedsideColumnIndex()
+    const cur = this.bedsideTable.getColumnConfig(c)
+    const next: Partial<BedsideColumnConfig> = { drawers: v }
+    if (v === 'all') next.doors = 'none'
+    this.bedsideTable.setColumnConfig(c, { ...cur, ...next })
+  }
+
+  /**
+   * Returns the current configuration describing the model and its options,
+   * which can be saved to the backend or loaded later.
+   */
+  public getModelConfig(): ProductModelConfig | null {
+    if (this.modelType() === 'Bookcase' && this.bookcase) {
+      return {
+        category: 'Bookcase',
+        modelConfig: {
+          widthCm: this.bookcaseWidthCm(),
+          heightCm: this.bookcaseHeightCm(),
+          depthCm: this.bookcaseDepthCm(),
+          color: this.bookcaseColor(),
+          style: this.bookcaseStyle(),
+          density: this.bookcaseDensity(),
+          withBack: this.withBack(),
+          topStorage: this.topStorageConfig(),
+          bottomStorage: this.bottomStorageConfig(),
+          rowConfigs: this.bookcase.getRowConfigs(),
+        }
+      }
+    } else if (this.modelType() === 'Desk' && this.desk) {
+      return {
+        category: 'Desk',
+        modelConfig: {
+          widthCm: this.deskWidthCm(),
+          heightCm: this.deskHeightCm(),
+          depthCm: this.deskDepthCm(),
+          color: this.deskColor(),
+          legroomPosition: this.legroomPosition(),
+          columnConfigs: this.desk.getColumnConfigs(),
+        }
+      }
+    } else if (this.modelType() === 'TvStand' && this.tvStand) {
+      return {
+        category: 'TvStand',
+        modelConfig: {
+          widthCm: this.tvStandWidthCm(),
+          heightCm: this.tvStandHeightCm(),
+          depthCm: this.tvStandDepthCm(),
+          color: this.tvStandColor(),
+          edgeColor: '#ffffff',
+          style: this.tvStandStyle(),
+          withBack: this.tvStandWithBack(),
+          columnConfigs: this.tvStand.getColumnConfigs(),
+        }
+      }
+    } else if (this.modelType() === 'ShoeRack' && this.shoeRack) {
+      return {
+        category: 'ShoeRack',
+        modelConfig: {
+          widthCm: this.shoeRackWidthCm(),
+          depthCm: this.shoeRackDepthCm(),
+          color: this.shoeRackColor(),
+          edgeColor: '#ffffff',
+          withBack: this.shoeRackWithBack(),
+          columnConfigs: this.shoeRack.getColumnConfigs(),
+        }
+      }
+    } else if (this.modelType() === 'BedsideTable' && this.bedsideTable) {
+      return {
+        category: 'BedsideTable',
+        modelConfig: {
+          widthCm: this.bedsideWidthCm(),
+          heightCm: this.bedsideHeightCm(),
+          depthCm: this.bedsideDepthCm(),
+          color: this.bedsideColor(),
+          edgeColor: '#ffffff',
+          density: this.bedsideDensity(),
+          withBack: this.bedsideWithBack(),
+          columnConfigs: this.bedsideTable.getColumnConfigs(),
+        }
+      }
+    }
+    return null
+  }
+
   ngAfterViewInit(): void {
     const loadingManager = new THREE.LoadingManager()
 
@@ -640,6 +1203,15 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
       } else if (this.modelType() === 'Desk' && this.desk) {
         this.raycaster.setFromCamera(this.mouse, this.camera)
         this.desk.handleHover(this.raycaster)
+      } else if (this.modelType() === 'TvStand' && this.tvStand) {
+        this.raycaster.setFromCamera(this.mouse, this.camera)
+        this.tvStand.handleHover(this.raycaster)
+      } else if (this.modelType() === 'ShoeRack' && this.shoeRack) {
+        this.raycaster.setFromCamera(this.mouse, this.camera)
+        this.shoeRack.handleHover(this.raycaster)
+      } else if (this.modelType() === 'BedsideTable' && this.bedsideTable) {
+        this.raycaster.setFromCamera(this.mouse, this.camera)
+        this.bedsideTable.handleHover(this.raycaster)
       }
     })
 
@@ -761,6 +1333,9 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
 
         if (this.modelType() === 'Bookcase' && this.bookcase) this.bookcase.update()
         else if (this.modelType() === 'Desk' && this.desk) this.desk.update()
+        else if (this.modelType() === 'TvStand' && this.tvStand) this.tvStand.update()
+        else if (this.modelType() === 'ShoeRack' && this.shoeRack) this.shoeRack.update()
+        else if (this.modelType() === 'BedsideTable' && this.bedsideTable) this.bedsideTable.update()
 
         controls.update()
         this.renderer.render(this.scene, this.camera)
@@ -775,7 +1350,15 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
 
   /** Project model group local position to overlay pixel coordinates; returns null if behind camera. */
   private projectDimensionPoint(localPoint: { x: number; y: number; z: number }): { left: number; top: number } | null {
-    const group = this.modelType() === 'Bookcase' ? this.bookcase?.build() : this.desk?.build()
+    const group = this.modelType() === 'Bookcase'
+      ? this.bookcase?.build()
+      : this.modelType() === 'TvStand'
+      ? this.tvStand?.build()
+      : this.modelType() === 'ShoeRack'
+      ? this.shoeRack?.build()
+      : this.modelType() === 'BedsideTable'
+      ? this.bedsideTable?.build()
+      : this.desk?.build()
     if (!group || !this.camera || !this.renderer) return null
     this.scene.updateMatrixWorld(true)
     this.dimensionProjectionVec.set(localPoint.x, localPoint.y, localPoint.z)
@@ -793,6 +1376,12 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
     const data =
       this.modelType() === 'Bookcase'
         ? this.bookcase?.getDimensionData() ?? null
+        : this.modelType() === 'TvStand'
+        ? this.tvStand?.getDimensionData() ?? null
+        : this.modelType() === 'ShoeRack'
+        ? this.shoeRack?.getDimensionData() ?? null
+        : this.modelType() === 'BedsideTable'
+        ? this.bedsideTable?.getDimensionData() ?? null
         : this.desk?.getDimensionData() ?? null
     if (!data || !this.renderer) return
     if (!data) return

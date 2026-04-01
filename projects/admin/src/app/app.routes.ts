@@ -17,6 +17,14 @@ export const routes: Routes = [
         path: 'home',
         component: Home,
       },
+      {
+        path: 'designs',
+        loadComponent: () => import('./features/designs/designs').then(m => m.Designs),
+      },
+      {
+        path: 'designs/design-studio',
+        loadComponent: () => import('./features/designs/design-studio/design-studio').then(m => m.DesignStudio),
+      },
     ],
   },
 

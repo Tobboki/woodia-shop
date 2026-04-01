@@ -14,12 +14,7 @@
         [height]="dimensionOverlayHeight()" />
     </div>
     <div class="absolute bottom-4 left-4 z-10">
-      <button
-        z-button
-        zType="outline"
-        (click)="showDimensions.set(!showDimensions())"
-        class="rounded-full"
-      >
+      <button z-button zType="outline" (click)="showDimensions.set(!showDimensions())" class="rounded-full">
         <ng-icon [name]="showDimensions() ? 'lucideEyeOff' : 'lucideEye'" class="size-4" />
         {{ showDimensions() ? 'Hide dimensions' : 'Show dimensions' }}
       </button>
@@ -32,7 +27,55 @@
       <h4 class="font-h4 hidden md:block">Design controls</h4>
 
       @if (showControls()) {
-      <!-- Mobile Tabs List -->
+
+      <!-- ===== Top-level tabs: Model / Rows Config / Columns Config ===== -->
+      @if (modelType() === 'Bookcase') {
+      <div class="configurator-main-tabs">
+        <button class="configurator-main-tab" [class.active]="activeMainTab() === 'model'"
+          (click)="setMainTab('model')">Model</button>
+        <button class="configurator-main-tab" [class.active]="activeMainTab() === 'rows'"
+          (click)="setMainTab('rows')">Rows config</button>
+      </div>
+      }
+
+      @if (modelType() === 'Desk') {
+      <div class="configurator-main-tabs">
+        <button class="configurator-main-tab" [class.active]="activeMainTab() === 'model'"
+          (click)="setMainTab('model')">Model</button>
+        <button class="configurator-main-tab" [class.active]="activeMainTab() === 'columns'"
+          (click)="setMainTab('columns')">Columns config</button>
+      </div>
+      }
+
+      @if (modelType() === 'TvStand') {
+      <div class="configurator-main-tabs">
+        <button class="configurator-main-tab" [class.active]="activeMainTab() === 'model'"
+          (click)="setMainTab('model')">Model</button>
+        <button class="configurator-main-tab" [class.active]="activeMainTab() === 'columns'"
+          (click)="setMainTab('columns')">Columns config</button>
+      </div>
+      }
+
+      @if (modelType() === 'ShoeRack') {
+      <div class="configurator-main-tabs">
+        <button class="configurator-main-tab" [class.active]="activeMainTab() === 'model'"
+          (click)="setMainTab('model')">Model</button>
+        <button class="configurator-main-tab" [class.active]="activeMainTab() === 'columns'"
+          (click)="setMainTab('columns')">Columns config</button>
+      </div>
+      }
+
+      @if (modelType() === 'BedsideTable') {
+      <div class="configurator-main-tabs">
+        <button class="configurator-main-tab" [class.active]="activeMainTab() === 'model'"
+          (click)="setMainTab('model')">Model</button>
+        <button class="configurator-main-tab" [class.active]="activeMainTab() === 'columns'"
+          (click)="setMainTab('columns')">Columns config</button>
+      </div>
+      }
+
+      <!-- ===== Mobile sub-tabs (only visible in Model tab) ===== -->
+      @if (activeMainTab() === 'model') {
       <div class="flex md:hidden overflow-x-auto gap-2 pb-2 snap-x no-scrollbar">
         @if (modelType() === 'Bookcase') {
         <button
@@ -61,10 +104,6 @@
           (click)="setControlTab('density')">Density</button>
         <button
           class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
-          [class.bg-black]="activeControlTab() === 'rows'" [class.text-white]="activeControlTab() === 'rows'"
-          (click)="setControlTab('rows')">Row Settings</button>
-        <button
-          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
           [class.bg-black]="activeControlTab() === 'storage'" [class.text-white]="activeControlTab() === 'storage'"
           (click)="setControlTab('storage')">Storage</button>
         }
@@ -91,13 +130,80 @@
           (click)="setControlTab('legroom')">Legroom</button>
         <button
           class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
-          [class.bg-black]="activeControlTab() === 'columns'" [class.text-white]="activeControlTab() === 'columns'"
-          (click)="setControlTab('columns')">Column Settings</button>
+          [class.bg-black]="activeControlTab() === 'overhang'" [class.text-white]="activeControlTab() === 'overhang'"
+          (click)="setControlTab('overhang')">Overhang</button>
+        }
+        @if (modelType() === 'TvStand') {
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'color'" [class.text-white]="activeControlTab() === 'color'"
+          (click)="setControlTab('color')">Color</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'width'" [class.text-white]="activeControlTab() === 'width'"
+          (click)="setControlTab('width')">Width</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'height'" [class.text-white]="activeControlTab() === 'height'"
+          (click)="setControlTab('height')">Height</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'depth'" [class.text-white]="activeControlTab() === 'depth'"
+          (click)="setControlTab('depth')">Depth</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'style'" [class.text-white]="activeControlTab() === 'style'"
+          (click)="setControlTab('style')">Style</button>
+        }
+        @if (modelType() === 'ShoeRack') {
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'color'" [class.text-white]="activeControlTab() === 'color'"
+          (click)="setControlTab('color')">Color</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'width'" [class.text-white]="activeControlTab() === 'width'"
+          (click)="setControlTab('width')">Width</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'height'" [class.text-white]="activeControlTab() === 'height'"
+          (click)="setControlTab('height')">Height</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'depth'" [class.text-white]="activeControlTab() === 'depth'"
+          (click)="setControlTab('depth')">Depth</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'overhang'" [class.text-white]="activeControlTab() === 'overhang'"
+          (click)="setControlTab('overhang')">Top plate</button>
+        }
+        @if (modelType() === 'BedsideTable') {
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'color'" [class.text-white]="activeControlTab() === 'color'"
+          (click)="setControlTab('color')">Color</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'width'" [class.text-white]="activeControlTab() === 'width'"
+          (click)="setControlTab('width')">Width</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'height'" [class.text-white]="activeControlTab() === 'height'"
+          (click)="setControlTab('height')">Height</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'depth'" [class.text-white]="activeControlTab() === 'depth'"
+          (click)="setControlTab('depth')">Depth</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'density'" [class.text-white]="activeControlTab() === 'density'"
+          (click)="setControlTab('density')">Density</button>
         }
       </div>
+      }
 
-      @if (modelType() === 'Bookcase') {
-      <!-- Bookcase custom inputs -->
+      <!-- ===== BOOKCASE – MODEL tab ===== -->
+      @if (modelType() === 'Bookcase' && activeMainTab() === 'model') {
       <div class="space-y-6">
         <div [class.hidden]="activeControlTab() !== 'color'" class="md:block space-y-3">
           <z-form-field>
@@ -152,22 +258,13 @@
             <z-carousel-content class="-ml-2">
               @for (style of styleOptions; track style) {
               <z-carousel-item class="!basis-[88px] !min-w-0 !shrink-0 !grow-0 pl-2">
-                <button
-                  type="button"
+                <button type="button"
                   class="flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-black/50 p-2.5 transition-colors min-h-[72px] w-full"
-                  [class.border-border]="bookcaseStyle() !== style"
-                  [class.bg-muted]="bookcaseStyle() !== style"
-                  [class.border-primary]="bookcaseStyle() === style"
-                  [class.bg-primary]="bookcaseStyle() === style"
+                  [class.border-border]="bookcaseStyle() !== style" [class.bg-muted]="bookcaseStyle() !== style"
+                  [class.border-primary]="bookcaseStyle() === style" [class.bg-primary]="bookcaseStyle() === style"
                   (click)="onStyleChange(style)">
-                  <ng-icon
-                    name="lucideBlocks"
-                    class="size-6"
-                    [class.text-primary]="bookcaseStyle() === style"
-                  />
-                  <span
-                    class="font-label text-xs capitalize"
-                    [class.text-primary]="bookcaseStyle() === style">
+                  <ng-icon name="lucideBlocks" class="size-6" [class.text-primary]="bookcaseStyle() === style" />
+                  <span class="font-label text-xs capitalize" [class.text-primary]="bookcaseStyle() === style">
                     {{ style }}
                   </span>
                 </button>
@@ -187,58 +284,6 @@
             </z-form-control>
           </z-form-field>
         </div>
-
-        @if (rowCount() > 0) {
-        <div [class.hidden]="activeControlTab() !== 'rows'" class="md:block space-y-4">
-          <h5 class="font-label text-foreground/60 hidden md:block">Row settings</h5>
-          <z-form-field>
-            <label class="font-label" z-form-label>Row</label>
-            <z-form-control>
-              <z-select [zPlaceholder]="'Select row'" [zValue]="selectedRowIndex() + ''"
-                (zSelectionChange)="onRowSelect($event)">
-                @for (idx of rowIndices(); track idx) {
-                <z-select-item [zValue]="idx + ''">Row {{ idx + 1 }}</z-select-item>
-                }
-              </z-select>
-            </z-form-control>
-          </z-form-field>
-          @let rowCfg = selectedRowConfig();
-          @if (rowCfg) {
-          <z-form-field>
-            <label class="font-label" z-form-label>Row height</label>
-            <z-form-control>
-              <z-select [zPlaceholder]="'Height'" [zValue]="rowCfg.height"
-                (zSelectionChange)="onRowHeightChange($event)">
-                <z-select-item zValue="sm">Small</z-select-item>
-                <z-select-item zValue="md">Medium</z-select-item>
-                <z-select-item zValue="lg">Large</z-select-item>
-              </z-select>
-            </z-form-control>
-          </z-form-field>
-          <z-form-field>
-            <label class="font-label" z-form-label>Doors</label>
-            <z-form-control>
-              <z-select [zPlaceholder]="'Doors'" [zValue]="rowCfg.doors" (zSelectionChange)="onRowDoorsChange($event)">
-                <z-select-item zValue="none">None</z-select-item>
-                <z-select-item zValue="some">Some</z-select-item>
-                <z-select-item zValue="all">Max</z-select-item>
-              </z-select>
-            </z-form-control>
-          </z-form-field>
-          <z-form-field>
-            <label class="font-label" z-form-label>Drawers</label>
-            <z-form-control>
-              <z-select [zPlaceholder]="'Drawers'" [zValue]="rowCfg.drawers"
-                (zSelectionChange)="onRowDrawersChange($event)">
-                <z-select-item zValue="none">None</z-select-item>
-                <z-select-item zValue="some">Some</z-select-item>
-                <z-select-item zValue="all">Max</z-select-item>
-              </z-select>
-            </z-form-control>
-          </z-form-field>
-          }
-        </div>
-        }
 
         <div [class.hidden]="activeControlTab() !== 'storage'" class="md:block space-y-4">
           <h5 class="font-label text-foreground/60 hidden md:block">Storage Options</h5>
@@ -280,8 +325,75 @@
       </div>
       }
 
-      @if (modelType() === 'Desk') {
-      <!-- Desk custom inputs -->
+      <!-- ===== BOOKCASE – ROWS CONFIG tab ===== -->
+      @if (modelType() === 'Bookcase' && activeMainTab() === 'rows') {
+      <div class="space-y-5">
+        @if (rowCount() > 0) {
+        <!-- Row pill tabs -->
+        <div>
+          <h5 class="font-label text-foreground/60 mb-3">Select row</h5>
+          <div class="flex flex-wrap gap-2">
+            @for (idx of rowIndices(); track idx) {
+            <button type="button" class="configurator-index-tab" [class.active]="selectedRowIndex() === idx"
+              (click)="onRowSelect(idx + '')">
+              @if (idx === rowCount() - 1 && rowCount() > 3) {
+              Row {{ idx + 1 }}
+              } @else {
+              {{ idx + 1 }}
+              }
+            </button>
+            }
+          </div>
+        </div>
+
+        <!-- Row settings for selected row -->
+        @let rowCfg = selectedRowConfig();
+        @if (rowCfg) {
+        <div class="space-y-4 pt-2 border-t border-border">
+          <h5 class="font-label text-foreground/60">Row {{ selectedRowIndex() + 1 }} settings</h5>
+          <z-form-field>
+            <label class="font-label" z-form-label>Row height</label>
+            <z-form-control>
+              <z-select [zPlaceholder]="'Height'" [zValue]="rowCfg.height"
+                (zSelectionChange)="onRowHeightChange($event)">
+                <z-select-item zValue="sm">Small</z-select-item>
+                <z-select-item zValue="md">Medium</z-select-item>
+                <z-select-item zValue="lg">Large</z-select-item>
+              </z-select>
+            </z-form-control>
+          </z-form-field>
+          <z-form-field>
+            <label class="font-label" z-form-label>Doors</label>
+            <z-form-control>
+              <z-select [zPlaceholder]="'Doors'" [zValue]="rowCfg.doors" (zSelectionChange)="onRowDoorsChange($event)">
+                <z-select-item zValue="none">None</z-select-item>
+                <z-select-item zValue="some">Some</z-select-item>
+                <z-select-item zValue="all">Max</z-select-item>
+              </z-select>
+            </z-form-control>
+          </z-form-field>
+          <z-form-field>
+            <label class="font-label" z-form-label>Drawers</label>
+            <z-form-control>
+              <z-select [zPlaceholder]="'Drawers'" [zValue]="rowCfg.drawers"
+                (zSelectionChange)="onRowDrawersChange($event)">
+                <z-select-item zValue="none">None</z-select-item>
+                <z-select-item zValue="some">Some</z-select-item>
+                <z-select-item zValue="all">Max</z-select-item>
+              </z-select>
+            </z-form-control>
+          </z-form-field>
+        </div>
+        }
+        } @else {
+        <p class="font-caption text-foreground/50 text-sm">No rows available. Adjust the bookcase height to add rows.
+        </p>
+        }
+      </div>
+      }
+
+      <!-- ===== DESK – MODEL tab ===== -->
+      @if (modelType() === 'Desk' && activeMainTab() === 'model') {
       <div class="space-y-6">
         <div [class.hidden]="activeControlTab() !== 'color'" class="md:block space-y-3">
           <h5 class="font-label text-foreground/60 hidden md:block">Color</h5>
@@ -298,7 +410,8 @@
           </z-form-field>
         </div>
 
-        <div [class.hidden]="!['width', 'height', 'depth'].includes(activeControlTab())" class="md:block space-y-4">
+        <div [class.hidden]="!['width', 'height', 'depth', 'overhang'].includes(activeControlTab())"
+          class="md:block space-y-4">
           <h5 class="font-label text-foreground/60 hidden md:block">Dimensions (cm)</h5>
           <div [class.hidden]="activeControlTab() !== 'width'" class="md:block">
             <z-form-field>
@@ -327,6 +440,17 @@
               </z-form-control>
             </z-form-field>
           </div>
+          <div [class.hidden]="activeControlTab() !== 'overhang'" class="md:block">
+            <z-form-field>
+              <label class="font-label" z-form-label>Tabletop overhang ({{ deskTopOverhangCm() }} cm)</label>
+              <z-form-control>
+                <z-slider [zMin]="0" [zMax]="10" [zDefault]="deskTopOverhangCm()" [zValue]="deskTopOverhangCm()"
+                  [zStep]="1" (zSlideIndexChange)="onDeskTopOverhangChange($event)"></z-slider>
+              </z-form-control>
+              <p class="font-caption text-foreground/50 mt-1">0 = flush with legs &nbsp;|&nbsp; higher = tabletop
+                extends beyond legs.</p>
+            </z-form-field>
+          </div>
         </div>
 
         <div [class.hidden]="activeControlTab() !== 'legroom'" class="md:block space-y-4">
@@ -340,23 +464,35 @@
               columnCount() }} = rightmost).</p>
           </z-form-field>
         </div>
+      </div>
+      }
 
+      <!-- ===== DESK – COLUMNS CONFIG tab ===== -->
+      @if (modelType() === 'Desk' && activeMainTab() === 'columns') {
+      <div class="space-y-5">
         @if (columnCount() > 0) {
-        <div [class.hidden]="activeControlTab() !== 'columns'" class="md:block space-y-4">
-          <h5 class="font-label text-foreground/60 hidden md:block">Column settings</h5>
-          <z-form-field>
-            <label class="font-label" z-form-label>Column</label>
-            <z-form-control>
-              <z-select [zPlaceholder]="'Select column'" [zValue]="selectedColumnIndex() + ''"
-                (zSelectionChange)="onColumnSelect($event)">
-                @for (idx of columnIndices(); track idx) {
-                <z-select-item [zValue]="idx + ''">Column {{ idx + 1 }}</z-select-item>
-                }
-              </z-select>
-            </z-form-control>
-          </z-form-field>
-          @let cfg = selectedColumnConfig();
-          @if (cfg) {
+        <!-- Column pill tabs -->
+        <div>
+          <h5 class="font-label text-foreground/60 mb-3">Select column</h5>
+          <div class="flex flex-wrap gap-2">
+            @for (idx of columnIndices(); track idx) {
+            <button type="button" class="configurator-index-tab" [class.active]="selectedColumnIndex() === idx"
+              (click)="onColumnSelect(idx + '')">
+              @if (idx === columnCount() - 1 && columnCount() > 3) {
+              Column {{ idx + 1 }}
+              } @else {
+              {{ idx + 1 }}
+              }
+            </button>
+            }
+          </div>
+        </div>
+
+        <!-- Column settings for selected column -->
+        @let cfg = selectedColumnConfig();
+        @if (cfg) {
+        <div class="space-y-4 pt-2 border-t border-border">
+          <h5 class="font-label text-foreground/60">Column {{ selectedColumnIndex() + 1 }} settings</h5>
           <z-form-field>
             <label class="font-label" z-form-label>Doors</label>
             <z-form-control>
@@ -379,12 +515,428 @@
               </z-select>
             </z-form-control>
           </z-form-field>
-          }
         </div>
+        }
+        } @else {
+        <p class="font-caption text-foreground/50 text-sm">No columns available. Adjust the desk width to add columns.
+        </p>
         }
       </div>
       }
+
+      <!-- ===== TVSTAND – MODEL tab ===== -->
+      @if (modelType() === 'TvStand' && activeMainTab() === 'model') {
+      <div class="space-y-6">
+        <div [class.hidden]="activeControlTab() !== 'color'" class="md:block space-y-3">
+          <z-form-field>
+            <label class="font-label" z-form-label>Color</label>
+            <div class="flex flex-wrap gap-2 pt-1">
+              @for (c of FURNITURE_COLORS; track c.name) {
+              <button type="button" class="size-8 rounded-full border-2 transition-transform shadow-sm"
+                [class.border-primary]="tvStandColor() === c.value"
+                [class.border-transparent]="tvStandColor() !== c.value" [class.scale-110]="tvStandColor() === c.value"
+                [style.background-color]="c.value" (click)="onTvStandColorChange(c.value)" [title]="c.name"></button>
+              }
+            </div>
+          </z-form-field>
+        </div>
+
+        <div [class.hidden]="!['width', 'height', 'depth'].includes(activeControlTab())" class="md:block space-y-4">
+          <h5 class="font-label text-foreground/60 hidden md:block">Dimensions (cm)</h5>
+          <div [class.hidden]="activeControlTab() !== 'width'" class="md:block">
+            <z-form-field>
+              <label class="font-label" z-form-label>Width ({{ tvStandWidthCm() }} cm)</label>
+              <z-form-control>
+                <z-slider [zMin]="60" [zMax]="400" [zDefault]="tvStandWidthCm()" [zValue]="tvStandWidthCm()" [zStep]="1"
+                  (zSlideIndexChange)="onTvStandWidthChange($event)"></z-slider>
+              </z-form-control>
+            </z-form-field>
+          </div>
+          <div [class.hidden]="activeControlTab() !== 'height'" class="md:block">
+            <z-form-field>
+              <label class="font-label" z-form-label>Height ({{ tvStandHeightCm() }} cm)</label>
+              <z-form-control>
+                <z-slider [zMin]="30" [zMax]="120" [zDefault]="tvStandHeightCm()" [zValue]="tvStandHeightCm()"
+                  [zStep]="1" (zSlideIndexChange)="onTvStandHeightChange($event)"></z-slider>
+              </z-form-control>
+            </z-form-field>
+          </div>
+          <div [class.hidden]="activeControlTab() !== 'depth'" class="md:block">
+            <z-form-field>
+              <label class="font-label" z-form-label>Depth ({{ tvStandDepthCm() }} cm)</label>
+              <z-form-control>
+                <z-slider [zMin]="30" [zMax]="60" [zDefault]="tvStandDepthCm()" [zValue]="tvStandDepthCm()" [zStep]="1"
+                  (zSlideIndexChange)="onTvStandDepthChange($event)"></z-slider>
+              </z-form-control>
+            </z-form-field>
+          </div>
+        </div>
+
+        <div [class.hidden]="activeControlTab() !== 'style'" class="md:block space-y-3">
+          <h5 class="font-label text-foreground/60 hidden md:block">Style</h5>
+          <z-carousel zControls="none" [zOptions]="{ align: 'start', containScroll: 'trimSnaps' }" class="w-full">
+            <z-carousel-content class="-ml-2">
+              @for (style of TV_STAND_STYLES; track style) {
+              <z-carousel-item class="!basis-[88px] !min-w-0 !shrink-0 !grow-0 pl-2">
+                <button type="button"
+                  class="flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 p-2.5 transition-colors min-h-[72px] w-full"
+                  [class.border-border]="tvStandStyle() !== style" [class.bg-muted]="tvStandStyle() !== style"
+                  [class.border-primary]="tvStandStyle() === style" [class.bg-primary]="tvStandStyle() === style"
+                  (click)="onTvStandStyleChange(style)">
+                  <ng-icon name="lucideBlocks" class="size-6" />
+                  <span class="font-label text-xs capitalize">{{ style }}</span>
+                </button>
+              </z-carousel-item>
+              }
+            </z-carousel-content>
+          </z-carousel>
+        </div>
+
+        <z-form-field class="md:block">
+          <z-form-control class="flex items-center">
+            <z-checkbox [ngModel]="tvStandWithBack()" (ngModelChange)="onTvStandBackPanelToggle($event)" zShape="circle"
+              zSize="lg">Back panel</z-checkbox>
+          </z-form-control>
+        </z-form-field>
+      </div>
       }
+
+      <!-- ===== TVSTAND – COLUMNS CONFIG tab ===== -->
+      @if (modelType() === 'TvStand' && activeMainTab() === 'columns') {
+      <div class="space-y-5">
+        @if (tvColumnCount() > 0) {
+        <!-- Column pill tabs -->
+        <div>
+          <h5 class="font-label text-foreground/60 mb-3">Select column</h5>
+          <div class="flex flex-wrap gap-2">
+            @for (idx of tvColumnIndices(); track idx) {
+            <button type="button" class="configurator-index-tab" [class.active]="selectedTvColumnIndex() === idx"
+              (click)="onTvColumnSelect(idx + '')">
+              @if (idx === tvColumnCount() - 1 && tvColumnCount() > 3) {
+              Col {{ idx + 1 }}
+              } @else {
+              {{ idx + 1 }}
+              }
+            </button>
+            }
+          </div>
+        </div>
+
+        <!-- Column settings -->
+        @let tvCfg = selectedTvColumnConfig();
+        @if (tvCfg) {
+        <div class="space-y-4 pt-2 border-t border-border">
+          <h5 class="font-label text-foreground/60">Column {{ selectedTvColumnIndex() + 1 }} settings</h5>
+          <z-form-field>
+            <z-form-control class="flex items-center">
+              <z-checkbox [ngModel]="tvCfg.hugeCell" (ngModelChange)="onTvColumnHugeCellChange($event)" zShape="circle"
+                zSize="lg">Huge cell (no shelves)</z-checkbox>
+            </z-form-control>
+            <p class="font-caption text-foreground/50 mt-1">Removes internal horizontal shelves, making the column one
+              tall opening.</p>
+          </z-form-field>
+          @if (!tvCfg.hugeCell) {
+          <z-form-field>
+            <label class="font-label" z-form-label>Doors</label>
+            <z-form-control>
+              <z-select [zPlaceholder]="'Doors'" [zValue]="tvCfg.doors"
+                (zSelectionChange)="onTvColumnDoorsChange($event)">
+                <z-select-item zValue="none">None</z-select-item>
+                <z-select-item zValue="some">Some</z-select-item>
+                <z-select-item zValue="all">Max</z-select-item>
+              </z-select>
+            </z-form-control>
+            <p class="font-caption text-foreground/50 mt-1">Max doors cannot be combined with max drawers.</p>
+          </z-form-field>
+          <z-form-field>
+            <label class="font-label" z-form-label>Drawers</label>
+            <z-form-control>
+              <z-select [zPlaceholder]="'Drawers'" [zValue]="tvCfg.drawers"
+                (zSelectionChange)="onTvColumnDrawersChange($event)">
+                <z-select-item zValue="none">None</z-select-item>
+                <z-select-item zValue="some">Some</z-select-item>
+                <z-select-item zValue="all">Max</z-select-item>
+              </z-select>
+            </z-form-control>
+          </z-form-field>
+          }
+        </div>
+        }
+        } @else {
+        <p class="font-caption text-foreground/50 text-sm">No columns available. Adjust the TV stand width to add
+          columns.</p>
+        }
+      </div>
+      }
+
+      <!-- ===== SHOERACK – MODEL tab ===== -->
+      @if (modelType() === 'ShoeRack' && activeMainTab() === 'model') {
+      <div class="space-y-6">
+        <div [class.hidden]="activeControlTab() !== 'color'" class="md:block space-y-3">
+          <z-form-field>
+            <label class="font-label" z-form-label>Color</label>
+            <div class="flex flex-wrap gap-2 pt-1">
+              @for (c of FURNITURE_COLORS; track c.name) {
+              <button type="button" class="size-8 rounded-full border-2 transition-transform shadow-sm"
+                [class.border-foreground]="shoeRackColor() === c.value"
+                [class.border-transparent]="shoeRackColor() !== c.value" [class.scale-110]="shoeRackColor() === c.value"
+                [style.background-color]="c.value" (click)="onShoeRackColorChange(c.value)" [title]="c.name"></button>
+              }
+            </div>
+          </z-form-field>
+        </div>
+
+        <div [class.hidden]="!['width', 'height', 'depth', 'overhang'].includes(activeControlTab())"
+          class="md:block space-y-4">
+          <h5 class="font-label text-foreground/60 hidden md:block">Dimensions (cm)</h5>
+          <div [class.hidden]="activeControlTab() !== 'width'" class="md:block">
+            <z-form-field>
+              <label class="font-label" z-form-label>Width ({{ shoeRackWidthCm() }} cm)</label>
+              <z-form-control>
+                <z-slider [zMin]="80" [zMax]="400" [zDefault]="shoeRackWidthCm()" [zValue]="shoeRackWidthCm()"
+                  [zStep]="1" (zSlideIndexChange)="onShoeRackWidthChange($event)"></z-slider>
+              </z-form-control>
+            </z-form-field>
+          </div>
+          <div [class.hidden]="activeControlTab() !== 'depth'" class="md:block">
+            <z-form-field>
+              <label class="font-label" z-form-label>Depth ({{ shoeRackDepthCm() }} cm)</label>
+              <z-form-control>
+                <z-slider [zMin]="20" [zMax]="40" [zDefault]="shoeRackDepthCm()" [zValue]="shoeRackDepthCm()"
+                  [zStep]="1" (zSlideIndexChange)="onShoeRackDepthChange($event)"></z-slider>
+              </z-form-control>
+            </z-form-field>
+          </div>
+          <div [class.hidden]="activeControlTab() !== 'height'" class="md:block">
+            <z-form-field>
+              <label class="font-label" z-form-label>Default column height ({{ shoeRackDefaultHeightCm() }} cm)</label>
+              <z-form-control>
+                <z-slider [zMin]="20" [zMax]="200" [zDefault]="shoeRackDefaultHeightCm()"
+                  [zValue]="shoeRackDefaultHeightCm()" [zStep]="1"
+                  (zSlideIndexChange)="onShoeRackDefaultHeightChange($event)"></z-slider>
+              </z-form-control>
+              <p class="font-caption text-foreground/50 mt-1">Sets all columns to this height. Fine-tune individual
+                columns in the Columns config tab.</p>
+            </z-form-field>
+          </div>
+        </div>
+
+        <z-form-field class="md:block">
+          <z-form-control class="flex items-center">
+            <z-checkbox [ngModel]="shoeRackWithBack()" (ngModelChange)="onShoeRackBackPanelToggle($event)"
+              zShape="circle" zSize="lg">Back panel</z-checkbox>
+          </z-form-control>
+        </z-form-field>
+      </div>
+      }
+
+      <!-- ===== SHOERACK – COLUMNS CONFIG tab ===== -->
+      @if (modelType() === 'ShoeRack' && activeMainTab() === 'columns') {
+      <div class="space-y-5">
+        @if (shoeColumnCount() > 0) {
+        <!-- Column pill tabs -->
+        <div>
+          <h5 class="font-label text-foreground/60 mb-3">Select column</h5>
+          <div class="flex flex-wrap gap-2">
+            @for (idx of shoeColumnIndices(); track idx) {
+            <button type="button" class="configurator-index-tab" [class.active]="selectedShoeColumnIndex() === idx"
+              (click)="onShoeColumnSelect(idx + '')">
+              @if (idx === shoeColumnCount() - 1 && shoeColumnCount() > 3) {
+              Col {{ idx + 1 }}
+              } @else {
+              {{ idx + 1 }}
+              }
+            </button>
+            }
+          </div>
+        </div>
+
+        <!-- Column settings -->
+        @let shoeCfg = selectedShoeColumnConfig();
+        @if (shoeCfg) {
+        <div class="space-y-4 pt-2 border-t border-border">
+          <h5 class="font-label text-foreground/60">Column {{ selectedShoeColumnIndex() + 1 }} settings</h5>
+
+          <z-form-field>
+            <label class="font-label" z-form-label>Column height ({{ shoeCfg.heightCm }} cm)</label>
+            <z-form-control>
+              <z-slider [zMin]="20" [zMax]="200" [zDefault]="shoeCfg.heightCm" [zValue]="shoeCfg.heightCm" [zStep]="1"
+                (zSlideIndexChange)="onShoeColumnHeightChange($event)"></z-slider>
+            </z-form-control>
+            <p class="font-caption text-foreground/50 mt-1">Each column can have a different height for a staggered
+              profile.</p>
+          </z-form-field>
+
+          <z-form-field>
+            <z-form-control class="flex items-center">
+              <z-checkbox [ngModel]="shoeCfg.hugeCell" (ngModelChange)="onShoeColumnHugeCellChange($event)"
+                zShape="circle" zSize="lg">Huge cell (no shelves)</z-checkbox>
+            </z-form-control>
+            <p class="font-caption text-foreground/50 mt-1">Removes internal shelves, making the column one tall
+              opening.</p>
+          </z-form-field>
+
+          @if (!shoeCfg.hugeCell) {
+          <z-form-field>
+            <label class="font-label" z-form-label>Doors</label>
+            <z-form-control>
+              <z-select [zPlaceholder]="'Doors'" [zValue]="shoeCfg.doors"
+                (zSelectionChange)="onShoeColumnDoorsChange($event)">
+                <z-select-item zValue="none">None</z-select-item>
+                <z-select-item zValue="some">Some</z-select-item>
+                <z-select-item zValue="all">Max</z-select-item>
+              </z-select>
+            </z-form-control>
+            <p class="font-caption text-foreground/50 mt-1">Max doors cannot be combined with max drawers.</p>
+          </z-form-field>
+          <z-form-field>
+            <label class="font-label" z-form-label>Drawers</label>
+            <z-form-control>
+              <z-select [zPlaceholder]="'Drawers'" [zValue]="shoeCfg.drawers"
+                (zSelectionChange)="onShoeColumnDrawersChange($event)">
+                <z-select-item zValue="none">None</z-select-item>
+                <z-select-item zValue="some">Some</z-select-item>
+                <z-select-item zValue="all">Max</z-select-item>
+              </z-select>
+            </z-form-control>
+          </z-form-field>
+          }
+        </div>
+        }
+        } @else {
+        <p class="font-caption text-foreground/50 text-sm">No columns available. Adjust the shoe rack width to add
+          columns.</p>
+        }
+      </div>
+      }
+
+      <!-- ===== BEDSIDETABLE – MODEL tab ===== -->
+      @if (modelType() === 'BedsideTable' && activeMainTab() === 'model') {
+      <div class="space-y-6">
+        <div [class.hidden]="activeControlTab() !== 'color'" class="md:block space-y-3">
+          <z-form-field>
+            <label class="font-label" z-form-label>Color</label>
+            <div class="flex flex-wrap gap-2 pt-1">
+              @for (c of FURNITURE_COLORS; track c.name) {
+              <button type="button" class="size-8 rounded-full border-2 transition-transform shadow-sm"
+                [class.border-foreground]="bedsideColor() === c.value"
+                [class.border-transparent]="bedsideColor() !== c.value" [class.scale-110]="bedsideColor() === c.value"
+                [style.background-color]="c.value" (click)="onBedsideColorChange(c.value)" [title]="c.name"></button>
+              }
+            </div>
+          </z-form-field>
+        </div>
+        <div [class.hidden]="!['width','height','depth','density'].includes(activeControlTab())"
+          class="md:block space-y-4">
+          <h5 class="font-label text-foreground/60 hidden md:block">Dimensions &amp; density</h5>
+          <div [class.hidden]="activeControlTab() !== 'width'" class="md:block">
+            <z-form-field>
+              <label class="font-label" z-form-label>Width ({{ bedsideWidthCm() }} cm)</label>
+              <z-form-control>
+                <z-slider [zMin]="30" [zMax]="90" [zDefault]="bedsideWidthCm()" [zValue]="bedsideWidthCm()" [zStep]="1"
+                  (zSlideIndexChange)="onBedsideWidthChange($event)"></z-slider>
+              </z-form-control>
+            </z-form-field>
+          </div>
+          <div [class.hidden]="activeControlTab() !== 'height'" class="md:block">
+            <z-form-field>
+              <label class="font-label" z-form-label>Height ({{ bedsideHeightCm() }} cm)</label>
+              <z-form-control>
+                <z-slider [zMin]="30" [zMax]="90" [zDefault]="bedsideHeightCm()" [zValue]="bedsideHeightCm()"
+                  [zStep]="1" (zSlideIndexChange)="onBedsideHeightChange($event)"></z-slider>
+              </z-form-control>
+            </z-form-field>
+          </div>
+          <div [class.hidden]="activeControlTab() !== 'depth'" class="md:block">
+            <z-form-field>
+              <label class="font-label" z-form-label>Depth ({{ bedsideDepthCm() }} cm)</label>
+              <z-form-control>
+                <z-slider [zMin]="25" [zMax]="50" [zDefault]="bedsideDepthCm()" [zValue]="bedsideDepthCm()" [zStep]="1"
+                  (zSlideIndexChange)="onBedsideDepthChange($event)"></z-slider>
+              </z-form-control>
+            </z-form-field>
+          </div>
+          <div [class.hidden]="activeControlTab() !== 'density'" class="md:block">
+            <z-form-field>
+              <label class="font-label" z-form-label>Shelf density ({{ bedsideDensity() }}%)</label>
+              <z-form-control>
+                <z-slider [zMin]="0" [zMax]="100" [zDefault]="bedsideDensity()" [zValue]="bedsideDensity()" [zStep]="5"
+                  (zSlideIndexChange)="onBedsideDensityChange($event)"></z-slider>
+              </z-form-control>
+              <p class="font-caption text-foreground/50 mt-1">0% = spacious shelves &nbsp;|&nbsp; 100% = maximum
+                shelves.</p>
+            </z-form-field>
+          </div>
+        </div>
+        <z-form-field class="md:block">
+          <z-form-control class="flex items-center">
+            <z-checkbox [ngModel]="bedsideWithBack()" (ngModelChange)="onBedsideBackPanelToggle($event)" zShape="circle"
+              zSize="lg">Back panel</z-checkbox>
+          </z-form-control>
+        </z-form-field>
+      </div>
+      }
+
+      <!-- ===== BEDSIDETABLE – COLUMNS CONFIG tab ===== -->
+      @if (modelType() === 'BedsideTable' && activeMainTab() === 'columns') {
+      <div class="space-y-5">
+        @if (bedsideColumnCount() > 0) {
+        <div>
+          <h5 class="font-label text-foreground/60 mb-3">Select column</h5>
+          <div class="flex flex-wrap gap-2">
+            @for (idx of bedsideColumnIndices(); track idx) {
+            <button type="button" class="configurator-index-tab" [class.active]="selectedBedsideColumnIndex() === idx"
+              (click)="onBedsideColumnSelect(idx + '')">{{ idx + 1 }}</button>
+            }
+          </div>
+        </div>
+        @let bCfg = selectedBedsideColumnConfig();
+        @if (bCfg) {
+        <div class="space-y-4 pt-2 border-t border-border">
+          <h5 class="font-label text-foreground/60">Column {{ selectedBedsideColumnIndex() + 1 }} settings</h5>
+          <z-form-field>
+            <z-form-control class="flex items-center">
+              <z-checkbox [ngModel]="bCfg.hugeCell" (ngModelChange)="onBedsideColumnHugeCellChange($event)"
+                zShape="circle" zSize="lg">Open cubby (no shelves)</z-checkbox>
+            </z-form-control>
+            <p class="font-caption text-foreground/50 mt-1">One tall opening — ideal for books or a lamp.</p>
+          </z-form-field>
+          @if (!bCfg.hugeCell) {
+          <z-form-field>
+            <label class="font-label" z-form-label>Doors</label>
+            <z-form-control>
+              <z-select [zPlaceholder]="'Doors'" [zValue]="bCfg.doors"
+                (zSelectionChange)="onBedsideColumnDoorsChange($event)">
+                <z-select-item zValue="none">None</z-select-item>
+                <z-select-item zValue="some">Some</z-select-item>
+                <z-select-item zValue="all">Max</z-select-item>
+              </z-select>
+            </z-form-control>
+          </z-form-field>
+          <z-form-field>
+            <label class="font-label" z-form-label>Drawers</label>
+            <z-form-control>
+              <z-select [zPlaceholder]="'Drawers'" [zValue]="bCfg.drawers"
+                (zSelectionChange)="onBedsideColumnDrawersChange($event)">
+                <z-select-item zValue="none">None</z-select-item>
+                <z-select-item zValue="some">Some</z-select-item>
+                <z-select-item zValue="all">Max</z-select-item>
+              </z-select>
+            </z-form-control>
+          </z-form-field>
+          }
+        </div>
+        }
+        } @else {
+        <p class="font-caption text-foreground/50 text-sm">No columns yet. Adjust the width to add columns.</p>
+        }
+      </div>
+      }
+
+      }
+
+
     </div>
   </div>
+
 </div>

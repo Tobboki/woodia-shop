@@ -100,6 +100,101 @@ export interface DeskConfigJson {
   columns: number
 }
 
+/** Config for one vertical column of the TV stand. */
+export interface TvColumnConfig {
+  doors: RowFill
+  drawers: RowFill
+  /** When true the column is rendered as a single tall unpartitioned cell. */
+  hugeCell: boolean
+}
+
+/** JSON-serializable config for a TvStand (lengths in cm). */
+export interface TvStandConfigJson {
+  widthCm: number
+  heightCm: number
+  depthCm: number
+  thicknessCm: number
+  withBack: boolean
+  style: string
+  columnConfigs: TvColumnConfig[]
+  columns: number
+  rows: number
+}
+
+/** API model config for TvStand product. */
+export interface TvStandModelConfig {
+  widthCm: number
+  heightCm: number
+  depthCm: number
+  color: string
+  edgeColor: string
+  style: string
+  withBack: boolean
+  columnConfigs: TvColumnConfig[]
+}
+
+/** Config for one vertical column of the ShoeRack (each column has its own height). */
+export interface ShoeColumnConfig {
+  /** Column height in centimetres — independent per column. */
+  heightCm: number
+  doors: RowFill
+  drawers: RowFill
+  /** When true the column has no internal horizontal shelves. */
+  hugeCell: boolean
+}
+
+/** JSON-serializable config for a ShoeRack (lengths in cm). */
+export interface ShoeRackConfigJson {
+  widthCm: number
+  depthCm: number
+  thicknessCm: number
+  withBack: boolean
+  columnConfigs: ShoeColumnConfig[]
+  columns: number
+}
+
+/** API model config for ShoeRack product. */
+export interface ShoeRackModelConfig {
+  widthCm: number
+  depthCm: number
+  color: string
+  edgeColor: string
+  withBack: boolean
+  columnConfigs: ShoeColumnConfig[]
+}
+
+/** Config for one vertical column of the BedsideTable. */
+export interface BedsideColumnConfig {
+  doors: RowFill
+  drawers: RowFill
+  /** When true the column has no internal shelves — one tall open cubby. */
+  hugeCell: boolean
+}
+
+/** JSON-serializable config for a BedsideTable (lengths in cm). */
+export interface BedsideTableConfigJson {
+  widthCm: number
+  heightCm: number
+  depthCm: number
+  thicknessCm: number
+  density: number
+  withBack: boolean
+  columnConfigs: BedsideColumnConfig[]
+  columns: number
+}
+
+/** API model config for BedsideTable product. */
+export interface BedsideTableModelConfig {
+  widthCm: number
+  heightCm: number
+  depthCm: number
+  color: string
+  edgeColor: string
+  density: number
+  withBack: boolean
+  columnConfigs: BedsideColumnConfig[]
+}
+
 /** API model config for Bookcase product (from /api/Product/{id}). */
 export interface BookcaseModelConfig {
   widthCm: number
@@ -125,19 +220,51 @@ export interface DeskModelConfig {
 }
 
 /** Product category determines which model and configurator inputs are used. */
-export type ProductCategory = 'Bookcase' | 'Desk'
+export type ProductCategory = 'Bookcase' | 'Desk' | 'TvStand' | 'ShoeRack' | 'BedsideTable'
+
+export const DESIGN_CATEGORIES: ProductCategory[] = ['Bookcase', 'Desk', 'TvStand', 'ShoeRack', 'BedsideTable']
+
+export const DEFAULT_MODEL_CONFIGS: Record<ProductCategory, BookcaseModelConfig | DeskModelConfig | TvStandModelConfig | ShoeRackModelConfig | BedsideTableModelConfig> = {
+  Bookcase: {
+    widthCm: 120, heightCm: 180, depthCm: 35,
+    color: '#d2b48c', style: 'grid', density: 50,
+    withBack: true, topStorage: null, bottomStorage: null, rowConfigs: []
+  },
+  Desk: {
+    widthCm: 180, heightCm: 75, depthCm: 60,
+    color: '#d2b48c', legroomPosition: 0, columnConfigs: []
+  },
+  TvStand: {
+    widthCm: 150, heightCm: 60, depthCm: 40,
+    color: '#d2b48c', edgeColor: '#ffffff', style: 'grid',
+    withBack: true, columnConfigs: []
+  },
+  ShoeRack: {
+    widthCm: 120, depthCm: 30,
+    color: '#d2b48c', edgeColor: '#ffffff',
+    withBack: true, columnConfigs: []
+  },
+  BedsideTable: {
+    widthCm: 45, heightCm: 60, depthCm: 40,
+    color: '#d2b48c', edgeColor: '#ffffff', density: 50,
+    withBack: true, columnConfigs: []
+  },
+}
 
 /** Discriminated union of model configs by category. */
 export type ProductModelConfig = 
   | { category: 'Bookcase'; modelConfig: BookcaseModelConfig }
   | { category: 'Desk'; modelConfig: DeskModelConfig }
+  | { category: 'TvStand'; modelConfig: TvStandModelConfig }
+  | { category: 'ShoeRack'; modelConfig: ShoeRackModelConfig }
+  | { category: 'BedsideTable'; modelConfig: BedsideTableModelConfig }
 
 /** Product */
 export interface Product {
   id: number
   category: ProductCategory
   images: string[]
-  modelConfig: BookcaseModelConfig | DeskModelConfig
+  modelConfig: BookcaseModelConfig | DeskModelConfig | TvStandModelConfig | ShoeRackModelConfig | BedsideTableModelConfig
 }
 export interface IProductCard {
   id: number

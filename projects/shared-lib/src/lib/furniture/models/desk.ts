@@ -50,8 +50,12 @@ export class Desk {
   private hoveredDrawer: { col: number; cell: number } | null = null
   private columnConfigs: DeskColumnConfig[] = []
   private invisibleHitboxMaterial: THREE.MeshBasicMaterial
-  private legroomPosition: number = 0 // Index where legroom is placed (0 = leftmost)
+  private legroomPosition: number = 0
   private dimensionOverlayData: DimensionOverlayData | null = null
+  private edgeColor: string = '#ffffff'
+  private edgeMaterial: THREE.MeshStandardMaterial
+  /** How much the tabletop extends beyond the left/right outer walls (in scene units). */
+  private topOverhang: number = 0
 
   constructor(
     width: number = 180 * CM,
@@ -75,6 +79,7 @@ export class Desk {
     this.meshIdStart = meshIdStart
     this.invisibleHitboxMaterial = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })
     this.legroomPosition = legroomPosition
+    this.edgeMaterial = new THREE.MeshStandardMaterial({ color: this.edgeColor })
     const desiredWidth = Math.max(width, DESK_COLUMN_WIDTH_MIN + DESK_LEGROOM_WIDTH_MIN)
     const desiredHeight = Math.max(height, DESK_HEIGHT_MIN)
     this.columns = this.computeColumnsFromWidth(desiredWidth)
@@ -167,11 +172,43 @@ export class Desk {
     }
     this.group.traverse((obj) => {
       if ((obj as THREE.Mesh).isMesh && obj.name !== 'invisible-hitbox') {
-        const mat = (obj as THREE.Mesh).material as THREE.MeshStandardMaterial
-        if (mat.color) mat.color.set(hex)
+        const mat = (obj as THREE.Mesh).material
+        if (Array.isArray(mat)) {
+          for (let i = 0; i <= 3; i++) {
+            const m = mat[i] as THREE.MeshStandardMaterial
+            if (m?.color) m.color.set(hex)
+          }
+        } else {
+          const m = mat as THREE.MeshStandardMaterial
+          if (m?.color) m.color.set(hex)
+        }
       }
     })
   }
+
+  setEdgeColor(hex: string) {
+    this.edgeColor = hex
+    this.edgeMaterial.color.set(hex)
+    this.group.traverse((obj) => {
+      if ((obj as THREE.Mesh).isMesh) {
+        const mat = (obj as THREE.Mesh).material
+        if (Array.isArray(mat) && mat.length >= 6) {
+          const frontMat = mat[4] as THREE.MeshStandardMaterial
+          const backMat = mat[5] as THREE.MeshStandardMaterial
+          if (frontMat?.color) frontMat.color.set(hex)
+          if (backMat?.color) backMat.color.set(hex)
+        }
+      }
+    })
+  }
+
+  setTopOverhang(overhanCm: number) {
+    this.topOverhang = Math.max(0, overhanCm) * CM
+    this.rebuild()
+    this.captureBaseSize()
+  }
+
+  getTopOverhang(): number { return this.topOverhang / CM }
 
   getWidth(): number {
     return this.width
@@ -191,6 +228,17 @@ export class Desk {
 
   private clamp(value: number, min: number, max: number): number {
     return Math.max(min, Math.min(max, value))
+  }
+
+  private getMaterialArray(mainMaterial: THREE.Material): THREE.Material[] {
+    return [
+      mainMaterial.clone(),
+      mainMaterial.clone(),
+      mainMaterial.clone(),
+      mainMaterial.clone(),
+      this.edgeMaterial.clone(), // front face
+      this.edgeMaterial.clone(), // back face
+    ]
   }
 
   private rebuild() {
@@ -232,17 +280,20 @@ export class Desk {
       cells: [],
     }
 
-    // Tabletop
+    // Tabletop (with optional overhang)
+    // Geometry columns + legroom span from 0 to (width - 2*thickness), so tabletop matches that
+    const overhang = this.topOverhang
+    const tabletopRight = width - 2 * thickness
     this.group.add(
       new Blank(
-        0,
+        -overhang,
         tabletopY,
         0,
-        width,
+        tabletopRight + overhang,
         height,
         depth,
         origin,
-        material.clone(),
+        this.getMaterialArray(material),
         idRef.id++
       ).build()
     )
@@ -268,13 +319,11 @@ export class Desk {
               height,
               depth,
               origin,
-              material.clone(),
+              this.getMaterialArray(material),
               idRef.id++
             ).build()
           )
         }
-        // Add vertical blank on right edge if legroom is at rightmost position (pos === columns)
-        // Extend to full height (tabletop sits on top)
         if (pos === columns) {
           this.group.add(
             new Blank(
@@ -285,7 +334,7 @@ export class Desk {
               height,
               depth,
               origin,
-              material.clone(),
+              this.getMaterialArray(material),
               idRef.id++
             ).build()
           )
@@ -343,66 +392,38 @@ export class Desk {
     const internalHeight = height - DESK_TABLETOP_THICKNESS
     const cellHeight = (internalHeight - thickness * (cells + 1)) / cells
 
-    // Left side - every column has its own left side blank
+    // Left side
     columnGroup.add(
       new Blank(
-        x,
-        0,
-        0,
-        x + thickness,
-        height,
-        depth,
-        origin,
-        material.clone(),
-        idRef.id++
+        x, 0, 0,
+        x + thickness, height, depth,
+        origin, this.getMaterialArray(material), idRef.id++
       ).build()
     )
-
-    // Right side - every column has its own right side blank
-    // This serves as the divider/wall between columns (or between column and legroom)
+    // Right side
     columnGroup.add(
       new Blank(
-        x + width - thickness,
-        0,
-        0,
-        x + width,
-        height,
-        depth,
-        origin,
-        material.clone(),
-        idRef.id++
+        x + width - thickness, 0, 0,
+        x + width, height, depth,
+        origin, this.getMaterialArray(material), idRef.id++
       ).build()
     )
-
-    // Back - stops before tabletop
+    // Back
     columnGroup.add(
       new Blank(
-        x + thickness,
-        0,
-        0,
-        x + width - thickness,
-        internalHeight,
-        thickness,
-        origin,
-        material.clone(),
-        idRef.id++
+        x + thickness, 0, 0,
+        x + width - thickness, internalHeight, thickness,
+        origin, this.getMaterialArray(material), idRef.id++
       ).build()
     )
-
-    // Horizontal shelves (dividers between cells) - stop before tabletop
+    // Horizontal shelves
     for (let i = 0; i <= cells; i++) {
       const y = i * (cellHeight + thickness)
       columnGroup.add(
         new Blank(
-          x + thickness,
-          y,
-          thickness,
-          x + width - thickness,
-          y + thickness,
-          depth - thickness,
-          origin,
-          material.clone(),
-          idRef.id++
+          x + thickness, y, thickness,
+          x + width - thickness, y + thickness, depth - thickness,
+          origin, this.getMaterialArray(material), idRef.id++
         ).build()
       )
     }

@@ -1,0 +1,142 @@
+@if (step() === 1) {
+<!-- Step 1: Configurator -->
+<div class="flex flex-col h-[calc(100vh-64px)] w-full">
+  <div class="flex items-center justify-between px-6 py-4 bg-card border-b shrink-0">
+    <div class="flex items-center gap-4">
+      <a z-button zType="outline" zSize="icon" [routerLink]="['/designs']">
+        <ng-icon name="lucideArrowLeft" class="size-4" />
+      </a>
+      <div>
+        <h2 class="text-lg font-semibold flex items-center gap-2">
+          <ng-icon name="lucideLayers" class="size-5 text-primary" />
+          Design Studio
+        </h2>
+        <p class="text-sm text-muted-foreground">Step 1: Configure your model</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <!-- Model Picker -->
+      <z-select [zValue]="selectedModelType()" (zSelectionChange)="onModelTypeChange($event)" class="w-48">
+        @for (model of modelCategories; track model) {
+        <z-select-item [zValue]="model">
+          {{ model }}
+        </z-select-item>
+        }
+      </z-select>
+
+      <button z-button zType="default" (click)="nextStep()">
+        Next Details
+        <ng-icon name="lucideArrowRight" class="ml-2 size-4" />
+      </button>
+    </div>
+  </div>
+
+  <div class="flex-1 min-h-0 bg-background">
+    <!-- Design Configurator takes the remaining space -->
+    <woodia-design-configurator [modelType]="selectedModelType()" class="block h-full w-full" />
+  </div>
+</div>
+} @else {
+<!-- Step 2: Form Details -->
+<div class="min-h-[calc(100vh-64px)] bg-muted/20">
+  <div class="flex items-center justify-between px-6 py-4 bg-card border-b sticky top-0 z-10">
+    <div class="flex items-center gap-4">
+      <button z-button zType="outline" zSize="icon" (click)="prevStep()">
+        <ng-icon name="lucideArrowLeft" class="size-4" />
+      </button>
+      <div>
+        <h2 class="text-lg font-semibold">Publish Design</h2>
+        <p class="text-sm text-muted-foreground">Step 2: Add metadata & details</p>
+      </div>
+    </div>
+
+    <button z-button zType="default" (click)="saveDesign()" [zDisabled]="loading()">
+      <ng-icon name="lucideSave" class="mr-2 size-4" />
+      {{ loading() ? 'Saving...' : 'Save Design' }}
+    </button>
+  </div>
+
+  <div class="wizard-content">
+    <div class="card">
+      <h3 class="text-base font-semibold border-b pb-2">Basic Info</h3>
+
+      <div class="form-group">
+        <label>Design Line Name <span class="text-destructive">*</span></label>
+        <input z-input placeholder="e.g. Modern Minimalist Desk" [ngModel]="productLine()" (ngModelChange)="productLine.set($event)" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="form-group">
+          <label>Description (EN)</label>
+          <textarea z-input placeholder="English description" rows="4" [ngModel]="descriptionEn()" (ngModelChange)="descriptionEn.set($event)"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="text-right">Description (AR)</label>
+          <textarea z-input placeholder="Arabic description" rows="4" dir="rtl" [ngModel]="descriptionAr()" (ngModelChange)="descriptionAr.set($event)"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 class="text-base font-semibold border-b pb-2">Classification</h3>
+
+      <div class="form-group max-w-sm">
+        <label>Category <span class="text-destructive">*</span></label>
+        <z-select [zValue]="categoryId()" (zSelectionChange)="categoryId.set($event.toString())" zPlaceholder="Choose a category">
+          @for (parent of categories(); track parent.id) {
+            <!-- Virtual item for grouping, disabled so it can't be selected -->
+            <div class="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase opacity-70 bg-muted/30">
+              {{ parent.nameEn }}
+            </div>
+            @if (parent.childCatogries) {
+              @for (child of parent.childCatogries; track child.id) {
+                <z-select-item [zValue]="child.id.toString()" class="pl-6">
+                  {{ child.nameEn }}
+                </z-select-item>
+              }
+            }
+          }
+        </z-select>
+        <p class="text-xs text-muted-foreground">Only sub-categories can be assigned to designs.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="flex items-center justify-between border-b pb-2">
+        <h3 class="text-base font-semibold">Images</h3>
+        <button z-button zType="outline" zSize="sm" (click)="addImage()">
+          <ng-icon name="lucidePlus" class="mr-2" />
+          Add Image
+        </button>
+      </div>
+
+      <div class="images-list">
+        @if (images().length === 0) {
+          <div class="flex flex-col items-center justify-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
+            <p>No images added. Click "Add Image" above.</p>
+          </div>
+        }
+
+        @for (img of images(); track $index; let i = $index) {
+          <div class="image-row">
+            <div class="flex-1 form-group !gap-1">
+              <label class="text-xs">Image URL</label>
+              <input z-input placeholder="https://..." [(ngModel)]="img.url" />
+            </div>
+            <div class="w-1/3 form-group !gap-1">
+              <label class="text-xs">Image Place (e.g. main, detail)</label>
+              <input z-input placeholder="main" [(ngModel)]="img.imagePlace" />
+            </div>
+            <div class="pt-5">
+              <button z-button zType="ghost" zSize="icon" class="text-destructive" (click)="removeImage(i)">
+                <ng-icon name="lucideTrash2" class="size-4" />
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+}
