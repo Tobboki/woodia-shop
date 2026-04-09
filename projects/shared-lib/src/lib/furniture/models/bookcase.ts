@@ -816,34 +816,16 @@ export class Bookcase {
     return cfg.drawers === 'all' || (cfg.drawers === 'some' && cellIndex % 2 !== 0)
   }
 
-  private setRowHighlight(row: number | null, active: boolean) {
-    if (row === null) return
-    this.rowsGroup[row]?.traverse((obj) => {
-      if ((obj as THREE.Mesh).isMesh && obj.name !== 'invisible-hitbox') {
-        const mat = (obj as THREE.Mesh).material
-        if (Array.isArray(mat)) {
-          for (let i = 0; i <= 3; i++) {
-            const m = mat[i] as THREE.MeshStandardMaterial
-            if (m && m.emissive) {
-              m.emissive.set(active ? 0xaa0000 : 0x000000)
-              m.emissiveIntensity = active ? 0.6 : 0
-              m.polygonOffset = active
-              m.polygonOffsetFactor = active ? -1 : 0
-              m.polygonOffsetUnits = active ? -4 : 0
-            }
-          }
-        } else {
-          const m = mat as THREE.MeshStandardMaterial
-          if (m && m.emissive) {
-            m.emissive.set(active ? 0xaa0000 : 0x000000)
-            m.emissiveIntensity = active ? 0.6 : 0
-            m.polygonOffset = active
-            m.polygonOffsetFactor = active ? -1 : 0
-            m.polygonOffsetUnits = active ? -4 : 0
-          }
-        }
-      }
-    })
+  private rowHasDoorsOrDrawers(row: number | null): boolean {
+    if (row === null || row < 0) return false
+    this.ensureRowConfigs()
+    const cfg = this.rowConfigs[row]
+    if (!cfg) return false
+    return cfg.doors !== 'none' || cfg.drawers !== 'none'
+  }
+
+  private setRowHighlight(_row: number | null, _active: boolean) {
+    // Highlight intentionally disabled — doors/drawers still animate on hover
   }
 
   update(dt = SMOOTHING) {

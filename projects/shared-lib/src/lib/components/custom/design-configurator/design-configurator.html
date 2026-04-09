@@ -1,15 +1,15 @@
-<div class="design-configurator-root" [class.is-compact]="compactLayout">
+<div class="h-full w-full max-w-[100vw] flex flex-col lg:flex-row min-h-0 gap-0" [class.lg:!flex-col]="compactLayout">
   <!-- Model -->
-  <div class="design-configurator-canvas-wrap select-none">
+  <div class="relative min-h-0 overflow-hidden flex-1 select-none">
     @if(designLoading()) {
-    <z-loader zSize="lg" class="design-configurator-loading-overlay" />
+    <z-loader zSize="lg" class="absolute inset-0 flex items-center justify-center z-[2] bg-white/80" />
     }
     @if(!modelLoaded()) {
     <div class="design-configurator-skeleton" aria-hidden="true"></div>
     }
-    <canvas #designConfiguratorCanvas class="block w-full h-full"></canvas>
-    <div class="design-configurator-dimension-overlay" [class.dimension-overlay-visible]="showDimensions()"
-      aria-hidden="true">
+    <canvas #designConfiguratorCanvas class="block w-full h-full bg-white"></canvas>
+    <div class="absolute inset-0 pointer-events-none z-[1]" [class.invisible]="!showDimensions()"
+      [class.visible]="showDimensions()" aria-hidden="true">
       <z-dimension-overlay [lines]="dimensionLines()" [labels]="dimensionLabels()" [width]="dimensionOverlayWidth()"
         [height]="dimensionOverlayHeight()" />
     </div>
@@ -22,9 +22,12 @@
   </div>
 
   <!-- Controls: fixed width, scrollable content, never taller than view -->
-  <div class="design-configurator-controls !bg-background">
-    <div class="design-configurator-controls-scroll">
-      <h4 class="font-h4 hidden md:block">Design controls</h4>
+  <div
+    class="w-full shrink-0 lg:w-[320px] lg:min-w-[320px] max-w-[100vw] min-h-0 flex flex-col rounded-none lg:rounded-r-[12px] overflow-hidden max-h-[50vh] lg:max-h-none lg:mb-0 !bg-background border-t-2 lg:border-t-0 border-border"
+    [class.lg:!w-full]="compactLayout" [class.lg:!min-w-0]="compactLayout" [class.lg:!max-h-[50vh]]="compactLayout"
+    [class.lg:!border-t-2]="compactLayout" [class.lg:!rounded-none]="compactLayout">
+    <div class="flex-1 min-h-0 overflow-y-auto p-4 flex flex-col gap-6">
+      <h4 class="font-h4 hidden md:block" [class.md:!hidden]="compactLayout">Design controls</h4>
 
       @if (showControls()) {
 
@@ -48,10 +51,16 @@
       }
 
       @if (modelType() === 'TvStand') {
-      <div class="configurator-main-tabs">
-        <button class="configurator-main-tab" [class.active]="activeMainTab() === 'model'"
+      <div class="flex gap-1 bg-muted rounded-full p-1">
+        <button
+          class="flex-1 px-3 py-1.5 rounded-full text-[0.8125rem] font-medium leading-tight border-none cursor-pointer transition-colors"
+          [class.bg-white]="activeMainTab() === 'model'" [class.text-foreground]="activeMainTab() === 'model'"
+          [class.shadow-sm]="activeMainTab() === 'model'" [class.text-foreground]="activeMainTab() !== 'model'"
           (click)="setMainTab('model')">Model</button>
-        <button class="configurator-main-tab" [class.active]="activeMainTab() === 'columns'"
+        <button
+          class="flex-1 px-3 py-1.5 rounded-full text-[0.8125rem] font-medium leading-tight border-none cursor-pointer transition-colors"
+          [class.bg-white]="activeMainTab() === 'columns'" [class.text-foreground]="activeMainTab() === 'columns'"
+          [class.shadow-sm]="activeMainTab() === 'columns'" [class.text-foreground]="activeMainTab() !== 'columns'"
           (click)="setMainTab('columns')">Columns config</button>
       </div>
       }
@@ -76,7 +85,7 @@
 
       <!-- ===== Mobile sub-tabs (only visible in Model tab) ===== -->
       @if (activeMainTab() === 'model') {
-      <div class="flex md:hidden overflow-x-auto gap-2 pb-2 snap-x no-scrollbar">
+      <div class="flex overflow-x-auto gap-2 pb-2 snap-x no-scrollbar md:hidden" [class.md:!flex]="compactLayout">
         @if (modelType() === 'Bookcase') {
         <button
           class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
@@ -154,6 +163,10 @@
           class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
           [class.bg-black]="activeControlTab() === 'style'" [class.text-white]="activeControlTab() === 'style'"
           (click)="setControlTab('style')">Style</button>
+        <button
+          class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap snap-start border transition-colors"
+          [class.bg-black]="activeControlTab() === 'legs'" [class.text-white]="activeControlTab() === 'legs'"
+          (click)="setControlTab('legs')">Legs</button>
         }
         @if (modelType() === 'ShoeRack') {
         <button
@@ -205,7 +218,8 @@
       <!-- ===== BOOKCASE – MODEL tab ===== -->
       @if (modelType() === 'Bookcase' && activeMainTab() === 'model') {
       <div class="space-y-6">
-        <div [class.hidden]="activeControlTab() !== 'color'" class="md:block space-y-3">
+        <div [class.hidden]="activeControlTab() !== 'color'" class="hidden md:block space-y-3"
+          [class.md:!block]="compactLayout">
           <z-form-field>
             <label class="font-label" z-form-label>Color</label>
             <div class="flex flex-wrap gap-2 pt-1">
@@ -220,9 +234,12 @@
           </z-form-field>
         </div>
 
-        <div [class.hidden]="!['width', 'height', 'depth'].includes(activeControlTab())" class="md:block space-y-4">
-          <h5 class="font-label text-foreground/60 hidden md:block">Dimensions (cm)</h5>
-          <div [class.hidden]="activeControlTab() !== 'width'" class="md:block">
+        <div [class.hidden]="!['width', 'height', 'depth'].includes(activeControlTab())"
+          class="hidden md:block space-y-4" [class.md:!block]="compactLayout">
+          <h5 class="font-label text-foreground/60 hidden md:block" [class.md:!hidden]="compactLayout">Dimensions (cm)
+          </h5>
+          <div [class.hidden]="activeControlTab() !== 'width'" class="hidden md:block"
+            [class.md:!block]="compactLayout">
             <z-form-field>
               <label class="font-label" z-form-label>Width ({{ bookcaseWidthCm() }} cm)</label>
               <z-form-control>
@@ -233,7 +250,7 @@
           </div>
           <div [class.hidden]="activeControlTab() !== 'height'" class="md:block">
             <z-form-field>
-              <label class="font-label" z-form-label>Height ({{ totalHeightCm() }} cm)</label>
+              <label class="font-label" z-form-label>Height ({{ bookcaseHeightCm() }} cm)</label>
               <z-form-control>
                 <z-slider [zMin]="38" [zMax]="200" [zDefault]="bookcaseHeightCm()" [zValue]="bookcaseHeightCm()"
                   [zStep]="1" (zSlideIndexChange)="onBookcaseHeightChange($event)"></z-slider>
@@ -259,12 +276,12 @@
               @for (style of styleOptions; track style) {
               <z-carousel-item class="!basis-[88px] !min-w-0 !shrink-0 !grow-0 pl-2">
                 <button type="button"
-                  class="flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-black/50 p-2.5 transition-colors min-h-[72px] w-full"
+                  class="flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-border p-2.5 transition-colors min-h-[72px] w-full"
                   [class.border-border]="bookcaseStyle() !== style" [class.bg-muted]="bookcaseStyle() !== style"
                   [class.border-primary]="bookcaseStyle() === style" [class.bg-primary]="bookcaseStyle() === style"
                   (click)="onStyleChange(style)">
                   <ng-icon name="lucideBlocks" class="size-6" [class.text-primary]="bookcaseStyle() === style" />
-                  <span class="font-label text-xs capitalize" [class.text-primary]="bookcaseStyle() === style">
+                  <span class="font-label text-xs capitalize">
                     {{ style }}
                   </span>
                 </button>
@@ -493,6 +510,42 @@
         @if (cfg) {
         <div class="space-y-4 pt-2 border-t border-border">
           <h5 class="font-label text-foreground/60">Column {{ selectedColumnIndex() + 1 }} settings</h5>
+
+          <!-- Density -->
+          @if (!cfg.hugeCell) {
+          <z-form-field>
+            <label class="font-label" z-form-label>Shelf density ({{ cfg.density }}%)</label>
+            <z-form-control>
+              <z-slider [zMin]="0" [zMax]="100" [zDefault]="cfg.density" [zValue]="cfg.density" [zStep]="10"
+                (zSlideIndexChange)="onColumnDensityChange($event)"></z-slider>
+            </z-form-control>
+            <p class="font-caption text-foreground/50 mt-1">0% = fewest shelves (1 row) &nbsp;|&nbsp; 100% = most
+              shelves (5 rows).</p>
+          </z-form-field>
+          }
+
+          <!-- Huge Cell -->
+          <z-form-field>
+            <z-form-control class="flex items-center">
+              <z-checkbox [ngModel]="cfg.hugeCell" (ngModelChange)="onColumnHugeCellChange($event)" zShape="circle"
+                zSize="lg">Huge cell (no shelves)</z-checkbox>
+            </z-form-control>
+            <p class="font-caption text-foreground/50 mt-1">Removes internal shelves, making the column one tall
+              opening.</p>
+          </z-form-field>
+
+          <!-- Huge Cell Door (only when hugeCell is on) -->
+          @if (cfg.hugeCell) {
+          <z-form-field>
+            <z-form-control class="flex items-center">
+              <z-checkbox [ngModel]="cfg.hugeCellDoor" (ngModelChange)="onColumnHugeCellDoorChange($event)"
+                zShape="circle" zSize="lg">Huge cell door</z-checkbox>
+            </z-form-control>
+            <p class="font-caption text-foreground/50 mt-1">Adds a full-height door covering the entire opening.</p>
+          </z-form-field>
+          }
+
+          @if (!cfg.hugeCell) {
           <z-form-field>
             <label class="font-label" z-form-label>Doors</label>
             <z-form-control>
@@ -515,6 +568,7 @@
               </z-select>
             </z-form-control>
           </z-form-field>
+          }
         </div>
         }
         } @else {
@@ -580,9 +634,12 @@
               <z-carousel-item class="!basis-[88px] !min-w-0 !shrink-0 !grow-0 pl-2">
                 <button type="button"
                   class="flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 p-2.5 transition-colors min-h-[72px] w-full"
-                  [class.border-border]="tvStandStyle() !== style" [class.bg-muted]="tvStandStyle() !== style"
-                  [class.border-primary]="tvStandStyle() === style" [class.bg-primary]="tvStandStyle() === style"
-                  (click)="onTvStandStyleChange(style)">
+                  [class.border-border]="tvStandStyle() !== style"
+                  [class.bg-muted]="tvStandStyle() !== style"
+                  [class.border-primary]="tvStandStyle() === style"
+                  [class.bg-primary]="tvStandStyle() === style"
+                  (click)="onTvStandStyleChange(style)"
+                >
                   <ng-icon name="lucideBlocks" class="size-6" />
                   <span class="font-label text-xs capitalize">{{ style }}</span>
                 </button>
@@ -598,6 +655,16 @@
               zSize="lg">Back panel</z-checkbox>
           </z-form-control>
         </z-form-field>
+
+        <div [class.hidden]="activeControlTab() !== 'legs'" class="md:block">
+          <z-form-field>
+            <z-form-control class="flex items-center">
+              <z-checkbox [ngModel]="tvStandWithLegs()" (ngModelChange)="onTvStandWithLegsChange($event)"
+                zShape="circle" zSize="lg">Legs</z-checkbox>
+            </z-form-control>
+            <p class="font-caption text-foreground/50 mt-1">Add four square corner legs below the cabinet body.</p>
+          </z-form-field>
+        </div>
       </div>
       }
 
@@ -610,8 +677,14 @@
           <h5 class="font-label text-foreground/60 mb-3">Select column</h5>
           <div class="flex flex-wrap gap-2">
             @for (idx of tvColumnIndices(); track idx) {
-            <button type="button" class="configurator-index-tab" [class.active]="selectedTvColumnIndex() === idx"
-              (click)="onTvColumnSelect(idx + '')">
+            <button type="button"
+              class="inline-flex items-center justify-center min-w-9 h-9 px-2.5 rounded-full text-[0.8125rem] font-semibold border-[1.5px] cursor-pointer transition-all"
+              [class.bg-foreground]="selectedTvColumnIndex() === idx"
+              [class.text-background]="selectedTvColumnIndex() === idx"
+              [class.border-foreground]="selectedTvColumnIndex() === idx"
+              [class.bg-background]="selectedTvColumnIndex() !== idx"
+              [class.text-foreground]="selectedTvColumnIndex() !== idx"
+              [class.border-border]="selectedTvColumnIndex() !== idx" (click)="onTvColumnSelect(idx + '')">
               @if (idx === tvColumnCount() - 1 && tvColumnCount() > 3) {
               Col {{ idx + 1 }}
               } @else {
@@ -658,6 +731,15 @@
                 <z-select-item zValue="all">Max</z-select-item>
               </z-select>
             </z-form-control>
+          </z-form-field>
+          }
+          @if (tvCfg.hugeCell) {
+          <z-form-field>
+            <z-form-control class="flex items-center">
+              <z-checkbox [ngModel]="tvCfg.hugeCellDoor" (ngModelChange)="onTvColumnHugeCellDoorChange($event)"
+                zShape="circle" zSize="lg">Huge cell door</z-checkbox>
+            </z-form-control>
+            <p class="font-caption text-foreground/50 mt-1">Adds a full-height door covering the entire opening.</p>
           </z-form-field>
           }
         </div>
@@ -801,6 +883,15 @@
             </z-form-control>
           </z-form-field>
           }
+          @if (shoeCfg.hugeCell) {
+          <z-form-field>
+            <z-form-control class="flex items-center">
+              <z-checkbox [ngModel]="shoeCfg.hugeCellDoor" (ngModelChange)="onShoeColumnHugeCellDoorChange($event)"
+                zShape="circle" zSize="lg">Huge cell door</z-checkbox>
+            </z-form-control>
+            <p class="font-caption text-foreground/50 mt-1">Adds a full-height door covering the entire opening.</p>
+          </z-form-field>
+          }
         </div>
         }
         } @else {
@@ -923,6 +1014,15 @@
                 <z-select-item zValue="all">Max</z-select-item>
               </z-select>
             </z-form-control>
+          </z-form-field>
+          }
+          @if (bCfg.hugeCell) {
+          <z-form-field>
+            <z-form-control class="flex items-center">
+              <z-checkbox [ngModel]="bCfg.hugeCellDoor" (ngModelChange)="onBedsideColumnHugeCellDoorChange($event)"
+                zShape="circle" zSize="lg">Huge cell door</z-checkbox>
+            </z-form-control>
+            <p class="font-caption text-foreground/50 mt-1">Adds a full-height door covering the entire opening.</p>
           </z-form-field>
           }
         </div>

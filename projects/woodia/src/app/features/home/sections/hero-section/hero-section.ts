@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { DesignConfigurator } from '@shared-components/custom/design-configurator/design-configurator';
-import type { Product, BookcaseModelConfig } from '@woodia-types/product';
+import type { Product, BookcaseModelConfig } from '@shared-types/product';
 
 @Component({
   selector: 'woodia-hero-section',

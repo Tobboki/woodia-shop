@@ -1,6 +1,12 @@
 {
   "app": {
     "app-title": "ووديا",
+    "header": {
+      "menu": {
+        "settings": "الإعدادات",
+        "logout": "الخروج"
+      }
+    },
     "footer": {
       "message": "جميع حقوق الطبع والنشر محفوظة"
     },
@@ -9,6 +15,29 @@
       "callbackMessage": "رجاءاَ ارجع للصفحه الرئيسية و حاول مره أخري",
       "callbackButton": "العودة للصفحه الرئيسية"
     }
+  },
+  "features": {
+    "customers": {
+      "jobs": {
+        "title": "وظائفي",
+        "description": "قم بإدارة طلباتك النشطة، ومراجعة عروض الحرفيين، وتتبع تقدم قطع الأثاث المصممة خصيصًا لك.",
+        "jobStatus": {
+          "all": "الكل",
+          "pending": "قيد الانتظار",
+          "inProgress": "قيد التنفيذ",
+          "completed": "مكتمل",
+          "canceled": "ملغي"
+        },
+        "displayModeOptions": {
+          "list": "قائمة",
+          "grid": "شبكة",
+          "calendar": "تقويم"
+        }
+      }
+    }
+  },
+  "responseKeys": {
+    "createdAt": "تاريخ الإنشاء"
   },
   "themeMode": {
     "title": "المظهر",

@@ -1,3 +1,5 @@
+import {BedsideTableModelConfig, ShoeRackModelConfig, TvStandModelConfig} from '@shared-types/product';
+
 export interface IOriginPoint {
   x: number
   y: number
@@ -128,9 +130,12 @@ export interface DeskModelConfig {
 export type ProductCategory = 'Bookcase' | 'Desk'
 
 /** Discriminated union of model configs by category. */
-export type ProductModelConfig = 
+export type ProductModelConfig =
   | { category: 'Bookcase'; modelConfig: BookcaseModelConfig }
   | { category: 'Desk'; modelConfig: DeskModelConfig }
+  | { category: 'TvStand'; modelConfig: TvStandModelConfig }
+  | { category: 'BesideTable'; modelConfig: BedsideTableModelConfig }
+  | { category: 'ShoeRack'; modelConfig: ShoeRackModelConfig }
 
 /** Product */
 export interface Product {

@@ -14,7 +14,7 @@ import { CommonModule, NgTemplateOutlet } from '@angular/common';
 import {NgIcon} from '@ng-icons/core';
 
 @Component({
-  selector: 'app-main.layout',
+  selector: 'app-main',
   imports: [
     RouterOutlet,
     LayoutImports,

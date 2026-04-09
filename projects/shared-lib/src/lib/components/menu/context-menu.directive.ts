@@ -3,6 +3,7 @@ import { DestroyRef, Directive, DOCUMENT, ElementRef, inject, input, type Templa
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { noopFn } from '@shared-utils/merge-classes';
+import {LanguageService} from '@woodia-core/services/language.service';
 
 @Directive({
   selector: '[z-context-menu]',
@@ -32,16 +33,31 @@ export class ZardContextMenuDirective {
   readonly zContextMenuTriggerFor = input.required<TemplateRef<void>>();
   noopFn = noopFn;
 
-  constructor() {
+  constructor(
+    private langService: LanguageService,
+  ) {
+    const isRtl = this.langService?.isRtl?.() ?? this.getDirFromHtml();
+
+    // Adjust horizontal alignment based on RTL/LTR
+    const originX = isRtl ? 'end' : 'start';
+    const overlayX = isRtl ? 'end' : 'start';
+
     this.cdkTrigger.menuPosition = [
       {
-        originX: 'start',
+        originX,
         originY: 'top',
-        overlayX: 'start',
+        overlayX,
         overlayY: 'top',
       },
     ];
-    this.cdkTrigger.opened.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.attachCloseListeners());
+
+    this.cdkTrigger.opened
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.attachCloseListeners());
+  }
+
+  private getDirFromHtml(): boolean {
+    return this.document.documentElement.getAttribute('dir') === 'rtl';
   }
 
   protected handleKeyDown(event: KeyboardEvent): void {

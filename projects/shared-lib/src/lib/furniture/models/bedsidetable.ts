@@ -319,6 +319,26 @@ export class BedsideTable {
           ).build())
         }
 
+        // Huge cell door spanning the full opening height
+        if (colCfg.hugeCellDoor) {
+          const doorW = Math.max(0, colNetWidth - 2 * clear)
+          const doorH = Math.max(0, (yHigh - yLow) - 2 * clear)
+          if (doorW > 0 && doorH > 0) {
+            const doorThickness = this.thickness * 0.5
+            const doorGroup = new THREE.Group()
+            doorGroup.position.set(xLeft + clear, yLow + clear, depth - doorThickness)
+            doorGroup.userData['door'] = true
+            doorGroup.userData['colIndex'] = c
+            doorGroup.userData['rowIndex'] = 0
+            const doorMesh = new Blank(
+              0, 0, 0, doorW, doorH, doorThickness,
+              { x: 0, y: 0, z: 0 }, this.getMaterialArray(material), idRef.id++
+            ).build()
+            doorGroup.add(doorMesh)
+            colGroup.add(doorGroup)
+          }
+        }
+
         const hitbox = new Blank(
           xLeft, yLow, 0,
           xRight, yHigh, depth,
@@ -564,20 +584,17 @@ export class BedsideTable {
     return cfg.drawers === 'all' || (cfg.drawers === 'some' && row % 2 !== 0)
   }
 
-  private setColumnHighlight(col: number | null, active: boolean) {
-    if (col === null) return
-    this.columnsGroup[col]?.traverse((obj) => {
-      if ((obj as THREE.Mesh).isMesh && obj.name !== 'invisible-hitbox') {
-        const mat = (obj as THREE.Mesh).material
-        const applyEmissive = (m: THREE.MeshStandardMaterial) => {
-          if (!m?.emissive) return
-          m.emissive.set(active ? 0xaa0000 : 0x000000)
-          m.emissiveIntensity = active ? 0.6 : 0
-        }
-        if (Array.isArray(mat)) mat.slice(0, 4).forEach((m) => applyEmissive(m as THREE.MeshStandardMaterial))
-        else applyEmissive(mat as THREE.MeshStandardMaterial)
-      }
-    })
+  private columnHasDoorsOrDrawers(col: number | null): boolean {
+    if (col === null) return false
+    this.ensureColumnConfigs()
+    const cfg = this.columnConfigs[col]
+    if (!cfg) return false
+    if (cfg.hugeCell) return cfg.hugeCellDoor === true
+    return cfg.doors !== 'none' || cfg.drawers !== 'none'
+  }
+
+  private setColumnHighlight(_col: number | null, _active: boolean) {
+    // Highlight intentionally disabled — doors/drawers still animate on hover
   }
 
   // ───────────────────────────────────────────────────────────────────────────

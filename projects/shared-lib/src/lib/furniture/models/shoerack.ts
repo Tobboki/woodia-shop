@@ -1,4 +1,4 @@
-﻿import * as THREE from 'three'
+import * as THREE from 'three'
 import { Blank } from '../primitives/blank'
 import { Drawer } from '../primitives/drawer'
 import { CM } from '../../types/product'
@@ -231,9 +231,9 @@ export class ShoeRack {
     this.captureBaseSize()
   }
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  // Rebuild â€” the core geometry builder
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ————————————————————————————————————————————————————————————————————————————————
+  // Rebuild — the core geometry builder
+  // ————————————————————————————————————————————————————————————————————————————————
 
   private rebuild() {
     this.width = this.targetWidth
@@ -632,34 +632,17 @@ export class ShoeRack {
     return cfg.drawers === 'all' || (cfg.drawers === 'some' && rowIndex % 2 !== 0)
   }
 
-  private setColumnHighlight(col: number | null, active: boolean) {
-    if (col === null) return
-    this.columnsGroup[col]?.traverse((obj) => {
-      if ((obj as THREE.Mesh).isMesh && obj.name !== 'invisible-hitbox') {
-        const mat = (obj as THREE.Mesh).material
-        if (Array.isArray(mat)) {
-          for (let i = 0; i <= 3; i++) {
-            const m = mat[i] as THREE.MeshStandardMaterial
-            if (m && m.emissive) {
-              m.emissive.set(active ? 0xaa0000 : 0x000000)
-              m.emissiveIntensity = active ? 0.6 : 0
-              m.polygonOffset = active
-              m.polygonOffsetFactor = active ? -1 : 0
-              m.polygonOffsetUnits = active ? -4 : 0
-            }
-          }
-        } else {
-          const m = mat as THREE.MeshStandardMaterial
-          if (m && m.emissive) {
-            m.emissive.set(active ? 0xaa0000 : 0x000000)
-            m.emissiveIntensity = active ? 0.6 : 0
-            m.polygonOffset = active
-            m.polygonOffsetFactor = active ? -1 : 0
-            m.polygonOffsetUnits = active ? -4 : 0
-          }
-        }
-      }
-    })
+  private columnHasDoorsOrDrawers(col: number | null): boolean {
+    if (col === null) return false
+    this.ensureColumnConfigs()
+    const cfg = this.columnConfigs[col]
+    if (!cfg) return false
+    if (cfg.hugeCell) return cfg.hugeCellDoor === true
+    return cfg.doors !== 'none' || cfg.drawers !== 'none'
+  }
+
+  private setColumnHighlight(_col: number | null, _active: boolean) {
+    // Highlight intentionally disabled — doors/drawers still animate on hover
   }
 
   // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

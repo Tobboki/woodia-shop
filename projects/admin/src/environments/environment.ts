@@ -4,10 +4,10 @@ export const environment = {
   endpoints: {
     auth: {
       login: '/Auth',
-      register: '/Auth/register',
+      // register: '/Auth/register',
       refreshToken: '/Auth/refresh',
-      confirmEmail: '/Auth/confirm-email',
-      resendConfirmation: '/Auth/resend-confirmation',
+      // confirmEmail: '/Auth/confirm-email',
+      // resendConfirmation: '/Auth/resend-confirmation',
     },
     upload: '/admin/Upload',
     category: {

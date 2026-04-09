@@ -17,7 +17,16 @@ import {
   lucideChevronUp,
   lucideHouse,
   lucideArmchair,
-  lucideLayoutGrid
+  lucideLayoutGrid,
+  lucidePlus,
+  lucideBlocks,
+  lucideEye,
+  lucideEyeOff,
+  lucideArrowLeft,
+  lucideArrowRight,
+  lucideSave,
+  lucideTrash2,
+  lucideLayers,
 } from '@ng-icons/lucide';
 import { provideRouter } from '@angular/router';
 
@@ -49,7 +58,16 @@ export const appConfig: ApplicationConfig = {
       lucideChevronUp,
       lucideHouse,
       lucideArmchair,
-      lucideLayoutGrid
+      lucideLayoutGrid,
+      lucidePlus,
+      lucideBlocks,
+      lucideEye,
+      lucideEyeOff,
+      lucideArrowLeft,
+      lucideArrowRight,
+      lucideSave,
+      lucideTrash2,
+      lucideLayers,
     }),
     provideRouter(routes), provideHttpClient(), provideTransloco({
         config: {

@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, tap, throwError } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { environment } from '@woodia-environments//environment';
 import { AuthService } from './auth.service';
 
 export interface IEmailVerificationData {
@@ -51,6 +51,21 @@ export class CustomerSettingsService {
   updateInfo(body: any): Observable<any> {
     return this.http
       .put(`${environment.apiUrl}/me/info`, body, this.headers)
+      .pipe(catchError(err => throwError(() => err)));
+  }
+
+  // ================================
+  //     add profile photo
+  // ================================
+  addProfileImage(photoUrl: string): Observable<any> {
+    return this.http
+      .post(`${environment.apiUrl}${environment.endpoints.customer.settings.account.addProfileImage}`, photoUrl, this.headers)
+      .pipe(catchError(err => throwError(() => err)));
+  }
+
+  updateProfileImage(photoUrl: string): Observable<any> {
+    return this.http
+      .put(`${environment.apiUrl}${environment.endpoints.customer.settings.account.updateProfileImage}`, photoUrl, this.headers)
       .pipe(catchError(err => throwError(() => err)));
   }
 

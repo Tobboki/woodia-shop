@@ -68,6 +68,7 @@
   --accent: oklch(0.92 0.04 250);
   --accent-foreground: oklch(0.286 0.0743 259.61);
   --destructive: oklch(0.5968 0.23956 19.6949);
+  --success: oklch(60.49% 0.107 184.17);
   --border: oklch(0.9 0.02 250);
   --input: oklch(0.9 0.02 250);
   --ring: oklch(0.5282 0.2628 262.87);
@@ -105,6 +106,7 @@
   --accent: oklch(0.35 0.05 250);
   --accent-foreground: oklch(0.95 0.01 250);
   --destructive: oklch(0.6798 0.20966331364664198 18.991221221142347);
+  --success: oklch(78.30% 0.141 181.38);
   --border: oklch(0.35 0.035 250);
   --input: oklch(0.35 0.035 250);
   --ring: oklch(0.7208 0.14506231083309437 260.8242405327947);
@@ -155,6 +157,7 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-success: var(--success);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -275,30 +278,3 @@
   border-radius: 5px;
   background: var(--muted);
 }
-
-/* Chrome, Edge */
-input::-ms-reveal,
-input::-ms-clear {
-  display: none !important;
-}
-
-input[type="password"]::-webkit-textfield-decoration-container {
-  display: none !important;
-}
-
-input[type="password"]::-webkit-inner-spin-button,
-  //input[type="password"]::-webkit-credentials-auto-fill-button,
-  //input[type="password"]::-webkit-p {
-  //  display: none !important;
-  //  visibility: hidden !important;
-  //}
-
-  /* Safari */
-input::-webkit-textfield-decoration-container {
-  display: none !important;
-}
-
-/* Firefox (never shows reveal button, but safe) */
-//input[type="password"]::-moz-password-toggle {
-//  display: none !important;
-//}

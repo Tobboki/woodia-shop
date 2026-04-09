@@ -19,6 +19,8 @@ import {
   DESK_TABLETOP_THICKNESS,
   DESK_LEGROOM_WIDTH_MIN,
   DESK_LEGROOM_WIDTH_MAX,
+  DESK_ROWS_MIN,
+  DESK_ROWS_MAX,
   SMOOTHING,
   EPS,
   DOOR_OPEN_ANGLE,
@@ -122,6 +124,11 @@ export class Desk {
     const next = { ...cur, ...config }
     if (next.doors === 'all' && next.drawers === 'all') next.drawers = 'none'
     if (next.drawers === 'all' && next.doors === 'all') next.doors = 'none'
+    // When hugeCell is on, doors/drawers are disabled (hugeCellDoor takes over)
+    if (next.hugeCell) {
+      next.doors = 'none'
+      next.drawers = 'none'
+    }
     this.columnConfigs[colIndex] = next
     this.rebuild()
     this.captureBaseSize()
@@ -387,7 +394,109 @@ export class Desk {
     columnGroup.userData['columnIndex'] = colIndex
 
     const colCfg = this.columnConfigs[colIndex] ?? defaultDeskColumnConfig()
-    const cells = 3 // Each column has 3 cells (shelves)
+
+    // ── Huge Cell: skip all internal shelves ──────────────────────────────────
+    if (colCfg.hugeCell) {
+      const yLow = 0               // bottom of column (sits on floor via wrapper)
+      const yHigh = height - DESK_TABLETOP_THICKNESS  // internal height below tabletop
+
+      // Left wall
+      columnGroup.add(
+        new Blank(
+          x, 0, 0,
+          x + thickness, height, depth,
+          origin, this.getMaterialArray(material), idRef.id++
+        ).build()
+      )
+      // Right wall
+      columnGroup.add(
+        new Blank(
+          x + width - thickness, 0, 0,
+          x + width, height, depth,
+          origin, this.getMaterialArray(material), idRef.id++
+        ).build()
+      )
+      // Back
+      columnGroup.add(
+        new Blank(
+          x + thickness, 0, 0,
+          x + width - thickness, yHigh, thickness,
+          origin, this.getMaterialArray(material), idRef.id++
+        ).build()
+      )
+      // Bottom shelf
+      columnGroup.add(
+        new Blank(
+          x + thickness, 0, thickness,
+          x + width - thickness, thickness, depth - thickness,
+          origin, this.getMaterialArray(material), idRef.id++
+        ).build()
+      )
+
+      // Huge cell door (spans the full internal height)
+      if (colCfg.hugeCellDoor) {
+        const clear = DOOR_DRAWER_CLEARANCE
+        const cellW = width - thickness * 2
+        const cellH = yHigh - thickness
+        const doorW = Math.max(0, cellW - 2 * clear)
+        const doorH = Math.max(0, cellH - 2 * clear)
+        if (doorW > 0 && doorH > 0) {
+          const doorThickness = thickness * 0.5
+          const doorGroup = new THREE.Group()
+          doorGroup.position.set(x + thickness + clear, thickness + clear, depth - doorThickness)
+          doorGroup.userData['door'] = true
+          doorGroup.userData['columnIndex'] = colIndex
+          doorGroup.userData['cellIndex'] = 0
+          const doorMesh = new Blank(
+            0, 0, 0,
+            doorW, doorH, doorThickness,
+            { x: 0, y: 0, z: 0 },
+            material.clone(),
+            idRef.id++
+          ).build()
+          doorMesh.userData['door'] = true
+          doorMesh.userData['columnIndex'] = colIndex
+          doorMesh.userData['cellIndex'] = 0
+          doorGroup.add(doorMesh)
+          columnGroup.add(doorGroup)
+        }
+      }
+
+      // Hitbox for the whole opening
+      const hitbox = new Blank(
+        x + thickness, 0, 0,
+        x + width - thickness, yHigh, depth,
+        origin, this.invisibleHitboxMaterial, idRef.id++
+      ).build()
+      hitbox.userData['columnIndex'] = colIndex
+      hitbox.userData['cellIndex'] = 0
+      hitbox.name = 'invisible-hitbox'
+      columnGroup.add(hitbox)
+
+      if (this.dimensionOverlayData) {
+        const cellW = width - thickness * 2
+        this.dimensionOverlayData.cells.push({
+          row: colIndex,
+          col: 0,
+          widthCm: Math.round(cellW / CM),
+          heightCm: Math.round(yHigh / CM),
+          localX: x + width / 2,
+          localY: yHigh / 2,
+          localZ: depth,
+        })
+      }
+
+      columnGroup.traverse((obj) => {
+        if ((obj as THREE.Mesh).isMesh) obj.userData['columnIndex'] = colIndex
+      })
+
+      return columnGroup
+    }
+
+    // ── Standard column: horizontal shelves ───────────────────────────────────
+    // Derive cell count from density (0–100 → DESK_ROWS_MIN–DESK_ROWS_MAX)
+    const density = colCfg.density ?? 50
+    const cells = Math.round(DESK_ROWS_MIN + (density / 100) * (DESK_ROWS_MAX - DESK_ROWS_MIN))
     // Internal structure (shelves, back) stops before tabletop
     const internalHeight = height - DESK_TABLETOP_THICKNESS
     const cellHeight = (internalHeight - thickness * (cells + 1)) / cells
@@ -599,20 +708,17 @@ export class Desk {
     return cfg.drawers === 'all' || (cfg.drawers === 'some' && cellIndex % 2 !== 0)
   }
 
-  private setColumnHighlight(col: number | null, active: boolean) {
-    if (col === null) return
-    this.columnsGroup[col]?.traverse((obj) => {
-      if ((obj as THREE.Mesh).isMesh && obj.name !== 'invisible-hitbox') {
-        const mat = (obj as THREE.Mesh).material as THREE.MeshStandardMaterial
-        if (mat && mat.emissive) {
-          mat.emissive.set(active ? 0xaa0000 : 0x000000)
-          mat.emissiveIntensity = active ? 0.6 : 0
-          mat.polygonOffset = active
-          mat.polygonOffsetFactor = active ? -1 : 0
-          mat.polygonOffsetUnits = active ? -4 : 0
-        }
-      }
-    })
+  private columnHasDoorsOrDrawers(col: number | null): boolean {
+    if (col === null) return false
+    this.ensureColumnConfigs()
+    const cfg = this.columnConfigs[col]
+    if (!cfg) return false
+    if (cfg.hugeCell) return cfg.hugeCellDoor === true
+    return cfg.doors !== 'none' || cfg.drawers !== 'none'
+  }
+
+  private setColumnHighlight(_col: number | null, _active: boolean) {
+    // Highlight intentionally disabled — doors/drawers still animate on hover
   }
 
   update(dt = SMOOTHING) {

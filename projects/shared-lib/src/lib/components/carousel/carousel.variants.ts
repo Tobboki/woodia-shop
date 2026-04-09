@@ -20,7 +20,7 @@ export const carouselVariants = cva('overflow-hidden', {
 export const carouselContentVariants = cva('flex', {
   variants: {
     zOrientation: {
-      horizontal: '-ml-4 mr-0.5 px-[8px]',
+      horizontal: 'mr-0.5',
       vertical: '-mt-4 flex-col',
     },
   },

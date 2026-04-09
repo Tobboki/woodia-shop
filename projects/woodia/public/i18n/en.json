@@ -1,6 +1,12 @@
 {
   "app": {
     "appTitle": "Woodia",
+    "header": {
+      "menu": {
+        "settings": "Settings",
+        "logout": "Logout"
+      }
+    },
     "footer": {
       "message": "All Rights Reserved."
     },
@@ -9,6 +15,29 @@
       "callbackMessage": " please return to the homepage and try again.",
       "callbackButton": "Go To Homepage"
     }
+  },
+  "features": {
+    "customers": {
+      "jobs": {
+        "title": "My Jobs",
+        "description": "Manage your active commissions, review artisan bids, and track the progress of your bespoke furniture pieces.",
+        "jobStatus": {
+          "all": "All",
+          "pending": "Pending",
+          "inProgress": "In Progress",
+          "completed": "Completed",
+          "canceled": "Canceled"
+        },
+        "displayModeOptions": {
+          "list": "List",
+          "grid": "Grid",
+          "calendar": "Calendar"
+        }
+      }
+    }
+  },
+  "responseKeys": {
+    "createdAt": "Created"
   },
   "themeMode": {
     "title": "Theme",

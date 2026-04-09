@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, tap, catchError, throwError, firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
-import { environment } from '../../../environments/environment';
+import { environment } from '@woodia-environments/environment';
 import { OAuthService } from 'angular-oauth2-oidc';
 
 export interface LoginCredentials {

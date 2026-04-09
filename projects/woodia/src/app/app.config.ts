@@ -3,7 +3,7 @@ import {
   importProvidersFrom,
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
-  isDevMode
+  isDevMode, LOCALE_ID,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
@@ -12,9 +12,18 @@ import {
   withInterceptors
 } from '@angular/common/http';
 import { OAuthModule, provideOAuthClient } from 'angular-oauth2-oidc';
-import { authInterceptor } from './core/interceptors/auth-interceptor';
+import { authInterceptor } from '@woodia-core/interceptors/auth.interceptor';
 import {provideTransloco} from '@jsverse/transloco';
 import { TranslocoHttpLoader } from './transloco-loader';
+
+import localeEn from '@angular/common/locales/en';
+import localeAr from '@angular/common/locales/ar';
+import {registerLocaleData} from '@angular/common';
+
+registerLocaleData(localeEn);
+registerLocaleData(localeAr);
+
+
 import {provideIcons} from '@ng-icons/core';
 import {
   lucideSun,
@@ -52,6 +61,19 @@ import {
   lucideBell,
   lucideSettings,
   lucideMessagesSquare,
+  lucideList,
+  lucideGrid,
+  lucideCalendar,
+  lucideMessageSquare,
+  lucideRotateCw,
+  lucideRotateCcw,
+  lucideBadge,
+  lucideCircle,
+  lucideLoaderCircle,
+  lucideEllipsisVertical,
+  lucideEllipsis,
+  lucideSave,
+  lucideBlocks,
 } from '@ng-icons/lucide';
 
 export const appConfig: ApplicationConfig = {
@@ -92,6 +114,19 @@ export const appConfig: ApplicationConfig = {
       lucideBell,
       lucideSettings,
       lucideMessagesSquare,
+      lucideList,
+      lucideGrid,
+      lucideCalendar,
+      lucideMessageSquare,
+      lucideRotateCw,
+      lucideRotateCcw,
+      lucideBadge,
+      lucideCircle,
+      lucideLoaderCircle,
+      lucideEllipsisVertical,
+      lucideEllipsis,
+      lucideSave,
+      lucideBlocks,
     }),
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
@@ -101,6 +136,7 @@ export const appConfig: ApplicationConfig = {
     ),
     importProvidersFrom(OAuthModule.forRoot()),
     provideOAuthClient(),
+    { provide: LOCALE_ID, useValue: 'ar' },
     provideTransloco({
       config: {
         availableLangs: ['en', 'ar'],

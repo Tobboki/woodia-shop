@@ -41,8 +41,10 @@ export interface BedsideColumnConfig {
   drawers: RowFill
   /** When true the column has no internal horizontal shelves — one tall open cubby. */
   hugeCell: boolean
+  /** When true (and hugeCell is true) a full-height door is added to the column opening. */
+  hugeCellDoor: boolean
 }
 
 export function defaultBedsideColumnConfig(): BedsideColumnConfig {
-  return { doors: 'none', drawers: 'none', hugeCell: false }
+  return { doors: 'none', drawers: 'none', hugeCell: false, hugeCellDoor: false }
 }

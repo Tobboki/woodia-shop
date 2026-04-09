@@ -46,6 +46,8 @@ export interface ShoeColumnConfig {
   drawers: RowFill
   /** When true the column has no internal horizontal shelves. */
   hugeCell: boolean
+  /** When true (and hugeCell is true) a full-height door is added to the column opening. */
+  hugeCellDoor: boolean
 }
 
 export function defaultShoeColumnConfig(): ShoeColumnConfig {
@@ -54,5 +56,6 @@ export function defaultShoeColumnConfig(): ShoeColumnConfig {
     doors: 'none',
     drawers: 'none',
     hugeCell: false,
+    hugeCellDoor: false,
   }
 }

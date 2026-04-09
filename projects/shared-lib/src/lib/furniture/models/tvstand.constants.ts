@@ -24,6 +24,14 @@ export const TV_DEPTH_MAX = 60 * CM
 export const SMOOTHING = 0.12
 /** Small epsilon to eliminate z-fighting on back panels. */
 export const EPS = 0.01 * CM
+
+// ─── Leg constants ─────────────────────────────────────────────────────────────
+/** Height of each corner leg when legs are enabled. */
+export const TV_LEG_HEIGHT = 8 * CM
+/** Width/depth of each square leg. */
+export const TV_LEG_WIDTH = 3 * CM
+/** Inset from the outer corner so legs sit just inside the side panels. */
+export const TV_LEG_INSET = 1 * CM
 /** Clearance so doors/drawers never overlap their surrounding frame. */
 export const DOOR_DRAWER_CLEARANCE = 0.001
 /** Door open angle in radians (~77° outward). */
@@ -46,8 +54,10 @@ export interface TvColumnConfig {
   drawers: RowFill
   /** When true the column is rendered as one tall unpartitioned cell. */
   hugeCell: boolean
+  /** When true (and hugeCell is true) a full-height door is added to the column opening. */
+  hugeCellDoor: boolean
 }
 
 export function defaultTvColumnConfig(): TvColumnConfig {
-  return { doors: 'none', drawers: 'none', hugeCell: false }
+  return { doors: 'none', drawers: 'none', hugeCell: false, hugeCellDoor: false }
 }

@@ -87,6 +87,12 @@ export interface BookcaseConfigJson {
 export interface DeskColumnConfig {
   doors: RowFill
   drawers: RowFill
+  /** 0–100: controls how many shelf rows are in the column (0 = fewest, 100 = most). */
+  density: number
+  /** When true the column is rendered as a single tall unpartitioned cell. Disables shelves. */
+  hugeCell: boolean
+  /** When true (and hugeCell is true) a full-height door is added to the column opening. */
+  hugeCellDoor: boolean
 }
 
 /** JSON-serializable config for a desk (e.g. for API or persistence). Lengths in cm. */
@@ -106,6 +112,8 @@ export interface TvColumnConfig {
   drawers: RowFill
   /** When true the column is rendered as a single tall unpartitioned cell. */
   hugeCell: boolean
+  /** When true (and hugeCell is true) a full-height door is added to the column opening. */
+  hugeCellDoor: boolean
 }
 
 /** JSON-serializable config for a TvStand (lengths in cm). */
@@ -141,6 +149,8 @@ export interface ShoeColumnConfig {
   drawers: RowFill
   /** When true the column has no internal horizontal shelves. */
   hugeCell: boolean
+  /** When true (and hugeCell is true) a full-height door is added to the column opening. */
+  hugeCellDoor: boolean
 }
 
 /** JSON-serializable config for a ShoeRack (lengths in cm). */
@@ -169,6 +179,8 @@ export interface BedsideColumnConfig {
   drawers: RowFill
   /** When true the column has no internal shelves — one tall open cubby. */
   hugeCell: boolean
+  /** When true (and hugeCell is true) a full-height door is added to the column opening. */
+  hugeCellDoor: boolean
 }
 
 /** JSON-serializable config for a BedsideTable (lengths in cm). */

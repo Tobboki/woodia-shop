@@ -15,6 +15,9 @@ import {
   TV_CELL_HEIGHT_MAX,
   TV_DEPTH_MIN,
   TV_DEPTH_MAX,
+  TV_LEG_HEIGHT,
+  TV_LEG_WIDTH,
+  TV_LEG_INSET,
   SMOOTHING,
   EPS,
   DOOR_OPEN_ANGLE,
@@ -88,6 +91,8 @@ export class TvStand {
   private edgeMaterial: THREE.MeshStandardMaterial
   private invisibleHitboxMaterial: THREE.MeshBasicMaterial
   private rowStyle: RowStyle = 'grid'
+  /** When true, render 4 corner box legs below the main body. */
+  private withLegs: boolean = false
 
   // ── per-column configuration ──────────────────────────────────────────────
   private columnConfigs: TvColumnConfig[] = []
@@ -253,6 +258,16 @@ export class TvStand {
     return this.rowStyle
   }
 
+  setWithLegs(value: boolean) {
+    this.withLegs = value
+    this.rebuild()
+    this.captureBaseSize()
+  }
+
+  getWithLegs(): boolean {
+    return this.withLegs
+  }
+
   // ───────────────────────────────────────────────────────────────────────────
   // Main rebuild
   // ───────────────────────────────────────────────────────────────────────────
@@ -267,19 +282,21 @@ export class TvStand {
 
     const idRef = { id: this.meshIdStart }
     const { width, height, depth, thickness, columns, rows, origin, material, withBack } = this
+    /** Y offset: when legs are enabled the whole cabinet body is lifted by leg height. */
+    const legYOffset = this.withLegs ? TV_LEG_HEIGHT : 0
 
     // ── dimension overlay init ───────────────────────────────────────────────
     this.dimensionOverlayData = {
       totalWidthCm: Math.round(width / CM),
-      totalHeightCm: Math.round(height / CM),
+      totalHeightCm: Math.round((height + legYOffset) / CM),
       totalDepthCm: Math.round(depth / CM),
       totalWidthLineLocal: {
-        start: { x: 0, y: height, z: depth },
-        end: { x: width, y: height, z: depth },
+        start: { x: 0, y: height + legYOffset, z: depth },
+        end: { x: width, y: height + legYOffset, z: depth },
       },
       totalHeightLineLocal: {
         start: { x: width, y: 0, z: depth },
-        end: { x: width, y: height, z: depth },
+        end: { x: width, y: height + legYOffset, z: depth },
       },
       totalDepthLineLocal: {
         start: { x: 0, y: 0, z: depth },
@@ -288,36 +305,65 @@ export class TvStand {
       cells: [],
     }
 
+    // ── Corner legs & Intermediate legs (below cabinet body, only when withLegs) ──
+    if (this.withLegs) {
+      const lw = TV_LEG_WIDTH
+      const li = TV_LEG_INSET
+      
+      const maxSpan = 80 * CM; 
+      const availableSpan = width - 2 * li - lw;
+      const numSegments = Math.ceil(availableSpan / maxSpan);
+      const numLegsX = numSegments + 1;
+
+      for (let i = 0; i < numLegsX; i++) {
+        const fraction = numLegsX > 1 ? i / (numLegsX - 1) : 0;
+        const x1 = li + fraction * availableSpan;
+        const x2 = x1 + lw;
+
+        // Front leg
+        this.group.add(
+          new Blank(x1, 0, li, x2, TV_LEG_HEIGHT, li + lw, origin, this.getMaterialArray(material), idRef.id++).build()
+        )
+        // Back leg
+        this.group.add(
+          new Blank(x1, 0, depth - li - lw, x2, TV_LEG_HEIGHT, depth - li, origin, this.getMaterialArray(material), idRef.id++).build()
+        )
+      }
+    }
+
+    // Y0: base Y of the cabinet body (0 normally, legYOffset when legs enabled)
+    const Y0 = legYOffset
+
     // ── outer frame ──────────────────────────────────────────────────────────
     // Bottom panel (full width)
     this.group.add(
       new Blank(
-        thickness, 0, 0,
-        width - thickness, thickness, depth,
+        thickness, Y0, 0,
+        width - thickness, Y0 + thickness, depth,
         origin, this.getMaterialArray(material), idRef.id++
       ).build()
     )
     // Top panel (full width)
     this.group.add(
       new Blank(
-        thickness, height - thickness, 0,
-        width - thickness, height, depth,
+        thickness, Y0 + height - thickness, 0,
+        width - thickness, Y0 + height, depth,
         origin, this.getMaterialArray(material), idRef.id++
       ).build()
     )
     // Left outer side panel
     this.group.add(
       new Blank(
-        thickness, 0, 0,
-        thickness * 2, height, depth,
+        thickness, Y0, 0,
+        thickness * 2, Y0 + height, depth,
         origin, this.getMaterialArray(material), idRef.id++
       ).build()
     )
     // Right outer side panel
     this.group.add(
       new Blank(
-        width - thickness * 2, 0, 0,
-        width - thickness, height, depth,
+        width - thickness * 2, Y0, 0,
+        width - thickness, Y0 + height, depth,
         origin, this.getMaterialArray(material), idRef.id++
       ).build()
     )
@@ -348,7 +394,11 @@ export class TvStand {
         totalRaw += w
       }
       const scale = availableWidth / totalRaw
-      columnWidths = rawWidths.map((w) => w * scale)
+      // Clamp each width within valid per-column bounds, then renormalize
+      const raw = rawWidths.map((w) => Math.max(TV_COLUMN_WIDTH_MIN, Math.min(TV_COLUMN_WIDTH_MAX, w * scale)))
+      const rawSum = raw.reduce((a, b) => a + b, 0)
+      const rescale = rawSum > 0 ? availableWidth / rawSum : 1
+      columnWidths = raw.map((w) => w * rescale)
     } else if (this.rowStyle === 'stagger') {
       const availableWidth = openingWidth - (columns - 1) * thickness
       let totalRaw = 0
@@ -361,7 +411,11 @@ export class TvStand {
         totalRaw += w
       }
       const scale = availableWidth / totalRaw
-      columnWidths = rawWidths.map((w) => w * scale)
+      // Clamp each width within valid per-column bounds, then renormalize
+      const raw = rawWidths.map((w) => Math.max(TV_COLUMN_WIDTH_MIN, Math.min(TV_COLUMN_WIDTH_MAX, w * scale)))
+      const rawSum = raw.reduce((a, b) => a + b, 0)
+      const rescale = rawSum > 0 ? availableWidth / rawSum : 1
+      columnWidths = raw.map((w) => w * rescale)
     } else {
       columnWidths = Array(columns).fill(baseCellWidth)
     }
@@ -395,8 +449,8 @@ export class TvStand {
       if (c < columns - 1) {
         this.group.add(
           new Blank(
-            xRight, thickness, EPS,
-            xRight + thickness, height - thickness, depth,
+            xRight, Y0 + thickness, EPS,
+            xRight + thickness, Y0 + height - thickness, depth,
             origin, this.getMaterialArray(material), idRef.id++
           ).build()
         )
@@ -404,8 +458,8 @@ export class TvStand {
 
       // ── Huge Cell: one single tall opening, no internal shelves ─────────────
       if (colCfg.hugeCell) {
-        const yLow = thickness
-        const yHigh = height - thickness
+        const yLow = Y0 + thickness
+        const yHigh = Y0 + height - thickness
         const opening_H = yHigh - yLow
 
         if (withBack) {
@@ -416,6 +470,30 @@ export class TvStand {
               origin, this.getMaterialArray(material), idRef.id++
             ).build()
           )
+        }
+
+        // Huge cell door spanning the full opening height
+        if (colCfg.hugeCellDoor) {
+          const clear = DOOR_DRAWER_CLEARANCE
+          const cellW = columnWidths[c]
+          const doorW = Math.max(0, cellW - 2 * clear)
+          const doorH = Math.max(0, opening_H - 2 * clear)
+          if (doorW > 0 && doorH > 0) {
+            const doorThickness = this.thickness * 0.5
+            const doorGroup = new THREE.Group()
+            doorGroup.position.set(xLeft + clear, yLow + clear, depth - doorThickness)
+            doorGroup.userData['door'] = true
+            doorGroup.userData['colIndex'] = c
+            doorGroup.userData['rowIndex'] = 0
+            const doorMesh = new Blank(
+              0, 0, 0,
+              doorW, doorH, doorThickness,
+              { x: 0, y: 0, z: 0 },
+              this.getMaterialArray(material), idRef.id++
+            ).build()
+            doorGroup.add(doorMesh)
+            colGroup.add(doorGroup)
+          }
         }
 
         // Hitbox for raycasting
@@ -454,7 +532,7 @@ export class TvStand {
       // ── Standard column: horizontal shelves divide into `rows` cells ─────────
       for (let r = 0; r < rows - 1; r++) {
         // Shelf at top of cell r (= bottom of cell r+1)
-        const shelfY = thickness + (r + 1) * (cellHeight + thickness) - thickness
+        const shelfY = Y0 + thickness + (r + 1) * (cellHeight + thickness) - thickness
         colGroup.add(
           new Blank(
             xLeft, shelfY, EPS,
@@ -470,7 +548,7 @@ export class TvStand {
       const bothSet = doorFill !== 'none' && drawerFill !== 'none'
 
       for (let r = 0; r < rows; r++) {
-        const yLow = thickness + r * (cellHeight + thickness)
+        const yLow = Y0 + thickness + r * (cellHeight + thickness)
         const yHigh = yLow + cellHeight
         const cellW = columnWidths[c]
         const cellD = depth - thickness * 2
@@ -660,13 +738,24 @@ export class TvStand {
       this.cellHasDrawer(colIndex, rowIndex) && colIndex !== null && rowIndex !== null
         ? { col: colIndex, row: rowIndex }
         : null
+
+    // Huge-cell door: rowIndex is always 0; set hoveredDoor even when rowIndex was null
+    if (colIndex !== null && rowIndex === null) {
+      const cfg = this.columnConfigs[colIndex]
+      if (cfg?.hugeCell && cfg?.hugeCellDoor) {
+        this.hoveredDoor = { col: colIndex, row: 0 }
+      }
+    }
   }
 
   private cellHasDoor(colIndex: number | null, rowIndex: number | null): boolean {
     if (colIndex === null || rowIndex === null) return false
     this.ensureColumnConfigs()
     const cfg = this.columnConfigs[colIndex]
-    if (!cfg || cfg.doors === 'none' || cfg.hugeCell) return false
+    if (!cfg) return false
+    // Huge-cell door is a special case: rowIndex is always 0
+    if (cfg.hugeCell) return cfg.hugeCellDoor === true && rowIndex === 0
+    if (cfg.doors === 'none') return false
     return cfg.doors === 'all' || (cfg.doors === 'some' && rowIndex % 2 === 0)
   }
 
@@ -678,34 +767,17 @@ export class TvStand {
     return cfg.drawers === 'all' || (cfg.drawers === 'some' && rowIndex % 2 !== 0)
   }
 
-  private setColumnHighlight(col: number | null, active: boolean) {
-    if (col === null) return
-    this.columnsGroup[col]?.traverse((obj) => {
-      if ((obj as THREE.Mesh).isMesh && obj.name !== 'invisible-hitbox') {
-        const mat = (obj as THREE.Mesh).material
-        if (Array.isArray(mat)) {
-          for (let i = 0; i <= 3; i++) {
-            const m = mat[i] as THREE.MeshStandardMaterial
-            if (m && m.emissive) {
-              m.emissive.set(active ? 0xaa0000 : 0x000000)
-              m.emissiveIntensity = active ? 0.6 : 0
-              m.polygonOffset = active
-              m.polygonOffsetFactor = active ? -1 : 0
-              m.polygonOffsetUnits = active ? -4 : 0
-            }
-          }
-        } else {
-          const m = mat as THREE.MeshStandardMaterial
-          if (m && m.emissive) {
-            m.emissive.set(active ? 0xaa0000 : 0x000000)
-            m.emissiveIntensity = active ? 0.6 : 0
-            m.polygonOffset = active
-            m.polygonOffsetFactor = active ? -1 : 0
-            m.polygonOffsetUnits = active ? -4 : 0
-          }
-        }
-      }
-    })
+  private columnHasDoorsOrDrawers(col: number | null): boolean {
+    if (col === null) return false
+    this.ensureColumnConfigs()
+    const cfg = this.columnConfigs[col]
+    if (!cfg) return false
+    if (cfg.hugeCell) return cfg.hugeCellDoor === true
+    return cfg.doors !== 'none' || cfg.drawers !== 'none'
+  }
+
+  private setColumnHighlight(_col: number | null, _active: boolean) {
+    // Highlight intentionally disabled — doors/drawers still animate on hover
   }
 
   // ───────────────────────────────────────────────────────────────────────────

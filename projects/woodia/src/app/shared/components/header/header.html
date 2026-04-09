@@ -4,7 +4,7 @@
     <logo class="md:hidden mr-4"/>
 
     <!-- Desktop Menu -->
-    <div class="max-md:hidden max-w-screen-xl flex items-center justify-between mx-auto">
+    <div class="max-md:hidden container flex items-center justify-between mx-auto">
       <!-- Desktop Navigation -->
       <div class="flex items-center">
         <logo class="mr-4"/>
@@ -25,7 +25,7 @@
               >
                 {{ menuItem.label }}
                 <!-- marked icon test -->
-                <ng-icon name="lucideChevronDown" size="24" />
+                <ng-icon name="lucideChevronDown" />
               </a>
 
               <ng-template #designsCategories>
@@ -215,7 +215,7 @@
             <button
               z-menu
               [zMenuTriggerFor]="userManager"
-              zPlacement="bottomRight"
+              [zPlacement]=" isRtl() ? 'bottomRight' : 'bottomLeft' "
             >
               <z-avatar
                 zSrc="/images/auth/customer.jpg"
@@ -232,7 +232,7 @@
                 >
                   <ng-icon name="lucideSettings" />
                   <span>
-                    Settings
+                    {{ t('app.header.menu.settings') }}
                   </span>
                 </a>
                 <!-- Theme Manager -->
@@ -386,7 +386,7 @@
           zSize="icon-lg"
           (click)="isMenuOpen.set(false)"
         >
-          <ng-icon name="lucideX" class="size-8" />
+          <ng-icon name="lucideX"/>
         </button>
       </div>
 

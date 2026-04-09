@@ -244,6 +244,7 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
   tvStandDepthCm = signal(40)
   tvStandColor = signal('#d2b48c')
   tvStandWithBack = signal(true)
+  tvStandWithLegs = signal(false)
   tvStandStyle = signal<RowStyle>('grid')
   selectedTvColumnIndex = signal(0)
   tvColumnCount = signal(0)
@@ -551,6 +552,7 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
     )
     this.tvStand = tvStand
     this.tvStand.setRowStyle(this.tvStandStyle())
+    this.tvStand.setWithLegs(this.tvStandWithLegs())
     const productVal = this.product()
     if (this.modelType() === 'TvStand' && productVal?.category === 'TvStand' && productVal.modelConfig) {
       const c = productVal.modelConfig as TvStandModelConfig
@@ -710,6 +712,27 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
     const next: Partial<DeskColumnConfig> = { drawers: v }
     if (v === 'all') next.doors = 'none'
     this.desk.setColumnConfig(c, { ...cur, ...next })
+  }
+
+  onColumnDensityChange(value: number) {
+    if (!this.desk) return
+    const c = this.selectedColumnIndex()
+    const cur = this.desk.getColumnConfig(c)
+    this.desk.setColumnConfig(c, { ...cur, density: value })
+  }
+
+  onColumnHugeCellChange(value: boolean) {
+    if (!this.desk) return
+    const c = this.selectedColumnIndex()
+    const cur = this.desk.getColumnConfig(c)
+    this.desk.setColumnConfig(c, { ...cur, hugeCell: value, hugeCellDoor: value ? cur.hugeCellDoor : false })
+  }
+
+  onColumnHugeCellDoorChange(value: boolean) {
+    if (!this.desk) return
+    const c = this.selectedColumnIndex()
+    const cur = this.desk.getColumnConfig(c)
+    this.desk.setColumnConfig(c, { ...cur, hugeCellDoor: value })
   }
 
   // ——— Bookcase handlers ———
@@ -880,6 +903,12 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
     if (this.tvStand) this.tvStand.setRowStyle(style)
   }
 
+  onTvStandWithLegsChange(enabled: boolean) {
+    this.tvStandWithLegs.set(enabled)
+    if (this.tvStand) this.tvStand.setWithLegs(enabled)
+    this.scheduleCameraUpdate()
+  }
+
   tvColumnIndices(): number[] {
     const n = this.tvColumnCount()
     return Array.from({ length: n }, (_, i) => i)
@@ -902,7 +931,14 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
     if (!this.tvStand) return
     const c = this.selectedTvColumnIndex()
     const cur = this.tvStand.getColumnConfig(c)
-    this.tvStand.setColumnConfig(c, { ...cur, hugeCell: enabled })
+    this.tvStand.setColumnConfig(c, { ...cur, hugeCell: enabled, hugeCellDoor: enabled ? cur.hugeCellDoor : false })
+  }
+
+  onTvColumnHugeCellDoorChange(enabled: boolean) {
+    if (!this.tvStand) return
+    const c = this.selectedTvColumnIndex()
+    const cur = this.tvStand.getColumnConfig(c)
+    this.tvStand.setColumnConfig(c, { ...cur, hugeCellDoor: enabled })
   }
 
   onTvColumnDoorsChange(value: string | string[]) {
@@ -984,7 +1020,14 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
     if (!this.shoeRack) return
     const c = this.selectedShoeColumnIndex()
     const cur = this.shoeRack.getColumnConfig(c)
-    this.shoeRack.setColumnConfig(c, { ...cur, hugeCell: enabled })
+    this.shoeRack.setColumnConfig(c, { ...cur, hugeCell: enabled, hugeCellDoor: enabled ? cur.hugeCellDoor : false })
+  }
+
+  onShoeColumnHugeCellDoorChange(enabled: boolean) {
+    if (!this.shoeRack) return
+    const c = this.selectedShoeColumnIndex()
+    const cur = this.shoeRack.getColumnConfig(c)
+    this.shoeRack.setColumnConfig(c, { ...cur, hugeCellDoor: enabled })
   }
 
   onShoeColumnDoorsChange(value: string | string[]) {
@@ -1082,7 +1125,14 @@ export class DesignConfigurator implements AfterViewInit, OnDestroy {
     if (!this.bedsideTable) return
     const c = this.selectedBedsideColumnIndex()
     const cur = this.bedsideTable.getColumnConfig(c)
-    this.bedsideTable.setColumnConfig(c, { ...cur, hugeCell: enabled })
+    this.bedsideTable.setColumnConfig(c, { ...cur, hugeCell: enabled, hugeCellDoor: enabled ? cur.hugeCellDoor : false })
+  }
+
+  onBedsideColumnHugeCellDoorChange(enabled: boolean) {
+    if (!this.bedsideTable) return
+    const c = this.selectedBedsideColumnIndex()
+    const cur = this.bedsideTable.getColumnConfig(c)
+    this.bedsideTable.setColumnConfig(c, { ...cur, hugeCellDoor: enabled })
   }
 
   onBedsideColumnDoorsChange(value: string | string[]) {

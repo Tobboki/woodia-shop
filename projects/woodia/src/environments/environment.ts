@@ -19,6 +19,8 @@ export const environment = {
       me: '/me',
       settings: {
         account: {
+          addProfileImage: '/me/profile-image',
+          updateProfileImage: '/me/profile-image',
           info: '/me/info',
           updateEmail: '/me/change-email',
           verifyEmail: '/me/verify-email',
@@ -38,6 +40,15 @@ export const environment = {
         getAll: '/api/Product',
         getById: (id: number) => `/api/Product/${id}`,
         getByCategorySlug: (slug: string) => `/api/Category/${slug}/Products`,
+      },
+      job: {
+        create: '/api/Job',
+        update: (id: number) => `/api/Job/${id}`,
+        myJobs: '/api/Job',
+        getById: (id: number) => `/api/Job/${id}`,
+        updateStatusComplete: (id: number) => `/api/Job/${id}/complete`,
+        updateStatusCanceled: (id: number) => `/api/Job/${id}/cancele`,
+        updateStatusInProgress: (id: number) => `/api/Job/${id}/inprogress`,
       },
     },
   },

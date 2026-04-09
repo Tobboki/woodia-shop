@@ -1,9 +1,31 @@
 import { Routes } from '@angular/router';
 import { Home } from './features/home/home';
-import { MainLayout } from './shared/layouts/main.layout/main.layout';
+import { MainLayout } from '@admin-shared/layouts/main/main.layout';
 import { ErrorPage } from './features/error-page/error-page';
+import {authGuard} from '@admin-shared/guards/auth.guard';
+import {Login} from '@admin-features/auth/login/login';
+import {PlainLayout} from '@admin-shared/layouts/plain/plain.layout';
 
 export const routes: Routes = [
+
+  // Auth
+  {
+    path: 'auth',
+    component: PlainLayout,
+    children: [
+      {
+        path: '',
+        redirectTo: 'login',
+        pathMatch: 'full',
+      },
+      {
+        path: 'login',
+        component: Login,
+      },
+    ],
+  },
+
+  // Admin Board
   {
     path: '',
     component: MainLayout,
@@ -31,7 +53,7 @@ export const routes: Routes = [
   // Error
     {
       path: '**',
-      component: MainLayout,
+      component: PlainLayout,
       children: [
         {
           path: '',

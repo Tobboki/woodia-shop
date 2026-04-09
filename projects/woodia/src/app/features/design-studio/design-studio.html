@@ -1,82 +1,170 @@
-<!-- Full-page loading skeleton when product is being fetched -->
 @if (productLoading()) {
-<div class="flex flex-col h-screen w-full">
-  <!-- Configurator skeleton -->
-  <div class="flex-1 min-h-0 flex">
-    <div class="flex-1 bg-muted animate-pulse rounded-lg m-4"></div>
-    <div class="w-[320px] bg-muted/60 animate-pulse rounded-lg m-4 ml-0"></div>
+  <div class="flex flex-col h-screen w-full">
+    <div class="flex-1 min-h-0 flex">
+      <div class="flex-1 bg-muted animate-pulse rounded-lg m-4"></div>
+      <div class="w-[320px] bg-muted/60 animate-pulse rounded-lg m-4 ml-0"></div>
+    </div>
+
+    <div class="p-6 grid grid-cols-3 gap-2" style="grid-template-rows: 240px 160px">
+      <div class="row-span-2 bg-muted animate-pulse rounded-lg"></div>
+      <div class="bg-muted/70 animate-pulse rounded-lg"></div>
+      <div class="bg-muted/70 animate-pulse rounded-lg"></div>
+      <div class="col-span-2 bg-muted/50 animate-pulse rounded-lg"></div>
+    </div>
   </div>
-  <!-- Gallery skeleton -->
-  <div class="p-6 grid grid-cols-3 gap-2" style="grid-template-rows: 240px 160px">
-    <div class="row-span-2 bg-muted animate-pulse rounded-lg"></div>
-    <div class="col-span-1 bg-muted/70 animate-pulse rounded-lg"></div>
-    <div class="col-span-1 bg-muted/70 animate-pulse rounded-lg"></div>
-    <div class="col-span-2 bg-muted/50 animate-pulse rounded-lg"></div>
-  </div>
-</div>
+
 } @else if (productError()) {
-<!-- Product load failure -->
-<div class="flex flex-col items-center justify-center h-screen gap-6 text-center px-4">
-  <div class="size-20 rounded-full bg-muted flex items-center justify-center">
-    <ng-icon name="lucideTriangleAlert" class="size-10 text-muted-foreground"  />
+
+  <div class="flex flex-col items-center justify-center h-screen gap-6 text-center px-4">
+    <div class="size-20 rounded-full bg-muted flex items-center justify-center">
+      <ng-icon name="lucideTriangleAlert" class="size-10 text-muted-foreground" />
+    </div>
+
+    <div>
+      <h2 class="font-h3">Product not found</h2>
+      <p class="text-muted-foreground">
+        We couldn't load this product.
+      </p>
+    </div>
+
+    <a routerLink="/designs/Bookcase" class="px-6 py-3 bg-primary text-white rounded-full">
+      Back
+    </a>
   </div>
-  <div class="space-y-2">
-    <h2 class="font-h3 text-foreground">Product not found</h2>
-    <p class="font-body text-muted-foreground max-w-sm">
-      We couldn't load this product. It may have been removed or the link is incorrect.
-    </p>
-  </div>
-  <a
-    routerLink="/designs/Bookcase"
-    class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-full font-medium text-sm hover:opacity-90 transition-opacity"
-  >
-    <ng-icon name="lucideArrowLeft" class="size-4" />
-    Browse all designs
-  </a>
-</div>
+
 } @else {
-<!-- Design Configurator — full viewport height -->
-<div class="h-[calc(100vh-92px)] min-h-0 overflow-hidden">
-  <woodia-design-configurator [product]="product()" [modelType]="modelType()" class="block h-full" />
-</div>
 
-<!-- Inspiration Gallery -->
-<section class="p-6 pt-8 pb-12 max-w-7xl mx-auto">
-  <div class="mb-6">
-    <h1 class="text-3xl font-bold text-foreground">In the room</h1>
-    <p class="font-body text-muted-foreground mt-1">See how it looks in real spaces</p>
-  </div>
+  @if (step() === 1) {
 
-  @if (images.length === 0) {
-  <!-- Empty state -->
-  <div
-    class="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border bg-muted/30 py-20 gap-4 text-center">
-    <div class="size-16 rounded-full bg-muted flex items-center justify-center">
-      <ng-icon name="lucideImage" class="size-8 text-muted-foreground" />
-    </div>
-    <div class="space-y-1">
-      <p class="font-label text-foreground">No photos yet</p>
-      <p class="font-caption text-muted-foreground">Inspiration images will appear here once available</p>
-    </div>
-  </div>
-  } @else {
-  <!-- Masonry-style gallery matching the reference layout -->
-  <div class="gallery-grid">
-    @for (img of images.slice(0, 10); track img; let i = $index) {
-    <div class="gallery-cell gallery-cell-{{ i }} overflow-hidden rounded-lg bg-muted relative group">
-      @if (!imageErrors()[i]) {
-      <img [src]="img" [alt]="'Product photo ' + (i + 1)" (error)="onImageError(i)"
-        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
-      } @else {
-      <!-- Per-image error state -->
-      <div class="w-full h-full flex flex-col items-center justify-center gap-2 text-muted-foreground">
-        <ng-icon name="lucideImageOff" class="size-8" />
-        <span class="text-xs font-medium">Image unavailable</span>
+    <!-- STEP 1 -->
+    <div class="flex flex-col border bg-card rounded-lg">
+      <woodia-design-configurator
+        [product]="product()"
+        [modelType]="modelType()"
+      />
+
+      <div class="p-2 flex justify-between border-t">
+        <span>Ready?</span>
+        <z-button (click)="nextStep()">Post Job</z-button>
       </div>
-      }
     </div>
-    }
-  </div>
+
+    <section class="p-6 max-w-7xl mx-auto">
+      <h1 class="text-3xl font-bold">In the room</h1>
+
+      @if (images.length === 0) {
+        <div class="text-center py-20">
+          No images
+        </div>
+      } @else {
+        <div class="grid grid-cols-3 gap-2">
+          @for (img of images; track img; let i = $index) {
+            <div class="bg-muted rounded overflow-hidden">
+              @if (!imageErrors()[i]) {
+                <img
+                  [src]="img"
+                  (error)="onImageError(i)"
+                  class="w-full h-full object-cover"
+                />
+              } @else {
+                <div class="p-4 text-center">Error</div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+  } @else {
+
+    <!--  STEP 2 (REACTIVE FORM) -->
+    <form [formGroup]="form" class="min-h-[calc(100vh-92px)] bg-muted/20 py-8 px-4">
+
+      <div class="max-w-2xl mx-auto space-y-6">
+
+        <!-- Header -->
+        <div class="flex items-center gap-4">
+          <button type="button" z-button zType="outline" zSize="icon" (click)="prevStep()">
+            <ng-icon name="lucideArrowLeft" />
+          </button>
+
+          <div>
+            <h1 class="text-3xl font-bold">Post your job</h1>
+            <p class="text-muted-foreground">
+              Submit your configuration
+            </p>
+          </div>
+        </div>
+
+        <!-- Form Card -->
+        <div class="bg-card border rounded-2xl p-6 space-y-6">
+
+          <!-- Job Title -->
+          <z-form-field>
+            <label z-form-label>Job Title *</label>
+            <input
+              z-input
+              formControlName="jobTitle"
+              placeholder="Custom desk"
+            />
+          </z-form-field>
+
+          <!-- Description -->
+          <z-form-field>
+            <label z-form-label>Description</label>
+            <textarea
+              z-input
+              formControlName="jobDescription"
+              rows="4"
+            ></textarea>
+          </z-form-field>
+
+          <!-- Budget + Delivery -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            <z-form-field>
+              <label z-form-label>Budget *</label>
+              <input
+                z-input
+                type="number"
+                formControlName="expectedBudget"
+              />
+            </z-form-field>
+
+            <z-form-field>
+              <label z-form-label>Delivery *</label>
+
+              <z-select
+                [zValue]="form.get('deliveryDay')?.value?.toString()"
+                (zSelectionChange)="onDeliveryDayChange($event)"
+              >
+                <z-select-item zValue="7">1 Week</z-select-item>
+                <z-select-item zValue="14">2 Weeks</z-select-item>
+                <z-select-item zValue="30">1 Month</z-select-item>
+                <z-select-item zValue="60">2+ Months</z-select-item>
+              </z-select>
+
+            </z-form-field>
+
+          </div>
+
+          <!-- Submit -->
+          <div class="flex justify-end pt-4 border-t">
+            <button
+              type="button"
+              z-button
+              (click)="submitJob()"
+              [zDisabled]="submitting()"
+            >
+              {{ submitting() ? 'Submitting...' : 'Submit Job' }}
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </form>
+
   }
-</section>
+
 }

@@ -1,5 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core'
 import { TranslocoService } from '@jsverse/transloco'
+import {registerLocaleData} from '@angular/common';
 
 export type TLanguage = 'en' | 'ar'
 const STORAGE_KEY = 'language'
@@ -8,11 +9,17 @@ const STORAGE_KEY = 'language'
   providedIn: 'root',
 })
 export class LanguageService {
+  private dirSignal = signal<'ltr' | 'rtl'>(document.documentElement.dir as 'ltr' | 'rtl');
+
+  isRtl = computed(() => this.dirSignal() === 'rtl');
+
   // Reactive language signal for UI
   lang = signal<TLanguage>('en')
 
   // Optional computed for display label
   label = computed(() => (this.lang() === 'ar' ? 'العربية' : 'English'))
+
+  locale = computed(() => (this.lang() === 'ar' ? 'ar-EG' : 'en-US'))
 
   constructor(private transloco: TranslocoService) {}
 
@@ -27,8 +34,16 @@ export class LanguageService {
     }
   }
 
-  setLanguage(lang: TLanguage, save = true) {
+  async setLanguage(lang: TLanguage, save = true) {
     this.lang.set(lang)
+
+    if (lang === 'ar') {
+      const locale = await import('@angular/common/locales/ar')
+      registerLocaleData(locale.default)
+    } else {
+      const locale = await import('@angular/common/locales/en')
+      registerLocaleData(locale.default)
+    }
 
     // Update Transloco runtime language
     this.transloco.setActiveLang(lang)

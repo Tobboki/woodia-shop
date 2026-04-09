@@ -15,7 +15,7 @@ import {
   TMenuKey
 } from '../../types/app.types';
 import { ICategory } from '../../types/category';
-import { environment } from '../../../../environments/environment';
+import { environment } from '@woodia-environments/environment';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '@woodia-core/services/auth.service';
 
@@ -55,9 +55,9 @@ export class MainLayout implements OnInit {
         path: '/customers/designs',
       },
       {
-        id: 'requests',
-        label: 'Requests',
-        path: '/customer/requests',
+        id: 'jobs',
+        label: 'Jobs',
+        path: '/customers/jobs',
       },
     ],
     maker: [],

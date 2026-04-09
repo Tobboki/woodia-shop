@@ -12,6 +12,7 @@ import { Shipping as CustomerShippingSettings } from './features/customers/setti
 import { ErrorPage } from './features/error-page/error-page';
 import { Designs } from './features/designs/designs';
 import { OurStory } from './features/our-story/our-story';
+import { Jobs } from '@woodia-features/customers/jobs/jobs';
 
 export const routes: Routes = [
   {
@@ -85,6 +86,12 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/design-studio/design-studio')
             .then(m => m.DesignStudio)
+      },
+
+      // Customer Jobs
+      {
+        path: 'jobs',
+        component: Jobs,
       },
 
       // Settings
