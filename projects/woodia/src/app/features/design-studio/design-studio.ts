@@ -8,9 +8,9 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
-import { ProductService } from '../../core/services/product.service';
-import { JobService } from '../../core/services/job.service';
-import { CategoryService } from '../../core/services/category.service';
+import { ProductService } from '@woodia-core/services/product.service';
+import { JobService } from '@woodia-core/services/job.service';
+import { CategoryService } from '@woodia-core/services/category.service';
 
 import { DesignConfigurator } from '@shared-components/custom/design-configurator/design-configurator';
 import type { Product, ProductCategory, ProductModelConfig } from '@shared-types/product';
@@ -167,7 +167,7 @@ export class DesignStudio implements OnInit {
         });
         this.router.navigate(['/customers/designs/all']);
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error(err);
         toast.error("Failed to post job. Please try again.", {
           duration: 3000,

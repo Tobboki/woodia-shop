@@ -6,8 +6,8 @@ import { toast } from 'ngx-sonner';
 import { timer } from 'rxjs';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { authConfig } from './features/auth/google-auth.config';
-import {ThemeService} from './core/services/theme.service';
-import {LanguageService} from './core/services/language.service';
+import { ThemeService } from './core/services/theme.service';
+import { LanguageService } from './core/services/language.service';
 
 @Component({
   selector: 'app-root',
@@ -20,6 +20,7 @@ import {LanguageService} from './core/services/language.service';
 })
 export class App implements OnInit {
   protected readonly title = signal('woodia');
+  private isProcessingToken = false;
 
   constructor(
     private renderer: Renderer2,
@@ -39,47 +40,120 @@ export class App implements OnInit {
     this.oauthService.events.subscribe(async (e) => {
       if (e.type === 'token_received') {
         this.processGoogleToken();
+      } else if (e.type === 'token_error') {
+        toast.error('Authentication Failed', {
+          description: 'An error occurred during authentication.',
+          position: 'bottom-center'
+        });
+        localStorage.removeItem('google_auth_intent');
+        this.router.navigate(['/auth/login']);
       }
     });
 
     await this.oauthService.loadDiscoveryDocument();
 
     const hash = window.location.hash;
+    const search = window.location.search;
+
+    if (hash.includes('error=') || search.includes('error=')) {
+      toast.error('Authentication Canceled', {
+        description: 'You canceled the login process or access was denied.',
+        position: 'bottom-center'
+      });
+      localStorage.removeItem('google_auth_intent');
+      this.router.navigate(['/auth/login']);
+      return;
+    }
+
     if (hash) {
-      await this.oauthService.tryLogin({ customHashFragment: hash });
+      await this.oauthService.tryLogin({ customHashFragment: hash }).catch(() => { });
     } else {
-      await this.oauthService.tryLogin();
+      await this.oauthService.tryLogin().catch(() => { });
     }
 
     // Fallback if the event was already fired or missed
     if (this.oauthService.hasValidIdToken() && !this.authService.isAuthenticated()) {
       this.processGoogleToken();
     }
+
+    if (this.authService.isAuthenticated()) {
+      this.scheduleAutoRefresh();
+    }
   }
 
   private async processGoogleToken() {
-    const idToken = this.oauthService.getIdToken();
-    if (idToken) {
-      try {
-        await this.authService.sendGoogleTokenToBackend(idToken);
-        toast.success('Login Successful', {
-          position: 'bottom-center',
-          duration: 2000,
-        });
+    if (this.isProcessingToken) return;
+    this.isProcessingToken = true;
 
-        // Let's clear Google's session storage ID token so we don't trigger this infinitely on page reloads
-        this.oauthService.logOut();
-
-        if (this.authService.getCurrentUser()?.userType === 'Client') {
-          this.router.navigate(['/customers']);
+    try {
+      const idToken = this.oauthService.getIdToken();
+      if (idToken) {
+        const intentStr = localStorage.getItem('google_auth_intent');
+        let intentObj: { intent: string, type?: string } = { intent: 'login' };
+        if (intentStr) {
+          try {
+            intentObj = JSON.parse(intentStr);
+          } catch (e) { }
         }
-      } catch (error) {
-        toast.error('Google Sign-In failed', {
-          description: 'There was a problem with your request.',
-          position: 'bottom-center',
-        });
-        console.error('sendGoogleTokenToBackend error', error);
+
+        try {
+          let isSignupSuccess = false;
+
+          if (intentObj.intent === 'signup') {
+            try {
+              await this.authService.sendGoogleSignUpTokenToBackend(idToken, intentObj.type || 'Client');
+              isSignupSuccess = true;
+            } catch (signUpError: any) {
+              console.log('Signup failed, attempting login...', signUpError);
+              await this.authService.sendGoogleTokenToBackend(idToken);
+            }
+          } else {
+            await this.authService.sendGoogleTokenToBackend(idToken);
+          }
+
+          const userType = this.authService.getCurrentUser()?.userType;
+
+          if (userType?.toLowerCase() === 'admin') {
+            this.authService.logout();
+            this.oauthService.logOut();
+            localStorage.removeItem('google_auth_intent');
+
+            toast.error('Access Denied', {
+              description: 'Admins cannot login to the client app.',
+              position: 'bottom-center',
+            });
+            return;
+          }
+
+          if (isSignupSuccess) {
+            toast.success('Registration Successful', {
+              position: 'bottom-center',
+              duration: 2000,
+            });
+          } else {
+            toast.success('Login Successful', {
+              position: 'bottom-center',
+              duration: 2000,
+            });
+          }
+
+          // Clear Google's session storage ID token so we don't trigger this infinitely on page reloads
+          this.oauthService.logOut();
+          localStorage.removeItem('google_auth_intent');
+
+          if (userType === 'Client') {
+            this.router.navigate(['/customers']);
+          }
+        } catch (error) {
+          toast.error('Google Auth failed', {
+            description: 'There was a problem with your request.',
+            position: 'bottom-center',
+          });
+          console.error('Google Auth error', error);
+        }
       }
+    } finally {
+      this.isProcessingToken = false;
     }
   }
 

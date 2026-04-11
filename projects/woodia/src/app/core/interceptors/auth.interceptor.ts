@@ -12,8 +12,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const locale = langService.locale();
 
   // Only attach the token for our API requests, exclude external URLs like google accounts
-  const isExternalUrl = req.url.startsWith('http') && !req.url.includes('woodia.onrender.com') && !req.url.includes('localhost:5033');
-  
+  const isExternalUrl = req.url.startsWith('http') && !req.url.includes('woodia.onrender.com') && !req.url.includes('localhost:4200');
+
   let setHeaders: any = {
     'Accept-Language': locale,
   };
@@ -33,6 +33,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
             const refreshToken = authService.getRefreshToken();
             if (!refreshToken) {
               authService.logout();
+              console.log("interceptor 401 error", err)
               return throwError(() => err);
             }
             return authService.refreshToken().pipe(

@@ -94,9 +94,6 @@ export class Designs implements OnInit {
         }
 
         this.pageNumber++;
-
-
-        console.log('res', res)
       },
       error: (err) => {
         console.error('Failed to load products', err);
@@ -131,8 +128,6 @@ export class Designs implements OnInit {
         } else {
           this.categories.set((res as IChildCategoryResponse).categoryChildNavigationResponses)
         }
-
-        console.log('category res', res)
       },
       error: (err) => {
         console.error('Failed to load Categories', err);

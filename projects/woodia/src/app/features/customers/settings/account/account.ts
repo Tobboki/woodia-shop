@@ -1,4 +1,3 @@
-
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ZardAvatarComponent } from '@shared-components/avatar/avatar.component';
@@ -9,8 +8,11 @@ import { ZardFormModule } from '@shared-components/form/form.module'
 import { ZardLoaderComponent } from '@shared-components/loader/loader.component';
 import { CustomerSettingsService } from '@woodia-core/services/customer-settings-service';
 import { toast } from 'ngx-sonner';
-import {ZardInputDirective} from '@shared-components/input/input.directive';
-import {NgIcon} from '@ng-icons/core';
+import { ZardInputDirective } from '@shared-components/input/input.directive';
+import { NgIcon } from '@ng-icons/core';
+import { ThemeService } from '@woodia-core/services/theme.service';
+import { UploadService } from '@woodia-core/services/upload.service';
+import { isImage } from '@woodia-shared/utils/helpers';
 
 interface IVerifyEmailChangeData {
   email: string;
@@ -25,6 +27,7 @@ interface IUserData {
   firstName: string
   lastName: string
   email: string
+  photoUrl: string | null
 }
 @Component({
   selector: 'verify-email-change-dialog',
@@ -34,7 +37,7 @@ interface IUserData {
     ZardInputDirective,
     ZardFormModule,
     ZardButtonComponent
-],
+  ],
   standalone: true,
   template: `
     <form [formGroup]="verifyEmailChangeForm" (ngSubmit)="handleVerificationSubmit()" class="space-y-6 my-[40px]">
@@ -164,17 +167,22 @@ export class VerifyEmailChangeDialog {
     ZardAvatarComponent,
     ZardLoaderComponent,
     NgIcon,
-],
+  ],
   templateUrl: './account.html',
   styleUrl: './account.scss',
 })
 export class Account implements OnInit {
-  userDataHolder: IUserData = { firstName: '', lastName: '', email: '' };
+  // helpers
+  isImage = isImage;
 
   constructor(
     private settingsService: CustomerSettingsService,
-    private dialogService: ZardDialogService
+    private dialogService: ZardDialogService,
+    private uploadService: UploadService,
+    private themeService: ThemeService,
   ) { }
+
+  userDataHolder: IUserData = { firstName: '', lastName: '', email: '', photoUrl: '' };
 
   infoForm = new FormGroup({
     firstName: new FormControl<string>('', [Validators.required]),
@@ -192,12 +200,15 @@ export class Account implements OnInit {
 
   ngOnInit(): void {
     this.settingsService.getMe().subscribe({
-      next: (userData) => {
+      next: (userData: IUserData) => {
         this.userDataHolder = {
           firstName: userData.firstName,
           lastName: userData.lastName,
-          email: userData.email
+          email: userData.email,
+          photoUrl: userData.photoUrl,
         }
+
+        this.hasPersistedPhoto.set(!!userData.photoUrl);
 
         this.infoForm.patchValue({
           firstName: userData.firstName,
@@ -219,6 +230,115 @@ export class Account implements OnInit {
 
         this.infoLoading.set(false)
       },
+    });
+  }
+
+
+  // ===========================================================
+  // Profile Picture
+  // ===========================================================
+  profilePicturePlaceholder = '/images/customer/settings/account/profile-picture-placeholder.png'
+  profilePicturePlaceholderDark = '/images/customer/settings/account/profile-picture-placeholder-dark.png'
+
+  profilePictureLoading = signal<boolean>(false)
+
+  previewUrl = signal<string | null>(null);
+  selectedFile = signal<File | null>(null);
+  hasPersistedPhoto = signal<boolean>(false);
+
+  get avatarSrc(): string {
+    if (this.previewUrl()) return this.previewUrl() ?? "";
+
+    if (this.isImage(this.userDataHolder.photoUrl)) {
+      return this.userDataHolder.photoUrl!;
+    }
+
+    return this.themeService.mode() === 'dark'
+      ? this.profilePicturePlaceholderDark
+      : this.profilePicturePlaceholder;
+  }
+
+  get hasPreview(): boolean {
+    return !!this.previewUrl();
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+
+    // Validate Type
+    if (!['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)) {
+      toast.error('Invalid file type', {
+        position: 'bottom-center',
+      });
+      return;
+    }
+
+    // Validate size (10MB)
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast.error('File is too large', {
+        position: 'bottom-center',
+      });
+      return;
+    }
+
+    this.selectedFile.set(file);
+
+    // Preview
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.previewUrl.set(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  onSavePicture() {
+    if (!this.selectedFile) return;
+
+    this.profilePictureLoading.set(true);
+
+    this.uploadService.uploadFile(this.selectedFile()!).subscribe({
+      next: (urls: string[]) => {
+        const uploadedUrl = urls[0];
+
+        const request$ = this.hasPersistedPhoto()
+          ? this.settingsService.updateProfileImage(uploadedUrl)
+          : this.settingsService.addProfileImage(uploadedUrl);
+
+        request$.subscribe({
+          next: () => {
+            this.profilePictureLoading.set(false);
+
+            this.userDataHolder.photoUrl = uploadedUrl;
+
+            this.previewUrl.set(null);
+            this.selectedFile.set(null);
+            this.hasPersistedPhoto.set(true);
+
+            toast.success('Profile picture saved', {
+              position: 'bottom-center',
+            });
+          },
+          error: () => {
+            this.profilePictureLoading.set(false);
+
+            toast.error('Failed to save picture', {
+              position: 'bottom-center',
+            });
+          }
+        });
+      },
+      error: () => {
+        this.profilePictureLoading.set(false);
+
+        toast.error('Upload failed', {
+          position: 'bottom-center',
+        });
+      }
     });
   }
 

@@ -33,9 +33,9 @@ import { Router } from '@angular/router';
 })
 export class LogoComponent {
 
-  constructor (
+  constructor(
     private router: Router
-  ) {}
+  ) { }
 
   readonly zType = input<logoVariants['zType']>('default');
 

@@ -3,6 +3,7 @@ export const environment = {
   apiUrl: 'https://woodia.onrender.com',
   googleSignInClientId: import.meta.env["NG_APP_GOOGLE_SIGN_IN_CLIENT_ID"],
   endpoints: {
+    upload: "/admin/Upload",
     constants: {
       governorate: '/api/Governorate',
     },
@@ -37,9 +38,11 @@ export const environment = {
         getParentCategories: '/api/Category/Parent',
       },
       product: {
+        create: '/api/admin/Product',
         getAll: '/api/Product',
         getById: (id: number) => `/api/Product/${id}`,
         getByCategorySlug: (slug: string) => `/api/Category/${slug}/Products`,
+        getPopularDesigns: '/api/Product/most-loved',
       },
       job: {
         create: '/api/Job',

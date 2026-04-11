@@ -13,18 +13,18 @@ import {
 } from '@angular/common/http';
 import { OAuthModule, provideOAuthClient } from 'angular-oauth2-oidc';
 import { authInterceptor } from '@woodia-core/interceptors/auth.interceptor';
-import {provideTransloco} from '@jsverse/transloco';
+import { provideTransloco } from '@jsverse/transloco';
 import { TranslocoHttpLoader } from './transloco-loader';
 
 import localeEn from '@angular/common/locales/en';
 import localeAr from '@angular/common/locales/ar';
-import {registerLocaleData} from '@angular/common';
+import { registerLocaleData } from '@angular/common';
 
 registerLocaleData(localeEn);
 registerLocaleData(localeAr);
 
 
-import {provideIcons} from '@ng-icons/core';
+import { provideIcons } from '@ng-icons/core';
 import {
   lucideSun,
   lucideMoon,
@@ -74,6 +74,8 @@ import {
   lucideEllipsis,
   lucideSave,
   lucideBlocks,
+  lucideShoppingBag,
+  lucideHammer,
 } from '@ng-icons/lucide';
 
 export const appConfig: ApplicationConfig = {
@@ -127,6 +129,8 @@ export const appConfig: ApplicationConfig = {
       lucideEllipsis,
       lucideSave,
       lucideBlocks,
+      lucideShoppingBag,
+      lucideHammer,
     }),
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),

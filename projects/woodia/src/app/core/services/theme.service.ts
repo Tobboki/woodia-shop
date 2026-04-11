@@ -1,5 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core'
-import { TThemeMode } from '../../shared/types/app.types'
+import { TThemeMode } from '@woodia-types/app.types'
 import {IconType} from '@ng-icons/core';
 
 const STORAGE_KEY = 'theme-mode'

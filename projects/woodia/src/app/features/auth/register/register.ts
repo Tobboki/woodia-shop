@@ -13,8 +13,8 @@ import { LogoComponent } from '@shared-components/custom/logo/logo.component';
 import { matchPasswordsValidator } from '@woodia-shared/validators/match-password-validator';
 import { passwordStrengthValidator } from '@woodia-shared/validators/password-strength-validator';
 import { toast } from 'ngx-sonner';
-import {ZardInputGroupComponent} from '@shared-components/input-group/input-group.component';
-import {NgIcon} from '@ng-icons/core';
+import { ZardInputGroupComponent } from '@shared-components/input-group/input-group.component';
+import { NgIcon } from '@ng-icons/core';
 
 @Component({
   selector: 'app-register',
@@ -106,7 +106,7 @@ export class Register implements OnInit, AfterViewInit {
     video.load();
 
     setTimeout(() => {
-      video.play().catch(() => {});
+      video.play().catch(() => { });
     });
 
     // 🔥 preload next again
@@ -116,6 +116,7 @@ export class Register implements OnInit, AfterViewInit {
   resetVideoLoop() {
     this.currentIndex = 0;
     this.currentVideo = this.panels[0];
+    this.videoLoading.set(true);
 
     const video = this.videoRef?.nativeElement;
     if (video) {
@@ -124,7 +125,7 @@ export class Register implements OnInit, AfterViewInit {
       video.load();
 
       setTimeout(() => {
-        video.play().catch(() => {});
+        video.play().catch(() => { });
       });
     }
 
@@ -174,6 +175,7 @@ export class Register implements OnInit, AfterViewInit {
   showConfirmPassword = signal<boolean>(false);
   registerFormLoading = signal<boolean>(false)
   codeVerificationLoading = signal<boolean>(false)
+  videoLoading = signal<boolean>(true)
 
   ngOnInit(): void {
     this.route.queryParamMap.subscribe(params => {
@@ -249,8 +251,9 @@ export class Register implements OnInit, AfterViewInit {
     });
   }
 
-  handleGoogleSignIn() {
-    this.authService.googleSignIn()
+  handleGoogleSignUp() {
+    const type = this.userType() === 'customer' ? 'Client' : 'Maker';
+    this.authService.googleSignUp(type);
   }
 
   resendConfirmation() {

@@ -13,7 +13,7 @@ import { inputVariants, ZardInputVariants } from './input.variants';
     '[class]': 'classes()',
   },
 })
-export class ZardInputDirective  {
+export class ZardInputDirective {
   readonly elementRef = inject(ElementRef);
 
   readonly zBorderless = input(false, { transform });

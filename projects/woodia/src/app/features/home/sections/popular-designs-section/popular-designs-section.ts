@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { ZardCarouselComponent, ZardCarouselContentComponent, ZardCarouselItemComponent } from '@shared-components/carousel';
 import { ProductCard } from "@woodia-shared/components/product-card/product-card";
-import { IProductCard } from '@shared-types/product';
+import { IProductCard, IProductsResponse } from '@shared-types/product';
+import { DesignService } from '@admin-core/services/design.service';
 
 export interface Product {
   id: number;
@@ -24,81 +25,33 @@ export interface Product {
   templateUrl: './popular-designs-section.html',
   styleUrl: './popular-designs-section.scss',
 })
-export class PopularDesignsSection {
-  products: IProductCard[] = [
-    {
-      id: 1,
-      productLine: 'Sideboard',
-      description:
-        'Modern wooden sideboard with minimalist design and ample storage compartments.',
-      thumbnailImage: '/images/placeholders/product-placeholder.png',
-      hoverImage: '/images/placeholders/product-placeholder.png'
-    },
-    {
-      id: 2,
-      productLine: 'Sideboard',
-      description:
-        'Modern wooden sideboard with minimalist design and ample storage compartments.',
-      thumbnailImage: '/images/placeholders/product-placeholder.png',
-      hoverImage: '/images/placeholders/product-placeholder.png'
-    },
-    {
-      id: 3,
-      productLine: 'Sideboard',
-      description:
-        'Modern wooden sideboard with minimalist design and ample storage compartments.',
-      thumbnailImage: '/images/placeholders/product-placeholder.png',
-      hoverImage: '/images/placeholders/product-placeholder.png'
-    },
-    {
-      id: 4,
-      productLine: 'Sideboard',
-      description:
-        'Modern wooden sideboard with minimalist design and ample storage compartments.',
-      thumbnailImage: '/images/placeholders/product-placeholder.png',
-      hoverImage: '/images/placeholders/product-placeholder.png'
-    },
-    {
-      id: 5,
-      productLine: 'Sideboard',
-      description:
-        'Modern wooden sideboard with minimalist design and ample storage compartments.',
-      thumbnailImage: '/images/placeholders/product-placeholder.png',
-      hoverImage: '/images/placeholders/product-placeholder.png'
-    },
-    {
-      id: 6,
-      productLine: 'Sideboard',
-      description:
-        'Modern wooden sideboard with minimalist design and ample storage compartments.',
-      thumbnailImage: '/images/placeholders/product-placeholder.png',
-      hoverImage: '/images/placeholders/product-placeholder.png'
-    },
-    {
-      id: 7,
-      productLine: 'Sideboard',
-      description:
-        'Modern wooden sideboard with minimalist design and ample storage compartments.',
-      thumbnailImage: '/images/placeholders/product-placeholder.png',
-      hoverImage: '/images/placeholders/product-placeholder.png'
-    },
-    {
-      id: 8,
-      productLine: 'Sideboard',
-      description:
-        'Modern wooden sideboard with minimalist design and ample storage compartments.',
-      thumbnailImage: '/images/placeholders/product-placeholder.png',
-      hoverImage: '/images/placeholders/product-placeholder.png'
-    },
-    {
-      id: 9,
-      productLine: 'Sideboard',
-      description:
-        'Modern wooden sideboard with minimalist design and ample storage compartments.',
-      thumbnailImage: '/images/placeholders/product-placeholder.png',
-      hoverImage: '/images/placeholders/product-placeholder.png'
-    },
-  ];
+export class PopularDesignsSection implements OnInit {
+  constructor(
+    private designService: DesignService,
+  ) { }
+
+  products = signal<IProductCard[]>([])
+  productsLoading = signal<boolean>(false)
+
+  ngOnInit() {
+    this.loadProducts();
+  }
+
+  loadProducts() {
+    this.productsLoading.set(true)
+
+    this.designService.getPopularDesigns().subscribe({
+      next: data => {
+        this.productsLoading.set(false)
+
+        this.products.set(data)
+      },
+      error: error => {
+        this.productsLoading.set(false)
+        console.error(error);
+      }
+    })
+  }
 
   zardCarouselOptions = {
     loop: true,

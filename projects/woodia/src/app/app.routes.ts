@@ -6,6 +6,7 @@ import { authGuard } from './core/guards/auth-guard';
 import { MainLayout } from './shared/layouts/main-layout/main-layout';
 import { Register } from './features/auth/register/register';
 import { customerGuard } from './core/guards/role-guard';
+import { googleAuthGuard } from './core/guards/google-auth.guard';
 import { Settings as CustomerSettings } from './features/customers/settings/settings'
 import { Account as CustomerAccountSettings } from './features/customers/settings/account/account'
 import { Shipping as CustomerShippingSettings } from './features/customers/settings/shipping/shipping'
@@ -137,6 +138,7 @@ export const routes: Routes = [
       },
       {
         path: 'google-callback',
+        canActivate: [googleAuthGuard],
         loadComponent: () => import('./features/auth/callback/callback').then(m => m.Callback)
       }
     ]

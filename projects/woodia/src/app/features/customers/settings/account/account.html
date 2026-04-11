@@ -1,178 +1,139 @@
 <section class="space-y-[24px]">
   <section class="space-y-[24px]">
-      <div>
-        <h3 class="font-h3">
-          My Profile
-        </h3>
+    <div>
+      <h3 class="font-h3">
+        My Profile
+      </h3>
 
-        <z-divider class="bg-black/25 mt-[8px]"></z-divider>
-      </div>
+      <z-divider class="mt-[8px]"></z-divider>
+    </div>
 
-      @if(infoLoading()) {
-        <z-loader zSize="lg" />
-      } @else {
-        <div class="flex flex-column items-center justify-between max-md:justify-center">
-          <div class="flex max-md:flex-col flex-nowrap items-center max-md:justify-center gap-[8px]">
-            <z-avatar
-              zStatus="online"
-              zSrc="/images/auth/customer.jpg"
-              zAlt="Image"
-              class="size-[128px]"
-            />
+    @if(infoLoading()) {
+    <z-loader zSize="lg" />
+    } @else {
+    <div class="flex max-md:flex-col items-center justify-between max-md:justify-center gap-2">
+      <div class="flex max-md:flex-col flex-nowrap items-center max-md:justify-center gap-[8px]">
+        <div class="relative cursor-pointer" (click)="fileInput.click()">
 
+          <!-- Avatar -->
+          <z-avatar [zSrc]="avatarSrc" zAlt="Profile Picture" class="size-[64px]" />
 
-            <div class="max-md:text-center">
-              <h4 class="font-button">Profile Picture</h4>
-              <p class="font-caption text-foreground/50">
-                PNG, JPEG, JPG under 10MB
-              </p>
-            </div>
+          <!-- Loading overlay -->
+          @if(profilePictureLoading()) {
+          <div class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full">
+            <ng-icon name="lucideLoaderCircle" class="animate-spin text-white" />
           </div>
+          } @else {
+          <!-- Default hover -->
+          <div
+            class="absolute inset-0 bg-black/30 opacity-0 hover:opacity-100 transition flex items-center justify-center text-white text-xs rounded-full">
+            Change
+          </div>
+          }
 
-
-          <button
-            z-button
-            zType="default"
-            type="button"
-            class="py-[8px] max-md:hidden"
-            disabled
-          >
-            Change Picture
-          </button>
         </div>
 
-        <div>
-          <!-- Form -->
-          <form
-            [formGroup]="infoForm"
-            (ngSubmit)="handleInfoSubmit()"
-            class="space-y-6 my-[40px]"
-          >
-            <div class="grid grid-cols-2 max-md:grid-cols-1 gap-[20px]">
-              <z-form-field>
-                <label class="font-label" z-form-label zRequired>
-                  First Name
-                </label>
-                <z-form-control>
-                  <input
-                    z-input
-                    type="text"
-                    placeholder="Your first name"
-                    formControlName="firstName"
-                  />
-                </z-form-control>
-              </z-form-field>
+        <!-- hidden picture file input  -->
+        <input #fileInput type="file" accept="image/png, image/jpeg, image/jpg" class="hidden"
+          (change)="onFileSelected($event)" />
 
-              <z-form-field>
-                <label class="font-label" z-form-label zRequired>
-                  Last Name
-                </label>
-                <z-form-control>
-                  <input
-                    z-input
-                    type="text"
-                    placeholder="Your last name"
-                    formControlName="lastName"
-                  />
-                </z-form-control>
-              </z-form-field>
-            </div>
 
-            <div class="flex flex-row max-sm:flex-col gap-[12px]">
-              <button
-                z-button
-                zType="default"
-                type="submit"
-                [disabled]="!infoForm.dirty"
-                [zLoading]="infoFormLoading()"
-              >
-                Save Changes
-              </button>
-
-              <button
-                z-button
-                zType="outline"
-                type="button"
-                [disabled]="!infoForm.dirty || infoFormLoading()"
-                (click)="cancelInfoUpdate()"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
+        <div class="max-md:text-center">
+          <h4 class="font-medium">Profile Picture</h4>
+          <p class="text-foreground/50">
+            PNG, JPEG, JPG under 10MB
+          </p>
         </div>
-      }
-    </section>
-
-    <section class="space-y-[24px]">
-      <div>
-        <h3 class="font-h3">
-          Account Security
-        </h3>
-
-        <div class="flex fle-row flex-nowrap items-center gap-[8px] mb-[8px]">
-          <ng-icon name="lucideTriangleAlert" />
-          <p class="font-caption text-warning-600 text-center">this action is currently disabled</p>
-        </div>
-
-        <z-divider class="bg-black/25 mt-[8px]"></z-divider>
       </div>
 
-       @if(infoLoading()) {
-        <z-loader zSize="lg" />
-      } @else {
-        <!-- Form -->
-        <form
-          [formGroup]="emailForm"
-          (ngSubmit)="handleEmailUpdate()"
-          class="flex flex-col flex-nowrap gap-[24px]"
-        >
-          <z-form-field
-            class="w-[60%] max-sm:w-[100%]"
-          >
-            <label
-              class="font-label"
-              z-form-label
-              zRequired
-            >
-              Email
+
+      <button z-button zType="default" zSize="lg" class="max-md:w-full"
+        (click)="hasPreview ? onSavePicture() : fileInput.click()" [zDisabled]="profilePictureLoading()"
+        [zLoading]="profilePictureLoading()">
+        {{ hasPreview ? 'Save' : (userDataHolder.photoUrl ? 'Change Picture' : 'Add Picture') }}
+      </button>
+    </div>
+
+    <div>
+      <!-- Form -->
+      <form [formGroup]="infoForm" (ngSubmit)="handleInfoSubmit()" class="space-y-6 my-[40px]">
+        <div class="grid grid-cols-2 max-md:grid-cols-1 gap-[20px]">
+          <z-form-field>
+            <label class="font-label" z-form-label zRequired>
+              First Name
             </label>
             <z-form-control>
-              <input
-                  z-input
-                  type="email"
-                  placeholder="Your email"
-                  formControlName="email"
-                  [zDisabled]="true"
-                />
+              <input z-input type="text" placeholder="Your first name" formControlName="firstName" />
             </z-form-control>
           </z-form-field>
 
-          <div
-            class="w-full flex gap-[12px] max-sm:flex-col"
-          >
-            <button
-              z-button
-              type="submit"
-              [disabled]="!emailForm.dirty || emailForm.invalid || true"
-              [zLoading]="emailFormLoading()"
-            >
-              Save Changes
-            </button>
-            <button
-              z-button
-              zType="outline"
-              type="button"
-              [disabled]="!emailForm.dirty || true"
-              (click)="cancelEmailUpdate()"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
+          <z-form-field>
+            <label class="font-label" z-form-label zRequired>
+              Last Name
+            </label>
+            <z-form-control>
+              <input z-input type="text" placeholder="Your last name" formControlName="lastName" />
+            </z-form-control>
+          </z-form-field>
+        </div>
 
-        <!-- Form -->
-        <!--<form [formGroup]="passwordForm" (ngSubmit)="handlePasswordChange()" class="flex flex-nowrap items-end gap-[24px]">
+        <div class="flex flex-row max-sm:flex-col gap-[12px]">
+          <button z-button zType="default" type="submit" [disabled]="!infoForm.dirty" [zLoading]="infoFormLoading()">
+            Save Changes
+          </button>
+
+          <button z-button zType="outline" type="button" [disabled]="!infoForm.dirty || infoFormLoading()"
+            (click)="cancelInfoUpdate()">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+    }
+  </section>
+
+  <section class="space-y-[24px]">
+    <div>
+      <h3 class="font-h3">
+        Account Security
+      </h3>
+
+      <div class="flex fle-row flex-nowrap items-center gap-[8px] mb-[8px]">
+        <ng-icon name="lucideTriangleAlert" />
+        <p class="font-caption text-warning-600 text-center">this action is currently disabled</p>
+      </div>
+
+      <z-divider class="bg-black/25 mt-[8px]"></z-divider>
+    </div>
+
+    @if(infoLoading()) {
+    <z-loader zSize="lg" />
+    } @else {
+    <!-- Form -->
+    <form [formGroup]="emailForm" (ngSubmit)="handleEmailUpdate()" class="flex flex-col flex-nowrap gap-[24px]">
+      <z-form-field class="w-[60%] max-sm:w-[100%]">
+        <label class="font-label" z-form-label zRequired>
+          Email
+        </label>
+        <z-form-control>
+          <input z-input type="email" placeholder="Your email" formControlName="email" [zDisabled]="true" />
+        </z-form-control>
+      </z-form-field>
+
+      <div class="w-full flex gap-[12px] max-sm:flex-col">
+        <button z-button type="submit" [disabled]="!emailForm.dirty || emailForm.invalid || true"
+          [zLoading]="emailFormLoading()">
+          Save Changes
+        </button>
+        <button z-button zType="outline" type="button" [disabled]="!emailForm.dirty || true"
+          (click)="cancelEmailUpdate()">
+          Cancel
+        </button>
+      </div>
+    </form>
+
+    <!-- Form -->
+    <!--<form [formGroup]="passwordForm" (ngSubmit)="handlePasswordChange()" class="flex flex-nowrap items-end gap-[24px]">
           <z-form-field
             class="w-full"
           >
@@ -205,6 +166,6 @@
             </button>
           </div>
         </form> -->
-      }
-    </section>
+    }
+  </section>
 </section>

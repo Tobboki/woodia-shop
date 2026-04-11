@@ -59,13 +59,13 @@ export class CustomerSettingsService {
   // ================================
   addProfileImage(photoUrl: string): Observable<any> {
     return this.http
-      .post(`${environment.apiUrl}${environment.endpoints.customer.settings.account.addProfileImage}`, photoUrl, this.headers)
+      .post(`${environment.apiUrl}${environment.endpoints.customer.settings.account.addProfileImage}`, {photoUrl}, this.headers)
       .pipe(catchError(err => throwError(() => err)));
   }
 
   updateProfileImage(photoUrl: string): Observable<any> {
     return this.http
-      .put(`${environment.apiUrl}${environment.endpoints.customer.settings.account.updateProfileImage}`, photoUrl, this.headers)
+      .put(`${environment.apiUrl}${environment.endpoints.customer.settings.account.updateProfileImage}`, {photoUrl}, this.headers)
       .pipe(catchError(err => throwError(() => err)));
   }
 

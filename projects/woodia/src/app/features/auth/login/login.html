@@ -153,16 +153,26 @@
       </div>
     </div>
 
-    <div class="overflow-hidden w-full h-full rounded-xl max-lg:hidden">
+    <div class="overflow-hidden relative w-full h-full rounded-xl max-lg:hidden bg-muted">
+      @if (videoLoading()) {
+        <div class="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm z-10 transition-opacity duration-300">
+           <ng-icon name="lucideLoaderCircle" class="animate-spin text-4xl text-primary" />
+        </div>
+      }
       <video
         #videoPlayer
-        class="w-full h-full object-cover"
+        class="w-full h-full object-cover transition-opacity duration-500"
+        [class.opacity-0]="videoLoading()"
+        [class.opacity-100]="!videoLoading()"
         [src]="currentVideo"
         autoplay
         muted
-        loop
         playsinline
         preload="auto"
+        (ended)="playNext()"
+        (canplay)="videoLoading.set(false)"
+        (waiting)="videoLoading.set(true)"
+        (playing)="videoLoading.set(false)"
       ></video>
     </div>
 </div>

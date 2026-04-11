@@ -15,14 +15,10 @@
       <div class="flex flex-col gap-4">
         <div
           class="flex max-md:flex-row flex-nowrap items-center gap-4 p-4 max-md:p-2 bg-background rounded-lg border-2 border-border transition-colors duration-300 ease-out"
-          [class]="userType() == 'customer' ? 'bg-muted' : ''"
-          (click)="setUserTypeCustomer()"
-        >
-          <div
-            class="p-4 bg-muted border-2 border-border rounded-lg transition-colors duration-300 ease-out"
-            [class]="userType() === 'customer' ? '!bg-background' : ''"
-          >
-            <ng-icon name="lucideShoppingBag" />
+          [class]="userType() == 'customer' ? 'bg-muted' : ''" (click)="setUserTypeCustomer()">
+          <div class="p-4 bg-muted border-2 border-border rounded-lg transition-colors duration-300 ease-out"
+            [class]="userType() === 'customer' ? '!bg-background' : ''">
+            <ng-icon name="lucideShoppingBag" size="24" />
           </div>
 
           <div class="flex flex-col">
@@ -38,14 +34,10 @@
 
         <div
           class="flex max-md:flex-row flex-nowrap items-center gap-4 p-4 max-md:p-2 bg-background rounded-lg border-2 border-border transition-colors duration-300 ease-out"
-          [class]="userType() === 'maker' ? 'bg-muted' : ''"
-          (click)="setUserTypeMaker()"
-        >
-          <div
-            class="p-4 bg-muted border-2 border-border rounded-lg transition-colors duration-100 ease-out"
-            [class]="userType() === 'maker' ? '!bg-background' : ''"
-          >
-            <ng-icon name="lucideHammer" />
+          [class]="userType() === 'maker' ? 'bg-muted' : ''" (click)="setUserTypeMaker()">
+          <div class="p-4 bg-muted border-2 border-border rounded-lg transition-colors duration-100 ease-out"
+            [class]="userType() === 'maker' ? '!bg-background' : ''">
+            <ng-icon name="lucideHammer" size="24" />
           </div>
 
           <div class="flex flex-col">
@@ -60,12 +52,7 @@
         </div>
       </div>
 
-      <button
-        zFull
-        z-button
-        zSize="xl"
-        (click)="setStepCredentials()"
-      >
+      <button zFull z-button zSize="xl" (click)="setStepCredentials()">
         Continue as a {{ userType() }}
         <ng-icon name="lucideArrowRight" />
       </button>
@@ -74,273 +61,230 @@
 
     <!-- Step 2: User Credentials -->
     @if (registerStep() === 'credentials') {
-      <div
-         class="w-[80%] max-xl:w-full max-lg:w-[60%] max-md:w-[80%] max-sm:w-full my-auto mx-auto space-y-[40px]"
-      >
-        <!-- Title -->
-        <div class="flex flex-col gap-[16px] max-xl:text-center">
-          <h3 class="font-h3 leading-1">
-            Get Started Now
-          </h3>
-          <p class="font-body">
-            Enter your Credentials to access your account
-          </p>
-        </div>
+    <div class="w-[80%] max-xl:w-full max-lg:w-[60%] max-md:w-[80%] max-sm:w-full my-auto mx-auto space-y-[40px]">
+      <!-- Title -->
+      <div class="flex flex-col gap-[16px] max-xl:text-center">
+        <h3 class="font-h3 leading-1">
+          Get Started Now
+        </h3>
+        <p class="font-body">
+          Enter your Credentials to access your account
+        </p>
+      </div>
 
-        <!-- Social Register -->
-        <button
-          class="bg-white text-foreground/50"
-          zFull
-          z-button
-          zType="outline"
-          zSize="xl"
-          (click)="handleGoogleSignIn()"
-        >
-          <img
-            src="/icons/google-logo.svg"
-            alt="Google Logo"
-            class="size-[24px] object-fit-cover"
-          >
-          Sign Up with Google
-        </button>
+      <!-- Social Register -->
+      <button class="bg-white text-foreground/50" zFull z-button zType="outline" zSize="xl"
+        (click)="handleGoogleSignUp()">
+        <img src="/icons/google-logo.svg" alt="Google Logo" class="size-[24px] object-fit-cover">
+        Sign Up with Google
+      </button>
 
-        <!-- Divider -->
-        <div class="flex flex-row flex-nowrap items-center gap-[16px]">
-          <z-divider />
-          <p class="font-body">
-            or
-          </p>
-          <z-divider />
-        </div>
+      <!-- Divider -->
+      <div class="flex flex-row flex-nowrap items-center gap-[16px]">
+        <z-divider />
+        <p class="font-body">
+          or
+        </p>
+        <z-divider />
+      </div>
 
-        <!-- Form -->
-        <form [formGroup]="registerForm" (ngSubmit)="handleCredentialsSubmit()" class="space-y-6 my-[40px]">
-          <div class="grid grid-cols-2 md:place-items-center max-md:grid-cols-1 gap-[20px]">
-            <z-form-field class="h-full flex flex-col justify-start">
-              <label class="font-label" z-form-label zRequired>
-                First Name
-              </label>
-              <z-form-control>
-                <input z-input type="text" placeholder="Enter your first name" formControlName="firstName"
-                       [zStatus]="firstNameControl.invalid && firstNameControl.touched ? 'error' : undefined" />
-              </z-form-control>
-              @if (firstNameControl.hasError('required') && firstNameControl.touched) {
-                <z-form-message class="font-caption" zType="error">Email is required.</z-form-message>
-              }
-            </z-form-field>
-
-            <z-form-field class="h-full flex flex-col justify-start">
-              <label class="font-label" z-form-label zRequired>
-                Last Name
-              </label>
-              <z-form-control>
-                <input z-input type="text" placeholder="Enter your last name" formControlName="lastName"
-                       [zStatus]="lastNameControl.invalid && lastNameControl.touched ? 'error' : undefined" />
-              </z-form-control>
-              @if (lastNameControl.hasError('required') && lastNameControl.touched) {
-                <z-form-message class="font-caption" zType="error">Email is required.</z-form-message>
-              }
-            </z-form-field>
-          </div>
-
+      <!-- Form -->
+      <form [formGroup]="registerForm" (ngSubmit)="handleCredentialsSubmit()" class="space-y-6 my-[40px]">
+        <div class="grid grid-cols-2 max-md:grid-cols-1 gap-2">
           <z-form-field class="h-full flex flex-col justify-start">
-            <label class="font-label" z-form-label zRequired>
-              Email
+            <label class="font-label w-full" z-form-label zRequired>
+              First Name
             </label>
             <z-form-control>
-              <input z-input type="email" placeholder="Enter your email" formControlName="email"
-                     [zStatus]="emailControl.invalid && emailControl.touched ? 'error' : undefined" />
+              <input z-input type="text" placeholder="Enter your first name" formControlName="firstName"
+                [zStatus]="firstNameControl.invalid && firstNameControl.touched ? 'error' : undefined" />
             </z-form-control>
-            @if (emailControl.hasError('required') && emailControl.touched) {
-              <z-form-message class="font-caption" zType="error">Email is required.</z-form-message>
-            } @else if (emailControl.hasError('email') && emailControl.touched) {
-              <z-form-message class="font-caption" zType="error">Enter a valid email address.</z-form-message>
+            @if (firstNameControl.hasError('required') && firstNameControl.touched) {
+            <z-form-message class="font-caption" zType="error">Email is required.</z-form-message>
             }
           </z-form-field>
 
-          <div class="grid grid-cols-2 md:place-items-center max-md:grid-cols-1 gap-[20px]">
-            <z-form-field class="h-full flex flex-col justify-start">
-              <label class="font-label" z-form-label zRequired>
-                Password
-              </label>
-              <z-form-control>
-                <z-input-group [zAddOnAfter]="showPasswordIcon" class="mb-4">
-                  <input
-                    z-input
-                    [type]="showPassword() ? 'text' : 'password'"
-                    placeholder="min 8 characters"
-                    formControlName="password"
-                    [zStatus]="passwordControl.invalid && passwordControl.touched ? 'error' : undefined"
-                  />
-                </z-input-group>
-
-                <ng-template #showPasswordIcon>
-                  <ng-icon
-                    class="text-foreground/50"
-                    [name]="showPassword() ? 'lucideEyeOff': 'lucideEye'"
-                    (click)="togglePasswordVisibility()"
-                  />
-                </ng-template>
-              </z-form-control>
-              @if (passwordControl.hasError('required') && passwordControl.touched) {
-                <z-form-message class="font-caption" zType="error">Password is required.</z-form-message>
-              } @else if (passwordControl.hasError('minlength') && passwordControl.touched) {
-                <z-form-message class="font-caption" zType="error">Minimum 8 characters.</z-form-message>
-              } @else if (passwordControl.hasError('passwordStrength') && passwordControl.touched) {
-                <z-form-message class="font-caption" zType="error">
-                  @if (passwordControl.getError('passwordStrength')) {
-                    <ng-container>
-                      @if (!passwordControl.getError('passwordStrength').hasUpper) {
-                        <span>• Must include an uppercase letter</span>
-                      }
-                      @if (!passwordControl.getError('passwordStrength').hasLower) {
-                        <span>• Must include a lowercase letter</span>
-                      }
-                      @if (!passwordControl.getError('passwordStrength').hasSpecial) {
-                        • Must include a special character
-                      }
-                    </ng-container>
-                  }
-                </z-form-message>
-              }
-            </z-form-field>
-
-            <z-form-field class="h-full flex flex-col justify-start">
-              <label class="font-label" z-form-label zRequired>
-                Confirm Password
-              </label>
-              <z-form-control>
-                <z-input-group [zAddOnAfter]="showConfirmPasswordIcon" class="mb-4">
-                  <input
-                    z-input
-                    [type]="showConfirmPassword() ? 'text' : 'password'"
-                    placeholder="min 8 characters"
-                    formControlName="confirmPassword"
-                    [zStatus]="confirmPasswordControl.invalid && confirmPasswordControl.touched ? 'error' : undefined"
-                  />
-                </z-input-group>
-
-                <ng-template #showConfirmPasswordIcon>
-                  <ng-icon
-                    class="text-foreground/50"
-                    [name]="showConfirmPassword() ? 'lucideEyeOff': 'lucideEye'"
-                    (click)="toggleConfirmPasswordVisibility()"
-                  />
-                </ng-template>
-              </z-form-control>
-              @if (confirmPasswordControl.hasError('required') && confirmPasswordControl.touched) {
-                <z-form-message class="font-caption" zType="error">Password is required.</z-form-message>
-              } @else if (registerForm.hasError('passwordMismatch') && confirmPasswordControl.touched) {
-                <z-form-message class="font-caption" zType="error">Passwords do not match.</z-form-message>
-              }
-            </z-form-field>
-          </div>
-
-          <z-form-field>
-            <z-form-control class="flex flex-col justify-center">
-              <div class="flex items-center space-x-2">
-                <z-checkbox id="agreeToTerms" formControlName="agreeToTerms" />
-                <label class="font-label text-nowrap" z-form-label for="agreeToTerms">
-                  I agree to the Terms & Policy
-                </label>
-              </div>
+          <z-form-field class="h-full flex flex-col justify-start">
+            <label class="font-label" z-form-label zRequired>
+              Last Name
+            </label>
+            <z-form-control>
+              <input z-input type="text" placeholder="Enter your last name" formControlName="lastName"
+                [zStatus]="lastNameControl.invalid && lastNameControl.touched ? 'error' : undefined" />
             </z-form-control>
+            @if (lastNameControl.hasError('required') && lastNameControl.touched) {
+            <z-form-message class="font-caption" zType="error">Email is required.</z-form-message>
+            }
+          </z-form-field>
+        </div>
+
+        <z-form-field class="h-full flex flex-col justify-start">
+          <label class="font-label" z-form-label zRequired>
+            Email
+          </label>
+          <z-form-control>
+            <input z-input type="email" placeholder="Enter your email" formControlName="email"
+              [zStatus]="emailControl.invalid && emailControl.touched ? 'error' : undefined" />
+          </z-form-control>
+          @if (emailControl.hasError('required') && emailControl.touched) {
+          <z-form-message class="font-caption" zType="error">Email is required.</z-form-message>
+          } @else if (emailControl.hasError('email') && emailControl.touched) {
+          <z-form-message class="font-caption" zType="error">Enter a valid email address.</z-form-message>
+          }
+        </z-form-field>
+
+        <div class="grid grid-cols-2 md:place-items-center max-md:grid-cols-1 gap-[20px]">
+          <z-form-field class="h-full flex flex-col justify-start">
+            <label class="font-label" z-form-label zRequired>
+              Password
+            </label>
+            <z-form-control>
+              <z-input-group [zAddOnAfter]="showPasswordIcon" class="mb-4">
+                <input z-input [type]="showPassword() ? 'text' : 'password'" placeholder="min 8 characters"
+                  formControlName="password"
+                  [zStatus]="passwordControl.invalid && passwordControl.touched ? 'error' : undefined" />
+              </z-input-group>
+
+              <ng-template #showPasswordIcon>
+                <ng-icon class="text-foreground/50" [name]="showPassword() ? 'lucideEyeOff': 'lucideEye'"
+                  (click)="togglePasswordVisibility()" />
+              </ng-template>
+            </z-form-control>
+            @if (passwordControl.hasError('required') && passwordControl.touched) {
+            <z-form-message class="font-caption" zType="error">Password is required.</z-form-message>
+            } @else if (passwordControl.hasError('minlength') && passwordControl.touched) {
+            <z-form-message class="font-caption" zType="error">Minimum 8 characters.</z-form-message>
+            } @else if (passwordControl.hasError('passwordStrength') && passwordControl.touched) {
+            <z-form-message class="font-caption" zType="error">
+              @if (passwordControl.getError('passwordStrength')) {
+              <ng-container>
+                @if (!passwordControl.getError('passwordStrength').hasUpper) {
+                <span>• Must include an uppercase letter</span>
+                }
+                @if (!passwordControl.getError('passwordStrength').hasLower) {
+                <span>• Must include a lowercase letter</span>
+                }
+                @if (!passwordControl.getError('passwordStrength').hasSpecial) {
+                • Must include a special character
+                }
+              </ng-container>
+              }
+            </z-form-message>
+            }
           </z-form-field>
 
-          <div class="space-y-[4px]">
-            <button
-              [disabled]="registerForm.invalid"
-              [zLoading]="registerFormLoading()"
-              type="submit"
-              z-button
-              zFull
-              zSize="xl"
-            >
-              Register
-            </button>
+          <z-form-field class="h-full flex flex-col justify-start">
+            <label class="font-label" z-form-label zRequired>
+              Confirm Password
+            </label>
+            <z-form-control>
+              <z-input-group [zAddOnAfter]="showConfirmPasswordIcon" class="mb-4">
+                <input z-input [type]="showConfirmPassword() ? 'text' : 'password'" placeholder="min 8 characters"
+                  formControlName="confirmPassword"
+                  [zStatus]="confirmPasswordControl.invalid && confirmPasswordControl.touched ? 'error' : undefined" />
+              </z-input-group>
 
-            <div class="flex flex-row justify-center items-center">
-              <p class="font-body">
-                Already have an account?
-              </p>
-              <button class="text-primary font-body" z-button zSize="sm" zType="link" (click)="goToLogin()">
-                Login
-              </button>
+              <ng-template #showConfirmPasswordIcon>
+                <ng-icon class="text-foreground/50" [name]="showConfirmPassword() ? 'lucideEyeOff': 'lucideEye'"
+                  (click)="toggleConfirmPasswordVisibility()" />
+              </ng-template>
+            </z-form-control>
+            @if (confirmPasswordControl.hasError('required') && confirmPasswordControl.touched) {
+            <z-form-message class="font-caption" zType="error">Password is required.</z-form-message>
+            } @else if (registerForm.hasError('passwordMismatch') && confirmPasswordControl.touched) {
+            <z-form-message class="font-caption" zType="error">Passwords do not match.</z-form-message>
+            }
+          </z-form-field>
+        </div>
+
+        <z-form-field>
+          <z-form-control class="flex flex-col justify-center">
+            <div class="flex items-center space-x-2">
+              <z-checkbox id="agreeToTerms" formControlName="agreeToTerms" />
+              <label class="font-label text-nowrap" z-form-label for="agreeToTerms">
+                I agree to the Terms & Policy
+              </label>
             </div>
+          </z-form-control>
+        </z-form-field>
+
+        <div class="space-y-[4px]">
+          <button [disabled]="registerForm.invalid" [zLoading]="registerFormLoading()" type="submit" z-button zFull
+            zSize="xl">
+            Register
+          </button>
+
+          <div class="flex flex-row justify-center items-center">
+            <p class="font-body">
+              Already have an account?
+            </p>
+            <button class="text-primary font-body" z-button zSize="sm" zType="link" (click)="goToLogin()">
+              Login
+            </button>
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
+    </div>
     }
 
 
     <!-- Step 3 User Type -->
     @if (registerStep() === 'verification') {
-      <div
-         class="w-[80%] max-xl:w-full max-lg:w-[60%] max-md:w-[80%] max-sm:w-full my-auto mx-auto space-y-[40px]"
-      >
+    <div class="w-[80%] max-xl:w-full max-lg:w-[60%] max-md:w-[80%] max-sm:w-full my-auto mx-auto space-y-[40px]">
 
-        <!-- Title -->
-        <div class="flex flex-col gap-[16px] text-center">
-          <h2 class="font-h2 leading-1 font-medium">
-            Email verification
-          </h2>
-          <p class="font-body text-foreground/50">
-            We have sent you code to your Email
-            <span class="text-primary">
+      <!-- Title -->
+      <div class="flex flex-col gap-[16px] text-center">
+        <h2 class="font-h2 leading-1 font-medium">
+          Email verification
+        </h2>
+        <p class="font-body text-foreground/50">
+          We have sent you code to your Email
+          <span class="text-primary">
             {{ userEmail }}
           </span>
-          </p>
-        </div>
-
-        <form [formGroup]="emailVerificationForm" (ngSubmit)="handleVerificationSubmit()" class="space-y-6 my-[40px]">
-          <z-form-field>
-            <label class="font-label" z-form-label zRequired>
-              Code
-            </label>
-            <z-form-control>
-              <input z-input type="text" placeholder="max 6 chars or digits" formControlName="code" />
-            </z-form-control>
-          </z-form-field>
-
-          <button
-            zFull
-            z-button
-            zType="default"
-            zSize="xl"
-            [disabled]="emailVerificationForm.invalid"
-            [zLoading]="codeVerificationLoading()"
-          >
-            Verify Account
-          </button>
-        </form>
-
-        <div class="flex flex-row justify-center items-center">
-          <p>
-            Didn't receive code?
-          </p>
-          <button
-            z-button
-            zType="link"
-            (click)="resendConfirmation()">
-            Resend
-          </button>
-        </div>
-
+        </p>
       </div>
+
+      <form [formGroup]="emailVerificationForm" (ngSubmit)="handleVerificationSubmit()" class="space-y-6 my-[40px]">
+        <z-form-field>
+          <label class="font-label" z-form-label zRequired>
+            Code
+          </label>
+          <z-form-control>
+            <input z-input type="text" placeholder="max 6 chars or digits" formControlName="code" />
+          </z-form-control>
+        </z-form-field>
+
+        <button zFull z-button zType="default" zSize="xl" [disabled]="emailVerificationForm.invalid"
+          [zLoading]="codeVerificationLoading()">
+          Verify Account
+        </button>
+      </form>
+
+      <div class="flex flex-row justify-center items-center">
+        <p>
+          Didn't receive code?
+        </p>
+        <button z-button zType="link" (click)="resendConfirmation()">
+          Resend
+        </button>
+      </div>
+
+    </div>
     }
 
   </div>
 
-  <div class="overflow-hidden w-full h-full rounded-[12px] max-lg:hidden">
-    <video
-      #videoPlayer
-      class="w-full h-full object-cover"
-      [src]="currentVideo"
-      autoplay
-      muted
-      playsinline
-      preload="auto"
-      (ended)="playNext()"
-    ></video>
+  <div class="overflow-hidden relative w-full h-full rounded-[12px] max-lg:hidden bg-muted">
+    @if (videoLoading()) {
+    <div
+      class="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm z-10 transition-opacity duration-300">
+      <ng-icon name="lucideLoaderCircle" class="animate-spin text-4xl text-primary" />
+    </div>
+    }
+    <video #videoPlayer class="w-full h-full object-cover transition-opacity duration-500"
+      [class.opacity-0]="videoLoading()" [class.opacity-100]="!videoLoading()" [src]="currentVideo" autoplay muted
+      playsinline preload="auto" (ended)="playNext()" (canplay)="videoLoading.set(false)"
+      (waiting)="videoLoading.set(true)" (playing)="videoLoading.set(false)"></video>
   </div>
 </div>

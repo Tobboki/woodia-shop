@@ -1,0 +1,75 @@
+<div class="flex flex-col gap-4 my-4" *transloco="let t">
+  <div class="flex max-md:flex-col justify-between items-end max-md:items-center gap-2">
+    <div class="flex flex-col max-md:items-center w-full md:w-1/2">
+      <h1 class="font-h1">
+        {{ t('features.customers.jobs.title') }}
+      </h1>
+
+      <p class="max-md:hidden">
+        {{ t('features.customers.jobs.description') }}
+      </p>
+    </div>
+
+    <z-segmented [zOptions]="displayModeOptions" zDefaultValue="list" zSize="lg" (zChange)="onDisplayModeChange($event)" />
+  </div>
+
+  <!-- Tabs -->
+  <div>
+    <div class="max-sm:hidden flex gap-2">
+      @for (option of statusOptions; track option) {
+        <z-button
+          class="rounded-full px-4"
+          [zType]=" currentStatus() === option ? 'default' : 'outline' "
+          (click)="currentStatus.set(option)"
+        >
+          {{ t(`features.customers.jobs.jobStatus.${option}`) }}
+        </z-button>
+      }
+    </div>
+
+    <z-carousel [zOptions]="zardCarouselOptions" zControls="none" class="sm:hidden">
+      <z-carousel-content>
+        @for (option of statusOptions; track option) {
+          <z-carousel-item class="px-1 basis-auto flex-shrink-0">
+            <z-button
+              class="rounded-full px-4"
+              [zType]=" currentStatus() === option ? 'default' : 'outline' "
+              (click)="currentStatus.set(option)"
+            >
+              {{ t(`features.customers.jobs.jobStatus.${option}`) }}
+            </z-button>
+          </z-carousel-item>
+        }
+      </z-carousel-content>
+    </z-carousel>
+  </div>
+
+  <div class="flex flex-col justify-between w-full gap-2">
+    <!-- Jobs list/grid -->
+    @if (displayMode() === 'list') {
+      <woodia-jobs-list [jobs]="jobs()" />
+    } @else if (displayMode() === 'grid') {
+      <woodia-jobs-grid [jobs]="jobs()" />
+    }
+
+    <!-- Load More Button -->
+    @if (jobs().length > 0 && hasMoreJobs()) {
+      <div class="mx-auto mt-4">
+        <z-button
+          zSize="xl"
+          [zDisabled]="isLoadingMoreJobs()"
+          [zLoading]="isLoadingMoreJobs()"
+          (click)="loadMoreJobs()"
+        >
+          Load More
+          <ng-icon
+            name="lucideRotateCw"
+            [class]=" isLoadingMoreJobs() ? 'hidden' : '' "
+          />
+        </z-button>
+      </div>
+    }
+  </div>
+
+
+</div>

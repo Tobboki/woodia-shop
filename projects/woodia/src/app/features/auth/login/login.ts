@@ -11,8 +11,8 @@ import { LogoComponent } from '@shared-components/custom/logo/logo.component';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { toast } from 'ngx-sonner';
-import {ZardInputGroupComponent} from '@shared-components/input-group/input-group.component';
-import {NgIcon} from '@ng-icons/core';
+import { ZardInputGroupComponent } from '@shared-components/input-group/input-group.component';
+import { NgIcon } from '@ng-icons/core';
 
 @Component({
   selector: 'app-login',
@@ -39,29 +39,57 @@ export class Login implements OnInit, AfterViewInit {
 
   @ViewChild('videoPlayer') videoRef!: ElementRef<HTMLVideoElement>;
 
+  private nextVideoEl: HTMLVideoElement | null = null;
+  videoLoading = signal<boolean>(true);
+
   // panels
   panels: string[] = [
-    '/videos/auth/customer-panel-1.mp4',
-    '/videos/auth/customer-panel-2.mp4',
-    '/videos/auth/customer-panel-3.mp4',
-    '/videos/auth/customer-panel-4.mp4',
+    'https://res.cloudinary.com/drzda0ka9/video/upload/v1774013506/x7diii1amr8ixw2u0frn.mp4',
+    'https://res.cloudinary.com/drzda0ka9/video/upload/v1774013395/kokhxqy7i3egvsncbktw.mp4',
+    'https://res.cloudinary.com/drzda0ka9/video/upload/v1774013449/viw0aw1kf9n2vzpmhyq6.mp4',
+    'https://res.cloudinary.com/drzda0ka9/video/upload/v1774013506/x7diii1amr8ixw2u0frn.mp4',
   ];
 
   currentIndex = 0;
   currentVideo = this.panels[this.currentIndex];
 
   ngAfterViewInit() {
-    this.videoRef.nativeElement.play();
+    const video = this.videoRef.nativeElement;
+    video.muted = true;
+    video.play().catch(() => {});
+  }
+
+  preloadNext(index: number) {
+    const nextIndex = (index + 1) % this.panels.length;
+
+    const vid = document.createElement('video');
+    vid.src = this.panels[nextIndex];
+    vid.preload = 'auto';
+    vid.muted = true;
+
+    vid.load();
+
+    this.nextVideoEl = vid;
   }
 
   playNext() {
     this.currentIndex = (this.currentIndex + 1) % this.panels.length;
-    this.currentVideo = this.panels[this.currentIndex];
 
-    // small timeout ensures src updates before playing
+    const video = this.videoRef.nativeElement;
+
+    if (this.nextVideoEl) {
+      video.src = this.nextVideoEl.src;
+    } else {
+      video.src = this.panels[this.currentIndex];
+    }
+
+    video.load();
+
     setTimeout(() => {
-      this.videoRef.nativeElement.play();
+      video.play().catch(() => { });
     });
+
+    this.preloadNext(this.currentIndex);
   }
 
   // Strongly typed form
@@ -110,15 +138,27 @@ export class Login implements OnInit, AfterViewInit {
       )
       .subscribe({
         next: () => {
-          this.loginFormLoading.set(false)
-          if (this.authService.getCurrentUser()?.userType === 'Client')
-            this.router.navigate(['/customers']);
-          if (this.authService.getCurrentUser()?.userType === 'Client')
-            this.router.navigate(['/customers']);
+          this.loginFormLoading.set(false);
+
+          const userType = this.authService.getCurrentUser()?.userType;
+
+          if (userType?.toLowerCase() === 'admin') {
+            this.authService.logout();
+            toast.error('Access Denied', {
+              description: 'Admins cannot login to the client app.',
+              position: 'bottom-center',
+            });
+            return;
+          }
+
           toast.success('Login Successful', {
             position: 'bottom-center',
             duration: 2000,
           });
+
+          if (userType === 'Client') {
+            this.router.navigate(['/customers']);
+          }
         },
         error: (err) => {
           this.loginFormLoading.set(false)

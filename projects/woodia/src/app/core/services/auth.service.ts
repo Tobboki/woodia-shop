@@ -87,20 +87,41 @@ export class AuthService {
   }
 
   googleSignIn() {
+    localStorage.setItem('google_auth_intent', JSON.stringify({ intent: 'login' }));
     this.oauthService.initLoginFlow()
   }
 
-  async processGoogleLoginCallback() {
-    if (!this.oauthService.hasValidIdToken())
-      return null
-
-    const idToken = this.oauthService.getIdToken()
-
-    return this.sendGoogleTokenToBackend(idToken)
+  googleSignUp(type: string) {
+    localStorage.setItem('google_auth_intent', JSON.stringify({ intent: 'signup', type }));
+    this.oauthService.initLoginFlow()
   }
 
-  googleLogout() {
-    this.oauthService.logOut()
+  async sendGoogleSignUpTokenToBackend(idToken: string, userType: string): Promise<void> {
+    return firstValueFrom(
+      this.http.post<AuthResponse>(
+        `${environment.apiUrl}${environment.endpoints.auth.googleSignUp}`,
+        { idToken, userType }
+      )
+    ).then(response => {
+      this.storeUser(response);
+    });
+  }
+
+  async processGoogleLoginCallback(): Promise<AuthResponse | null> {
+    if (!this.oauthService.hasValidIdToken()) return null;
+
+    const idToken = this.oauthService.getIdToken();
+
+    const response = await firstValueFrom(
+      this.http.post<AuthResponse & { isNewUser?: boolean }>(
+        `${environment.apiUrl}${environment.endpoints.auth.googleSignIn}`,
+        { idToken }
+      )
+    );
+
+    this.storeUser(response);
+
+    return response;
   }
 
   get googleIdentityClaims() {
@@ -301,6 +322,7 @@ export class AuthService {
       }),
       catchError(error => {
         this.logout();
+        console.log(error);
         return throwError(() => error);
       })
     );

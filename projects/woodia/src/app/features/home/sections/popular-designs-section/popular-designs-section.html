@@ -4,11 +4,11 @@
       Our Most Loved Designs
     </h1>
   </div>
-  
+
   <div class="w-full">
     <z-carousel [zOptions]="zardCarouselOptions" zControls="none">
       <z-carousel-content>
-        @for (product of products; track product.id) {
+        @for (product of products(); track product.id) {
           <z-carousel-item class="basis-auto flex-shrink-0">
             <woodia-product-card
               [product]="product"

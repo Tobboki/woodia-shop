@@ -16,7 +16,6 @@ import { environment } from '@woodia-environments/environment';
 export class CategoriesSection implements OnInit {
   categories = signal<ICategory[]>([]);
   loading = signal<boolean>(false);
-  error = signal<string | null>(null);
 
   constructor(
     private http: HttpClient,
@@ -29,7 +28,6 @@ export class CategoriesSection implements OnInit {
 
   fetchCategories() {
     this.loading.set(true);
-    this.error.set(null);
 
     this.http
       .get<ICategory[]>(
@@ -42,7 +40,6 @@ export class CategoriesSection implements OnInit {
         },
         error: (err) => {
           console.error('Failed to load categories', err);
-          this.error.set('Failed to load categories');
           this.loading.set(false);
         }
       });
