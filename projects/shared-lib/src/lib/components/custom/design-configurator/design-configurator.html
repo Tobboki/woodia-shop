@@ -35,51 +35,45 @@
       <!-- ===== Top-level tabs: Model / Rows Config / Columns Config ===== -->
       @if (modelType() === 'Bookcase') {
       <div class="flex gap-2">
-        <button z-button zType="outline" class="flex-1" [class.active]="activeMainTab() === 'model'"
+        <button z-button [zType]="activeMainTab() === 'model' ? 'default' : 'outline'" class="rounded-full flex-1"
           (click)="setMainTab('model')">Model</button>
-        <button z-button zType="outline" class="flex-1" [class.active]="activeMainTab() === 'rows'"
+        <button z-button [zType]="activeMainTab() === 'rows' ? 'default' : 'outline'" class="rounded-full flex-1"
           (click)="setMainTab('rows')">Rows config</button>
       </div>
       }
 
       @if (modelType() === 'Desk') {
-      <div class="configurator-main-tabs">
-        <button class="configurator-main-tab" [class.active]="activeMainTab() === 'model'"
+      <div class="flex gap-2">
+        <button z-button [zType]="activeMainTab() === 'model' ? 'default' : 'outline'" class="rounded-full flex-1"
           (click)="setMainTab('model')">Model</button>
-        <button class="configurator-main-tab" [class.active]="activeMainTab() === 'columns'"
+        <button z-button [zType]="activeMainTab() === 'columns' ? 'default' : 'outline'" class="rounded-full flex-1"
           (click)="setMainTab('columns')">Columns config</button>
       </div>
       }
 
       @if (modelType() === 'TvStand') {
-      <div class="flex gap-1 bg-muted rounded-full p-1">
-        <button
-          class="flex-1 px-3 py-1.5 rounded-full text-[0.8125rem] font-medium leading-tight border-none cursor-pointer transition-colors"
-          [class.bg-white]="activeMainTab() === 'model'" [class.text-foreground]="activeMainTab() === 'model'"
-          [class.shadow-sm]="activeMainTab() === 'model'" [class.text-foreground]="activeMainTab() !== 'model'"
+      <div class="flex gap-2">
+        <button z-button [zType]="activeMainTab() === 'model' ? 'default' : 'outline'" class="rounded-full flex-1"
           (click)="setMainTab('model')">Model</button>
-        <button
-          class="flex-1 px-3 py-1.5 rounded-full text-[0.8125rem] font-medium leading-tight border-none cursor-pointer transition-colors"
-          [class.bg-white]="activeMainTab() === 'columns'" [class.text-foreground]="activeMainTab() === 'columns'"
-          [class.shadow-sm]="activeMainTab() === 'columns'" [class.text-foreground]="activeMainTab() !== 'columns'"
+        <button z-button [zType]="activeMainTab() === 'columns' ? 'default' : 'outline'" class="rounded-full flex-1"
           (click)="setMainTab('columns')">Columns config</button>
       </div>
       }
 
       @if (modelType() === 'ShoeRack') {
-      <div class="configurator-main-tabs">
-        <button class="configurator-main-tab" [class.active]="activeMainTab() === 'model'"
+      <div class="flex gap-2">
+        <button z-button [zType]="activeMainTab() === 'model' ? 'default' : 'outline'" class="rounded-full flex-1"
           (click)="setMainTab('model')">Model</button>
-        <button class="configurator-main-tab" [class.active]="activeMainTab() === 'columns'"
+        <button z-button [zType]="activeMainTab() === 'columns' ? 'default' : 'outline'" class="rounded-full flex-1"
           (click)="setMainTab('columns')">Columns config</button>
       </div>
       }
 
       @if (modelType() === 'BedsideTable') {
-      <div class="configurator-main-tabs">
-        <button class="configurator-main-tab" [class.active]="activeMainTab() === 'model'"
+      <div class="flex gap-2">
+        <button z-button [zType]="activeMainTab() === 'model' ? 'default' : 'outline'" class="rounded-full flex-1"
           (click)="setMainTab('model')">Model</button>
-        <button class="configurator-main-tab" [class.active]="activeMainTab() === 'columns'"
+        <button z-button [zType]="activeMainTab() === 'columns' ? 'default' : 'outline'" class="rounded-full flex-1"
           (click)="setMainTab('columns')">Columns config</button>
       </div>
       }
@@ -352,14 +346,14 @@
           <h5 class="font-label text-foreground/60 mb-3">Select row</h5>
           <div class="flex flex-wrap gap-2">
             @for (idx of rowIndices(); track idx) {
-            <button type="button" class="configurator-index-tab" [class.active]="selectedRowIndex() === idx"
+            <z-button [zType]="selectedRowIndex() === idx ? 'default' : 'outline'" class="rounded-full"
               (click)="onRowSelect(idx + '')">
-              @if (idx === rowCount() - 1 && rowCount() > 3) {
+              @if (selectedRowIndex() === idx) {
               Row {{ idx + 1 }}
               } @else {
               {{ idx + 1 }}
               }
-            </button>
+            </z-button>
             }
           </div>
         </div>
@@ -494,14 +488,14 @@
           <h5 class="font-label text-foreground/60 mb-3">Select column</h5>
           <div class="flex flex-wrap gap-2">
             @for (idx of columnIndices(); track idx) {
-            <button type="button" class="configurator-index-tab" [class.active]="selectedColumnIndex() === idx"
+            <z-button [zType]="selectedColumnIndex() === idx ? 'default' : 'outline'" class="rounded-full"
               (click)="onColumnSelect(idx + '')">
-              @if (idx === columnCount() - 1 && columnCount() > 3) {
+              @if (selectedColumnIndex() === idx) {
               Column {{ idx + 1 }}
               } @else {
               {{ idx + 1 }}
               }
-            </button>
+            </z-button>
             }
           </div>
         </div>
@@ -675,20 +669,14 @@
           <h5 class="font-label text-foreground/60 mb-3">Select column</h5>
           <div class="flex flex-wrap gap-2">
             @for (idx of tvColumnIndices(); track idx) {
-            <button type="button"
-              class="inline-flex items-center justify-center min-w-9 h-9 px-2.5 rounded-full text-[0.8125rem] font-semibold border-[1.5px] cursor-pointer transition-all"
-              [class.bg-foreground]="selectedTvColumnIndex() === idx"
-              [class.text-background]="selectedTvColumnIndex() === idx"
-              [class.border-foreground]="selectedTvColumnIndex() === idx"
-              [class.bg-background]="selectedTvColumnIndex() !== idx"
-              [class.text-foreground]="selectedTvColumnIndex() !== idx"
-              [class.border-border]="selectedTvColumnIndex() !== idx" (click)="onTvColumnSelect(idx + '')">
-              @if (idx === tvColumnCount() - 1 && tvColumnCount() > 3) {
-              Col {{ idx + 1 }}
+            <z-button [zType]="selectedTvColumnIndex() === idx ? 'default' : 'outline'" class="rounded-full"
+              (click)="onTvColumnSelect(idx + '')">
+              @if (selectedTvColumnIndex() === idx) {
+              Column {{ idx + 1 }}
               } @else {
               {{ idx + 1 }}
               }
-            </button>
+            </z-button>
             }
           </div>
         </div>
@@ -819,14 +807,14 @@
           <h5 class="font-label text-foreground/60 mb-3">Select column</h5>
           <div class="flex flex-wrap gap-2">
             @for (idx of shoeColumnIndices(); track idx) {
-            <button type="button" class="configurator-index-tab" [class.active]="selectedShoeColumnIndex() === idx"
+            <z-button [zType]="selectedShoeColumnIndex() === idx ? 'default' : 'outline'" class="rounded-full"
               (click)="onShoeColumnSelect(idx + '')">
-              @if (idx === shoeColumnCount() - 1 && shoeColumnCount() > 3) {
-              Col {{ idx + 1 }}
+              @if (selectedShoeColumnIndex() === idx) {
+              Column {{ idx + 1 }}
               } @else {
               {{ idx + 1 }}
               }
-            </button>
+            </z-button>
             }
           </div>
         </div>
@@ -974,8 +962,14 @@
           <h5 class="font-label text-foreground/60 mb-3">Select column</h5>
           <div class="flex flex-wrap gap-2">
             @for (idx of bedsideColumnIndices(); track idx) {
-            <button type="button" class="configurator-index-tab" [class.active]="selectedBedsideColumnIndex() === idx"
-              (click)="onBedsideColumnSelect(idx + '')">{{ idx + 1 }}</button>
+            <z-button [zType]="selectedBedsideColumnIndex() === idx ? 'default' : 'outline'" class="rounded-full"
+              (click)="onBedsideColumnSelect(idx + '')">
+              @if (selectedBedsideColumnIndex() === idx) {
+              Column {{ idx + 1 }}
+              } @else {
+              {{ idx + 1 }}
+              }
+            </z-button>
             }
           </div>
         </div>

@@ -40,9 +40,12 @@
 <div class="flex flex-col border bg-card rounded-lg">
   <woodia-design-configurator [product]="product()" [modelType]="modelType()" />
 
-  <div class="p-2 flex justify-between border-t">
-    <span>Ready?</span>
-    <z-button (click)="nextStep()">Post Job</z-button>
+  <div class="p-2 flex items-center justify-between border-t">
+    <span>Design is ready?</span>
+    <z-button zSize="lg" (click)="nextStep()">
+      Next Step
+      <ng-icon name="lucideArrowRight" class="size-4" />
+    </z-button>
   </div>
 </div>
 
