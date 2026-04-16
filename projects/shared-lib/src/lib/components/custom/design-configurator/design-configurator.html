@@ -1,6 +1,7 @@
 <div class="h-full w-full max-w-[100vw] flex flex-col lg:flex-row min-h-0 gap-0" [class.lg:!flex-col]="compactLayout">
   <!-- Model -->
-  <div class="relative min-h-0 overflow-hidden flex-1 select-none">
+  <div class="relative h-[80vh] shrink-0 lg:h-auto lg:min-h-0 overflow-hidden lg:flex-1 select-none"
+    [class.lg:!h-[80vh]]="compactLayout" [class.lg:!flex-none]="compactLayout">
     @if(designLoading()) {
     <z-loader zSize="lg" class="absolute inset-0 flex items-center justify-center z-[2] bg-white/80" />
     }
@@ -23,20 +24,20 @@
 
   <!-- Controls: fixed width, scrollable content, never taller than view -->
   <div
-    class="w-full shrink-0 lg:w-[320px] lg:min-w-[320px] max-w-[100vw] min-h-0 flex flex-col rounded-none lg:rounded-r-[12px] overflow-hidden max-h-[50vh] lg:max-h-none lg:mb-0 !bg-background border-t-2 lg:border-t-0 border-border"
-    [class.lg:!w-full]="compactLayout" [class.lg:!min-w-0]="compactLayout" [class.lg:!max-h-[50vh]]="compactLayout"
-    [class.lg:!border-t-2]="compactLayout" [class.lg:!rounded-none]="compactLayout">
-    <div class="flex-1 min-h-0 overflow-y-auto p-4 flex flex-col gap-6">
+    class="w-full shrink-0 lg:w-[320px] lg:min-w-[320px] max-w-[100vw] min-h-0 flex flex-col rounded-none lg:rounded-r-[12px] lg:mb-0 !bg-background border-t-2 lg:border-t-0 border-border"
+    [class.lg:!w-full]="compactLayout" [class.lg:!min-w-0]="compactLayout" [class.lg:!border-t-2]="compactLayout"
+    [class.lg:!rounded-none]="compactLayout">
+    <div class="flex-1 lg:min-h-0 lg:overflow-y-auto p-4 flex flex-col gap-6">
       <h4 class="font-h4 hidden md:block" [class.md:!hidden]="compactLayout">Design controls</h4>
 
       @if (showControls()) {
 
       <!-- ===== Top-level tabs: Model / Rows Config / Columns Config ===== -->
       @if (modelType() === 'Bookcase') {
-      <div class="configurator-main-tabs">
-        <button class="configurator-main-tab" [class.active]="activeMainTab() === 'model'"
+      <div class="flex gap-2">
+        <button z-button zType="outline" class="flex-1" [class.active]="activeMainTab() === 'model'"
           (click)="setMainTab('model')">Model</button>
-        <button class="configurator-main-tab" [class.active]="activeMainTab() === 'rows'"
+        <button z-button zType="outline" class="flex-1" [class.active]="activeMainTab() === 'rows'"
           (click)="setMainTab('rows')">Rows config</button>
       </div>
       }
@@ -634,12 +635,9 @@
               <z-carousel-item class="!basis-[88px] !min-w-0 !shrink-0 !grow-0 pl-2">
                 <button type="button"
                   class="flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 p-2.5 transition-colors min-h-[72px] w-full"
-                  [class.border-border]="tvStandStyle() !== style"
-                  [class.bg-muted]="tvStandStyle() !== style"
-                  [class.border-primary]="tvStandStyle() === style"
-                  [class.bg-primary]="tvStandStyle() === style"
-                  (click)="onTvStandStyleChange(style)"
-                >
+                  [class.border-border]="tvStandStyle() !== style" [class.bg-muted]="tvStandStyle() !== style"
+                  [class.border-primary]="tvStandStyle() === style" [class.bg-primary]="tvStandStyle() === style"
+                  (click)="onTvStandStyleChange(style)">
                   <ng-icon name="lucideBlocks" class="size-6" />
                   <span class="font-label text-xs capitalize">{{ style }}</span>
                 </button>

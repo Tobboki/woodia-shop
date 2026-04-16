@@ -1,18 +1,16 @@
-import { AfterViewInit, Component, ElementRef, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService, LoginCredentials } from '@admin-core/services/auth.service';
-
 import { ZardButtonComponent } from '@shared-components/button/button.component';
 import { ZardInputDirective } from '@shared-components/input/input.directive';
 import { ZardFormModule } from '@shared-components/form/form.module';
 import { ZardCheckboxComponent } from '@shared-components/checkbox/checkbox.component';
-import { ZardDividerComponent } from '@shared-components/divider/divider.component';
 import { LogoComponent } from '@shared-components/custom/logo/logo.component';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { toast } from 'ngx-sonner';
-import {ZardInputGroupComponent} from '@shared-components/input-group/input-group.component';
-import {NgIcon} from '@ng-icons/core';
+import { ZardInputGroupComponent } from '@shared-components/input-group/input-group.component';
+import { NgIcon } from '@ng-icons/core';
 
 @Component({
   selector: 'app-login',

@@ -4,12 +4,13 @@ import { Observable } from 'rxjs'
 import { environment } from '@woodia-environments/environment'
 import type { Product } from '@shared-types/product'
 import { IProductsResponse } from '@shared-types/product'
+import { IProductCard } from '@woodia-shared/types/product'
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProductService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getById(id: number): Observable<Product> {
     return this.http
@@ -67,5 +68,11 @@ export class ProductService {
       `${environment.apiUrl}${environment.endpoints.customer.product.getByCategorySlug(slug)}`,
       { params }
     );
+  }
+
+  getPopularDesigns(): Observable<IProductCard[]> {
+    return this.http.get<IProductCard[]>(
+      `${environment.apiUrl}${environment.endpoints.customer.product.getPopularDesigns}`
+    )
   }
 }

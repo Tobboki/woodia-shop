@@ -76,6 +76,8 @@ import {
   lucideBlocks,
   lucideShoppingBag,
   lucideHammer,
+  lucidePencil,
+  lucideClipboardList
 } from '@ng-icons/lucide';
 
 export const appConfig: ApplicationConfig = {
@@ -131,6 +133,8 @@ export const appConfig: ApplicationConfig = {
       lucideBlocks,
       lucideShoppingBag,
       lucideHammer,
+      lucidePencil,
+      lucideClipboardList
     }),
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),

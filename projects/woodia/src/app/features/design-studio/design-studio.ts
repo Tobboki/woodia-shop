@@ -17,9 +17,6 @@ import type { Product, ProductCategory, ProductModelConfig } from '@shared-types
 
 import { NgIcon } from '@ng-icons/core';
 import { ZardButtonComponent } from '@shared-components/button';
-import { ZardSelectComponent } from '@shared-components/select/select.component';
-import { ZardSelectItemComponent } from '@shared-components/select/select-item.component';
-import { ZardInputDirective } from '@shared-components/input/input.directive';
 import { ZardFormModule } from '@shared-components/form/form.module';
 
 import { toast } from 'ngx-sonner';
@@ -34,9 +31,6 @@ import { toast } from 'ngx-sonner';
     NgIcon,
     ZardFormModule,
     ZardButtonComponent,
-    ZardSelectComponent,
-    ZardSelectItemComponent,
-    ZardInputDirective,
     DesignConfigurator,
   ],
   templateUrl: './design-studio.html',

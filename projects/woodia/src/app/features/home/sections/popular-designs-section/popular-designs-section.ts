@@ -2,7 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { ZardCarouselComponent, ZardCarouselContentComponent, ZardCarouselItemComponent } from '@shared-components/carousel';
 import { ProductCard } from "@woodia-shared/components/product-card/product-card";
 import { IProductCard, IProductsResponse } from '@shared-types/product';
-import { DesignService } from '@admin-core/services/design.service';
+import { ProductService } from '@woodia-core/services/product.service';
 
 export interface Product {
   id: number;
@@ -27,7 +27,7 @@ export interface Product {
 })
 export class PopularDesignsSection implements OnInit {
   constructor(
-    private designService: DesignService,
+    private productService: ProductService,
   ) { }
 
   products = signal<IProductCard[]>([])
@@ -40,13 +40,13 @@ export class PopularDesignsSection implements OnInit {
   loadProducts() {
     this.productsLoading.set(true)
 
-    this.designService.getPopularDesigns().subscribe({
-      next: data => {
+    this.productService.getPopularDesigns().subscribe({
+      next: (data: any) => {
         this.productsLoading.set(false)
 
         this.products.set(data)
       },
-      error: error => {
+      error: (error: any) => {
         this.productsLoading.set(false)
         console.error(error);
       }
