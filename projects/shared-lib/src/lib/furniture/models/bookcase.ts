@@ -54,8 +54,6 @@ export class Bookcase {
   private hoveredDoor: { row: number; col: number } | null = null
   private hoveredDrawer: { row: number; col: number } | null = null
   private rowStyle: RowStyle = 'grid'
-  private edgeColor: string = '#ffffff'
-  private edgeMaterial: THREE.MeshStandardMaterial
   private invisibleHitboxMaterial: THREE.MeshBasicMaterial
   private density: number = 50
   private rowConfigs: ShelfRowConfig[] = []
@@ -69,7 +67,7 @@ export class Bookcase {
     depth: number = 35 * CM,
     thickness: number = 2 * CM,
     origin: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 },
-    material: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xd4cfc9 }),
+    material: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xaec6de }),
     backMaterial: THREE.Material = material,
     meshIdStart: number = 0,
     withBack: boolean = true
@@ -84,7 +82,6 @@ export class Bookcase {
     this.origin = origin
     this.material = material
     this.backMaterial = backMaterial
-    this.edgeMaterial = new THREE.MeshStandardMaterial({ color: this.edgeColor })
     this.invisibleHitboxMaterial = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })
     this.meshIdStart = meshIdStart
     this.withBack = withBack
@@ -283,19 +280,19 @@ export class Bookcase {
       for (let c = 0; c < columns; c++) {
         const cellXLeft = thickness * 2 + c * (baseCellWidth + thickness)
         const cellXRight = cellXLeft + baseCellWidth
-        group.add(
-          new Blank(
-            cellXLeft,
-            yBase + thickness,
-            EPS,
-            cellXRight,
-            yBase + sectionHeight - thickness,
-            thickness,
-            origin,
-            this.getMaterialArray(backMaterial),
-            idRef.id++
-          ).build()
-        )
+        const bp = new Blank(
+          cellXLeft,
+          yBase + thickness,
+          EPS,
+          cellXRight,
+          yBase + sectionHeight - thickness,
+          thickness,
+          origin,
+          this.getMaterialArray(backMaterial),
+          idRef.id++
+        ).build()
+        bp.name = 'back-panel'
+        group.add(bp)
       }
     }
     // One door per column spanning full section height (covers both compartments)
@@ -628,19 +625,19 @@ export class Bookcase {
           ((slantNoRightBlank && c === columns - 1) || (slantNoLeftBlank && c === 0))
 
         if (withBack && !slantCellOpenEdge) {
-          rowGroup.add(
-            new Blank(
-              xLeft,
-              yLow,
-              EPS,
-              xRight,
-              yHigh,
-              thickness,
-              origin,
-              this.getMaterialArray(backMaterial),
-              idRef.id++
-            ).build()
-          )
+          const bp = new Blank(
+            xLeft,
+            yLow,
+            EPS,
+            xRight,
+            yHigh,
+            thickness,
+            origin,
+            this.getMaterialArray(backMaterial),
+            idRef.id++
+          ).build()
+          bp.name = 'back-panel'
+          rowGroup.add(bp)
         }
 
         // Invisible hit-box covering the entire cell volume for raycasting
@@ -914,39 +911,35 @@ export class Bookcase {
   }
 
   setColor(hex: string) {
+    const mainColor = new THREE.Color(hex)
     if (this.material instanceof THREE.MeshStandardMaterial) {
-      this.material.color.set(hex)
+      this.material.color.copy(mainColor)
     } else {
-      (this.material as any).color = new THREE.Color(hex)
+      ;(this.material as any).color = mainColor.clone()
     }
+
+    if (this.backMaterial !== this.material) {
+      if (this.backMaterial instanceof THREE.MeshStandardMaterial) {
+        this.backMaterial.color.copy(mainColor).multiplyScalar(0.82)
+      } else {
+        ;(this.backMaterial as any).color = mainColor.clone().multiplyScalar(0.82)
+      }
+    }
+
     this.group.traverse((obj) => {
       if ((obj as THREE.Mesh).isMesh && obj.name !== 'invisible-hitbox') {
-        // If an object has a multi-material array, index 0 is body, index 4 is edge
+        const isBack = obj.name === 'back-panel'
+        const color = isBack ? mainColor.clone().multiplyScalar(0.82) : mainColor
+
         const mat = (obj as THREE.Mesh).material
         if (Array.isArray(mat)) {
-          for (let i = 0; i <= 3; i++) {
+          for (let i = 0; i < mat.length; i++) {
             const bodyMat = mat[i] as THREE.MeshStandardMaterial
-            if (bodyMat && bodyMat.color) bodyMat.color.set(hex)
+            if (bodyMat && bodyMat.color) bodyMat.color.copy(color)
           }
         } else {
           const standardMat = mat as THREE.MeshStandardMaterial
-          if (standardMat && standardMat.color) standardMat.color.set(hex)
-        }
-      }
-    })
-  }
-
-  setEdgeColor(hex: string) {
-    this.edgeColor = hex
-    this.edgeMaterial.color.set(hex)
-    this.group.traverse((obj) => {
-      if ((obj as THREE.Mesh).isMesh) {
-        const mat = (obj as THREE.Mesh).material
-        if (Array.isArray(mat) && mat.length >= 6) {
-          const frontMat = mat[4] as THREE.MeshStandardMaterial
-          const backMat = mat[5] as THREE.MeshStandardMaterial
-          if (frontMat && frontMat.color) frontMat.color.set(hex)
-          if (backMat && backMat.color) backMat.color.set(hex)
+          if (standardMat && standardMat.color) standardMat.color.copy(color)
         }
       }
     })
@@ -954,14 +947,14 @@ export class Bookcase {
 
   private getMaterialArray(mainMaterial: THREE.Material): THREE.Material[] {
     // Array: [right, left, top, bottom, front, back]
-    // We want the front and back 'edges' to be edgeColor, rest body color
+    // All sides now use the same main material
     return [
       mainMaterial.clone(),
       mainMaterial.clone(),
       mainMaterial.clone(),
       mainMaterial.clone(),
-      this.edgeMaterial.clone(),
-      this.edgeMaterial.clone(),
+      mainMaterial.clone(),
+      mainMaterial.clone(),
     ]
   }
 

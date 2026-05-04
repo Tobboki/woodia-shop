@@ -227,7 +227,6 @@ export class Login implements OnInit, AfterViewInit {
 
           else {
             toast.error(this.translocoService.translate('features.auth.login.errors.genericError'));
-            console.log('login failed: ', err)
             this.passwordControl.markAsTouched();
           }
         }

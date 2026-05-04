@@ -1,38 +1,23 @@
-<div class="p-6 h-full flex flex-col" *transloco="let t">
-  <app-crud-server-data-table
-    modelName="Category"
-    [headers]="headers"
-    [items]="items()"
-    [pagedResponse]="pagedResponse()"
-    [loading]="loading()"
-    [allowedOperations]="{ add: true, update: true, delete: true, readSingle: false }"
-    (addClicked)="onAddClicked()"
-    (editClicked)="onEditClicked($event)"
-    (deleteClicked)="onDeleteClicked($event)"
+<div class="p-4 h-full flex flex-col" *transloco="let t">
+  <app-crud-server-data-table modelName="Category" [headers]="headers" [items]="items()"
+    [pagedResponse]="pagedResponse()" [loading]="loading()"
+    [allowedOperations]="{ add: true, update: true, delete: true, readSingle: false }" (addClicked)="onAddClicked()"
+    (editClicked)="onEditClicked($event)" (deleteClicked)="onDeleteClicked($event)"
     (queryParamsChanged)="loadCategories($event)">
   </app-crud-server-data-table>
 
   <!-- Sidebar Form for Add/Edit -->
-  <app-cu-form-sidebar
-    [isOpen]="sidebarOpen()"
-    [mode]="sidebarMode()"
-    modelName="Category"
-    [isLoading]="submitting()"
-    [disableSubmit]="categoryForm.invalid"
-    [disableReset]="false"
-    (closeSidebar)="closeSidebar()"
-    (submitForm)="onSubmitForm()"
-    (resetForm)="onResetForm()">
-    
+  <app-cu-form-sidebar [isOpen]="sidebarOpen()" [mode]="sidebarMode()" modelName="Category" [isLoading]="submitting()"
+    [disableSubmit]="categoryForm.invalid" [disableReset]="false" (closeSidebar)="closeSidebar()"
+    (submitForm)="onSubmitForm()" (resetForm)="onResetForm()">
+
     <form [formGroup]="categoryForm" class="space-y-6">
       <!-- Name EN -->
       <div class="space-y-2">
         <label class="text-sm font-medium" for="nameEn">{{ t('crud.headers.nameEn') }}</label>
-        <input z-input id="nameEn" formControlName="nameEn" 
-               [placeholder]="t('crud.headers.nameEn')" 
-               class="w-full">
-        <p *ngIf="categoryForm.get('nameEn')?.touched && categoryForm.get('nameEn')?.hasError('required')" 
-           class="text-xs text-destructive">
+        <input z-input id="nameEn" formControlName="nameEn" [placeholder]="t('crud.headers.nameEn')" class="w-full">
+        <p *ngIf="categoryForm.get('nameEn')?.touched && categoryForm.get('nameEn')?.hasError('required')"
+          class="text-xs text-destructive">
           Field is required
         </p>
       </div>
@@ -40,11 +25,10 @@
       <!-- Name AR -->
       <div class="space-y-2">
         <label class="text-sm font-medium" for="nameAr">{{ t('crud.headers.nameAr') }}</label>
-        <input z-input id="nameAr" formControlName="nameAr" 
-               [placeholder]="t('crud.headers.nameAr')" 
-               class="w-full text-right" dir="rtl">
-        <p *ngIf="categoryForm.get('nameAr')?.touched && categoryForm.get('nameAr')?.hasError('required')" 
-           class="text-xs text-destructive">
+        <input z-input id="nameAr" formControlName="nameAr" [placeholder]="t('crud.headers.nameAr')"
+          class="w-full text-right" dir="rtl">
+        <p *ngIf="categoryForm.get('nameAr')?.touched && categoryForm.get('nameAr')?.hasError('required')"
+          class="text-xs text-destructive">
           Field is required
         </p>
       </div>

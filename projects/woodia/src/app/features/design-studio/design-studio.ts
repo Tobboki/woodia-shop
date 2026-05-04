@@ -103,7 +103,6 @@ export class DesignStudio implements OnInit {
   ngOnInit(): void {
     this.initForm();
 
-    const idStr = this.route.snapshot.paramMap.get('id');
     const saved = sessionStorage.getItem(this.storageKey);
     if (saved) {
       try {
@@ -113,8 +112,14 @@ export class DesignStudio implements OnInit {
       }
     }
 
-    const idStr2 = idStr;
-    const id = idStr2 != null ? parseInt(idStr2, 10) : NaN;
+    this.langService.langChanges$.subscribe(() => {
+      this.fetchProduct();
+    });
+  }
+
+  private fetchProduct(): void {
+    const idStr = this.route.snapshot.paramMap.get('id');
+    const id = idStr != null ? parseInt(idStr, 10) : NaN;
 
     if (Number.isNaN(id)) {
       this.productLoading.set(false);
@@ -122,10 +127,9 @@ export class DesignStudio implements OnInit {
       return;
     }
 
+    this.productLoading.set(true);
     this.productService.getById(id).subscribe({
       next: (product) => {
-        console.log(product)
-
         if (this.savedModelConfig) {
           product.modelConfig = this.savedModelConfig.modelConfig;
         }

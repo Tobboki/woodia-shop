@@ -79,8 +79,6 @@ export class BedsideTable {
   // ── appearance ─────────────────────────────────────────────────────────────
   private material: THREE.Material
   private backMaterial: THREE.Material
-  private edgeColor: string = '#ffffff'
-  private edgeMaterial: THREE.MeshStandardMaterial
   private invisibleHitboxMaterial: THREE.MeshBasicMaterial
 
   // ── per-column configuration ──────────────────────────────────────────────
@@ -106,7 +104,7 @@ export class BedsideTable {
     depth: number = 40 * CM,
     thickness: number = 1 * CM,
     origin: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 },
-    material: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xd4cfc9 }),
+    material: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xaec6de }),
     backMaterial: THREE.Material = material,
     meshIdStart: number = 0,
     withBack: boolean = true,
@@ -122,7 +120,6 @@ export class BedsideTable {
     this.origin = origin
     this.material = material
     this.backMaterial = backMaterial
-    this.edgeMaterial = new THREE.MeshStandardMaterial({ color: this.edgeColor })
     this.invisibleHitboxMaterial = new THREE.MeshBasicMaterial({
       transparent: true,
       opacity: 0,
@@ -314,11 +311,13 @@ export class BedsideTable {
         const yHigh = height
 
         if (withBack) {
-          colGroup.add(new Blank(
+          const bp = new Blank(
             xLeft, yLow, EPS,
             xRight, yHigh, thickness,
-            origin, this.getMaterialArray(material), idRef.id++
-          ).build())
+            origin, this.getMaterialArray(backMaterial), idRef.id++
+          ).build()
+          bp.name = 'back-panel'
+          colGroup.add(bp)
         }
 
         // Huge cell door spanning the full opening height
@@ -398,11 +397,13 @@ export class BedsideTable {
         const cellD = depth - thickness * 2
 
         if (withBack) {
-          colGroup.add(new Blank(
+          const bp = new Blank(
             xLeft, yLow, EPS,
             xRight, yHigh, thickness,
-            origin, this.getMaterialArray(material), idRef.id++
-          ).build())
+            origin, this.getMaterialArray(backMaterial), idRef.id++
+          ).build()
+          bp.name = 'back-panel'
+          colGroup.add(bp)
         }
 
         const hitbox = new Blank(
@@ -509,8 +510,8 @@ export class BedsideTable {
       mainMaterial.clone(),
       mainMaterial.clone(),
       mainMaterial.clone(),
-      this.edgeMaterial.clone(), // front
-      this.edgeMaterial.clone(), // back
+      mainMaterial.clone(),
+      mainMaterial.clone(),
     ]
   }
 
@@ -677,33 +678,35 @@ export class BedsideTable {
   }
 
   setColor(hex: string) {
+    const mainColor = new THREE.Color(hex)
+    if (this.material instanceof THREE.MeshStandardMaterial) {
+      this.material.color.copy(mainColor)
+    } else {
+      ;(this.material as any).color = mainColor.clone()
+    }
+
+    if (this.backMaterial !== this.material) {
+      if (this.backMaterial instanceof THREE.MeshStandardMaterial) {
+        this.backMaterial.color.copy(mainColor).multiplyScalar(0.82)
+      } else {
+        ;(this.backMaterial as any).color = mainColor.clone().multiplyScalar(0.82)
+      }
+    }
+
     this.group.traverse((obj) => {
       if ((obj as THREE.Mesh).isMesh && obj.name !== 'invisible-hitbox') {
+        const isBack = obj.name === 'back-panel'
+        const color = isBack ? mainColor.clone().multiplyScalar(0.82) : mainColor
+
         const mat = (obj as THREE.Mesh).material
         if (Array.isArray(mat)) {
-          for (let i = 0; i <= 3; i++) {
+          for (let i = 0; i < mat.length; i++) {
             const m = mat[i] as THREE.MeshStandardMaterial
-            if (m?.color) m.color.set(hex)
+            if (m?.color) m.color.copy(color)
           }
         } else {
           const m = mat as THREE.MeshStandardMaterial
-          if (m?.color) m.color.set(hex)
-        }
-      }
-    })
-    if (this.material instanceof THREE.MeshStandardMaterial) this.material.color.set(hex)
-  }
-
-  setEdgeColor(hex: string) {
-    this.edgeColor = hex
-    this.edgeMaterial.color.set(hex)
-    this.group.traverse((obj) => {
-      if ((obj as THREE.Mesh).isMesh) {
-        const mat = (obj as THREE.Mesh).material
-        if (Array.isArray(mat) && mat.length >= 6) {
-          for (const m of [mat[4], mat[5]] as THREE.MeshStandardMaterial[]) {
-            if (m?.color) m.color.set(hex)
-          }
+          if (m?.color) m.color.copy(color)
         }
       }
     })

@@ -1,18 +1,15 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ICreateDesignDto } from '@admin-types/design.types';
 import { environment } from '@admin-environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
-export class DesignService {
-  constructor(
-    private http: HttpClient,
-  ) { }
+export class ProductService {
+  constructor(private http: HttpClient) {}
 
-  getDesigns(req: any): Observable<any> {
+  getProducts(req: any): Observable<any> {
     let params = new HttpParams()
       .set('PageNumber', req.pageNumber.toString())
       .set('PageSize', req.pageSize.toString());
@@ -24,23 +21,23 @@ export class DesignService {
     return this.http.get<any>(`${environment.apiUrl}${environment.endpoints.product.getAll}`, { params });
   }
 
-  getDesign(id: number): Observable<any> {
+  getProduct(id: number): Observable<any> {
     return this.http.get<any>(`${environment.apiUrl}${environment.endpoints.product.getOne(id)}`);
   }
 
-  createDesign(dto: ICreateDesignDto): Observable<any> {
-    return this.http.post(`${environment.apiUrl}${environment.endpoints.product.create}`, dto);
+  createProduct(data: any): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}${environment.endpoints.product.create}`, data);
   }
 
-  updateDesign(id: number, dto: any): Observable<any> {
-    return this.http.put(`${environment.apiUrl}${environment.endpoints.product.update(id)}`, dto);
+  updateProduct(id: number, data: any): Observable<any> {
+    return this.http.put<any>(`${environment.apiUrl}${environment.endpoints.product.update(id)}`, data);
   }
 
-  deleteDesign(id: number): Observable<any> {
+  deleteProduct(id: number): Observable<any> {
     return this.http.delete<any>(`${environment.apiUrl}${environment.endpoints.product.delete(id)}`);
   }
 
-  updateDesignStatus(id: number, status: string): Observable<any> {
+  updateProductStatus(id: number, status: string): Observable<any> {
     return this.http.put<any>(`${environment.apiUrl}${environment.endpoints.product.updateStatus(id)}`, { status });
   }
 }

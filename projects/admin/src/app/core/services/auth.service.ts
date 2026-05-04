@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Router} from '@angular/router';
-import {catchError, Observable, tap, throwError} from 'rxjs';
+import {catchError, Observable, tap, throwError, BehaviorSubject, filter, take} from 'rxjs';
 import {environment} from '@admin-environments/environment';
 
 export interface LoginCredentials {
@@ -39,6 +39,9 @@ export class AuthService {
     private router: Router,
   ) { }
 
+  private isRefreshing = false;
+  private refreshTokenSubject: BehaviorSubject<AuthResponse | null> = new BehaviorSubject<AuthResponse | null>(null);
+
   // Helpers
   storeUser(response: AuthResponse, rememberMe: boolean = true) {
     const storage = rememberMe ? localStorage : sessionStorage;
@@ -47,7 +50,7 @@ export class AuthService {
     if (response.refreshToken) storage.setItem('refresh_token', response.refreshToken);
     if (response.refreshTokenExpiration) storage.setItem('refresh_token_expiration', response.refreshTokenExpiration);
 
-    // Calculate the absolute expiration time (Current Time + ExpiresIn seconds)
+    // Calculate the absolute expiration time (Current Time + ExpiresIn minutes)
     const expiresAt = Date.now() + (response.expiresIn * 60 * 1000);
     storage.setItem('expires_at', expiresAt.toString());
 
@@ -140,6 +143,7 @@ export class AuthService {
       }
     ).pipe(
       tap(response => {
+        console.log('Login response:', response);
         this.storeUser(response, credentials.rememberMe);
       }),
       catchError(error => {
@@ -169,6 +173,16 @@ export class AuthService {
    * Refresh authentication token
    */
   refreshToken(): Observable<AuthResponse> {
+    if (this.isRefreshing) {
+      return this.refreshTokenSubject.pipe(
+        filter(res => res !== null),
+        take(1)
+      ) as Observable<AuthResponse>;
+    }
+
+    this.isRefreshing = true;
+    this.refreshTokenSubject.next(null);
+
     const token = this.getToken()
     const refreshToken = this.getRefreshToken();
 
@@ -180,9 +194,13 @@ export class AuthService {
       },
     ).pipe(
       tap(response => {
+        this.isRefreshing = false;
+        console.log('Refresh response:', response);
         this.storeUser(response);
+        this.refreshTokenSubject.next(response);
       }),
       catchError(error => {
+        this.isRefreshing = false;
         this.logout();
         return throwError(() => error);
       })

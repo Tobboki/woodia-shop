@@ -80,7 +80,6 @@ export class Header implements OnInit, AfterViewInit {
           },
           error: err => {
             this.userPFP.set(mode === 'dark' ? this.profilePicturePlaceholderDark : this.profilePicturePlaceholder);
-            console.log(err);
           }
         });
       } else {

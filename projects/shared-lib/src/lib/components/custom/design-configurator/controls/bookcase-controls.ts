@@ -34,7 +34,7 @@ import {TranslocoDirective} from '@jsverse/transloco';
         <div>
           <div [class.hidden]="store.activeControlTab() !== 'color'" class="md:block space-y-3">
             <z-form-field>
-              <label class="font-label text-foreground/60" z-form-label>
+              <label class="font-label text-foreground/60 hidden md:block" z-form-label>
                 {{ t('sharedLib.designConfigurator.controls.color') }}
               </label>
 

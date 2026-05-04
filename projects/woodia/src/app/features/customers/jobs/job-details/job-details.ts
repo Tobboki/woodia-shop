@@ -19,6 +19,7 @@ import { ZardTooltipDirective } from '@shared-components/tooltip';
 import { ZardDialogService } from '@shared-components/dialog/dialog.service';
 import { JobStatusDialogComponent } from '../job-status-dialog.component';
 import { HttpErrorResponse } from '@angular/common/http';
+import { skip } from 'rxjs';
 
 
 @Component({
@@ -54,6 +55,11 @@ export class JobDetails implements OnInit {
   isLoading = signal(true);
   isError = signal(false);
   isSaving = signal(false);
+
+  isJobOpen = computed(() => {
+    const j = this.job();
+    return j?.status !== 'Completed' && j?.status !== 'Canceled';
+  });
 
   // Error states for sections
   modelError = signal<boolean>(false);
@@ -104,6 +110,10 @@ export class JobDetails implements OnInit {
 
   ngOnInit(): void {
     this.loadJob();
+
+    this.translocoService.langChanges$.pipe(skip(1)).subscribe(() => {
+      this.loadJob();
+    });
   }
 
   loadJob(): void {

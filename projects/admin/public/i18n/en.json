@@ -23,6 +23,11 @@
       "step2": {
         "title": "Publish Design",
         "subtitle": "Step 2: Add metadata & details",
+        "updateModelConfig": "Model Configuration",
+        "updateModelConfigHint": "Review or manually adjust the 3D model properties below.",
+        "updateModelConfigWarning": "Warning: Manual changes will override the 3D configurator state.",
+        "manualConfig": "Raw JSON Configuration",
+        "manualConfigHint": "Expert Mode: Directly edit the raw model properties. Use caution as incorrect format will cause errors.",
         "save": "Save Design",
         "saving": "Saving...",
         "translating": "Translating...",
@@ -60,6 +65,13 @@
           "BedsideTable": "Bedside Table"
         }
       }
+    },
+    "designs": {
+      "title": "Designs",
+      "subtitle": "Manage your design lines and models.",
+      "newDesign": "New Design",
+      "publish": "Publish Design",
+      "setAsDraft": "Set as Draft"
     }
   },
   "sharedLib": {
@@ -209,7 +221,11 @@
       "createdAt": "Created At",
       "role": "Role",
       "email": "Email",
-      "name": "Name"
+      "name": "Name",
+      "productLine": "Design Line",
+      "category": "Category",
+      "productStatus": "Status",
+      "imageThumbnail": "Thumbnail"
     }
   }
 }

@@ -25,83 +25,81 @@ import type { ShoeColumnConfig } from './shoerack.constants'
 
 export type { ShoeColumnConfig } from './shoerack.constants'
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ───────────────────────────────────────────────────────────────────────────
 // ShoeRack
 //
 // A column-primary furniture model where each vertical column has its own
-// independently configurable height.  The overall group height equals the
-// tallest column.  A shared base plate spans the full width at y = 0.
+// independently configurable height. The overall group height equals the
+// tallest column. A shared base plate spans the full width at y = 0.
 //
 // Structure overview
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ──────────────────
 //
 //    col0        col1           col2
 //   (short)    (tallest)      (medium)
 //
-//   â”Œâ”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-//   â”‚      â”‚ â”‚   shelf     â”‚ â”‚          â”‚
-//   â”‚      â”‚ â”‚â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”‚ â”‚  shelf   â”‚
-//   â”‚ huge â”‚ â”‚   shelf     â”‚ â”‚â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”‚
-//   â”‚ cell â”‚ â”‚â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”‚ â”‚  shelf   â”‚
-//   â”‚      â”‚ â”‚   shelf     â”‚ â”‚          â”‚
-//   â””â”€â”€â”€â”€â”€â”€â”´â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-//   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•   â† base plate (full width)
+//   ┌──────┐ ┌─────────────┐ ┌──────────┐
+//   │      │ │   shelf     │ │          │
+//   │      │ │─────────────│ │  shelf   │
+//   │ huge │ │   shelf     │ │──────────│
+//   │ cell │ │─────────────│ │  shelf   │
+//   │      │ │   shelf     │ │          │
+//   └──────┘─└─────────────┘─└──────────┘
+//   ═══════════════════════════════════    ← base plate (full width)
 //
 // Dividers between columns extend to max(leftHeight, rightHeight).
 // Pivot: width expands from centre, depth from the back (z = 0 at wall).
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ───────────────────────────────────────────────────────────────────────────
 
 export class ShoeRack {
   private group = new THREE.Group()
-  /** One THREE.Group per column â€” used for hover highlighting. */
+  /** One THREE.Group per column — used for hover highlighting. */
   private columnsGroup: THREE.Group[] = []
 
-  // â”€â”€ dimensions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── dimensions ────────────────────────────────────────────────────────────
   private width: number
   private depth: number
   private targetWidth: number
   private targetDepth: number
   private baseWidth!: number
   private baseDepth!: number
-  // height is virtual â€” it equals the tallest column, used only for scale animation
+  // height is virtual — it equals the tallest column, used only for scale animation
   private _totalHeight: number = 0
   private _baseTotalHeight: number = 0
 
-  // â”€â”€ structural â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── structural ────────────────────────────────────────────────────────────
   private columns: number
   private readonly thickness: number
   private readonly origin: { x: number; y: number; z: number }
   private readonly withBack: boolean
   private readonly meshIdStart: number
 
-  // â”€â”€ appearance â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── appearance ────────────────────────────────────────────────────────────
   private material: THREE.Material
   private backMaterial: THREE.Material
-  private edgeColor: string = '#ffffff'
-  private edgeMaterial: THREE.MeshStandardMaterial
   private invisibleHitboxMaterial: THREE.MeshBasicMaterial
 
-  // â”€â”€ per-column configuration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── per-column configuration ──────────────────────────────────────────────
   private columnConfigs: ShoeColumnConfig[] = []
 
-  // â”€â”€ hover state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── hover state ───────────────────────────────────────────────────────────
   private hoveredColumn: number | null = null
   private hoveredDoor: { col: number; row: number } | null = null
   private hoveredDrawer: { col: number; row: number } | null = null
 
-  // â”€â”€ dimension overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── dimension overlay ─────────────────────────────────────────────────────
   private dimensionOverlayData: DimensionOverlayData | null = null
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ───────────────────────────────────────────────────────────────────────────
   // Constructor
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ───────────────────────────────────────────────────────────────────────────
 
   constructor(
     width: number = 120 * CM,
     depth: number = 30 * CM,
     thickness: number = 2 * CM,
     origin: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 },
-    material: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xd4cfc9 }),
+    material: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xaec6de }),
     backMaterial: THREE.Material = material,
     meshIdStart: number = 0,
     withBack: boolean = true
@@ -114,7 +112,6 @@ export class ShoeRack {
     this.origin = origin
     this.material = material
     this.backMaterial = backMaterial
-    this.edgeMaterial = new THREE.MeshStandardMaterial({ color: this.edgeColor })
     this.invisibleHitboxMaterial = new THREE.MeshBasicMaterial({
       transparent: true,
       opacity: 0,
@@ -134,9 +131,9 @@ export class ShoeRack {
     this.captureBaseSize()
   }
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ───────────────────────────────────────────────────────────────────────────
   // Column count computation
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ───────────────────────────────────────────────────────────────────────────
 
   private computeColumnsFromWidth(desiredWidth: number): number {
     const avgCellWidth = (SHOE_COLUMN_WIDTH_MIN + SHOE_COLUMN_WIDTH_MAX) / 2
@@ -155,9 +152,9 @@ export class ShoeRack {
     return rows
   }
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ───────────────────────────────────────────────────────────────────────────
   // Column config management
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ───────────────────────────────────────────────────────────────────────────
 
   private ensureColumnConfigs() {
     while (this.columnConfigs.length < this.columns) {
@@ -234,9 +231,9 @@ export class ShoeRack {
     this.captureBaseSize()
   }
 
-  // ————————————————————————————————————————————————————————————————————————————————
+  // ───────────────────────────────────────────────────────────────────────────
   // Rebuild — the core geometry builder
-  // ————————————————————————————————————————————————————————————————————————————————
+  // ───────────────────────────────────────────────────────────────────────────
 
   private rebuild() {
     this.width = this.targetWidth
@@ -248,7 +245,7 @@ export class ShoeRack {
     const idRef = { id: this.meshIdStart }
     const { width, depth, thickness, columns, origin, material, backMaterial, withBack } = this
 
-    // Column widths â€” equal distribution
+    // Column widths — equal distribution
     // Opening area = width - 2*thickness (outer side walls) - (columns-1)*thickness (dividers)
     const openingWidth = width - thickness * 2
     const colNetWidth = (openingWidth - thickness * (columns - 1)) / columns
@@ -260,7 +257,7 @@ export class ShoeRack {
     const maxHeight = Math.max(...colHeights)
     this._totalHeight = maxHeight
 
-    // â”€â”€ dimension overlay init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── dimension overlay init ────────────────────────────────────────────────
     this.dimensionOverlayData = {
       totalWidthCm: Math.round(width / CM),
       totalHeightCm: Math.round(maxHeight / CM),
@@ -280,7 +277,7 @@ export class ShoeRack {
       cells: [],
     }
 
-    // â”€â”€ Base plate (full width, sits between y=0 and y=thickness) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Base plate (full width, sits between y=0 and y=thickness) ───────────
     this.group.add(
       new Blank(
         0, 0, 0,
@@ -289,7 +286,7 @@ export class ShoeRack {
       ).build()
     )
 
-    // â”€â”€ Build each column â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Build each column ─────────────────────────────────────────────────────
     // Compute x-starts
     const colXStarts: number[] = []
     let xCursor = thickness // start after left outer panel
@@ -316,7 +313,7 @@ export class ShoeRack {
       ).build()
     )
 
-    // Inter-column vertical dividers â€” height = max of adjacent column heights
+    // Inter-column vertical dividers — height = max of adjacent column heights
     for (let c = 0; c < columns - 1; c++) {
       const divH = Math.max(colHeights[c], colHeights[c + 1]) + thickness
       const divX = colXStarts[c] + colNetWidth
@@ -329,7 +326,7 @@ export class ShoeRack {
       )
     }
 
-    // â”€â”€ Per-column internals â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Per-column internals ──────────────────────────────────────────────────
     for (let c = 0; c < columns; c++) {
       const colGroup = new THREE.Group()
       colGroup.userData['colIndex'] = c
@@ -348,20 +345,20 @@ export class ShoeRack {
         ).build()
       )
 
-      // â”€â”€ Huge Cell: one single tall opening, no internal shelves â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── Huge Cell: one single tall opening, no internal shelves ───────────
       if (colCfg.hugeCell) {
         const yLow = thickness
         const yHigh = colH
         const openH = yHigh - yLow
 
         if (withBack) {
-          colGroup.add(
-            new Blank(
-              xLeft, yLow, EPS,
-              xRight, yHigh, thickness,
-              origin, this.getMaterialArray(backMaterial), idRef.id++
-            ).build()
-          )
+          const bp = new Blank(
+            xLeft, yLow, EPS,
+            xRight, yHigh, thickness,
+            origin, this.getMaterialArray(backMaterial), idRef.id++
+          ).build()
+          bp.name = 'back-panel'
+          colGroup.add(bp)
         }
 
         const hitbox = new Blank(
@@ -396,7 +393,7 @@ export class ShoeRack {
         continue
       }
 
-      // â”€â”€ Standard column: horizontal shelves â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── Standard column: horizontal shelves ───────────────────────────────
       const innerH = colH - thickness // base plate already drawn; inner starts at thickness
       const rows = this.computeRowsFromHeight(innerH)
       const cellHeight = (innerH - thickness * (rows - 1)) / rows
@@ -433,13 +430,13 @@ export class ShoeRack {
 
         // Back panel per cell
         if (withBack) {
-          colGroup.add(
-            new Blank(
-              xLeft, yLow, EPS,
-              xRight, yHigh, thickness,
-              origin, this.getMaterialArray(backMaterial), idRef.id++
-            ).build()
-          )
+          const bp = new Blank(
+            xLeft, yLow, EPS,
+            xRight, yHigh, thickness,
+            origin, this.getMaterialArray(backMaterial), idRef.id++
+          ).build()
+          bp.name = 'back-panel'
+          colGroup.add(bp)
         }
 
         // Invisible hitbox for raycasting
@@ -519,9 +516,9 @@ export class ShoeRack {
     this.recenterPivot()
   }
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ───────────────────────────────────────────────────────────────────────────
   // Pivot / capture
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ───────────────────────────────────────────────────────────────────────────
 
   /** Width expands from centre; depth from the back (z = 0 at wall). */
   private recenterPivot() {
@@ -534,9 +531,9 @@ export class ShoeRack {
     this._baseTotalHeight = this._totalHeight
   }
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ───────────────────────────────────────────────────────────────────────────
   // Material helpers
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ───────────────────────────────────────────────────────────────────────────
 
   /** Returns [right, left, top, bottom, front, back] arrays so front/back edges use `edgeMaterial`. */
   private getMaterialArray(mainMaterial: THREE.Material): THREE.Material[] {
@@ -545,14 +542,14 @@ export class ShoeRack {
       mainMaterial.clone(),
       mainMaterial.clone(),
       mainMaterial.clone(),
-      this.edgeMaterial.clone(),
-      this.edgeMaterial.clone(),
+      mainMaterial.clone(),
+      mainMaterial.clone(),
     ]
   }
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ───────────────────────────────────────────────────────────────────────────
   // Hover / raycasting
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ───────────────────────────────────────────────────────────────────────────
 
   handleHover(raycaster: THREE.Raycaster) {
     const hits = raycaster.intersectObject(this.group, true)
@@ -648,9 +645,9 @@ export class ShoeRack {
     // Highlight intentionally disabled — doors/drawers still animate on hover
   }
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ───────────────────────────────────────────────────────────────────────────
   // Animation loop
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ───────────────────────────────────────────────────────────────────────────
 
   update(dt = SMOOTHING) {
     // Width / depth scale animation (same pattern as TvStand)
@@ -664,7 +661,7 @@ export class ShoeRack {
 
     this.group.scale.set(
       this.baseWidth > 0 ? this.width / this.baseWidth : 1,
-      1, // heights are per column â€” no uniform Y scale; they rebuild on change
+      1, // heights are per column — no uniform Y scale; they rebuild on change
       this.baseDepth > 0 ? this.depth / this.baseDepth : 1
     )
 
@@ -677,8 +674,8 @@ export class ShoeRack {
       if (obj.userData['door']) {
         const target =
           this.hoveredDoor &&
-          this.hoveredDoor.col === obj.userData['colIndex'] &&
-          this.hoveredDoor.row === obj.userData['rowIndex']
+            this.hoveredDoor.col === obj.userData['colIndex'] &&
+            this.hoveredDoor.row === obj.userData['rowIndex']
             ? DOOR_OPEN_ANGLE
             : 0
         obj.rotation.y = THREE.MathUtils.lerp(obj.rotation.y, target, t)
@@ -687,8 +684,8 @@ export class ShoeRack {
         const baseZ = obj.userData['baseZ'] as number
         const targetZ =
           this.hoveredDrawer &&
-          this.hoveredDrawer.col === obj.userData['colIndex'] &&
-          this.hoveredDrawer.row === obj.userData['rowIndex']
+            this.hoveredDrawer.col === obj.userData['colIndex'] &&
+            this.hoveredDrawer.row === obj.userData['rowIndex']
             ? baseZ + DRAWER_SLIDE
             : baseZ
         obj.position.z = THREE.MathUtils.lerp(obj.position.z, targetZ, t)
@@ -696,9 +693,9 @@ export class ShoeRack {
     })
   }
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ───────────────────────────────────────────────────────────────────────────
   // Setters
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ───────────────────────────────────────────────────────────────────────────
 
   setWidth(value: number) {
     const desired = Math.max(value, SHOE_COLUMN_WIDTH_MIN)
@@ -724,46 +721,45 @@ export class ShoeRack {
 
 
   setColor(hex: string) {
+    const mainColor = new THREE.Color(hex)
     if (this.material instanceof THREE.MeshStandardMaterial) {
-      this.material.color.set(hex)
+      this.material.color.copy(mainColor)
     } else {
-      ;(this.material as any).color = new THREE.Color(hex)
+      ;(this.material as any).color = mainColor.clone()
     }
+
+    if (this.backMaterial !== this.material) {
+      if (this.backMaterial instanceof THREE.MeshStandardMaterial) {
+        this.backMaterial.color.copy(mainColor).multiplyScalar(0.82)
+      } else {
+        ;(this.backMaterial as any).color = mainColor.clone().multiplyScalar(0.82)
+      }
+    }
+
     this.group.traverse((obj) => {
       if ((obj as THREE.Mesh).isMesh && obj.name !== 'invisible-hitbox') {
+        const isBack = obj.name === 'back-panel'
+        const color = isBack ? mainColor.clone().multiplyScalar(0.82) : mainColor
+
         const mat = (obj as THREE.Mesh).material
         if (Array.isArray(mat)) {
-          for (let i = 0; i <= 3; i++) {
+          for (let i = 0; i < mat.length; i++) {
             const m = mat[i] as THREE.MeshStandardMaterial
-            if (m && m.color) m.color.set(hex)
+            if (m && m.color) m.color.copy(color)
           }
         } else {
           const m = mat as THREE.MeshStandardMaterial
-          if (m && m.color) m.color.set(hex)
+          if (m && m.color) m.color.copy(color)
         }
       }
     })
   }
 
-  setEdgeColor(hex: string) {
-    this.edgeColor = hex
-    this.edgeMaterial.color.set(hex)
-    this.group.traverse((obj) => {
-      if ((obj as THREE.Mesh).isMesh) {
-        const mat = (obj as THREE.Mesh).material
-        if (Array.isArray(mat) && mat.length >= 6) {
-          const frontMat = mat[4] as THREE.MeshStandardMaterial
-          const backMat = mat[5] as THREE.MeshStandardMaterial
-          if (frontMat && frontMat.color) frontMat.color.set(hex)
-          if (backMat && backMat.color) backMat.color.set(hex)
-        }
-      }
-    })
-  }
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+  // ───────────────────────────────────────────────────────────────────────────
   // Getters
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ───────────────────────────────────────────────────────────────────────────
 
   getColumns(): number { return this.columns }
   getWidth(): number { return this.width }
@@ -795,9 +791,9 @@ export class ShoeRack {
     }
   }
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ───────────────────────────────────────────────────────────────────────────
   // Utilities
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ───────────────────────────────────────────────────────────────────────────
 
   private clamp(v: number, min: number, max: number) {
     return Math.max(min, Math.min(max, v))

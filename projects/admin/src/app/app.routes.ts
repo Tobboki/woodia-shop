@@ -49,6 +49,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/designs/design-studio/design-studio').then(m => m.DesignStudio),
       },
       {
+        path: 'designs/design-studio/:id',
+        loadComponent: () => import('./features/designs/design-studio/design-studio').then(m => m.DesignStudio),
+      },
+      {
         path: 'category',
         loadComponent: () => import('./features/categories/categories-page.component'),
       },

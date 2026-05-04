@@ -136,7 +136,6 @@ export interface TvStandModelConfig {
   heightCm: number
   depthCm: number
   color: string
-  edgeColor: string
   style: string
   withBack: boolean
   columnConfigs: TvColumnConfig[]
@@ -170,7 +169,6 @@ export interface ShoeRackModelConfig {
   widthCm: number
   depthCm: number
   color: string
-  edgeColor: string
   withBack: boolean
   columnConfigs: ShoeColumnConfig[]
 }
@@ -204,7 +202,6 @@ export interface BedsideTableModelConfig {
   heightCm: number
   depthCm: number
   color: string
-  edgeColor: string
   density: number
   withBack: boolean
   columnConfigs: BedsideColumnConfig[]
@@ -245,30 +242,30 @@ export const DEFAULT_MODEL_CONFIGS: Record<ProductCategory, BookcaseModelConfig 
   Bookcase: {
     modelType: 'Bookcase',
     widthCm: 120, heightCm: 180, depthCm: 35,
-    color: '#d2b48c', style: 'grid', density: 50,
+    color: '#aec6de', style: 'grid', density: 50,
     withBack: true, topStorage: null, bottomStorage: null, rowConfigs: []
   },
   Desk: {
     modelType: 'Desk',
     widthCm: 180, heightCm: 75, depthCm: 60,
-    color: '#d2b48c', legroomPosition: 0, columnConfigs: []
+    color: '#aec6de', legroomPosition: 0, columnConfigs: []
   },
   TvStand: {
     modelType: 'TvStand',
     widthCm: 150, heightCm: 60, depthCm: 40,
-    color: '#d2b48c', edgeColor: '#ffffff', style: 'grid',
+    color: '#aec6de', style: 'grid',
     withBack: true, columnConfigs: []
   },
   ShoeRack: {
     modelType: 'ShoeRack',
     widthCm: 120, depthCm: 30,
-    color: '#d2b48c', edgeColor: '#ffffff',
+    color: '#aec6de',
     withBack: true, columnConfigs: []
   },
   BedsideTable: {
     modelType: 'BedsideTable',
     widthCm: 45, heightCm: 60, depthCm: 40,
-    color: '#d2b48c', edgeColor: '#ffffff', density: 50,
+    color: '#aec6de', density: 50,
     withBack: true, columnConfigs: []
   },
 }

@@ -1036,7 +1036,6 @@ export class ConfiguratorStore {
           heightCm: this.tvStandHeightCm(),
           depthCm: this.tvStandDepthCm(),
           color: this.tvStandColor(),
-          edgeColor: '#ffffff',
           style: this.tvStandStyle(),
           withBack: this.tvStandWithBack(),
           columnConfigs: this.tvStand.getColumnConfigs(),
@@ -1050,7 +1049,6 @@ export class ConfiguratorStore {
           widthCm: this.shoeRackWidthCm(),
           depthCm: this.shoeRackDepthCm(),
           color: this.shoeRackColor(),
-          edgeColor: '#ffffff',
           withBack: this.shoeRackWithBack(),
           columnConfigs: this.shoeRack.getColumnConfigs(),
         }
@@ -1064,7 +1062,6 @@ export class ConfiguratorStore {
           heightCm: this.bedsideHeightCm(),
           depthCm: this.bedsideDepthCm(),
           color: this.bedsideColor(),
-          edgeColor: '#ffffff',
           density: this.bedsideDensity(),
           withBack: this.bedsideWithBack(),
           columnConfigs: this.bedsideTable.getColumnConfigs(),

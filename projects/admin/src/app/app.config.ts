@@ -40,6 +40,8 @@ import {
   lucideSearch,
   lucideChevronsUpDown,
   lucidePencil,
+  lucideSend,
+  lucideCode,
 } from '@ng-icons/lucide';
 import { provideRouter } from '@angular/router';
 
@@ -94,6 +96,8 @@ export const appConfig: ApplicationConfig = {
       lucideSearch,
       lucideChevronsUpDown,
       lucidePencil,
+      lucideSend,
+      lucideCode,
     }),
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor])),

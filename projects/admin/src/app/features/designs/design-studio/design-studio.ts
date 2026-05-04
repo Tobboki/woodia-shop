@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, computed, signal, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+// Forced recompile to pick up ICategory changes
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import {
   ReactiveFormsModule,
   FormBuilder,
@@ -16,11 +17,12 @@ import { ZardSelectItemComponent } from '@shared-components/select/select-item.c
 import { ZardInputDirective } from '@shared-components/input/input.directive';
 import { DesignConfigurator } from '@shared-components/custom/design-configurator/design-configurator';
 import { TranslocoDirective } from '@jsverse/transloco';
+import { ZardSkeletonComponent } from '@shared-components/skeleton';
 import { ImageDropzoneComponent } from '@admin-shared/components/image-dropzone/image-dropzone.component';
 
 import { ICategory } from '@admin-types/category.types';
 import { DESIGN_CATEGORIES, ProductCategory, ProductModelConfig, DEFAULT_MODEL_CONFIGS, Product } from '@shared-types/product';
-import { TProductLine } from '@admin-types/design.types';
+import { TProductLine, ICreateDesignDto, TImagePlace } from '@admin-types/design.types';
 
 import { CategoryService } from '@admin-core/services/category.service';
 import { DesignService } from '@admin-core/services/design.service';
@@ -32,7 +34,9 @@ import { LayoutService } from '@admin-core/services/layout.service';
 import { toast } from 'ngx-sonner';
 
 interface ImageSlot {
-  place: string;
+  id?: number; // Added for existing images
+  place: TImagePlace;
+  labelKey?: string;
   url: string | null;
   uploading: boolean;
   required: boolean;
@@ -52,6 +56,7 @@ interface ImageSlot {
     ZardInputDirective,
     DesignConfigurator,
     TranslocoDirective,
+    ZardSkeletonComponent,
     ImageDropzoneComponent
   ],
   templateUrl: './design-studio.html',
@@ -65,7 +70,8 @@ export class DesignStudio implements OnInit {
     private uploadService: UploadService,
     private translationService: TranslationService,
     public layoutService: LayoutService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private route: ActivatedRoute
   ) {}
 
   protected langService = inject(LanguageService);
@@ -75,7 +81,14 @@ export class DesignStudio implements OnInit {
   // UI State
   step = signal<1 | 2>(1);
   loading = signal(false);
+  dataLoading = signal(false);
   translating = signal(false);
+  editId = signal<number | null>(null);
+  isEditMode = computed(() => this.editId() !== null);
+  updateModelConfig = signal(true); // Toggle to update model config
+  productStatus = signal<string | null>(null);
+  showRawConfig = signal(false);
+  rawConfigText = signal('');
 
   // Step 1
   modelCategories = DESIGN_CATEGORIES;
@@ -84,11 +97,13 @@ export class DesignStudio implements OnInit {
 
   dummyProduct = computed(() => {
     const type = this.selectedModelType();
+    const saved = this.savedModelConfig();
+
     return {
-      id: 0,
+      id: this.editId() || 0,
       category: type,
       images: [],
-      modelConfig: DEFAULT_MODEL_CONFIGS[type]
+      modelConfig: (saved && saved.category === type) ? saved.modelConfig : DEFAULT_MODEL_CONFIGS[type]
     } as Product;
   });
 
@@ -98,30 +113,23 @@ export class DesignStudio implements OnInit {
   // Data
   categories = signal<ICategory[]>([]);
   childCategories = computed(() => {
-    const all = this.categories();
-    
-    // 1. Try to find all leaf categories (categories with a parent)
-    const leafNodes = all.filter(c => c.parentId !== null);
-    if (leafNodes.length > 0) return leafNodes;
-
-    // 2. Fallback: If the main list only has parents, extract their children
-    return all.flatMap(parent => parent.childCatogries || []);
+    return this.categories();
   });
 
-  savedModelConfig: ProductModelConfig | null = null;
+  savedModelConfig = signal<ProductModelConfig | null>(null);
 
   // Image Slots
   imageSlots = signal<ImageSlot[]>([
-    { place: 'thumbnailImage', url: null, uploading: false, required: true },
-    { place: 'hoverImage', url: null, uploading: false, required: true },
-    { place: 'detail1', url: null, uploading: false, required: false },
-    { place: 'detail2', url: null, uploading: false, required: false },
-    { place: 'detail3', url: null, uploading: false, required: false },
-    { place: 'detail4', url: null, uploading: false, required: false },
-    { place: 'detail5', url: null, uploading: false, required: false },
-    { place: 'detail6', url: null, uploading: false, required: false },
-    { place: 'detail7', url: null, uploading: false, required: false },
-    { place: 'detail8', url: null, uploading: false, required: false },
+    { place: 'Thumbnail', labelKey: 'thumbnailLabel', url: null, uploading: false, required: true },
+    { place: 'Hover', labelKey: 'hoverLabel', url: null, uploading: false, required: true },
+    { place: 'Gallery', labelKey: 'detailLarge', url: null, uploading: false, required: false },
+    { place: 'Gallery', labelKey: 'detailSmall', url: null, uploading: false, required: false },
+    { place: 'Gallery', labelKey: 'detailSmall', url: null, uploading: false, required: false },
+    { place: 'Gallery', labelKey: 'detailSmall', url: null, uploading: false, required: false },
+    { place: 'Gallery', labelKey: 'detailSmall', url: null, uploading: false, required: false },
+    { place: 'Gallery', labelKey: 'detailSmall', url: null, uploading: false, required: false },
+    { place: 'Gallery', labelKey: 'detailSmall', url: null, uploading: false, required: false },
+    { place: 'Gallery', labelKey: 'detailSmall', url: null, uploading: false, required: false },
   ]);
 
   ngOnInit() {
@@ -140,12 +148,105 @@ export class DesignStudio implements OnInit {
       this.translateDescription();
     });
 
-    this.categoryService.getAllCategories().subscribe({
+    this.categoryService.getChildrenCategories().subscribe({
       next: (res) => {
-        console.log('Loaded categories:', res.items);
-        this.categories.set(res.items || []);
+        this.categories.set(res || []);
       },
-      error: (err) => console.error('Failed to load categories', err)
+      error: (err) => console.error('Failed to load child categories', err)
+    });
+
+    // Check for Edit Mode
+    const id = this.route.snapshot.params['id'];
+    if (id) {
+      this.editId.set(parseInt(id));
+      this.loadDesign(parseInt(id));
+    }
+  }
+
+  private loadDesign(id: number) {
+    this.dataLoading.set(true);
+    this.designService.getDesign(id).subscribe({
+      next: (res) => {
+        console.log('Loaded Design Raw:', res);
+        
+        // Map productLine back to enum
+        let line: string = '';
+        if (res.productLineEn === 'Original Modern') line = 'OriginalModern';
+        else if (res.productLineEn === 'Original Classic') line = 'OriginalClassic';
+        else if (res.productLineEn === 'Edge') line = 'Edge';
+        else if (res.productLineEn === 'Tone') line = 'Tone';
+        else line = res.productLine || '';
+
+        this.form.patchValue({
+          productLine: line,
+          descriptionEn: res.descriptionEn,
+          descriptionAr: res.descriptionAr,
+          categoryId: res.categoryProductResponses?.id?.toString() || res.categoryId?.toString()
+        });
+
+        // Detect Category robustly
+        let category = res.category || res.modelConfig?.modelType;
+        if (!category && res.categoryProductResponses) {
+          const name = res.categoryProductResponses.nameEn;
+          if (name === 'Bookcases' || name === 'Bookcase') category = 'Bookcase';
+          else if (name === 'TV Stands' || name === 'TvStand' || name === 'TV Stand') category = 'TvStand';
+          else if (name === 'Desks' || name === 'Desk') category = 'Desk';
+          else if (name === 'Shoe Racks' || name === 'ShoeRack') category = 'ShoeRack';
+          else if (name === 'Bedside Tables' || name === 'BedsideTable') category = 'BedsideTable';
+        }
+
+        this.selectedModelType.set(category as ProductCategory);
+        this.savedModelConfig.set({ category, modelConfig: res.modelConfig } as any);
+        this.rawConfigText.set(JSON.stringify(res.modelConfig, null, 2));
+        this.productStatus.set(res.productStatus);
+
+        // Map existing images to slots
+        const slots = [...this.imageSlots()];
+        
+        // Reset slots urls
+        slots.forEach(s => { s.url = null; s.id = undefined; });
+
+        const images = res.productImageResponses || res.images || [];
+        if (Array.isArray(images)) {
+          // Helper to get image place either from field or from displayOrder
+          const getPlace = (img: any) => {
+            if (img.imagePlace) return img.imagePlace;
+            if (img.displayOrder === 1) return 'Thumbnail';
+            if (img.displayOrder === 2) return 'Hover';
+            return 'Gallery';
+          };
+
+          const thumbnail = images.find((img: any) => getPlace(img) === 'Thumbnail');
+          const hover = images.find((img: any) => getPlace(img) === 'Hover');
+          const gallery = images.filter((img: any) => getPlace(img) === 'Gallery');
+
+          if (thumbnail) {
+            slots[0].url = thumbnail.url;
+            slots[0].id = thumbnail.id;
+          }
+          if (hover) {
+            slots[1].url = hover.url;
+            slots[1].id = hover.id;
+          }
+          
+          let galleryIdx = 2;
+          gallery.forEach((img: any) => {
+            if (galleryIdx < slots.length) {
+              slots[galleryIdx].url = img.url;
+              slots[galleryIdx].id = img.id;
+              galleryIdx++;
+            }
+          });
+        }
+        
+        this.imageSlots.set(slots);
+        this.dataLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to load design', err);
+        toast.error('Failed to load design data');
+        this.dataLoading.set(false);
+      }
     });
   }
 
@@ -156,7 +257,6 @@ export class DesignStudio implements OnInit {
     this.translating.set(true);
     this.translationService.translate(descAr).subscribe({
       next: (res: any) => {
-        console.log('Translation response:', res);
         let translatedText = '';
         if (typeof res === 'string') {
           translatedText = res;
@@ -179,24 +279,27 @@ export class DesignStudio implements OnInit {
     });
   }
 
+
   onImageDrop(file: File, index: number) {
+    if (!file) return;
+
     const slots = [...this.imageSlots()];
     slots[index].uploading = true;
     this.imageSlots.set(slots);
 
     this.uploadService.uploadFile(file).subscribe({
-      next: (urls) => {
+      next: (res: string[]) => {
         const updatedSlots = [...this.imageSlots()];
-        updatedSlots[index].url = urls[0];
+        updatedSlots[index].url = res[0]; // uploadFile returns string[]
         updatedSlots[index].uploading = false;
         this.imageSlots.set(updatedSlots);
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Upload failed', err);
-        toast.error('Image upload failed');
         const updatedSlots = [...this.imageSlots()];
         updatedSlots[index].uploading = false;
         this.imageSlots.set(updatedSlots);
+        toast.error('Image upload failed');
       }
     });
   }
@@ -215,7 +318,11 @@ export class DesignStudio implements OnInit {
 
   nextStep() {
     if (this.configuratorRef) {
-      this.savedModelConfig = this.configuratorRef.getModelConfig();
+      const config = this.configuratorRef.getModelConfig();
+      if (config) {
+        this.savedModelConfig.set(config);
+        this.rawConfigText.set(JSON.stringify(config.modelConfig, null, 2));
+      }
     }
     this.step.set(2);
   }
@@ -230,6 +337,11 @@ export class DesignStudio implements OnInit {
     const missingRequired = slots.some(s => s.required && !s.url);
 
     if (this.form.invalid || !this.savedModelConfig || missingRequired) {
+      console.warn('Validation Failed:', {
+        formInvalid: this.form.invalid,
+        missingModelConfig: !this.savedModelConfig,
+        missingRequiredImages: missingRequired
+      });
       toast.error('All required inputs and images must be provided', { duration: 2000 });
       return;
     }
@@ -237,28 +349,60 @@ export class DesignStudio implements OnInit {
     this.loading.set(true);
 
     const value = this.form.value;
+    const saved = this.savedModelConfig();
+    
+    let configToSave = null;
+    if (this.updateModelConfig() && saved) {
+      try {
+        // Use raw JSON if it exists and is different/provided, otherwise use saved config
+        const parsedRaw = this.rawConfigText() ? JSON.parse(this.rawConfigText()) : null;
+        configToSave = parsedRaw || { ...saved.modelConfig, modelType: this.selectedModelType() };
+        
+        // Ensure modelType is present
+        if (configToSave && !configToSave.modelType) {
+          configToSave.modelType = this.selectedModelType();
+        }
+      } catch (e) {
+        toast.error('Invalid JSON in manual configuration update');
+        this.loading.set(false);
+        return;
+      }
+    }
 
-    const configToSave = { ...this.savedModelConfig.modelConfig, modelType: this.selectedModelType() };
-
-    const dto = {
+    const dto: any = {
       productLine: value.productLine,
       descriptionEn: value.descriptionEn,
       descriptionAr: value.descriptionAr,
       categoryId: parseInt(value.categoryId),
-      productImage: slots.filter(s => s.url).map(s => ({ imagePlace: s.place, url: s.url })),
-      modelConfig: configToSave
+      productImage: slots
+        .filter(s => s.url)
+        .map(s => ({ 
+          id: s.id, // Important for updates
+          imagePlace: s.place, 
+          url: s.url as string 
+        })),
     };
 
-    this.designService.createDesign(dto as any).subscribe({
+    if (configToSave) {
+      dto.modelConfig = configToSave;
+    }
+
+    console.log('Final DTO:', dto);
+
+    const request = this.isEditMode()
+      ? this.designService.updateDesign(this.editId()!, dto)
+      : this.designService.createDesign(dto);
+
+    request.subscribe({
       next: () => {
         this.loading.set(false);
         this.router.navigate(['/designs']);
-        toast.success('Design created successfully');
+        toast.success(this.isEditMode() ? 'Design updated successfully' : 'Design created successfully');
       },
       error: (err) => {
         console.error(err);
         this.loading.set(false);
-        toast.error('Failed to create design');
+        toast.error(this.isEditMode() ? 'Failed to update design' : 'Failed to create design');
       }
     });
   }

@@ -55,8 +55,6 @@ export class Desk {
   private invisibleHitboxMaterial: THREE.MeshBasicMaterial
   private legroomPosition: number = 0
   private dimensionOverlayData: DimensionOverlayData | null = null
-  private edgeColor: string = '#ffffff'
-  private edgeMaterial: THREE.MeshStandardMaterial
   /** How much the tabletop extends beyond the left/right outer walls (in scene units). */
   private topOverhang: number = 0
 
@@ -66,7 +64,7 @@ export class Desk {
     depth: number = 60 * CM,
     thickness: number = 2 * CM,
     origin: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 },
-    material: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xd4cfc9 }),
+    material: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xaec6de }),
     backMaterial: THREE.Material = material,
     meshIdStart: number = 0,
     legroomPosition: number = 0
@@ -84,7 +82,6 @@ export class Desk {
     this.meshIdStart = meshIdStart
     this.invisibleHitboxMaterial = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })
     this.legroomPosition = legroomPosition
-    this.edgeMaterial = new THREE.MeshStandardMaterial({ color: this.edgeColor })
     const desiredWidth = Math.max(width, DESK_COLUMN_WIDTH_MIN + DESK_LEGROOM_WIDTH_MIN)
     const desiredHeight = Math.max(height, DESK_HEIGHT_MIN)
     this.columns = this.computeColumnsFromWidth(desiredWidth)
@@ -175,38 +172,35 @@ export class Desk {
   }
 
   setColor(hex: string) {
+    const mainColor = new THREE.Color(hex)
     if (this.material instanceof THREE.MeshStandardMaterial) {
-      this.material.color.set(hex)
+      this.material.color.copy(mainColor)
     } else {
-      (this.material as any).color = new THREE.Color(hex)
+      ;(this.material as any).color = mainColor.clone()
     }
+
+    if (this.backMaterial !== this.material) {
+      if (this.backMaterial instanceof THREE.MeshStandardMaterial) {
+        this.backMaterial.color.copy(mainColor).multiplyScalar(0.82)
+      } else {
+        ;(this.backMaterial as any).color = mainColor.clone().multiplyScalar(0.82)
+      }
+    }
+
     this.group.traverse((obj) => {
       if ((obj as THREE.Mesh).isMesh && obj.name !== 'invisible-hitbox') {
+        const isBack = obj.name === 'back-panel'
+        const color = isBack ? mainColor.clone().multiplyScalar(0.82) : mainColor
+
         const mat = (obj as THREE.Mesh).material
         if (Array.isArray(mat)) {
-          for (let i = 0; i <= 3; i++) {
+          for (let i = 0; i < mat.length; i++) {
             const m = mat[i] as THREE.MeshStandardMaterial
-            if (m?.color) m.color.set(hex)
+            if (m?.color) m.color.copy(color)
           }
         } else {
           const m = mat as THREE.MeshStandardMaterial
-          if (m?.color) m.color.set(hex)
-        }
-      }
-    })
-  }
-
-  setEdgeColor(hex: string) {
-    this.edgeColor = hex
-    this.edgeMaterial.color.set(hex)
-    this.group.traverse((obj) => {
-      if ((obj as THREE.Mesh).isMesh) {
-        const mat = (obj as THREE.Mesh).material
-        if (Array.isArray(mat) && mat.length >= 6) {
-          const frontMat = mat[4] as THREE.MeshStandardMaterial
-          const backMat = mat[5] as THREE.MeshStandardMaterial
-          if (frontMat?.color) frontMat.color.set(hex)
-          if (backMat?.color) backMat.color.set(hex)
+          if (m?.color) m.color.copy(color)
         }
       }
     })
@@ -246,8 +240,8 @@ export class Desk {
       mainMaterial.clone(),
       mainMaterial.clone(),
       mainMaterial.clone(),
-      this.edgeMaterial.clone(), // front face
-      this.edgeMaterial.clone(), // back face
+      mainMaterial.clone(),
+      mainMaterial.clone(),
     ]
   }
 
@@ -422,13 +416,13 @@ export class Desk {
         ).build()
       )
       // Back
-      columnGroup.add(
-        new Blank(
-          x + thickness, 0, 0,
-          x + width - thickness, yHigh, thickness,
-          origin, this.getMaterialArray(backMaterial), idRef.id++
-        ).build()
-      )
+      const bp = new Blank(
+        x + thickness, 0, 0,
+        x + width - thickness, yHigh, thickness,
+        origin, this.getMaterialArray(backMaterial), idRef.id++
+      ).build()
+      bp.name = 'back-panel'
+      columnGroup.add(bp)
       // Bottom shelf
       columnGroup.add(
         new Blank(
@@ -523,13 +517,13 @@ export class Desk {
       ).build()
     )
     // Back
-    columnGroup.add(
-      new Blank(
-        x + thickness, 0, 0,
-        x + width - thickness, internalHeight, thickness,
-        origin, this.getMaterialArray(backMaterial), idRef.id++
-      ).build()
-    )
+    const bp = new Blank(
+      x + thickness, 0, 0,
+      x + width - thickness, internalHeight, thickness,
+      origin, this.getMaterialArray(backMaterial), idRef.id++
+    ).build()
+    bp.name = 'back-panel'
+    columnGroup.add(bp)
     // Horizontal shelves
     for (let i = 0; i <= cells; i++) {
       const y = i * (cellHeight + thickness)

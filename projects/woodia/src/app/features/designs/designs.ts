@@ -1,4 +1,5 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, untracked } from '@angular/core';
+import { skip } from 'rxjs';
 import { NgOptimizedImage } from '@angular/common';
 
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -55,16 +56,20 @@ export class Designs implements OnInit {
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
-
       this.currentCategory.set(params.get('category') ?? 'all');
-
-      // Reset when category changes
-      this.pageNumber = 1;
-      this.productCards.set([]);
-      this.hasMoreProducts.set(true);
-
-      this.loadProducts();
+      this.resetAndLoad();
     });
+
+    this.translocoService.langChanges$.pipe(skip(1)).subscribe(() => {
+      this.resetAndLoad();
+    });
+  }
+
+  private resetAndLoad(): void {
+    this.pageNumber = 1;
+    this.productCards.set([]);
+    this.hasMoreProducts.set(true);
+    this.loadProducts();
   }
 
   loadProducts(): void {

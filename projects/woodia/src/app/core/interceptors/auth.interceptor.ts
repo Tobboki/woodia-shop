@@ -24,6 +24,25 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     setHeaders['Authorization'] = `Bearer ${token}`;
   }
 
+  // Proactive refresh: if token exists but is about to expire, refresh it before sending the request
+  if (token && !isExternalUrl && !isRefreshUrl && authService.isAccessTokenExpired()) {
+    return authService.refreshToken().pipe(
+      switchMap(newTokenRes => {
+        const proactiveCloned = req.clone({
+          setHeaders: {
+            ...setHeaders,
+            Authorization: `Bearer ${newTokenRes.token}`
+          }
+        });
+        return next(proactiveCloned);
+      }),
+      catchError(err => {
+        authService.logout();
+        return throwError(() => err);
+      })
+    );
+  }
+
   let cloned = req.clone({ setHeaders });
 
   return next(cloned).pipe(
@@ -41,7 +60,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
             const refreshToken = authService.getRefreshToken();
             if (!refreshToken) {
               authService.logout();
-              console.log("interceptor 401 error: No refresh token", err)
               return throwError(() => err);
             }
 

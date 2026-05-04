@@ -5,6 +5,7 @@ export interface ITableHeader {
   key: string;
   title: string;
   sortable?: boolean;
+  type?: string;
 }
 
 export interface IGeneralResponse {
@@ -20,6 +21,7 @@ export interface TableHeader {
   title: string;
   sortable?: boolean;
   align?: 'start' | 'center' | 'end';
+  type?: 'text' | 'image' | 'date' | 'status' | string;
 }
 
 export interface PagingConfig {

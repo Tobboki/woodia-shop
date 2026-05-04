@@ -3,6 +3,7 @@ import { Component, Input } from '@angular/core';
 import { IProductCard } from 'shared-lib/types/product';
 
 import { isImagePath } from 'shared-lib/utils/is-image-path';
+import { getTextDir } from '@woodia-shared/utils/helpers';
 import {RouterLink} from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
 
@@ -22,4 +23,5 @@ export class ProductCard {
   @Input() product: IProductCard = {} as IProductCard;
 
   isImagePath = isImagePath;
+  protected readonly getTextDir = getTextDir;
 }

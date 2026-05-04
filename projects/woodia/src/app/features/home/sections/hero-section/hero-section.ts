@@ -21,7 +21,7 @@ export class HeroSection {
       widthCm: 160,
       heightCm: 180,
       depthCm: 40,
-      color: '#d2b48c',
+      color: '#3c506a',
       withBack: true,
       style: 'pattern',
       density: 70,

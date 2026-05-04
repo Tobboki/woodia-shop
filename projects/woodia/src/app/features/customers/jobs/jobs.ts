@@ -1,4 +1,5 @@
 import { Component, effect, OnInit, OnDestroy, signal, untracked } from '@angular/core';
+import { skip } from 'rxjs';
 import { IJob, TJobStatus } from '@woodia-types/job.types';
 import { JobService } from '@woodia-core/services/job.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -120,7 +121,6 @@ export class Jobs implements OnInit {
   pageSize = 10;
 
   ngOnInit() {
-    console.log('Jobs Component Initialized');
     this.route.queryParamMap.subscribe(params => {
       const status = params.get('status') as TJobStatusFilter;
       const mode = params.get('view') as TDisplayMode;
@@ -143,6 +143,17 @@ export class Jobs implements OnInit {
         }
       });
     });
+
+    this.translocoService.langChanges$.pipe(skip(1)).subscribe(() => {
+      this.refreshJobs();
+    });
+  }
+
+  private refreshJobs(): void {
+    this.pageNumber = 1;
+    this.jobs.set([]);
+    this.hasMoreJobs.set(true);
+    this.loadJobs();
   }
   loadJobs(): void {
     // If no more jobs, stop
@@ -197,7 +208,6 @@ export class Jobs implements OnInit {
           // Are there more jobs to load?
           this.hasMoreJobs.set(data.items.length >= this.pageSize);
         } else {
-          console.warn('Jobs API returned unexpected data format:', data);
           this.hasMoreJobs.set(false);
         }
 
@@ -214,7 +224,6 @@ export class Jobs implements OnInit {
         this.isLoadingJobs.set(false);
         this.isLoadingMoreJobs.set(false);
         toast.error(this.translocoService.translate('features.customers.jobs.errors.loadFailed'), { duration: 3000, position: "bottom-center" });
-        console.error(err);
       }
     });
   }

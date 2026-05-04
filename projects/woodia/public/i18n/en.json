@@ -77,6 +77,7 @@
         "heightCm": "Height",
         "depth": "Depth",
         "depthCm": "Depth",
+        "style": "Style",
         "rowDensity": "Density",
         "styles": {
           "label": "Styles",
@@ -309,6 +310,21 @@
         "title": "Become a maker",
         "description": "Have a talent or love making furniture? Join our elite force and showcase your skills and connect with clients who value custom craftsmanship.",
         "joinNow": "Join Now",
+        "badge": {
+          "brand": "Woodia",
+          "role": "Maker"
+        },
+        "names": {
+          "1": "Laila Asmr",
+          "2": "Mohamed Ali",
+          "3": "Omar Hassan",
+          "4": "Nour Ahmed",
+          "5": "Sara Mahmoud",
+          "6": "Ahmed Khaled",
+          "7": "Mona Adel",
+          "8": "Youssef Samir",
+          "9": "Dina Fathy"
+        },
         "quotes": {
           "1": "Good furniture starts with honest wood, careful hands, and patience in every cut.",
           "2": "Every joint tells a story — strong craftsmanship turns simple wood into lasting furniture.",

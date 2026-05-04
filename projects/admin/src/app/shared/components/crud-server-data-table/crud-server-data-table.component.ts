@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, signal, computed, effect, OnChanges, SimpleChanges, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal, computed, effect, OnChanges, SimpleChanges, OnInit, ContentChild, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgIcon } from '@ng-icons/core';
@@ -53,6 +53,8 @@ export class CrudServerDataTableComponent implements OnChanges, OnInit {
   @Input() hasSingle = false;
   @Input() loading = false;
   @Input() density: 'default' | 'compact' | 'comfortable' = 'default';
+  
+  @ContentChild('customActions') customActionsTemplate?: TemplateRef<any>;
 
   @Output() addClicked = new EventEmitter<void>();
   @Output() editClicked = new EventEmitter<string>();

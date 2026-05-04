@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { ZardButtonComponent } from '@shared-components/button/button.component';
 import { ICategory } from '@woodia-types/category';
 import { environment } from '@woodia-environments/environment';
-import { TranslocoDirective } from '@jsverse/transloco';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'woodia-categories-section',
@@ -22,10 +22,13 @@ export class CategoriesSection implements OnInit {
   constructor(
     private http: HttpClient,
     private router: Router,
+    private transloco: TranslocoService
   ) {}
 
   ngOnInit(): void {
-    this.fetchCategories();
+    this.transloco.langChanges$.subscribe(() => {
+      this.fetchCategories();
+    });
   }
 
   fetchCategories() {

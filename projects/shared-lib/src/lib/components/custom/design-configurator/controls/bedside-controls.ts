@@ -28,7 +28,7 @@ import { TranslocoDirective } from '@jsverse/transloco'
         <div class="space-y-6">
           <div [class.hidden]="store.activeControlTab() !== 'color'" class="md:block space-y-3">
             <z-form-field>
-              <label class="font-label" z-form-label>{{ t('sharedLib.designConfigurator.controls.color') }}</label>
+              <label class="font-label hidden md:block" z-form-label>{{ t('sharedLib.designConfigurator.controls.color') }}</label>
             <div class="flex max-md:hidden flex-wrap gap-2 pt-1">
               @for (c of store.FURNITURE_COLORS; track c.name) {
                 <button type="button" class="size-8 rounded-full border-3 border-border transition-transform shadow-sm"

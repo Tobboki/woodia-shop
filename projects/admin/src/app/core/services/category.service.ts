@@ -15,6 +15,11 @@ export class CategoryService {
       .get<ICategoryResponse>(`${environment.apiUrl}${environment.endpoints.category.getAll}`)
   }
 
+  getChildrenCategories(): Observable<any[]> {
+    return this.http
+      .get<any[]>(`${environment.apiUrl}${environment.endpoints.category.getChildren}`)
+  }
+
   getPagedCategories(req: any): Observable<any> {
     let params = new HttpParams()
       .set('PageNumber', req.pageNumber.toString())

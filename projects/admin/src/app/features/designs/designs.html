@@ -1,16 +1,16 @@
-<div class="flex flex-col gap-6 p-6">
-  <div class="flex items-center justify-between">
-    <div>
-      <h1 class="text-3xl font-bold tracking-tight">Designs</h1>
-      <p class="text-muted-foreground mt-1">Manage your design lines and models.</p>
-    </div>
-    <a z-button [routerLink]="['design-studio']" zType="default">
-      <ng-icon name="lucidePlus" class="mr-2" />
-      New Design
-    </a>
-  </div>
+<div class="p-4 h-full flex flex-col" *transloco="let t">
+  <app-crud-server-data-table modelName="design" [headers]="headers" [items]="items()" [pagedResponse]="pagedResponse()"
+    [loading]="loading()" [allowedOperations]="{ add: true, update: true, delete: true }" (addClicked)="onAddClicked()"
+    (queryParamsChanged)="onQueryParamsChanged($event)" (deleteClicked)="onDelete($event)" (editClicked)="onEditClicked($event)">
+    
+    <ng-template #customActions let-item>
+      <button z-button zType="ghost" zSize="sm" class="size-8 p-0"
+        [zTooltip]="item.productStatus === 'Published' ? t('modules.designs.setAsDraft') : t('modules.designs.publish')"
+        (click)="onStatusChange(item)">
+        <ng-icon [name]="item.productStatus === 'Published' ? 'lucideEyeOff' : 'lucideSend'" 
+          class="size-4" [class.text-amber-500]="item.productStatus === 'Published'" [class.text-green-500]="item.productStatus !== 'Published'"></ng-icon>
+      </button>
+    </ng-template>
 
-  <div class="bg-card rounded-lg border shadow-sm">
-    <app-data-table [headers]="headers" [items]="items" emptyMessage="No designs found. Create one to get started."></app-data-table>
-  </div>
+  </app-crud-server-data-table>
 </div>

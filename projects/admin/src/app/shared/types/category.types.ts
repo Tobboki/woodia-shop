@@ -1,5 +1,6 @@
 export interface ICategory {
   id: number;
+  name: string;
   nameAr: string;
   nameEn: string;
   parentId: number | null;

@@ -56,7 +56,7 @@
           <th z-table-head *ngFor="let header of headers"
             class="whitespace-nowrap px-4 py-3 font-medium transition-colors"
             [class.cursor-pointer]="fullQueryOptions.sort && header.sortable !== false"
-            [class.hover:bg-muted-foreground]="fullQueryOptions.sort && header.sortable !== false"
+            [class.hover:bg-muted/50]="fullQueryOptions.sort && header.sortable !== false"
             (click)="onSort(header)"
             [ngClass]="{
               'text-left': header.align === 'start' || !header.align,
@@ -111,13 +111,18 @@
               'text-center': header.align === 'center',
               'text-right': header.align === 'end'
             }">
-            {{ item[header.key] }}
+            <ng-container [ngSwitch]="header.type">
+              <img *ngSwitchCase="'image'" [src]="item[header.key]" class="size-10 rounded-md object-cover border shadow-sm" />
+              <span *ngSwitchDefault>{{ item[header.key] }}</span>
+            </ng-container>
           </td>
 
           <!-- Actions -->
           <td z-table-cell *ngIf="showActions" class="px-4 py-2 text-right">
             <div class="flex items-center justify-end gap-1">
-              <ng-content select="[slot='customActions']"></ng-content>
+              <ng-container *ngIf="customActionsTemplate">
+                <ng-container *ngTemplateOutlet="customActionsTemplate; context: { $implicit: item }"></ng-container>
+              </ng-container>
               
               <button z-button zType="ghost" zSize="sm" class="size-8 p-0"
                 *ngIf="hasSingle || fullAllowedOperations.readSingle"

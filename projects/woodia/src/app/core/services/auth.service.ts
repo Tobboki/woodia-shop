@@ -74,7 +74,7 @@ export class AuthService {
     if (response.refreshToken) storage.setItem('refresh_token', response.refreshToken);
     if (response.refreshTokenExpiration) storage.setItem('refresh_token_expiration', response.refreshTokenExpiration);
 
-    // Calculate the absolute expiration time (Current Time + ExpiresIn seconds)
+    // Calculate the absolute expiration time (Current Time + ExpiresIn minutes)
     const expiresAt = Date.now() + (response.expiresIn * 60 * 1000);
     storage.setItem('expires_at', expiresAt.toString());
 
@@ -343,7 +343,6 @@ export class AuthService {
       catchError(error => {
         this.isRefreshing = false;
         this.logout();
-        console.log(error);
         return throwError(() => error);
       })
     );

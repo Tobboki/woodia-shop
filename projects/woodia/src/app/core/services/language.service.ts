@@ -16,12 +16,16 @@ export class LanguageService {
   // Reactive language signal for UI
   lang = signal<TLanguage>('en')
 
+  langChanges$: any;
+
   // Optional computed for display label
   label = computed(() => (this.lang() === 'ar' ? 'العربية' : 'English'))
 
   locale = computed(() => (this.lang() === 'ar' ? 'ar-EG' : 'en-US'))
 
-  constructor(private transloco: TranslocoService) {}
+  constructor(private transloco: TranslocoService) {
+    this.langChanges$ = this.transloco.langChanges$;
+  }
 
   translate(key: string, params?: any) {
     return this.transloco.translate(key, params);
