@@ -1,7 +1,7 @@
 <a
   class="relative w-full max-w-[360px] aspect-[4/5] p-[8px] border-2 bg-muted rounded-[16px]
          flex flex-col gap-[8px] overflow-hidden group"
-  [routerLink]="`/customers/designs/model/${product.id}`"
+  [routerLink]="`/designs/model/${product.id}`"
 >
 
   <!-- Image Section -->
@@ -11,7 +11,7 @@
 
     <!-- Default Image -->
     <img
-      [src]="isImagePath(product.thumbnailImage) ?  product.thumbnailImage : '/images/placeholders/product-placeholder.png'"
+      [ngSrc]="isImagePath(product.thumbnailImage) ?  product.thumbnailImage : '/images/placeholders/product-placeholder.png'"
       [alt]="product.productLine"
       height="372"
       width="372"
@@ -22,15 +22,15 @@
     <!-- Hover Image -->
     @if (isImagePath(product.hoverImage) && isImagePath(product.thumbnailImage)) {
       <img
-        [src]="product.hoverImage"
+        [ngSrc]="product.hoverImage"
         [alt]="product.productLine"
-        height="372"
-        width="372"
+        fill
         class="object-contain absolute inset-0
                opacity-0 transition-opacity duration-300
                group-hover:opacity-100"
       />
     }
+
 
   </div>
 

@@ -131,6 +131,7 @@ export interface TvStandConfigJson {
 
 /** API model config for TvStand product. */
 export interface TvStandModelConfig {
+  modelType: 'TvStand'
   widthCm: number
   heightCm: number
   depthCm: number
@@ -165,6 +166,7 @@ export interface ShoeRackConfigJson {
 
 /** API model config for ShoeRack product. */
 export interface ShoeRackModelConfig {
+  modelType: 'ShoeRack'
   widthCm: number
   depthCm: number
   color: string
@@ -197,6 +199,7 @@ export interface BedsideTableConfigJson {
 
 /** API model config for BedsideTable product. */
 export interface BedsideTableModelConfig {
+  modelType: 'BedsideTable'
   widthCm: number
   heightCm: number
   depthCm: number
@@ -209,6 +212,7 @@ export interface BedsideTableModelConfig {
 
 /** API model config for Bookcase product (from /api/Product/{id}). */
 export interface BookcaseModelConfig {
+  modelType: 'Bookcase'
   widthCm: number
   heightCm: number
   depthCm: number
@@ -223,6 +227,7 @@ export interface BookcaseModelConfig {
 
 /** API model config for Desk product (from /api/Product/{id}). */
 export interface DeskModelConfig {
+  modelType: 'Desk'
   widthCm: number
   heightCm: number
   depthCm: number
@@ -238,25 +243,30 @@ export const DESIGN_CATEGORIES: ProductCategory[] = ['Bookcase', 'Desk', 'TvStan
 
 export const DEFAULT_MODEL_CONFIGS: Record<ProductCategory, BookcaseModelConfig | DeskModelConfig | TvStandModelConfig | ShoeRackModelConfig | BedsideTableModelConfig> = {
   Bookcase: {
+    modelType: 'Bookcase',
     widthCm: 120, heightCm: 180, depthCm: 35,
     color: '#d2b48c', style: 'grid', density: 50,
     withBack: true, topStorage: null, bottomStorage: null, rowConfigs: []
   },
   Desk: {
+    modelType: 'Desk',
     widthCm: 180, heightCm: 75, depthCm: 60,
     color: '#d2b48c', legroomPosition: 0, columnConfigs: []
   },
   TvStand: {
+    modelType: 'TvStand',
     widthCm: 150, heightCm: 60, depthCm: 40,
     color: '#d2b48c', edgeColor: '#ffffff', style: 'grid',
     withBack: true, columnConfigs: []
   },
   ShoeRack: {
+    modelType: 'ShoeRack',
     widthCm: 120, depthCm: 30,
     color: '#d2b48c', edgeColor: '#ffffff',
     withBack: true, columnConfigs: []
   },
   BedsideTable: {
+    modelType: 'BedsideTable',
     widthCm: 45, heightCm: 60, depthCm: 40,
     color: '#d2b48c', edgeColor: '#ffffff', density: 50,
     withBack: true, columnConfigs: []

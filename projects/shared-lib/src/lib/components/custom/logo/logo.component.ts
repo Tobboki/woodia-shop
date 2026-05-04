@@ -2,55 +2,62 @@ import { ChangeDetectionStrategy, Component, computed, input, ViewEncapsulation 
 import { mergeClasses } from '../../../utils/merge-classes';
 import { logoVariants } from './logo.variants';
 import { ClassValue } from 'clsx';
-import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
+import { TranslocoDirective } from '@jsverse/transloco';
+import { NgOptimizedImage } from '@angular/common';
+
 
 @Component({
   selector: 'logo, [logo]',
   imports: [
-
+    RouterLink,
+    TranslocoDirective,
+    NgOptimizedImage
   ],
+
   standalone: true,
   template: `
-    <div
-      class="flex flex-row items-center gap-[4px] cursor-pointer"
-      (click)="navigateToHome()"
+    <a
+      class="flex flex-row cursor-pointer transition-opacity hover:opacity-80 active:opacity-90"
+      [class]="wText() ? 'items-center gap-2' : ''"
+      [routerLink]="['/']"
+      *transloco="let t"
     >
-      <div>
-        <img 
-          src="/images/logo.svg" 
-          alt="Woodia Logo" 
-          class="w-[64px] h-[32px] object-contain"
+        <img
+          ngSrc="/images/logo.svg"
+          [alt]="t('app.appTitle') + ' Logo'"
+          width="48"
+          height="24"
+          priority
+          class="w-[48px] h-[24px] object-contain shrink-0"
         >
-      </div>
-      <!-- <span class="font-h3">
-        Woodia
-      </span> -->
-    </div>
+
+      @if (wText()) {
+        <span class="text-2xl font-bold font-link tracking-tight text-foreground leading-none">
+          {{ t('app.appTitle') }}
+        </span>
+      }
+    </a>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  host: {}
+  host: {
+    '[class]': 'classes()',
+  }
 })
 export class LogoComponent {
-
-  constructor(
-    private router: Router
-  ) { }
-
-  readonly zType = input<logoVariants['zType']>('default');
+  readonly wType = input<logoVariants['wType']>('default');
+  readonly wText = input<logoVariants['wText']>(false);
 
   readonly class = input<ClassValue>('');
 
   protected readonly classes = computed(() =>
     mergeClasses(
       logoVariants({
-        zType: this.zType(),
+        wType: this.wType(),
+        wText: this.wText(),
       }),
       this.class(),
     ),
   );
-
-  navigateToHome() {
-    this.router.navigate(['/'])
-  }
 }

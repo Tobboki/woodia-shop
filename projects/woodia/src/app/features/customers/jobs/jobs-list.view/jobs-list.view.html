@@ -1,57 +1,138 @@
-<div class="p-6">
+<div *transloco="let t">
 
   <!-- Empty State -->
-  @if (jobs.length !>= 0) {
-    <div class="flex flex-col items-center justify-center py-20 text-center">
-      <div class="text-5xl mb-4">📭</div>
-      <h2 class="text-xl font-semibold text-gray-700">No jobs found</h2>
-      <p class="text-gray-500 mt-2">Try creating a new job or adjusting filters</p>
-    </div>
+  @if (jobs.length === 0) {
+  <div class="flex flex-col items-center justify-center py-20 text-center">
+    <div class="text-6xl mb-6">👀</div>
+    <h2 class="text-2xl font-bold text-foreground">{{ t('features.customers.jobs.noJobsFound') }}</h2>
+    <p class="text-muted-foreground mt-2 max-w-sm mx-auto">{{ t('features.customers.jobs.noJobsFoundDesc') }}</p>
+  </div>
   }
 
-  <!-- Jobs Grid -->
+  <!-- Jobs List -->
   @if (jobs.length > 0) {
-    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+  <div class="flex flex-col gap-5">
+    @for (job of jobs; track job.id) {
+    <div
+      class="group relative bg-card rounded-2xl border border-border shadow-sm transition-all duration-300 hover:shadow-lg hover:border-primary/10 overflow-hidden">
 
-      @for (job of jobs; track job.id) {
-        <div
-          class="group bg-white rounded-2xl shadow-sm border border-gray-200 p-5 transition hover:shadow-lg hover:-translate-y-1"
-        >
+      <!-- Left Accent Bar -->
+      <div class="absolute left-0 top-0 bottom-0 w-1.5 transition-all duration-300 group-hover:w-2"
+        [ngClass]="getAccentColor(job.status)"></div>
 
-          <!-- Header -->
-          <div class="flex items-start justify-between mb-3">
-            <h3 class="text-lg font-semibold text-gray-800 group-hover:text-primary transition">
-              {{ job.title }}
+      <div class="p-6 max-sm:p-5 flex flex-col md:flex-row md:items-center gap-6">
+
+        <!-- Main Content Area -->
+        <div class="flex-1 space-y-4 overflow-hidden">
+
+          <!-- Meta Header -->
+          <div class="flex items-center justify-between">
+            <div class="flex flex-wrap items-center gap-3">
+              <span class="font-bold tracking-[0.05em] text-muted-foreground uppercase">
+                {{ t('features.customers.jobs.id') }}: #{{ job.id }}
+              </span>
+
+              <span class="w-1 h-1 rounded-full bg-border"></span>
+
+              <div class="flex items-center gap-2" (click)="$event.stopPropagation()">
+                <z-badge zShape="pill" [class]="getStatusColor(job.status)"
+                  class="!text-xs !font-bold !tracking-wider !uppercase !px-2.5 !py-1 !border">
+                  {{ t('features.customers.jobs.jobStatus.' + (job.status)) }}
+                </z-badge>
+
+                @if (job.status !== 'Completed' && job.status !== 'Canceled') {
+                <button z-button zType="ghost" zSize="icon-lg" class="hover:!bg-muted" (click)="handleStatusChange(job)"
+                  [zTooltip]="t('features.customers.jobs.changeStatus')">
+                  <ng-icon name="lucideSettings" class="size-4" />
+                </button>
+                }
+              </div>
+
+
+            </div>
+            <!-- Action Column (Desktop) -->
+            <div
+              class="hidden md:flex flex-col items-end justify-center gap-3 min-w-[180px] border-l border-border/50 h-full self-stretch">
+              <z-button zType="default" (click)="navigateToDetails(job.id)" class="!rounded-xl px-8 py-2">
+                {{ t('features.customers.jobs.viewDetails') }}
+              </z-button>
+            </div>
+          </div>
+
+          <!-- Title & Description -->
+          <div class="space-y-2">
+            <h3
+              class="text-xl font-bold text-foreground group-hover:text-primary transition-colors leading-tight break-words line-clamp-1"
+              [class.text-left]="getTextDir(job.title) === 'ltr'" [class.text-right]="getTextDir(job.title) === 'rtl'"
+              [dir]="getTextDir(job.title)">
+              {{ job.title.trim() ? job.title : t('features.customers.jobs.details.placeholders.noTitle') }}
             </h3>
 
-            <span
-              class="text-xs font-medium px-3 py-1 rounded-full"
-              [ngClass]="{
-                'bg-yellow-100 text-yellow-700': job.status === 'pending',
-                'bg-green-100 text-green-700': job.status === 'completed',
-                'bg-blue-100 text-blue-700': job.status === 'inProgress',
-                'bg-gray-100 text-gray-600': !job.status
-              }"
-            >
-              {{ job.status }}
-            </span>
+            @if (job.description) {
+            <div class="relative w-full" [class.text-left]="getTextDir(job.description) === 'ltr'"
+              [class.text-right]="getTextDir(job.description) === 'rtl'" [dir]="getTextDir(job.description)">
+              <p class="text-sm text-muted-foreground line-clamp-2 leading-relaxed break-words">
+                {{ job.description }}
+              </p>
+              <div
+                class="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-card to-transparent pointer-events-none">
+              </div>
+            </div>
+            }
           </div>
 
-          <!-- Description -->
-          <p class="text-sm text-gray-600 line-clamp-3 mb-4">
-            {{ job.description }}
-          </p>
+          <!-- Metadata Footer (Responsive) -->
+          <div class="flex flex-wrap items-center gap-x-8 gap-y-3 pt-2">
 
-          <!-- Footer -->
-          <div class="flex items-center justify-between text-xs text-gray-500 border-t pt-3">
-            <span class="font-medium">#{{ job.id }}</span>
-            <span>{{ job.createdAt | date: 'mediumDate' }}</span>
+            <!-- Delivery Day -->
+            <div class="flex items-center gap-2 text-muted-foreground">
+              <div class="flex items-center justify-center size-8 bg-muted rounded-lg text-muted-foreground">
+                <ng-icon name="lucideCalendar" size="20" />
+              </div>
+              <div class="flex flex-col">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{{
+                  t('features.customers.jobs.delivery') }}</span>
+                <span class="text-sm font-semibold text-foreground/90">
+                  {{ job.deliveryDay > 0 ? job.deliveryDay + ' ' + t('features.customers.jobs.details.labels.days') :
+                  t('features.customers.jobs.notSpecified') }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Budget -->
+            <div class="flex items-center gap-2 text-muted-foreground">
+              <div class="flex items-center justify-center size-8 bg-muted rounded-lg text-muted-foreground">
+                <ng-icon name="lucideDollarSign" size="20" />
+              </div>
+              <div class="flex flex-col">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{{
+                  t('features.customers.jobs.budget') }}</span>
+                <div class="flex flex-col">
+                  @if (job.expectedBudget) {
+                  <span class="text-sm font-semibold text-foreground/90">{{ job.expectedBudget |
+                    currency:'EGP':'symbol':'1.0-0' }}</span>
+                  } @else {
+                  <span class="text-sm font-semibold text-foreground/90">{{ t('features.customers.jobs.notSpecified')
+                    }}</span>
+                  <span class="text-[9px] text-muted-foreground font-medium leading-none">{{
+                    t('features.customers.jobs.details.labels.negotiable') }}</span>
+                  }
+                </div>
+              </div>
+            </div>
           </div>
 
+          <!-- Mobile Action Button -->
+          <div class="md:hidden pt-4 border-t border-border/50">
+            <z-button zType="default" zFull (click)="navigateToDetails(job.id)">
+              {{ t('features.customers.jobs.viewDetails') }}
+            </z-button>
+          </div>
         </div>
-      }
-
+      </div>
     </div>
+    }
+  </div>
   }
 
 </div>

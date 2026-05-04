@@ -1,165 +1,241 @@
-@if (step() === 1) {
+<div class="h-full pb-16" *transloco="let t; read: 'modules.designStudio'">
+  @if (step() === 1) {
   <!-- STEP 1 -->
-  <div class="flex flex-col h-[calc(100vh-64px)] w-full">
-    <div class="flex items-center justify-between px-6 py-4 bg-card border-b shrink-0">
-      <div class="flex items-center gap-4">
-        <a z-button zType="outline" zSize="icon" [routerLink]="['/designs']">
-          <ng-icon name="lucideArrowLeft" class="size-4" />
+  <div class="bg-card flex flex-col gap-4 w-full rounded-lg p-4 h-full">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card border-b shrink-0 pb-4">
+      <div class="flex items-center gap-3 md:gap-4">
+        <a z-button zType="outline" zSize="icon" [routerLink]="['/designs']" class="shrink-0">
+          <ng-icon [name]="langService.lang() === 'ar' ? 'lucideArrowRight' : 'lucideArrowLeft'"
+            class="ms-1 md:ms-2 size-4" />
         </a>
 
         <div>
-          <h2 class="text-lg font-semibold flex items-center gap-2">
-            <ng-icon name="lucideLayers" class="size-5 text-primary" />
-            Design Studio
+          <h2 class="text-base md:text-lg font-semibold flex items-center gap-2">
+            <ng-icon name="lucideLayers" class="size-4 md:size-5 text-primary" />
+            {{ t('title') }}
           </h2>
-          <p class="text-sm text-muted-foreground">
-            Step 1: Configure your model
+          <p class="text-xs md:text-sm text-muted-foreground">
+            {{ t('step1.title') }}
           </p>
         </div>
       </div>
 
-      <div class="flex items-center gap-4">
-        <z-select
-          [zValue]="selectedModelType()"
-          (zSelectionChange)="onModelTypeChange($event)"
-          class="w-48"
-        >
+      <div class="flex items-center gap-2 md:gap-4 w-full md:w-auto">
+        <z-select [zValue]="selectedModelType()" (zSelectionChange)="onModelTypeChange($event)" class="flex-1 md:w-48">
           @for (model of modelCategories; track model) {
-            <z-select-item [zValue]="model">
-              {{ model }}
-            </z-select-item>
+          <z-select-item [zValue]="model">
+            {{ t('step2.categories.' + model) }}
+          </z-select-item>
           }
         </z-select>
-
-        <button z-button zSize="xl" (click)="nextStep()">
-          Next Details
-          <ng-icon name="lucideArrowRight" />
-        </button>
       </div>
     </div>
 
-    <div class="flex-1 min-h-0 bg-background">
-      <woodia-design-configurator
-        [modelType]="selectedModelType()"
-        class="block h-full w-full"
-      />
+    <div class="flex-1 min-h-0">
+      <woodia-design-configurator [product]="dummyProduct()" class="block h-full w-full" />
     </div>
+
+    <!-- Bottom sticky bar -->
+    @if (configuratorRef?.store?.modelLoaded()) {
+    <div
+      class="fixed bg-background bottom-0 start-0 end-0 p-4 flex items-center justify-between border-t shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-40 transition-all duration-300"
+      [ngClass]="layoutService.sidebarCollapsed() ? 'md:start-[72px]' : 'md:start-[200px]'">
+      <span class="font-medium text-foreground">{{ t('step1.designIsReady') }}</span>
+      <z-button zSize="lg" (click)="nextStep()">
+        <span class="hidden md:inline">{{ t('step1.next') }}</span>
+        <span class="md:hidden">{{ t('step1.nextShort') }}</span>
+        <ng-icon [name]="langService.lang() === 'ar' ? 'lucideArrowLeft' : 'lucideArrowRight'"
+          class="ms-1 md:ms-2 size-4" />
+      </z-button>
+    </div>
+    }
   </div>
-} @else {
+  } @else {
 
   <!-- STEP 2 -->
-  <form [formGroup]="form" class="min-h-[calc(100vh-64px)] bg-card">
-    <div class="flex items-center justify-between px-6 py-4 border-b sticky top-0 z-10">
+  <form [formGroup]="form" class="min-h-[calc(100vh-64px)] bg-card rounded-lg">
+    <div
+      class="flex flex-col md:flex-row gap-4 items-center justify-between px-4 md:px-8 py-4 border-b sticky top-0 z-10 bg-card">
       <div class="flex items-center gap-4">
-        <button z-button zType="outline" zSize="icon" (click)="prevStep()">
-          <ng-icon name="lucideArrowLeft" />
+        <button type="button" z-button zType="outline" zSize="icon" (click)="prevStep()">
+          <ng-icon [name]="langService.lang() === 'ar' ? 'lucideArrowRight' : 'lucideArrowLeft'" />
         </button>
 
         <div>
-          <h2 class="text-lg font-semibold">Publish Design</h2>
+          <h2 class="text-lg font-semibold">{{ t('step2.title') }}</h2>
           <p class="text-sm text-muted-foreground">
-            Step 2: Add metadata & details
+            {{ t('step2.subtitle') }}
           </p>
         </div>
       </div>
 
-      <button z-button (click)="saveDesign()" [zDisabled]="loading()">
-        {{ loading() ? 'Saving...' : 'Save Design' }}
+      <button z-button class="max-md:w-full" (click)="saveDesign()" [zDisabled]="loading()">
+        {{ loading() ? t('step2.saving') : t('step2.save') }}
       </button>
     </div>
 
-    <div class="flex flex-col gap-4 p-4">
+    <div class="flex flex-col gap-8 p-8 max-md:px-4 max-w-5xl mx-auto">
 
       <!-- BASIC INFO -->
-      <div>
-        <h3 class="font-semibold">Basic Info</h3>
-
-        <input
-          z-input
-          formControlName="productLine"
-          placeholder="Design name"
-        />
-
-        <div class="grid grid-cols-2 gap-4 mt-2">
-        <textarea
-          z-input
-          zType="textarea"
-          formControlName="descriptionEn"
-          placeholder="English description"
-        ></textarea>
-
-          <textarea
-            z-input
-            zType="textarea"
-            formControlName="descriptionAr"
-            dir="rtl"
-            placeholder="Arabic description"
-          ></textarea>
+      <section class="space-y-6">
+        <div class="flex items-center gap-2 border-b pb-2">
+          <ng-icon name="lucideInfo" class="text-primary" />
+          <h3 class="font-bold text-xl">{{ t('step2.basicInfo') }}</h3>
         </div>
-      </div>
 
-      <!-- CATEGORY -->
-      <div>
-        <h3 class="font-semibold">Category</h3>
-
-        <z-select
-          [zValue]="form.get('categoryId')?.value"
-          (zSelectionChange)="form.get('categoryId')?.setValue($event.toString())"
-        >
-          @for (parent of categories(); track parent.id) {
-            <div class="px-2 text-xs opacity-70">
-              {{ parent.nameEn }}
+        <div class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="text-sm font-medium">{{ t('step2.designName') }}</label>
+              <z-select [zPlaceholder]="t('step2.productLinePlaceholder')" [zValue]="form.get('productLine')?.value"
+                (zSelectionChange)="form.get('productLine')?.setValue($event?.toString() || '')" class="w-full">
+                @for (line of productLines; track line) {
+                <z-select-item [zValue]="line">{{ t('step2.productLines.' + line) }}</z-select-item>
+                }
+              </z-select>
             </div>
 
-            @if (parent.childCatogries) {
-              @for (child of parent.childCatogries; track child.id) {
-                <z-select-item [zValue]="child.id.toString()">
-                  {{ child.nameEn }}
+            <div class="space-y-2">
+              <label class="text-sm font-medium">{{ t('step2.category') }}</label>
+              <z-select [zPlaceholder]="t('step2.categoryPlaceholder')" [zValue]="form.get('categoryId')?.value"
+                (zSelectionChange)="form.get('categoryId')?.setValue($event?.toString() || '')" class="w-full">
+                @for (child of childCategories(); track $index) {
+                <z-select-item [zValue]="child.id?.toString() || ''">
+                  {{ langService.lang() === 'ar' ? child.nameAr : child.nameEn }}
                 </z-select-item>
-              }
-            }
-          }
-        </z-select>
-      </div>
+                }
+              </z-select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <label class="text-sm font-medium">{{ t('step2.descAr') }}</label>
+                @if (translating()) {
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-primary flex items-center gap-1 animate-pulse">
+                    <ng-icon name="lucideLoader2" class="animate-spin size-3" /> 
+                    {{ t('step2.translating') }}
+                  </span>
+                }
+              </div>
+              <textarea z-input zType="textarea" formControlName="descriptionAr" dir="rtl"
+                [placeholder]="t('step2.descAr')" rows="4" class="w-full"></textarea>
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-sm font-medium">{{ t('step2.descEn') }}</label>
+              <textarea z-input zType="textarea" formControlName="descriptionEn" [placeholder]="t('step2.descEn')"
+                dir="ltr" rows="4" class="w-full"></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <!-- IMAGES -->
-      <div>
-        <div class="flex justify-between items-center">
-          <h3 class="font-semibold">Images</h3>
-          <button type="button" z-button (click)="addImage()">
-            Add Image
-          </button>
+      <section class="space-y-6">
+        <div class="flex items-center justify-between border-b pb-2">
+          <div class="flex items-center gap-2">
+            <ng-icon name="lucideImage" class="text-primary" />
+            <h3 class="font-bold text-xl">{{ t('step2.images') }}</h3>
+          </div>
         </div>
 
-        <div formArrayName="images">
-          @for (img of imagesArray.controls; track $index; let i = $index) {
-            <div [formGroupName]="i" class="flex gap-2 mt-2">
+        <div class="space-y-8">
 
-              <input
-                z-input
-                formControlName="url"
-                placeholder="Image URL"
-              />
+          <!-- Mandatory Images -->
+          <div class="space-y-4">
+             <div class="bg-primary/5 border border-primary/20 rounded-xl p-4 flex items-start gap-3 mb-2">
+                <ng-icon name="lucideInfo" class="text-primary size-5 mt-0.5 shrink-0" />
+                <div class="space-y-1">
+                  <h4 class="font-bold text-xs text-primary uppercase tracking-wider">{{ t('step2.imageHintTitle') }}</h4>
+                  <p class="text-sm text-muted-foreground leading-relaxed">
+                    {{ t('step2.imageHint') }}
+                  </p>
+                </div>
+             </div>
 
-              <input
-                z-input
-                formControlName="imagePlace"
-                placeholder="main / detail"
-              />
-
-              <button
-                type="button"
-                z-button
-                (click)="removeImage(i)"
-              >
-                Delete
-              </button>
-
+             <div class="flex items-center max-md:flex-col max-md:items-start max-md:gap-2 justify-between">
+               <h4 class="font-semibold text-md text-foreground">{{ t('step2.mandatoryTitle') }}</h4>
+             </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-muted-foreground uppercase px-1">{{ t('step2.thumbnailLabel')
+                  }}</label>
+                <app-image-dropzone [imageUrl]="imageSlots()[0].url" [uploading]="imageSlots()[0].uploading"
+                  [hasError]="imageSlots()[0].required && !imageSlots()[0].url"
+                  [placeholder]="t('step2.thumbnailLabel')" (fileDropped)="onImageDrop($event, 0)"
+                  (remove)="removeImage(0)">
+                </app-image-dropzone>
+              </div>
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-muted-foreground uppercase px-1">{{ t('step2.hoverLabel')
+                  }}</label>
+                <app-image-dropzone [imageUrl]="imageSlots()[1].url" [uploading]="imageSlots()[1].uploading"
+                  [hasError]="imageSlots()[1].required && !imageSlots()[1].url" [placeholder]="t('step2.hoverLabel')"
+                  (fileDropped)="onImageDrop($event, 1)" (remove)="removeImage(1)">
+                </app-image-dropzone>
+              </div>
             </div>
-          }
+          </div>
+
+          <!-- Optional Images Grid -->
+          <div class="space-y-4">
+            <h4 class="font-semibold text-md text-foreground">{{ t('step2.optionalTitle') }}</h4>
+
+            <!-- Top Grid (3 images) -->
+            <div
+              class="grid grid-cols-1 md:grid-cols-5 gap-2">
+              <div class="md:col-span-3 min-h-[300px]">
+                <app-image-dropzone [imageUrl]="imageSlots()[2].url" [uploading]="imageSlots()[2].uploading"
+                  [placeholder]="t('step2.detailLarge', {n: 1})" (fileDropped)="onImageDrop($event, 2)"
+                  (remove)="removeImage(2)">
+                </app-image-dropzone>
+              </div>
+
+              <div class="md:col-span-2 grid grid-cols-1 md:grid-rows-2 gap-2">
+                <div class="min-h-[150px]">
+                  <app-image-dropzone [imageUrl]="imageSlots()[3].url" [uploading]="imageSlots()[3].uploading"
+                    [placeholder]="t('step2.detailSmall', {n: 2})" (fileDropped)="onImageDrop($event, 3)"
+                    (remove)="removeImage(3)">
+                  </app-image-dropzone>
+                </div>
+                <div class="min-h-[150px]">
+                  <app-image-dropzone [imageUrl]="imageSlots()[4].url" [uploading]="imageSlots()[4].uploading"
+                    [placeholder]="t('step2.detailSmall', {n: 3})" (fileDropped)="onImageDrop($event, 4)"
+                    (remove)="removeImage(4)">
+                  </app-image-dropzone>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Grid (5 images) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+              <div class="grid grid-cols-2 grid-rows-2 gap-2 min-h-[300px] md:min-h-0">
+                @for (idx of [5, 6, 7, 8]; track idx) {
+                <div>
+                  <app-image-dropzone [imageUrl]="imageSlots()[idx].url" [uploading]="imageSlots()[idx].uploading"
+                    [placeholder]="t('step2.detailSmall', {n: idx - 1})" (fileDropped)="onImageDrop($event, idx)"
+                    (remove)="removeImage(idx)">
+                  </app-image-dropzone>
+                </div>
+                }
+              </div>
+
+              <div class="min-h-[300px] md:min-h-0">
+                <app-image-dropzone [imageUrl]="imageSlots()[9].url" [uploading]="imageSlots()[9].uploading"
+                  [placeholder]="t('step2.detailLarge', {n: 8})" (fileDropped)="onImageDrop($event, 9)"
+                  (remove)="removeImage(9)">
+                </app-image-dropzone>
+              </div>
+            </div>
+
+          </div>
+
         </div>
-      </div>
+      </section>
 
     </div>
   </form>
-}
+  }
+</div>

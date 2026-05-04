@@ -1,7 +1,9 @@
-import {ProductModelConfig} from '@shared-types/product';
+import { ProductModelConfig } from '@shared-types/product';
+
+export type TProductLine = 'OriginalClassic' | 'OriginalModern' | 'Edge' | 'Tone';
 
 export interface ICreateDesignDto {
-  productLine: string;
+  productLine: TProductLine;
   descriptionAr: string;
   descriptionEn: string;
   modelConfig: ProductModelConfig;

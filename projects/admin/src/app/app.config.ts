@@ -1,3 +1,4 @@
+// Trigger Rebuild
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection, isDevMode } from '@angular/core';
 import {
   lucideSun,
@@ -27,11 +28,24 @@ import {
   lucideSave,
   lucideTrash2,
   lucideLayers,
+  lucideLogOut,
+  lucideInfo,
+  lucideTag,
+  lucideImage,
+  lucideImagePlus,
+  lucideLoader2,
+  lucideLoaderCircle,
+  lucideWand2,
+  lucideCheck,
+  lucideSearch,
+  lucideChevronsUpDown,
+  lucidePencil,
 } from '@ng-icons/lucide';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { TranslocoHttpLoader } from './transloco-loader';
 import { provideTransloco } from '@jsverse/transloco';
 import {provideIcons} from '@ng-icons/core';
@@ -68,16 +82,30 @@ export const appConfig: ApplicationConfig = {
       lucideSave,
       lucideTrash2,
       lucideLayers,
+      lucideLogOut,
+      lucideInfo,
+      lucideTag,
+      lucideImage,
+      lucideImagePlus,
+      lucideLoader2,
+      lucideLoaderCircle,
+      lucideWand2,
+      lucideCheck,
+      lucideSearch,
+      lucideChevronsUpDown,
+      lucidePencil,
     }),
-    provideRouter(routes), provideHttpClient(), provideTransloco({
-        config: {
-          availableLangs: ['en', 'ar'],
-          defaultLang: 'en',
-          // Remove this option if your application doesn't support changing language in runtime.
-          reRenderOnLangChange: true,
-          prodMode: !isDevMode(),
-        },
-        loader: TranslocoHttpLoader
-      })
+    provideRouter(routes),
+    provideHttpClient(withInterceptors([authInterceptor])),
+    provideTransloco({
+      config: {
+        availableLangs: ['en', 'ar'],
+        defaultLang: 'en',
+        // Remove this option if your application doesn't support changing language in runtime.
+        reRenderOnLangChange: true,
+        prodMode: !isDevMode(),
+      },
+      loader: TranslocoHttpLoader
+    })
   ]
 };

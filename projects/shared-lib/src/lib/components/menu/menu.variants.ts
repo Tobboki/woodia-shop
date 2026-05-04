@@ -13,12 +13,12 @@ export const menuItemVariants = cva(
     'relative flex w-full cursor-default select-none items-center rounded-sm px-2 py-1.5',
     'text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground',
     'focus:bg-accent focus:text-accent-foreground data-disabled:pointer-events-none',
-    'data-disabled:opacity-50 text-left [&>i]:me-2 [&>ng-icon]:me-2',
+    'data-disabled:opacity-50 text-start [&>i]:me-2 [&>ng-icon]:me-2',
   ],
   {
     variants: {
       inset: {
-        true: 'pl-8',
+        true: 'ps-8',
         false: '',
       },
       zType: {
@@ -33,7 +33,7 @@ export const menuItemVariants = cva(
 );
 
 export const submenuArrowVariants = cva([
-  'ml-auto opacity-60 transition-opacity duration-150',
+  'ms-auto opacity-60 transition-opacity duration-150',
   'text-muted-foreground dark:text-gray-400',
   'group-hover:opacity-100 group-focus:opacity-100',
 ]);
@@ -43,7 +43,7 @@ export const menuLabelVariants = cva(
   {
     variants: {
       inset: {
-        true: 'pl-8',
+        true: 'ps-8',
         false: '',
       },
     },
@@ -53,6 +53,6 @@ export const menuLabelVariants = cva(
   },
 );
 
-export const menuShortcutVariants = cva('ml-auto text-xs tracking-widest text-muted-foreground');
+export const menuShortcutVariants = cva('ms-auto text-xs tracking-widest text-muted-foreground');
 
 export type ZardMenuItemTypeVariants = NonNullable<VariantProps<typeof menuItemVariants>['zType']>;

@@ -29,6 +29,7 @@ export const routes: Routes = [
   {
     path: '',
     component: MainLayout,
+    canActivate: [authGuard],
     children: [
       {
         path: '',
@@ -46,6 +47,10 @@ export const routes: Routes = [
       {
         path: 'designs/design-studio',
         loadComponent: () => import('./features/designs/design-studio/design-studio').then(m => m.DesignStudio),
+      },
+      {
+        path: 'category',
+        loadComponent: () => import('./features/categories/categories-page.component'),
       },
     ],
   },

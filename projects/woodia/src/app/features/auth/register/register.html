@@ -1,15 +1,15 @@
-<div class="h-[100dvh] grid grid-cols-2 max-lg:grid-cols-1 gap-[16px]">
+<div class="h-[100dvh] grid grid-cols-2 max-lg:grid-cols-1 gap-4 max-md:p-4" *transloco="let t">
   <div class="h-full flex flex-col">
     <!-- Logo -->
-    <logo class="mb-[40px]" />
+    <logo [wText]="true" class="p-2 md:self-start max-md:mb-4" />
 
     <!-- Step 1: User Type -->
     @if(registerStep() === 'userType') {
     <div
-      class="w-[70%] max-2xl:w-[90%] max-xl:w-full max-lg:w-[70%] max-md:w-[80%] max-sm:w-full my-auto mx-auto space-y-[40px]">
+      class="w-[70%] max-2xl:w-[90%] max-xl:w-full max-lg:w-[70%] max-md:w-[80%] max-sm:w-full m-auto space-y-[40px]">
       <!-- Title -->
-      <h3 class="font-h3 leading-1 text-center">
-        What are you here as?
+      <h3 class="font-h3 text-center">
+        {{ t('features.auth.register.userTypeTitle') }}
       </h3>
 
       <div class="flex flex-col gap-4">
@@ -23,11 +23,11 @@
 
           <div class="flex flex-col">
             <h4 class="font-h4">
-              Customer
+              {{ t('features.auth.register.customer') }}
             </h4>
 
             <p>
-              Explore a ton of customizable furniture, with bargaining deals all within the comfort of your home
+              {{ t('features.auth.register.customerDesc') }}
             </p>
           </div>
         </div>
@@ -42,20 +42,31 @@
 
           <div class="flex flex-col">
             <h4 class="font-h4">
-              Maker
+              {{ t('features.auth.register.maker') }}
             </h4>
 
             <p>
-              Create a ton of customizable furniture, with bargaining deals all within t he comfort of your home
+              {{ t('features.auth.register.makerDesc') }}
             </p>
           </div>
         </div>
       </div>
 
-      <button zFull z-button zSize="xl" (click)="setStepCredentials()">
-        Continue as a {{ userType() }}
-        <ng-icon name="lucideArrowRight" />
-      </button>
+      <div class="flex flex-col gap-1">
+        <button zFull z-button zSize="xl" (click)="setStepCredentials()">
+          {{ t('features.auth.register.continueAs') }} {{ t('features.auth.register.' + userType()) }}
+          <ng-icon [name]="langService.isRtl() ? 'lucideArrowRight' : 'lucideArrowLeft'" />
+        </button>
+
+        <div class="flex flex-row justify-center items-center">
+          <p class="font-body">
+            {{ t('features.auth.register.alreadyHaveAccount') }}
+          </p>
+          <button class="text-primary font-body" z-button zSize="sm" zType="link" (click)="goToLogin()">
+            {{ t('features.auth.register.login') }}
+          </button>
+        </div>
+      </div>
     </div>
     }
 
@@ -65,25 +76,26 @@
       <!-- Title -->
       <div class="flex flex-col gap-[16px] max-xl:text-center">
         <h3 class="font-h3 leading-1">
-          Get Started Now
+          {{ t('features.auth.register.getStartedNow') }}
         </h3>
         <p class="font-body">
-          Enter your Credentials to access your account
+          {{ t('features.auth.register.enterCredentialsDesc') }}
         </p>
       </div>
 
       <!-- Social Register -->
       <button class="bg-white text-foreground/50" zFull z-button zType="outline" zSize="xl"
         (click)="handleGoogleSignUp()">
-        <img src="/icons/google-logo.svg" alt="Google Logo" class="size-[24px] object-fit-cover">
-        Sign Up with Google
+        <img ngSrc="/icons/google-logo.svg" alt="Google Logo" width="24" height="24"
+          class="size-[24px] object-fit-cover">
+        {{ t('features.auth.register.signUpWithGoogle') }}
       </button>
 
       <!-- Divider -->
       <div class="flex flex-row flex-nowrap items-center gap-[16px]">
         <z-divider />
         <p class="font-body">
-          or
+          {{ t('features.auth.login.or') }}
         </p>
         <z-divider />
       </div>
@@ -91,57 +103,63 @@
       <!-- Form -->
       <form [formGroup]="registerForm" (ngSubmit)="handleCredentialsSubmit()" class="space-y-6 my-[40px]">
         <div class="grid grid-cols-2 max-md:grid-cols-1 gap-2">
-          <z-form-field class="h-full flex flex-col justify-start">
+          <z-form-field>
             <label class="font-label w-full" z-form-label zRequired>
-              First Name
+              {{ t('features.auth.register.firstName') }}
             </label>
             <z-form-control>
-              <input z-input type="text" placeholder="Enter your first name" formControlName="firstName"
+              <input z-input type="text" [placeholder]="t('features.auth.register.firstNamePlaceholder')"
+                formControlName="firstName"
                 [zStatus]="firstNameControl.invalid && firstNameControl.touched ? 'error' : undefined" />
             </z-form-control>
             @if (firstNameControl.hasError('required') && firstNameControl.touched) {
-            <z-form-message class="font-caption" zType="error">Email is required.</z-form-message>
+            <z-form-message class="font-caption" zType="error">{{ t('features.auth.register.firstNameRequired')
+              }}</z-form-message>
             }
           </z-form-field>
 
-          <z-form-field class="h-full flex flex-col justify-start">
+          <z-form-field>
             <label class="font-label" z-form-label zRequired>
-              Last Name
+              {{ t('features.auth.register.lastName') }}
             </label>
             <z-form-control>
-              <input z-input type="text" placeholder="Enter your last name" formControlName="lastName"
+              <input z-input type="text" [placeholder]="t('features.auth.register.lastNamePlaceholder')"
+                formControlName="lastName"
                 [zStatus]="lastNameControl.invalid && lastNameControl.touched ? 'error' : undefined" />
             </z-form-control>
             @if (lastNameControl.hasError('required') && lastNameControl.touched) {
-            <z-form-message class="font-caption" zType="error">Email is required.</z-form-message>
+            <z-form-message class="font-caption" zType="error">{{ t('features.auth.register.lastNameRequired')
+              }}</z-form-message>
             }
           </z-form-field>
         </div>
 
-        <z-form-field class="h-full flex flex-col justify-start">
+        <z-form-field>
           <label class="font-label" z-form-label zRequired>
-            Email
+            {{ t('features.auth.login.email') }}
           </label>
           <z-form-control>
-            <input z-input type="email" placeholder="Enter your email" formControlName="email"
-              [zStatus]="emailControl.invalid && emailControl.touched ? 'error' : undefined" />
+            <input z-input type="email" [placeholder]="t('features.auth.register.emailPlaceholder')"
+              formControlName="email" [zStatus]="emailControl.invalid && emailControl.touched ? 'error' : undefined" />
           </z-form-control>
           @if (emailControl.hasError('required') && emailControl.touched) {
-          <z-form-message class="font-caption" zType="error">Email is required.</z-form-message>
+          <z-form-message class="font-caption" zType="error">{{ t('features.auth.login.emailRequired')
+            }}</z-form-message>
           } @else if (emailControl.hasError('email') && emailControl.touched) {
-          <z-form-message class="font-caption" zType="error">Enter a valid email address.</z-form-message>
+          <z-form-message class="font-caption" zType="error">{{ t('features.auth.login.emailInvalid')
+            }}</z-form-message>
           }
         </z-form-field>
 
         <div class="grid grid-cols-2 md:place-items-center max-md:grid-cols-1 gap-[20px]">
-          <z-form-field class="h-full flex flex-col justify-start">
+          <z-form-field>
             <label class="font-label" z-form-label zRequired>
-              Password
+              {{ t('features.auth.login.password') }}
             </label>
             <z-form-control>
-              <z-input-group [zAddOnAfter]="showPasswordIcon" class="mb-4">
-                <input z-input [type]="showPassword() ? 'text' : 'password'" placeholder="min 8 characters"
-                  formControlName="password"
+              <z-input-group [zAddOnAfter]="showPasswordIcon">
+                <input z-input [type]="showPassword() ? 'text' : 'password'"
+                  [placeholder]="t('features.auth.login.passwordPlaceholder')" formControlName="password"
                   [zStatus]="passwordControl.invalid && passwordControl.touched ? 'error' : undefined" />
               </z-input-group>
 
@@ -151,21 +169,23 @@
               </ng-template>
             </z-form-control>
             @if (passwordControl.hasError('required') && passwordControl.touched) {
-            <z-form-message class="font-caption" zType="error">Password is required.</z-form-message>
+            <z-form-message class="font-caption" zType="error">{{ t('features.auth.login.passwordRequired')
+              }}</z-form-message>
             } @else if (passwordControl.hasError('minlength') && passwordControl.touched) {
-            <z-form-message class="font-caption" zType="error">Minimum 8 characters.</z-form-message>
+            <z-form-message class="font-caption" zType="error">{{ t('features.auth.login.passwordMinlength')
+              }}</z-form-message>
             } @else if (passwordControl.hasError('passwordStrength') && passwordControl.touched) {
             <z-form-message class="font-caption" zType="error">
               @if (passwordControl.getError('passwordStrength')) {
               <ng-container>
                 @if (!passwordControl.getError('passwordStrength').hasUpper) {
-                <span>• Must include an uppercase letter</span>
+                <span>• {{ t('features.auth.register.passwordStrengthUpper') }}</span>
                 }
                 @if (!passwordControl.getError('passwordStrength').hasLower) {
-                <span>• Must include a lowercase letter</span>
+                <span>• {{ t('features.auth.register.passwordStrengthLower') }}</span>
                 }
                 @if (!passwordControl.getError('passwordStrength').hasSpecial) {
-                • Must include a special character
+                • {{ t('features.auth.register.passwordStrengthSpecial') }}
                 }
               </ng-container>
               }
@@ -173,14 +193,14 @@
             }
           </z-form-field>
 
-          <z-form-field class="h-full flex flex-col justify-start">
+          <z-form-field>
             <label class="font-label" z-form-label zRequired>
-              Confirm Password
+              {{ t('features.auth.register.confirmPassword') }}
             </label>
             <z-form-control>
-              <z-input-group [zAddOnAfter]="showConfirmPasswordIcon" class="mb-4">
-                <input z-input [type]="showConfirmPassword() ? 'text' : 'password'" placeholder="min 8 characters"
-                  formControlName="confirmPassword"
+              <z-input-group [zAddOnAfter]="showConfirmPasswordIcon">
+                <input z-input [type]="showConfirmPassword() ? 'text' : 'password'"
+                  [placeholder]="t('features.auth.login.passwordPlaceholder')" formControlName="confirmPassword"
                   [zStatus]="confirmPasswordControl.invalid && confirmPasswordControl.touched ? 'error' : undefined" />
               </z-input-group>
 
@@ -190,9 +210,11 @@
               </ng-template>
             </z-form-control>
             @if (confirmPasswordControl.hasError('required') && confirmPasswordControl.touched) {
-            <z-form-message class="font-caption" zType="error">Password is required.</z-form-message>
+            <z-form-message class="font-caption" zType="error">{{ t('features.auth.login.passwordRequired')
+              }}</z-form-message>
             } @else if (registerForm.hasError('passwordMismatch') && confirmPasswordControl.touched) {
-            <z-form-message class="font-caption" zType="error">Passwords do not match.</z-form-message>
+            <z-form-message class="font-caption" zType="error">{{ t('features.auth.register.passwordMismatch')
+              }}</z-form-message>
             }
           </z-form-field>
         </div>
@@ -202,7 +224,7 @@
             <div class="flex items-center space-x-2">
               <z-checkbox id="agreeToTerms" formControlName="agreeToTerms" />
               <label class="font-label text-nowrap" z-form-label for="agreeToTerms">
-                I agree to the Terms & Policy
+                {{ t('features.auth.register.agreeToTerms') }}
               </label>
             </div>
           </z-form-control>
@@ -211,15 +233,15 @@
         <div class="space-y-[4px]">
           <button [disabled]="registerForm.invalid" [zLoading]="registerFormLoading()" type="submit" z-button zFull
             zSize="xl">
-            Register
+            {{ t('features.auth.register.registerButton') }}
           </button>
 
           <div class="flex flex-row justify-center items-center">
             <p class="font-body">
-              Already have an account?
+              {{ t('features.auth.register.alreadyHaveAccount') }}
             </p>
             <button class="text-primary font-body" z-button zSize="sm" zType="link" (click)="goToLogin()">
-              Login
+              {{ t('features.auth.register.login') }}
             </button>
           </div>
         </div>
@@ -235,10 +257,10 @@
       <!-- Title -->
       <div class="flex flex-col gap-[16px] text-center">
         <h2 class="font-h2 leading-1 font-medium">
-          Email verification
+          {{ t('features.auth.register.verificationTitle') }}
         </h2>
         <p class="font-body text-foreground/50">
-          We have sent you code to your Email
+          {{ t('features.auth.register.verificationDesc') }}
           <span class="text-primary">
             {{ userEmail }}
           </span>
@@ -248,25 +270,26 @@
       <form [formGroup]="emailVerificationForm" (ngSubmit)="handleVerificationSubmit()" class="space-y-6 my-[40px]">
         <z-form-field>
           <label class="font-label" z-form-label zRequired>
-            Code
+            {{ t('features.auth.register.code') }}
           </label>
           <z-form-control>
-            <input z-input type="text" placeholder="max 6 chars or digits" formControlName="code" />
+            <input z-input type="text" [placeholder]="t('features.auth.register.codePlaceholder')"
+              formControlName="code" />
           </z-form-control>
         </z-form-field>
 
         <button zFull z-button zType="default" zSize="xl" [disabled]="emailVerificationForm.invalid"
           [zLoading]="codeVerificationLoading()">
-          Verify Account
+          {{ t('features.auth.register.verifyAccount') }}
         </button>
       </form>
 
       <div class="flex flex-row justify-center items-center">
         <p>
-          Didn't receive code?
+          {{ t('features.auth.register.didntReceiveCode') }}
         </p>
         <button z-button zType="link" (click)="resendConfirmation()">
-          Resend
+          {{ t('features.auth.register.resend') }}
         </button>
       </div>
 

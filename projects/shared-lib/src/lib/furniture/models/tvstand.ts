@@ -87,6 +87,7 @@ export class TvStand {
 
   // ── appearance ─────────────────────────────────────────────────────────────
   private material: THREE.Material
+  private backMaterial: THREE.Material
   private edgeColor: string = '#ffffff'
   private edgeMaterial: THREE.MeshStandardMaterial
   private invisibleHitboxMaterial: THREE.MeshBasicMaterial
@@ -122,7 +123,8 @@ export class TvStand {
     depth: number = 40 * CM,
     thickness: number = 2 * CM,
     origin: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 },
-    material: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xd2b48c }),
+    material: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xd4cfc9 }),
+    backMaterial: THREE.Material = material,
     meshIdStart: number = 0,
     withBack: boolean = true
   ) {
@@ -135,6 +137,7 @@ export class TvStand {
     this.thickness = thickness
     this.origin = origin
     this.material = material
+    this.backMaterial = backMaterial
     this.edgeMaterial = new THREE.MeshStandardMaterial({ color: this.edgeColor })
     this.invisibleHitboxMaterial = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -281,7 +284,7 @@ export class TvStand {
     this.ensureColumnConfigs()
 
     const idRef = { id: this.meshIdStart }
-    const { width, height, depth, thickness, columns, rows, origin, material, withBack } = this
+    const { width, height, depth, thickness, columns, rows, origin, material, backMaterial, withBack } = this
     /** Y offset: when legs are enabled the whole cabinet body is lifted by leg height. */
     const legYOffset = this.withLegs ? TV_LEG_HEIGHT : 0
 
@@ -467,7 +470,7 @@ export class TvStand {
             new Blank(
               xLeft, yLow, EPS,
               xRight, yHigh, thickness,
-              origin, this.getMaterialArray(material), idRef.id++
+              origin, this.getMaterialArray(backMaterial), idRef.id++
             ).build()
           )
         }
@@ -565,7 +568,7 @@ export class TvStand {
             new Blank(
               xLeft, yLow, EPS,
               xRight, yHigh, thickness,
-              origin, this.getMaterialArray(material), idRef.id++
+              origin, this.getMaterialArray(backMaterial), idRef.id++
             ).build()
           )
         }

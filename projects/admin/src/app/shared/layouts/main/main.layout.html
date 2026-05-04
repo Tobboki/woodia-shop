@@ -1,32 +1,20 @@
 <z-layout class="overflow-hidden" *transloco="let t">
 
   <!-- ================= DESKTOP SIDEBAR ================= -->
-  <z-sidebar
-    class="!p-0 hidden md:block"
-    [zWidth]="256"
-    [zCollapsible]="true"
-    [zCollapsed]="sidebarCollapsed()"
-    [zCollapsedWidth]="72"
-    (zCollapsedChange)="onCollapsedChange($event)"
-  >
+  <z-sidebar class="!p-0 hidden md:block" [zWidth]="200" [zCollapsible]="true" [zCollapsed]="sidebarCollapsed()"
+    [zCollapsedWidth]="72" (zCollapsedChange)="onCollapsedChange($event)">
     <ng-container *ngTemplateOutlet="sidebarNav; context:{ collapsed: sidebarCollapsed() }"></ng-container>
   </z-sidebar>
 
   <!-- ================= MOBILE SHEET ================= -->
-   @if(mobileNavOpen()) {
-    <div
-      class="fixed inset-0 z-50 bg-black/50 md:hidden transition-opacity duration-300"
-      (click)="mobileNavOpen.set(false)"
-    ></div>
-   }
+  @if(mobileNavOpen()) {
+  <div class="fixed inset-0 z-50 bg-black/50 md:hidden transition-opacity duration-300"
+    (click)="mobileNavOpen.set(false)"></div>
+  }
 
-  <aside
-    class="fixed top-0 z-50 h-full w-64 max-sm:w-48 bg-sidebar shadow-lg transform md:hidden"
-    [ngClass]="mobileSidebarClasses()"
-    [class.translate-x-0]="mobileNavOpen()"
-    [class.opacity-0]="!mobileNavOpen()"
-    [class.-translate-x-full]="!mobileNavOpen()"
-  >
+  <aside class="fixed top-0 z-50 h-full w-64 max-sm:w-48 bg-sidebar shadow-lg transform md:hidden"
+    [ngClass]="mobileSidebarClasses()" [class.translate-x-0]="mobileNavOpen()" [class.opacity-0]="!mobileNavOpen()"
+    [class.-translate-x-full]="!mobileNavOpen()">
     <!-- Header -->
     <div class="flex items-center justify-between p-4 border-b">
       <logo></logo>
@@ -42,75 +30,47 @@
   <!-- ================= SIDEBAR NAV TEMPLATE ================= -->
   <ng-template #sidebarNav let-collapsed="collapsed">
     <nav [class]="'flex h-full flex-col overflow-hidden ' + (collapsed ? 'gap-1 p-1 pt-4' : 'gap-4 p-4')">
-      <logo class="max-md:hidden"/>
+      <logo class="max-md:hidden" />
       <z-sidebar-group>
         @for (item of navGroups; track item.label) {
-            @if (item.submenu) {
-              <a
-                type="button"
-                z-button
-                zType="ghost"
-                zSize="lg"
-                z-menu
-                [zMenuTriggerFor]="submenu"
-                zTrigger="hover"
-                zPlacement="rightTop"
-                [class]="collapsed ? 'justify-center' : 'justify-start'"
-                [zTooltip]="collapsed ? item.label : null"
-                zPosition="right"
-              >
-                @if (item.icon) {
-                  <ng-icon
-                    [name]="item.icon ? item.icon : 'circle'"
-                    [class]="collapsed ? '' : 'mr-2'"
-                  />
-                }
-                @if (!collapsed) {
-                  <span class="flex-1 text-left">
-                    {{ t(`navigation.${item.label}`) }}
-                  </span>
-                  <ng-icon name="lucideChevronRight" />
-                }
-              </a>
-
-              <ng-template #submenu>
-                <div z-menu-content class="w-48">
-                  @for (subitem of item.submenu; track subitem.label) {
-                    <a
-                      z-menu-item
-                      [routerLink]="subitem.route ?? null"
-                      routerLinkActive="text-primary"
-                      [routerLinkActiveOptions]="{ exact: false }"
-                    >
-                      {{ t(`navigation.${subitem.label}`) }}
-                    </a>
-                  }
-                </div>
-              </ng-template>
-            } @else {
-              <a
-                type="button"
-                z-button
-                zType="ghost"
-                zSize="lg"
-                [class]="collapsed ? 'justify-center' : 'justify-start'"
-                [zTooltip]="collapsed ? item.label : ''"
-                [routerLink]="item.route ?? null"
-                routerLinkActive="text-primary"
-                [routerLinkActiveOptions]="{ exact: false }"
-              >
-                @if (item.icon) {
-                  <ng-icon
-                    [name]="item.icon ? item.icon : 'circle'"
-                    [class]="collapsed ? '' : 'mr-2'"
-                  />
-                }
-                  @if (!collapsed) {
-                    <span>{{ t(`navigation.${item.label}`) }}</span>
-                  }
-              </a>
-            }
+        @if (item.submenu) {
+        <a type="button" z-button zType="ghost" zSize="lg" z-menu [zMenuTriggerFor]="submenu" zTrigger="hover"
+          zPlacement="rightTop" [class]="collapsed ? 'justify-center' : 'justify-start'"
+          [zTooltip]="collapsed ? item.label : null" zPosition="right">
+          @if (item.icon) {
+          <ng-icon [name]="item.icon ? item.icon : 'circle'" [class]="collapsed ? '' : 'mr-2'" />
           }
+          @if (!collapsed) {
+          <span class="flex-1 text-left">
+            {{ t(`navigation.${item.label}`) }}
+          </span>
+          <ng-icon name="lucideChevronRight" />
+          }
+        </a>
+
+        <ng-template #submenu>
+          <div z-menu-content class="w-48">
+            @for (subitem of item.submenu; track subitem.label) {
+            <a z-menu-item [routerLink]="subitem.route ?? null" routerLinkActive="text-primary"
+              [routerLinkActiveOptions]="{ exact: false }">
+              {{ t(`navigation.${subitem.label}`) }}
+            </a>
+            }
+          </div>
+        </ng-template>
+        } @else {
+        <a type="button" z-button zType="ghost" zSize="lg" [class]="collapsed ? 'justify-center' : 'justify-start'"
+          [zTooltip]="collapsed ? item.label : ''" [routerLink]="item.route ?? null" routerLinkActive="text-primary"
+          [routerLinkActiveOptions]="{ exact: false }">
+          @if (item.icon) {
+          <ng-icon [name]="item.icon ? item.icon : 'circle'" [class]="collapsed ? '' : 'mr-2'" />
+          }
+          @if (!collapsed) {
+          <span>{{ t(`navigation.${item.label}`) }}</span>
+          }
+        </a>
+        }
+        }
       </z-sidebar-group>
     </nav>
   </ng-template>
@@ -120,14 +80,7 @@
 
     <!-- Header -->
     <z-header class="justify-between">
-      <button
-        type="button"
-        z-button
-        zType="ghost"
-        zSize="lg"
-        class="-ml-2 max-md:hidden"
-        (click)="toggleSidebar()"
-      >
+      <button type="button" z-button zType="ghost" zSize="lg" class="-ml-2 max-md:hidden" (click)="toggleSidebar()">
         <ng-icon [name]="
           isRtl()
           ? sidebarCollapsed() ?'lucidePanelRight' : 'lucidePanelRightClose'
@@ -136,14 +89,7 @@
       </button>
 
       <!-- ================= MOBILE NAV BUTTON ================= -->
-      <button
-        type="button"
-        z-button
-        zType="ghost"
-        zSize="lg"
-        class="-ml-2 md:hidden"
-        (click)="mobileNavOpen.set(true)"
-      >
+      <button type="button" z-button zType="ghost" zSize="lg" class="-ml-2 md:hidden" (click)="mobileNavOpen.set(true)">
         <ng-icon name="lucideMenu" />
       </button>
 
@@ -151,44 +97,29 @@
         <!-- Theme Manager -->
         <div class="relative">
           <button type="button" z-button zType="ghost" z-menu zTrigger="click" [zMenuTriggerFor]="themeMenu">
-            <ng-icon [name]="themeService.icon()"/>
+            <ng-icon [name]="themeService.icon()" />
           </button>
 
           <ng-template #themeMenu>
             <div z-menu-content>
-              <button
-                type="button"
-                z-menu-item
-                (click)="setThemeMode('light')"
-                class="flex gap-2 items-center"
-                [class.text-primary]="themeService.mode() === 'light'"
-              >
+              <button type="button" z-menu-item (click)="setThemeMode('light')" class="flex gap-2 items-center"
+                [class.text-primary]="themeService.mode() === 'light'">
                 <ng-icon name="lucideSun" />
                 <span>
                   {{ t('themeMode.light') }}
                 </span>
               </button>
 
-              <button
-                type="button"
-                z-menu-item
-                (click)="setThemeMode('dark')"
-                class="flex gap-2 items-center"
-                [class.text-primary]="themeService.mode() === 'dark'"
-              >
+              <button type="button" z-menu-item (click)="setThemeMode('dark')" class="flex gap-2 items-center"
+                [class.text-primary]="themeService.mode() === 'dark'">
                 <ng-icon name="lucideMoon" />
                 <span>
                   {{ t('themeMode.dark') }}
                 </span>
               </button>
 
-              <button
-                type="button"
-                z-menu-item
-                (click)="setThemeMode('system')"
-                class="flex gap-2 items-center"
-                [class.text-primary]="themeService.mode() === 'system'"
-              >
+              <button type="button" z-menu-item (click)="setThemeMode('system')" class="flex gap-2 items-center"
+                [class.text-primary]="themeService.mode() === 'system'">
                 <ng-icon name="lucideMonitor" />
                 <span>
                   {{ t('themeMode.system') }}
@@ -200,32 +131,49 @@
 
         <!-- Language Manager -->
         <div class="relative">
-          <button type="button" z-button zType="ghost" z-menu zTrigger="click" [zMenuTriggerFor]="languageMEnu">
+          <button type="button" z-button zType="ghost" z-menu zTrigger="click" [zMenuTriggerFor]="languageMenu">
             <ng-icon name="lucideLanguages" />
             {{ langService.label() }}
           </button>
 
-          <ng-template #languageMEnu>
+          <ng-template #languageMenu>
             <div z-menu-content>
-              <button
-                type="button"
-                z-menu-item
-                (click)="langService.setLanguage('en')"
-                [class.text-primary]="langService.lang() === 'en'"
-              >
+              <button type="button" z-menu-item (click)="langService.setLanguage('en')"
+                [class.text-primary]="langService.lang() === 'en'">
                 <span>
                   English
                 </span>
               </button>
 
-              <button
-                type="button"
-                z-menu-item
-                (click)="langService.setLanguage('ar')"
-                [class.text-primary]="langService.lang() === 'ar'"
-              >
+              <button type="button" z-menu-item (click)="langService.setLanguage('ar')"
+                [class.text-primary]="langService.lang() === 'ar'">
                 <span>
                   العربية
+                </span>
+              </button>
+            </div>
+          </ng-template>
+        </div>
+
+        <!-- User Profile -->
+        <div class="relative">
+          <button type="button" z-button zType="ghost" z-menu zTrigger="click" [zMenuTriggerFor]="userMenu" class="flex items-center gap-2">
+            <div class="size-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
+              {{ currentUser()?.firstName?.charAt(0) }}{{ currentUser()?.lastName?.charAt(0) }}
+            </div>
+            <span class="max-sm:hidden">{{ currentUser()?.firstName }} {{ currentUser()?.lastName }}</span>
+          </button>
+
+          <ng-template #userMenu>
+            <div z-menu-content class="w-56">
+              <div class="px-2 py-1.5 text-xs text-muted-foreground border-b mb-1">
+                {{ currentUser()?.email }}
+              </div>
+              
+              <button type="button" z-menu-item class="flex gap-2 items-center text-destructive" (click)="logout()">
+                <ng-icon name="lucideLogOut" />
+                <span>
+                  {{ t('navigation.logout') || 'Logout' }}
                 </span>
               </button>
             </div>

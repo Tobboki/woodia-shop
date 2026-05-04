@@ -1,11 +1,11 @@
-<div class="flex flex-col gap-[24px]">
+<div class="flex flex-col gap-[24px]" *transloco="let t">
   <div class="flex flex-col">
     <p class="font-caption text-foreground/50">
-      Create in just a few clicks
+      {{ t('features.home.guide.subtitle') }}
     </p>
 
     <h1 class="font-h1">
-      Design once, love forever
+      {{ t('features.home.guide.title') }}
     </h1>
   </div>
 
@@ -25,9 +25,9 @@
         @for (slide of slides; track slide.image) {
           <z-carousel-item class="basis-8/9">
               <div
-                class="relative h-[600px] w-full bg-cover bg-center rounded-3xl"
-                [style.backgroundImage]="'url(' + slide.image + ')'"
+                class="relative h-[600px] w-full overflow-hidden rounded-3xl"
               >
+                <img [ngSrc]="slide.image" [alt]="t(slide.title)" fill class="object-cover" />
 
                 <!-- Gradient -->
                 <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
@@ -46,11 +46,11 @@
                 <!-- Content -->
                 <div class="absolute bottom-0 left-0 z-10 p-10 text-white max-w-xl select-none">
                   <h2 class="font-h1 mb-[8px]">
-                    {{ slide.title }}
+                    {{ t(slide.title) }}
                   </h2>
 
                   <p class="font-caption text-white/80 leading-relaxed select-none">
-                    {{ slide.description }}
+                    {{ t(slide.description) }}
                   </p>
                 </div>
 

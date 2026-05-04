@@ -1,6 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core'
-import { TThemeMode } from '../types/data-table.types'
-import type {IconType} from '@ng-icons/core';
+import { TThemeMode } from '@admin-types/data-table.types'
+import type { IconType } from '@ng-icons/core';
 
 const STORAGE_KEY = 'theme-mode'
 

@@ -10,35 +10,30 @@
       </p>
     </div>
 
-    <z-segmented [zOptions]="displayModeOptions" zDefaultValue="list" zSize="lg" (zChange)="onDisplayModeChange($event)" />
+    <z-segmented [zOptions]="displayModeOptions" [ngModel]="displayMode()" zSize="lg"
+      (ngModelChange)="onDisplayModeChange($event)" />
   </div>
 
   <!-- Tabs -->
   <div>
     <div class="max-sm:hidden flex gap-2">
       @for (option of statusOptions; track option) {
-        <z-button
-          class="rounded-full px-4"
-          [zType]=" currentStatus() === option ? 'default' : 'outline' "
-          (click)="currentStatus.set(option)"
-        >
-          {{ t(`features.customers.jobs.jobStatus.${option}`) }}
-        </z-button>
+      <z-button class="rounded-full px-4" [zType]=" currentStatus() === option ? 'default' : 'outline' "
+        (click)="currentStatus.set(option)">
+        {{ t(`features.customers.jobs.jobStatus.${option}`) }}
+      </z-button>
       }
     </div>
 
     <z-carousel [zOptions]="zardCarouselOptions" zControls="none" class="sm:hidden">
       <z-carousel-content>
         @for (option of statusOptions; track option) {
-          <z-carousel-item class="px-1 basis-auto flex-shrink-0">
-            <z-button
-              class="rounded-full px-4"
-              [zType]=" currentStatus() === option ? 'default' : 'outline' "
-              (click)="currentStatus.set(option)"
-            >
-              {{ t(`features.customers.jobs.jobStatus.${option}`) }}
-            </z-button>
-          </z-carousel-item>
+        <z-carousel-item class="px-1 basis-auto flex-shrink-0">
+          <z-button class="rounded-full px-4" [zType]=" currentStatus() === option ? 'default' : 'outline' "
+            (click)="currentStatus.set(option)">
+            {{ t(`features.customers.jobs.jobStatus.${option}`) }}
+          </z-button>
+        </z-carousel-item>
         }
       </z-carousel-content>
     </z-carousel>
@@ -46,28 +41,95 @@
 
   <div class="flex flex-col justify-between w-full gap-2">
     <!-- Jobs list/grid -->
+    @if (isLoadingJobs()) {
+    @if (displayMode() === 'grid') {
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-6 max-sm:p-4">
+      @for (i of [1,2,3,4,5,6,7,8]; track i) {
+      <div class="bg-card rounded-2xl border border-border p-5 space-y-4">
+        <div class="flex justify-between items-start">
+          <div class="space-y-1">
+            <z-skeleton class="h-3 w-16 rounded" />
+            <z-skeleton class="h-4 w-20 rounded-full" />
+          </div>
+          <z-skeleton class="h-8 w-8 rounded-lg" />
+        </div>
+        <div class="space-y-2">
+          <z-skeleton class="h-5 w-3/4 rounded" />
+          <z-skeleton class="h-3 w-full rounded" />
+          <z-skeleton class="h-3 w-2/3 rounded" />
+        </div>
+        <div class="h-px bg-border/50"></div>
+        <div class="flex justify-between">
+          <z-skeleton class="h-6 w-16 rounded" />
+          <z-skeleton class="h-6 w-16 rounded" />
+        </div>
+      </div>
+      }
+    </div>
+    } @else {
+    <div class="flex flex-col gap-5 px-6 max-sm:p-4">
+      @for (i of [1,2,3,4,5]; track i) {
+      <div class="bg-card rounded-2xl border border-border p-6 space-y-4">
+        <!-- Header Skeleton -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <z-skeleton class="h-4 w-24 rounded" />
+            <z-skeleton class="h-6 w-20 rounded-full" />
+          </div>
+          <z-skeleton class="hidden md:block h-10 w-40 rounded-xl" />
+        </div>
+
+        <!-- Body Skeleton -->
+        <div class="space-y-4">
+          <div class="space-y-2">
+            <z-skeleton class="h-7 w-2/3 rounded" />
+            <z-skeleton class="h-4 w-full rounded" />
+            <z-skeleton class="h-4 w-1/2 rounded" />
+          </div>
+          
+          <!-- Footer Skeleton -->
+          <div class="flex gap-8 pt-2">
+            <div class="flex gap-2">
+              <z-skeleton class="size-8 rounded-lg" />
+              <div class="space-y-1">
+                <z-skeleton class="h-2 w-12" />
+                <z-skeleton class="h-4 w-16" />
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <z-skeleton class="size-8 rounded-lg" />
+              <div class="space-y-1">
+                <z-skeleton class="h-2 w-12" />
+                <z-skeleton class="h-4 w-16" />
+              </div>
+            </div>
+          </div>
+          
+          <!-- Mobile Button Skeleton -->
+          <div class="md:hidden pt-4 border-t border-border/50">
+            <z-skeleton class="h-10 w-full rounded-xl" />
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+    }
+    } @else {
     @if (displayMode() === 'list') {
-      <woodia-jobs-list [jobs]="jobs()" />
+    <woodia-jobs-list [jobs]="jobs()" />
     } @else if (displayMode() === 'grid') {
-      <woodia-jobs-grid [jobs]="jobs()" />
+    <woodia-jobs-grid [jobs]="jobs()" />
+    }
     }
 
     <!-- Load More Button -->
     @if (jobs().length > 0 && hasMoreJobs()) {
-      <div class="mx-auto mt-4">
-        <z-button
-          zSize="xl"
-          [zDisabled]="isLoadingMoreJobs()"
-          [zLoading]="isLoadingMoreJobs()"
-          (click)="loadMoreJobs()"
-        >
-          Load More
-          <ng-icon
-            name="lucideRotateCw"
-            [class]=" isLoadingMoreJobs() ? 'hidden' : '' "
-          />
-        </z-button>
-      </div>
+    <div class="mx-auto mt-4">
+      <z-button zSize="xl" [zDisabled]="isLoadingMoreJobs()" [zLoading]="isLoadingMoreJobs()" (click)="loadMoreJobs()">
+        {{ t('features.customers.jobs.loadMore') }}
+        <ng-icon name="lucideRotateCw" [class]=" isLoadingMoreJobs() ? 'hidden' : '' " />
+      </z-button>
+    </div>
     }
   </div>
 

@@ -15,6 +15,10 @@ import { passwordStrengthValidator } from '@woodia-shared/validators/password-st
 import { toast } from 'ngx-sonner';
 import { ZardInputGroupComponent } from '@shared-components/input-group/input-group.component';
 import { NgIcon } from '@ng-icons/core';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
+import { NgOptimizedImage } from '@angular/common';
+import { LanguageService } from '@woodia-core/services/language.service';
+
 
 @Component({
   selector: 'app-register',
@@ -27,8 +31,11 @@ import { NgIcon } from '@ng-icons/core';
     ZardFormModule,
     LogoComponent,
     ZardInputGroupComponent,
-    NgIcon
+    NgIcon,
+    TranslocoDirective,
+    NgOptimizedImage
   ],
+
   templateUrl: './register.html',
   styleUrls: ['./register.scss'],
 })
@@ -36,8 +43,10 @@ export class Register implements OnInit, AfterViewInit {
 
   constructor(
     private authService: AuthService,
+    protected langService: LanguageService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private translocoService: TranslocoService
   ) { }
 
   @ViewChild('videoPlayer') videoRef!: ElementRef<HTMLVideoElement>;
@@ -209,7 +218,7 @@ export class Register implements OnInit, AfterViewInit {
     // Call the register method
     this.authService.register(userData).subscribe({
       next: () => {
-        toast.success('Registration Successful', {
+        toast.success(this.translocoService.translate('features.auth.register.messages.registrationSuccess'), {
           position: 'bottom-center',
           duration: 2000,
         });
@@ -236,14 +245,14 @@ export class Register implements OnInit, AfterViewInit {
     this.authService.confirmEmail(verificationData).subscribe({
       next: () => {
         this.codeVerificationLoading.set(false);
-        toast.success('Verification Successful', {
+        toast.success(this.translocoService.translate('features.auth.register.messages.verificationSuccess'), {
           position: 'bottom-center',
         });
         this.router.navigate(['/auth'])
       },
       error: (err: any) => {
         this.codeVerificationLoading.set(false);
-        toast.success('Code does not match', {
+        toast.error(this.translocoService.translate('features.auth.register.errors.codeMismatch'), {
           position: 'bottom-center',
         });
         console.log('verification failed', err);
@@ -262,12 +271,12 @@ export class Register implements OnInit, AfterViewInit {
 
     this.authService.resendConfirmation(email).subscribe({
       next: () => {
-        toast.success('Code resent successfully', {
+        toast.success(this.translocoService.translate('features.auth.register.messages.codeResentSuccess'), {
           position: 'bottom-center',
         });
       },
       error: (err: any) => {
-        toast.success('Resending confirmation code failed', {
+        toast.error(this.translocoService.translate('features.auth.register.errors.codeResendFailed'), {
           position: 'bottom-center',
         });
         console.log('Resending Confirmation failed', err);

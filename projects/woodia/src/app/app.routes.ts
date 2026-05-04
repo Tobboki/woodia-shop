@@ -5,7 +5,7 @@ import { PublicLayout } from './shared/layouts/public-layout/public-layout';
 import { authGuard } from './core/guards/auth-guard';
 import { MainLayout } from './shared/layouts/main-layout/main-layout';
 import { Register } from './features/auth/register/register';
-import { customerGuard } from './core/guards/role-guard';
+import { customerGuard, makerGuard } from './core/guards/role-guard';
 import { googleAuthGuard } from './core/guards/google-auth.guard';
 import { Settings as CustomerSettings } from './features/customers/settings/settings'
 import { Account as CustomerAccountSettings } from './features/customers/settings/account/account'
@@ -17,25 +17,21 @@ import { Jobs } from '@woodia-features/customers/jobs/jobs';
 
 export const routes: Routes = [
   {
-    // Landing
+    // Public & Shared Area
     path: '',
-    canActivate: [authGuard],
     component: MainLayout,
-    data: { layoutVariant: 'default' },
+    data: { layoutVariant: 'plain' },
     children: [
-      // (Default)
       {
         path: '',
         redirectTo: 'home',
         pathMatch: 'full',
-        title: 'Home',
       },
       {
         path: 'home',
         component: Home,
+        data: { layoutVariant: 'default' }
       },
-
-      // designs
       {
         path: 'designs',
         redirectTo: 'designs/all',
@@ -51,73 +47,70 @@ export const routes: Routes = [
           import('./features/design-studio/design-studio')
             .then(m => m.DesignStudio)
       },
-
       {
         path: 'our-story',
         component: OurStory,
       },
-    ]
-  },
-  // Customer
-  {
-    path: 'customers',
-    canActivate: [customerGuard],
-    component: MainLayout,
-    data: { layoutVariant: 'plain' },
-    children: [
-      // (Default)
-      {
-        path: '',
-        redirectTo: 'designs/all',
-        pathMatch: 'full',
-      },
 
-      // Designs
+      // Customer Protected Routes
       {
-        path: 'designs',
-        redirectTo: 'designs/all',
-        pathMatch: 'full'
-      },
-      {
-        path: 'designs/:category',
-        component: Designs,
-      },
-      {
-        path: 'designs/model/:id',
-        loadComponent: () =>
-          import('./features/design-studio/design-studio')
-            .then(m => m.DesignStudio)
-      },
-
-      // Customer Jobs
-      {
-        path: 'jobs',
-        component: Jobs,
-      },
-
-      // Settings
-      {
-        path: 'settings',
-        component: CustomerSettings,
+        path: 'customers',
+        canActivate: [customerGuard],
         children: [
           {
             path: '',
-            redirectTo: 'account',
+            redirectTo: 'jobs',
             pathMatch: 'full',
           },
           {
-            path: 'account',
-            component: CustomerAccountSettings,
+            path: 'jobs',
+            component: Jobs,
           },
           {
-            path: 'shipping',
-            component: CustomerShippingSettings,
+            path: 'jobs/:id',
+            loadComponent: () =>
+              import('./features/customers/jobs/job-details/job-details')
+                .then(m => m.JobDetails)
           },
+          {
+            path: 'settings',
+            component: CustomerSettings,
+            children: [
+              {
+                path: '',
+                redirectTo: 'account',
+                pathMatch: 'full',
+              },
+              {
+                path: 'account',
+                component: CustomerAccountSettings,
+              },
+              {
+                path: 'shipping',
+                component: CustomerShippingSettings,
+              },
+            ]
+          },
+        ]
+      },
+
+      // Maker Protected Routes
+      {
+        path: 'makers',
+        canActivate: [makerGuard],
+        children: [
+          {
+            path: '',
+            redirectTo: 'jobs', // Or dashboard when ready
+            pathMatch: 'full',
+          },
+          // Future maker routes go here
         ]
       },
     ]
   },
-  // auth
+
+  // Auth routes
   {
     path: 'auth',
     component: PublicLayout,
@@ -143,7 +136,8 @@ export const routes: Routes = [
       }
     ]
   },
-  // Error
+
+  // Error Page
   {
     path: '**',
     component: MainLayout,
@@ -155,3 +149,4 @@ export const routes: Routes = [
     ]
   }
 ];
+

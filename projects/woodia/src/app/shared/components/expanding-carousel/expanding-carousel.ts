@@ -11,7 +11,10 @@ import {
 } from '@angular/core';
 
 
+import { TranslocoDirective } from '@jsverse/transloco';
+import { NgOptimizedImage } from '@angular/common';
 import { gsap } from 'gsap';
+
 
 export interface ExpandSlide {
   image: string;
@@ -23,7 +26,8 @@ export interface ExpandSlide {
 @Component({
   selector: 'woodia-expanding-carousel',
   standalone: true,
-  imports: [],
+  imports: [TranslocoDirective, NgOptimizedImage],
+
   templateUrl: './expanding-carousel.html',
   styleUrl: './expanding-carousel.scss',
 })
@@ -65,12 +69,12 @@ export class ExpandingCarousel implements OnInit, OnDestroy, AfterViewInit {
   // ============================
 
   setActive(index: number) {
-  const current = this.activeIndex();
+    const current = this.activeIndex();
 
-  if (index === current) return;
+    if (index === current) return;
 
-  // Immediately hide previous panel text
-  const prevEl = this.contents.get(current)?.nativeElement;
+    // Immediately hide previous panel text
+    const prevEl = this.contents.get(current)?.nativeElement;
     if (prevEl) {
       gsap.killTweensOf(prevEl);
       gsap.set(prevEl, { opacity: 0, y: 20 });

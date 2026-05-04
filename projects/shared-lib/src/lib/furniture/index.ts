@@ -34,3 +34,4 @@ export type {
   DimensionLineSegment3D,
 } from '../types/product'
 export { CM, MM, M, ROW_HEIGHT_MAP, DESIGN_CATEGORIES, DEFAULT_MODEL_CONFIGS } from '../types/product'
+export { FURNITURE_COLORS, type FurnitureColor } from './furniture-colors'

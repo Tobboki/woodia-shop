@@ -1,0 +1,35 @@
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
+:host {
+  display: block;
+
+  // Custom shadows and transitions
+  .job-details-container {
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  // Ensure inputs look premium
+  textarea, input, select {
+    &::placeholder {
+      color: hsl(var(--muted-foreground) / 0.5);
+    }
+    
+    &:focus {
+      outline: none;
+      border-color: hsl(var(--primary) / 0.5) !important;
+      box-shadow: 0 0 0 4px hsl(var(--primary) / 0.1);
+    }
+  }
+}

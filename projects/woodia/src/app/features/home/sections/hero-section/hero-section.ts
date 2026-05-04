@@ -1,10 +1,14 @@
 import { Component } from '@angular/core';
 import { DesignConfigurator } from '@shared-components/custom/design-configurator/design-configurator';
 import type { Product, BookcaseModelConfig } from '@shared-types/product';
+import { TranslocoDirective } from '@jsverse/transloco';
+import { NgOptimizedImage } from '@angular/common';
+
 
 @Component({
   selector: 'woodia-hero-section',
-  imports: [DesignConfigurator],
+  imports: [DesignConfigurator, TranslocoDirective, NgOptimizedImage],
+
   templateUrl: './hero-section.html',
   styleUrl: './hero-section.scss',
 })
@@ -13,6 +17,7 @@ export class HeroSection {
     id: 999,
     category: 'Bookcase',
     modelConfig: {
+      modelType: 'Bookcase',
       widthCm: 160,
       heightCm: 180,
       depthCm: 40,

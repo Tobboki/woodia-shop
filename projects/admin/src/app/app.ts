@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ThemeService } from '@admin-shared/services/theme.service';
-import { LanguageService } from '@admin-shared/services/language.service';
+import { ThemeService } from '@admin-core/services/theme.service';
+import { LanguageService } from '@admin-core/services/language.service';
 import { ZardToastComponent } from '@shared-components/toast/toast.component';
 
 @Component({

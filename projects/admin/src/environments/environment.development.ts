@@ -10,6 +10,7 @@ export const environment = {
       resendConfirmation: '/Auth/resend-confirmation',
     },
     upload: '/admin/Upload',
+    translation: "/api/Translation/translate",
     category: {
       getAll: '/api/admin/Category',
       getOne: (id: number) => `/api/admin/Category/${id}`,

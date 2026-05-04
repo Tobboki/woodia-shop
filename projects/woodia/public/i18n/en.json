@@ -1,14 +1,44 @@
 {
   "app": {
     "appTitle": "Woodia",
+    "currentYear": "2026",
+    "dialogs": {
+      "loginPrompt": {
+        "title": "Login Required",
+        "message": "You need to login before you can continue with your design.",
+        "login": "Login",
+        "cancel": "Cancel"
+      }
+    },
     "header": {
       "menu": {
+        "home": "Home",
+        "designs": "Designs",
+        "ourStory": "Our Story",
+        "jobs": "Jobs",
         "settings": "Settings",
-        "logout": "Logout"
+        "logout": "Logout",
+        "notifications": "Notifications",
+        "messages": "Messages",
+        "joinNow": "Join Now",
+        "language": "Language",
+        "theme": "Theme"
       }
     },
     "footer": {
-      "message": "All Rights Reserved."
+      "message": "All Rights Reserved.",
+      "description": "Customizable furniture for customers and makers. Creating unique spaces together.",
+      "information": "Information",
+      "faq": "FAQ",
+      "termsConditions": "Terms & Conditions",
+      "privacyPolicy": "Privacy Policy",
+      "followUs": "Follow Us",
+      "facebook": "Facebook",
+      "instagram": "Instagram",
+      "pinterest": "Pinterest",
+      "tiktok": "Tiktok",
+      "resources": "Resources",
+      "mediaKit": "Media Kit"
     },
     "errorPage": {
       "errorMessage": "This page does not exist.",
@@ -16,22 +46,532 @@
       "callbackButton": "Go To Homepage"
     }
   },
+  "sharedLib": {
+    "designConfigurator": {
+      "cm": "cm",
+      "showDimensions": "Show Dimensions",
+      "hideDimensions": "Hide Dimensions",
+      "controls": {
+        "row": "Row",
+        "rowHeight": "Row Height",
+        "column": "Column",
+        "colHeight": "Column Height",
+        "title": "Design Controls",
+        "mainTabs": {
+          "model": "Model",
+          "rowsConfig": "Rows",
+          "colsConfig": "Columns"
+        },
+        "Compartments": {
+          "drawers": "Drawers",
+          "doors": "Doors",
+          "none": "None",
+          "some": "Some",
+          "max": "Max"
+        },
+        "color": "Color",
+        "dimensions": "Dimensions",
+        "width": "Width",
+        "widthCm": "Width",
+        "height": "Height",
+        "heightCm": "Height",
+        "depth": "Depth",
+        "depthCm": "Depth",
+        "rowDensity": "Density",
+        "styles": {
+          "label": "Styles",
+          "grid": "Grid",
+          "slant": "Slant",
+          "stagger": "Stagger",
+          "gradient": "Gradient",
+          "mosaic": "Mosaic"
+        },
+        "heightOptions": {
+          "small": "small",
+          "medium": "medium",
+          "large": "large"
+        },
+        "storageOptions": {
+          "label": "Storage Options",
+          "topStorage": "Top Storage",
+          "bottomStorage": "Bottom Storage",
+          "none": "None",
+          "small": "Small",
+          "medium": "Medium",
+          "large": "Large"
+        },
+        "density": "Density",
+        "backPanel": "Back Panel",
+        "withBack": "Back Panel",
+        "overhang": "Tabletop overhang",
+        "overhangHint": "0 = flush with legs | higher = tabletop extends beyond legs.",
+        "legroomPosition": "Legroom Position",
+        "legroomPositionHint": "Position of the empty legroom space (0 = leftmost, {max} = rightmost).",
+        "shelfDensity": "Shelf density",
+        "deskDensityHint": "0% = fewest shelves (1 row) | 100% = most shelves (5 rows).",
+        "legs": "Legs",
+        "legsHint": "Add four square corner legs below the cabinet body.",
+        "defaultColumnHeight": "Default column height",
+        "defaultColumnHeightHint": "Sets all columns to this height. Fine-tune individual columns in the Columns config tab.",
+        "columnHeight": "Column height",
+        "columnHeightHint": "Each column can have a different height for a staggered profile.",
+        "dimensionsAndDensity": "Dimensions & density",
+        "bedsideDensityHint": "0% = spacious shelves | 100% = maximum shelves.",
+        "selectColumn": "Select column",
+        "columnSettings": "settings",
+        "hugeCellDoor": "Huge cell door",
+        "hugeCellDoorHint": "Adds a full-height door covering the entire opening.",
+        "maxDoorsHint": "Max doors cannot be combined with max drawers.",
+        "noColumnsAvailable": "No columns available. Adjust the width to add columns.",
+        "noRowsAvailable": "No rows available. Adjust the bookcase height to add rows.",
+        "hugeCellLabel": "Huge cell (no shelves)",
+        "hugeCellDescription": "Removes internal horizontal shelves, making the column one tall opening.",
+        "openCubbyLabel": "Open cubby (no shelves)",
+        "openCubbyDescription": "One tall opening — ideal for books or a lamp."
+      },
+      "errors": {
+        "invalidConfig": "Invalid Configuration",
+        "invalidConfigDesc": "The model configuration is missing or invalid."
+      }
+    }
+  },
   "features": {
+    "auth": {
+      "login": {
+        "welcomeBack": "Welcome Back",
+        "enterCredentials": "Enter your Credentials to access your account",
+        "loginWithGoogle": "Login with Google",
+        "or": "or",
+        "email": "Email",
+        "emailPlaceholder": "Enter your email",
+        "emailRequired": "Email is required.",
+        "emailInvalid": "Enter a valid email address.",
+        "password": "Password",
+        "passwordPlaceholder": "min 8 characters",
+        "passwordRequired": "Password is required.",
+        "passwordMinlength": "Password must be at least 8 characters.",
+        "rememberMe": "Remember me",
+        "forgetPassword": "Forget Password?",
+        "loginButton": "Login",
+        "dontHaveAccount": "Don't have an account?",
+        "signUp": "Sign Up",
+        "messages": {
+          "loginSuccess": "Login Successful"
+        },
+        "errors": {
+          "accessDenied": "Access Denied",
+          "genericError": "Something went wrong",
+          "authFailed": "Authentication Failed",
+          "authCanceled": "Authentication Canceled",
+          "googleAuthFailed": "Google Auth failed",
+          "sessionExpired": "Session expired"
+        }
+      },
+      "register": {
+        "userTypeTitle": "Choose your path to start crafting or requesting custom furniture.",
+        "customer": "Customer",
+        "customerDesc": "Explore a ton of customizable furniture, with bargaining deals all within the comfort of your home",
+        "maker": "Maker",
+        "makerDesc": "Create a ton of customizable furniture, with bargaining deals all within the comfort of your home",
+        "continueAs": "Continue as a",
+        "alreadyHaveAccount": "Already have an account?",
+        "login": "Login",
+        "getStartedNow": "Get Started Now",
+        "enterCredentialsDesc": "Enter your Credentials to access your account",
+        "signUpWithGoogle": "Sign Up with Google",
+        "firstName": "First Name",
+        "firstNamePlaceholder": "Enter your first name",
+        "firstNameRequired": "First name is required.",
+        "lastName": "Last Name",
+        "lastNamePlaceholder": "Enter your last name",
+        "lastNameRequired": "Last name is required.",
+        "emailPlaceholder": "Enter your email",
+        "passwordStrengthUpper": "Must include an uppercase letter",
+        "passwordStrengthLower": "Must include a lowercase letter",
+        "passwordStrengthSpecial": "Must include a special character",
+        "confirmPassword": "Confirm Password",
+        "passwordMismatch": "Passwords do not match.",
+        "agreeToTerms": "I agree to the Terms & Policy",
+        "registerButton": "Register",
+        "verificationTitle": "Email verification",
+        "verificationDesc": "We have sent you code to your Email",
+        "code": "Code",
+        "codePlaceholder": "max 6 chars or digits",
+        "verifyAccount": "Verify Account",
+        "didntReceiveCode": "Didn't receive code?",
+        "resend": "Resend",
+        "messages": {
+          "registrationSuccess": "Registration Successful",
+          "verificationSuccess": "Verification Successful",
+          "codeResentSuccess": "Code resent successfully"
+        },
+        "errors": {
+          "codeMismatch": "Code does not match",
+          "codeResendFailed": "Resending confirmation code failed"
+        }
+      },
+      "callback": {
+        "processing": "Completing Sign-In...",
+        "pleaseWait": "Please wait while we finalize your session."
+      }
+    },
+    "designStudio": {
+      "productNotFound": "Product not found",
+      "productNotFoundDesc": "We couldn't load this product.",
+      "back": "Back",
+      "designIsReady": "Design is ready?",
+      "nextStep": "Next Step",
+      "backToConfigurator": "Back to Configurator",
+      "postYourJob": "Post your job",
+      "jobTitle": "Job Title",
+      "jobTitlePlaceholder": "Unit 01: Custom Shelving",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe the specific finish, installation requirements, or any architectural constraints...",
+      "budget": "Expected Budget",
+      "deliveryDay": "Delivery Time",
+      "deliveryDayPlaceholder": "Select expected delivery time",
+      "deliveryOptions": {
+        "7Days": "7 Days",
+        "14Days": "14 Days",
+        "30Days": "30 Days"
+      },
+      "includedConfiguration": "Included Configuration",
+      "dimensions": "Dimensions",
+      "attachedAsset": "ATTACHED_ASSET_",
+      "submitJobRequest": "Submit Job Request",
+      "submitting": "Submitting...",
+      "termsAgreement1": "By submitting, you agree to the ",
+      "termsAgreement2": "Woodia Customer Agreement",
+      "termsAgreement3": " and ",
+      "termsAgreement4": "Privacy Policy.",
+      "imagesTitle": "See It in Your Space",
+      "noImagesTitle": "No preview images available",
+      "noImagesDesc": "Preview images will be added by our team soon.",
+      "startDesigning": "Start designing",
+      "categories": {
+        "Bookcase": "Bookcase",
+        "Desk": "Desk",
+        "TvStand": "TV Stand",
+        "ShoeRack": "Shoe Rack",
+        "BedsideTable": "Bedside Table",
+        "Design": "Custom Piece"
+      },
+      "invalidConfigPrompt": "This configuration is not valid.",
+      "messages": {
+        "jobCreated": "Job successfully created"
+      },
+      "errors": {
+        "fillRequiredFields": "Please fill all required fields",
+        "jobPostFailed": "Failed to post job. Please try again."
+      }
+    },
+    "designs": {
+      "allDesigns": "All Designs",
+      "loadMore": "Load More",
+      "errors": {
+        "categoryNotFound": "Category Does not Exist"
+      }
+    },
+    "home": {
+      "hero": {
+        "centuriesOf": "Centuries Of",
+        "craftsmanship": "Craftsmanship",
+        "presentedWith": "Presented With",
+        "modernity": "Modernity"
+      },
+      "guide": {
+        "subtitle": "Create in just a few clicks",
+        "title": "Design once, love forever",
+        "slides": {
+          "slide1": {
+            "title": "Start with the Perfect Design",
+            "description": "Explore a curated collection of customizable furniture designs. Whether your style is modern, classic, or somewhere in between, begin with a piece that fits your vision."
+          },
+          "slide2": {
+            "title": "Personalize Every Detail",
+            "description": "Choose the size, materials, finishes, and features that suit your space. From fabric to wood tones, every detail can be tailored to match your lifestyle and taste."
+          },
+          "slide3": {
+            "title": "Crafted by Experts",
+            "description": "Once your design is finalized, skilled craftsmen bring it to life with precision and care. Each piece is made to order, ensuring exceptional quality and attention to detail."
+          },
+          "slide4": {
+            "title": "Delivered & Enjoyed",
+            "description": "Your custom piece arrives ready to transform your space. Built to last and designed for everyday living, it's furniture made just for you — and made to stay."
+          }
+        }
+      },
+      "categories": {
+        "subtitle": "The future of furniture",
+        "title": "Made to fit. Made to stay. Made simple.Customize yours."
+      },
+      "makers": {
+        "title": "Become a maker",
+        "description": "Have a talent or love making furniture? Join our elite force and showcase your skills and connect with clients who value custom craftsmanship.",
+        "joinNow": "Join Now",
+        "quotes": {
+          "1": "Good furniture starts with honest wood, careful hands, and patience in every cut.",
+          "2": "Every joint tells a story — strong craftsmanship turns simple wood into lasting furniture.",
+          "3": "Measure twice, cut once — precision is what makes a piece stand the test of time.",
+          "4": "Design is important, but true beauty appears when the wood grain guides the craft.",
+          "5": "Handcrafted furniture carries character — every curve and edge shaped with intention.",
+          "6": "A well-built table isn't just furniture — it's where families gather for years.",
+          "7": "Craftsmanship is the balance between strength, simplicity, and the natural beauty of wood.",
+          "8": "The best furniture pieces are built slowly, shaped by skill rather than machines.",
+          "9": "Every handcrafted piece carries the mark of the maker behind it."
+        }
+      },
+      "popularDesigns": {
+        "title": "Our Most Loved Designs"
+      }
+    },
+    "ourStory": {
+      "mission": "Our Mission",
+      "title1": "Furniture used to be personal",
+      "p1": "It carried the mark of the craftsman — the subtle curve of a hand-finished edge, the precision of a joint cut with care, the pride of someone who built it to last.",
+      "p2": "Today, much of the furniture industry is controlled by large galleries and showrooms. Mass production replaced craftsmanship. Customers choose from what’s available — not from what they truly want. Meanwhile, thousands of skilled carpenters remain unseen, competing for limited exposure rather than for their actual talent.",
+      "p3": "We believe there is a better way!",
+      "title2": "The Problem We Saw",
+      "p4": "Customers are forced to buy what galleries display.",
+      "p5": "Custom furniture is expensive, slow, and often inaccessible.",
+      "p6": "Skilled carpenters struggle to find consistent, fair opportunities.",
+      "p7": "Talent exists — but visibility does not.",
+      "title3": "The system favors middlemen, not makers.",
+      "title4": "Our Idea",
+      "p8": "We built a platform that brings craftsmanship back to the center.Instead of browsing finished products, customers start with an idea.",
+      "title5": "They can",
+      "p9": "Select a base furniture piece",
+      "p10": "Customize dimensions, materials, finishes, and details",
+      "p11": "Post their project to a community of verified carpenters",
+      "title6": "From there, professional craftsmen compete by submitting",
+      "p12": "Their proposed price",
+      "p13": "Estimated completion time",
+      "p14": "Portfolio samples",
+      "p15": "Customer ratings",
+      "title7": "The result?",
+      "p16": "Competitive pricing.",
+      "p17": "Transparent timelines",
+      "p18": "True customization.",
+      "p19": "Direct connection between maker and customer.",
+      "ctaTitle": "Ready to start your story?",
+      "ctaPrimary": "Start designing",
+      "ctaSecondary": "Join as a Maker",
+      "p16Desc": "Every bid is tailored to your specific budget and requirements.",
+      "p17Desc": "Know exactly when your piece will arrive, from start to finish.",
+      "p18Desc": "Your design, your materials, your dimensions. No compromises.",
+      "p19Desc": "Talk directly with the artisan crafting your future heritage."
+    },
     "customers": {
       "jobs": {
         "title": "My Jobs",
         "description": "Manage your active commissions, review artisan bids, and track the progress of your bespoke furniture pieces.",
         "jobStatus": {
           "all": "All",
-          "pending": "Pending",
-          "inProgress": "In Progress",
-          "completed": "Completed",
-          "canceled": "Canceled"
+          "Pending": "Pending",
+          "InProgress": "In Progress",
+          "Completed": "Completed",
+          "Canceled": "Canceled"
         },
+        "selectAnOption": "Select an option",
         "displayModeOptions": {
           "list": "List",
           "grid": "Grid",
           "calendar": "Calendar"
+        },
+        "id": "JOB ID",
+        "projectId": "PROJECT ID",
+        "noJobsFound": "No jobs found",
+        "noJobsFoundDesc": "You haven't posted any jobs yet. Start by creating a custom furniture design!",
+        "loadMore": "Load More",
+        "errors": {
+          "loadFailed": "Failed to load jobs",
+          "cannotCancel": "Cannot cancel the job because it is no longer in the 'Open' status. It might be already in progress or completed.",
+          "cannotStart": "Cannot start the job because it is no longer in the 'Open' status. It might have been canceled or already started."
+        },
+        "viewModel": "View Model",
+        "modelNotAvailable": "Model not available",
+        "deliveryDay": "Delivery Day",
+        "budget": "Budget",
+        "notSpecified": "Not Specified",
+        "viewDetails": "View Details",
+        "expectedBudget": "Expected Budget",
+        "toBeDetermined": "To Be Determined",
+        "delivery": "Delivery",
+        "confirmStatusChangeTitle": "Update Job Status",
+        "selectNewStatus": "Select New Status",
+        "statusChangeHint": "Note: Changing status to Completed or Canceled is permanent and will notify the maker.",
+        "changeStatus": "Change Status",
+        "confirm": "Confirm",
+        "cancel": "Cancel",
+        "statusUpdatedSuccess": "Job status updated successfully!",
+        "statusUpdateFailed": "Failed to update job status",
+        "details": {
+          "breadcrumb": {
+            "home": "Home",
+            "jobs": "Jobs"
+          },
+          "placeholders": {
+            "noTitle": "Untitled Job",
+            "noCategory": "Custom Piece",
+            "noDescription": "No description provided for this job.",
+            "noVisual": "No design preview available",
+            "category": "Category",
+            "mockTitle": "Modern Minimalist Desk Design",
+            "mockDesc": "Looking for a professional maker to build a custom desk with integrated cable management...",
+            "mockTime": "2 days ago",
+            "mockLocation": "Remote"
+          },
+          "sections": {
+            "description": "Project Description",
+            "design": "Design Configuration",
+            "aboutClient": "About the Client",
+            "relatedJobs": "Related Projects",
+            "designDetails": "Model Specifications",
+            "jobDetails": "Job Details",
+            "modelPreview": "Model Preview"
+          },
+          "actions": {
+            "readMore": "Read more",
+            "readLess": "Read less",
+            "edit": "Edit Request",
+            "cancel": "Cancel Request",
+            "viewAll": "View All",
+            "viewModel": "View Model",
+            "retry": "Retry",
+            "saveChanges": "Save Changes",
+            "discard": "Discard",
+            "unsavedChanges": "Unsaved Changes",
+            "changesDetected": "Changes detected in data or design",
+            "done": "Done"
+          },
+          "labels": {
+            "budget": "Expected Budget",
+            "total": "Total",
+            "negotiable": "Negotiable",
+            "deliveryTime": "Delivery Time",
+            "days": "Days",
+            "reviews": "reviews",
+            "photos": "Photos",
+            "ref": "Ref",
+            "customer": "Woodia Customer",
+            "yes": "Yes",
+            "no": "No",
+            "expectedDelivery": "Expected Delivery",
+            "interactiveDesign": "Interactive Design",
+            "modelNotAvailable": "Model Not Available",
+            "notSpecified": "Not Specified",
+            "jobDescription": "Job Description",
+            "trustDescription": "This job is verified and protected by Woodia terms of service.",
+            "competitiveBudget": "Competitive budget attracts more offers"
+          },
+          "journey": {
+            "title": "The Journey",
+            "spark": {
+              "title": "The Spark",
+              "desc": "Job Posted"
+            },
+            "craft": {
+              "title": "The Craft",
+              "desc": "Artisan Working"
+            },
+            "legacy": {
+              "title": "The Legacy",
+              "desc": "Completed & Enjoyed"
+            }
+          },
+          "config": {
+            "color": "Selected Color",
+            "withBack": "Includes Back Panel"
+          },
+          "trust": {
+            "verifiedTitle": "Woodia Verified",
+            "verifiedDesc": "This job is posted by a verified customer and follows our quality guidelines."
+          },
+          "errors": {
+            "notFoundTitle": "Job Not Found",
+            "notFoundDesc": "The job project you are looking for might have been removed or is currently unavailable.",
+            "backToDesigns": "Browse Designs",
+            "loadFailed": "Failed to load job details. Please try again later.",
+            "saveFailed": "Failed to save changes",
+            "invalidDetails": "Some details are missing or invalid.",
+            "invalidConfig": "Missing Model Specifications",
+            "invalidConfigDesc": "The design configuration seems to be incomplete or corrupted."
+          },
+          "messages": {
+            "editSuccess": "Edit initiated successfully!",
+            "cancelSuccess": "Request cancelled successfully.",
+            "pauseSuccess": "Job paused successfully.",
+            "saveSuccess": "Changes saved successfully"
+          }
+        }
+      },
+      "settings": {
+        "title": "Settings",
+        "backToSettings": "Back to settings",
+        "myProfile": "My Profile",
+        "profilePicture": "Profile Picture",
+        "profilePictureDesc": "PNG, JPEG, JPG under 10MB",
+        "change": "Change",
+        "changePicture": "Change Picture",
+        "addPicture": "Add Picture",
+        "save": "Save",
+        "firstName": "First Name",
+        "firstNamePlaceholder": "Your first name",
+        "lastName": "Last Name",
+        "lastNamePlaceholder": "Your last name",
+        "saveChanges": "Save Changes",
+        "cancel": "Cancel",
+        "accountSecurity": "Account Security",
+        "actionDisabled": "this action is currently disabled",
+        "email": "Email",
+        "emailPlaceholder": "Your email",
+        "emailVerificationTitle": "Email Verification",
+        "emailVerificationDesc": "We have sent a verification code to {{email}}. Please enter it below.",
+        "emailVerificationCode": "Code",
+        "emailVerificationCodePlaceholder": "max 6 chars or digits",
+        "verifyEmail": "Verify Email",
+        "didntReceiveCode": "Didn't receive code?",
+        "resend": "Resend",
+        "emailChangedSuccess": "Email changed successfully",
+        "codeMismatch": "Code does not match",
+        "emailDuplicated": "Another user with the same email already exists",
+        "resendSuccess": "Code resent successfully",
+        "resendFailed": "Resending confirmation code failed",
+        "messages": {
+          "profilePictureSaved": "Profile picture saved",
+          "nameUpdateSuccess": "Name updated successful"
+        },
+        "errors": {
+          "fetchUserDataFailed": "Error fetching user data",
+          "invalidFileType": "Invalid file type",
+          "fileTooLarge": "File is too large",
+          "savePictureFailed": "Failed to save picture",
+          "uploadFailed": "Upload failed",
+          "nameUpdateFailed": "Name update was not successful",
+          "emailUpdateFailed": "Email update was not successful"
+        },
+        "shippingDetails": "Shipping Details",
+        "addDetails": "Add Details",
+        "governorate": "Governorate",
+        "governoratePlaceholder": "Select your Governorate",
+        "phone": "Phone",
+        "phonePlaceholder": "Your phone number",
+        "addressLine": "Address Line",
+        "addressLinePlaceholder": "Ex: Kafr Saad, Nasr Street",
+        "additionalDetails": "Additional Details",
+        "additionalDetailsPlaceholder": "Ex: Tawheed Tower by Kafr Saad's Train Station",
+        "reset": "Reset",
+        "messages": {
+          "addSuccess": "shipping details added successful",
+          "updateSuccess": "shipping details updated successful"
+        },
+        "errors": {
+          "addFailed": "shipping detail add failed",
+          "updateFailed": "shipping details update failed"
+        },
+        "menu": {
+          "account": "Account",
+          "shipping": "Shipping"
         }
       }
     }

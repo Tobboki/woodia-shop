@@ -4,23 +4,27 @@ import { AuthService } from '../services/auth.service';
 
 
 export const customerGuard: CanActivateFn = (route, state) => {
-
   const auth = inject(AuthService);
+  const router = inject(Router);
 
-  if (auth.getCurrentUser()?.userType === 'Client') {
+  const user = auth.getCurrentUser();
+  if (auth.isAuthenticated() && user?.userType === 'Client') {
     return true;
   }
 
-  return false;
+  return router.createUrlTree(['/auth/login'], { queryParams: { returnUrl: state.url } });
 };
 
 export const makerGuard: CanActivateFn = (route, state) => {
-
   const auth = inject(AuthService);
+  const router = inject(Router);
 
-  if (auth.getCurrentUser()?.userType === 'MAKER') {
+  const user = auth.getCurrentUser();
+  if (auth.isAuthenticated() && user?.userType === 'MAKER') {
     return true;
   }
 
-  return false;
+  return router.createUrlTree(['/auth/login'], { queryParams: { returnUrl: state.url } });
 };
+
+

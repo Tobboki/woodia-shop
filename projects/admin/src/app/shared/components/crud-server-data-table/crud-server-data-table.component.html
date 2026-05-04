@@ -1,0 +1,175 @@
+<div class="flex flex-col gap-4" *transloco="let t">
+  <!-- Top Slot Overrides everything -->
+  <ng-content select="[slot='top']">
+    <!-- Default Top Toolbar -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
+      <!-- Left side: Title -->
+      <h2 class="text-xl font-bold text-foreground">
+        {{ t('navigation.' + modelName.toLowerCase()) || modelName }}
+      </h2>
+
+      <!-- Right side: Add Button -->
+      <ng-container *ngIf="fullAllowedOperations.add">
+        <button z-button zType="default" (click)="addClicked.emit()">
+          <ng-icon name="lucidePlus" class="mr-2"></ng-icon>
+          {{ t('crud.addModel', { model: t('navigation.' + modelName.toLowerCase()) || modelName }) }}
+        </button>
+      </ng-container>
+    </div>
+  </ng-content>
+
+  <ng-content select="[slot='topPartialAbove']"></ng-content>
+
+  <!-- Search and Page Size Controls -->
+  <div class="flex flex-col sm:flex-row justify-between gap-4">
+    <!-- Page Size (Show X entries) -->
+    <div class="flex items-center gap-2" *ngIf="fullQueryOptions.paging">
+      <span class="text-sm text-muted-foreground">{{ t('shared.show') }}</span>
+      <z-select [zValue]="pageSize.toString()" (zSelectionChange)="onPageSizeChange($event)" class="w-20">
+        <z-select-item *ngFor="let size of fullPagingConfig.pageSizes" [zValue]="size.toString()">
+          {{ size }}
+        </z-select-item>
+      </z-select>
+      <span class="text-sm text-muted-foreground">{{ t('shared.entries') }}</span>
+    </div>
+
+    <!-- Search Input -->
+    <div class="relative w-full sm:w-64" *ngIf="fullQueryOptions.search">
+      <ng-icon name="lucideSearch" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"></ng-icon>
+      <input z-input type="text" [placeholder]="t('crud.searchIn', { model: t('navigation.' + modelName.toLowerCase()) || modelName })"
+        class="pl-9 w-full" (input)="onSearchChange($event)" [value]="searchValue">
+    </div>
+  </div>
+
+  <ng-content select="[slot='topPartialUnder']"></ng-content>
+
+  <!-- Table Container -->
+  <div class="border rounded-lg overflow-x-auto bg-background relative">
+    
+    <!-- Loading Overlay -->
+    <div *ngIf="loading" class="absolute inset-0 bg-background/50 z-10 flex flex-col justify-center items-center">
+    </div>
+
+    <table z-table class="w-full text-sm text-left">
+      <thead z-table-header class="bg-muted text-muted-foreground">
+        <tr z-table-row>
+          <th z-table-head *ngFor="let header of headers"
+            class="whitespace-nowrap px-4 py-3 font-medium transition-colors"
+            [class.cursor-pointer]="fullQueryOptions.sort && header.sortable !== false"
+            [class.hover:bg-muted-foreground]="fullQueryOptions.sort && header.sortable !== false"
+            (click)="onSort(header)"
+            [ngClass]="{
+              'text-left': header.align === 'start' || !header.align,
+              'text-center': header.align === 'center',
+              'text-right': header.align === 'end'
+            }">
+            <div class="flex items-center gap-1"
+              [ngClass]="{
+                'justify-start': header.align === 'start' || !header.align,
+                'justify-center': header.align === 'center',
+                'justify-end': header.align === 'end'
+              }">
+              {{ t('crud.headers.' + header.key) || header.title }}
+              <ng-container *ngIf="fullQueryOptions.sort && header.sortable !== false">
+                <ng-icon name="lucideChevronUp" class="size-3" *ngIf="sortBy === header.key && sortDirection === 'asc'"></ng-icon>
+                <ng-icon name="lucideChevronDown" class="size-3" *ngIf="sortBy === header.key && sortDirection === 'desc'"></ng-icon>
+                <ng-icon name="lucideChevronsUpDown" class="size-3 opacity-30" *ngIf="sortBy !== header.key"></ng-icon>
+              </ng-container>
+            </div>
+          </th>
+          <th z-table-head *ngIf="showActions" class="px-4 py-3 text-right">
+            {{ t('crud.actions') }}
+          </th>
+        </tr>
+      </thead>
+      
+      <tbody z-table-body>
+        <!-- Loading Skeletons -->
+        <ng-container *ngIf="loading && (!items || items.length === 0)">
+          <tr z-table-row *ngFor="let i of [1,2,3,4,5]">
+            <td z-table-cell *ngFor="let h of headers" class="px-4 py-3">
+              <z-skeleton class="h-4 w-full"></z-skeleton>
+            </td>
+            <td z-table-cell *ngIf="showActions" class="px-4 py-3">
+               <z-skeleton class="h-8 w-20 ml-auto"></z-skeleton>
+            </td>
+          </tr>
+        </ng-container>
+
+        <!-- No Data -->
+        <tr z-table-row *ngIf="!loading && (!items || items.length === 0)">
+          <td z-table-cell [attr.colspan]="headers.length + (showActions ? 1 : 0)" class="px-4 py-8 text-center text-muted-foreground">
+            {{ t('shared.noData') }}
+          </td>
+        </tr>
+
+        <!-- Data Rows -->
+        <tr z-table-row *ngFor="let item of items" class="hover:bg-muted/50 transition-colors">
+          <td z-table-cell *ngFor="let header of headers" class="px-4 py-3"
+            [ngClass]="{
+              'text-left': header.align === 'start' || !header.align,
+              'text-center': header.align === 'center',
+              'text-right': header.align === 'end'
+            }">
+            {{ item[header.key] }}
+          </td>
+
+          <!-- Actions -->
+          <td z-table-cell *ngIf="showActions" class="px-4 py-2 text-right">
+            <div class="flex items-center justify-end gap-1">
+              <ng-content select="[slot='customActions']"></ng-content>
+              
+              <button z-button zType="ghost" zSize="sm" class="size-8 p-0"
+                *ngIf="hasSingle || fullAllowedOperations.readSingle"
+                [zTooltip]="t('crud.viewDetails')"
+                (click)="viewClicked.emit(item.id)">
+                <ng-icon name="lucideEye" class="size-4 text-blue-500"></ng-icon>
+              </button>
+              
+              <button z-button zType="ghost" zSize="sm" class="size-8 p-0"
+                *ngIf="fullAllowedOperations.update"
+                [zTooltip]="t('crud.edit')"
+                (click)="editClicked.emit(item.id)">
+                <ng-icon name="lucidePencil" class="size-4 text-emerald-500"></ng-icon>
+              </button>
+              
+              <button z-button zType="ghost" zSize="sm" class="size-8 p-0"
+                *ngIf="fullAllowedOperations.delete"
+                [zTooltip]="t('crud.delete')"
+                (click)="deleteClicked.emit(item.id)">
+                <ng-icon name="lucideTrash2" class="size-4 text-destructive"></ng-icon>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer Pagination Override -->
+  <ng-content select="[slot='bottom']">
+    <!-- Default Footer -->
+    <ng-container *ngIf="fullQueryOptions.paging">
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-2">
+        <div class="text-sm text-muted-foreground">
+          {{ t('shared.showing') }} <span class="font-medium text-foreground">{{ showingStart }}</span> {{ t('shared.to') }}
+          <span class="font-medium text-foreground">{{ showingEnd }}</span> {{ t('shared.of') }}
+          <span class="font-medium text-foreground">{{ totalItems }}</span> {{ t('shared.entries') }}
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button z-button zType="outline" zSize="sm"
+            [disabled]="!hasPreviousPage || loading"
+            (click)="prevPage()">
+            <ng-icon name="lucideChevronLeft" class="mr-1" [class.rotate-180]="t('dir') === 'rtl'"></ng-icon> {{ t('shared.previous') }}
+          </button>
+          <button z-button zType="outline" zSize="sm"
+            [disabled]="!hasNextPage || loading"
+            (click)="nextPage()">
+            {{ t('shared.next') }} <ng-icon name="lucideChevronRight" class="ml-1" [class.rotate-180]="t('dir') === 'rtl'"></ng-icon>
+          </button>
+        </div>
+      </div>
+    </ng-container>
+  </ng-content>
+</div>

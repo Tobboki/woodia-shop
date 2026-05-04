@@ -18,7 +18,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     'Accept-Language': locale,
   };
 
-  if (token && !isExternalUrl) {
+  const isRefreshUrl = req.url.includes('/Auth/refresh');
+
+  if (token && !isExternalUrl && !isRefreshUrl) {
     setHeaders['Authorization'] = `Bearer ${token}`;
   }
 
@@ -29,13 +31,20 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       if (err instanceof HttpErrorResponse) {
         switch (err.status) {
           case 401:
+            // Prevent infinite loop if the refresh token call itself fails
+            if (req.url.includes('/Auth/refresh')) {
+              authService.logout();
+              return throwError(() => err);
+            }
+
             // Attempt refresh
             const refreshToken = authService.getRefreshToken();
             if (!refreshToken) {
               authService.logout();
-              console.log("interceptor 401 error", err)
+              console.log("interceptor 401 error: No refresh token", err)
               return throwError(() => err);
             }
+
             return authService.refreshToken().pipe(
               switchMap(newTokenRes => {
                 const retryReq = req.clone({
@@ -53,7 +62,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
             );
 
           case 403:
-            // Optional: navigate to forbidden page / show toast
             console.warn('Forbidden request');
             break;
 

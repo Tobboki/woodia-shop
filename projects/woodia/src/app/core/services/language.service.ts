@@ -23,6 +23,11 @@ export class LanguageService {
 
   constructor(private transloco: TranslocoService) {}
 
+  translate(key: string, params?: any) {
+    return this.transloco.translate(key, params);
+  }
+
+
   init() {
     // Load saved language from localStorage
     const saved = localStorage.getItem(STORAGE_KEY) as TLanguage | null

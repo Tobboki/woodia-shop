@@ -3,6 +3,8 @@ import { ZardCarouselComponent, ZardCarouselContentComponent, ZardCarouselItemCo
 import { ProductCard } from "@woodia-shared/components/product-card/product-card";
 import { IProductCard, IProductsResponse } from '@shared-types/product';
 import { ProductService } from '@woodia-core/services/product.service';
+import { TranslocoDirective } from '@jsverse/transloco';
+import {finalize} from 'rxjs/operators';
 
 export interface Product {
   id: number;
@@ -20,7 +22,8 @@ export interface Product {
     ZardCarouselComponent,
     ZardCarouselContentComponent,
     ZardCarouselItemComponent,
-    ProductCard
+    ProductCard,
+    TranslocoDirective
   ],
   templateUrl: './popular-designs-section.html',
   styleUrl: './popular-designs-section.scss',
@@ -40,17 +43,18 @@ export class PopularDesignsSection implements OnInit {
   loadProducts() {
     this.productsLoading.set(true)
 
-    this.productService.getPopularDesigns().subscribe({
+    this.productService.getPopularDesigns()
+    .pipe(
+      finalize(() => this.productsLoading.set(false))
+    )
+    .subscribe({
       next: (data: any) => {
-        this.productsLoading.set(false)
-
-        this.products.set(data)
+        this.products.set(data);
       },
       error: (error: any) => {
-        this.productsLoading.set(false)
         console.error(error);
       }
-    })
+    });
   }
 
   zardCarouselOptions = {

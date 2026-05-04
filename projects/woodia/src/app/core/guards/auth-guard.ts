@@ -3,7 +3,6 @@ import {CanActivateFn, Router} from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 export const authGuard: CanActivateFn = (route, state) => {
-
   const authService = inject(AuthService);
   const router = inject(Router);
 
@@ -13,12 +12,19 @@ export const authGuard: CanActivateFn = (route, state) => {
   }
 
   const user = authService.getCurrentUser();
-  if (authService.isAuthenticated()) {
-    if (user?.userType === 'Client' && !state.url.startsWith('/customers')) {
-      return router.parseUrl('/customers');
+  const isAuthenticated = authService.isAuthenticated();
+
+  // If user is already logged in and trying to access auth pages, redirect to their dashboard
+  if (isAuthenticated && state.url.startsWith('/auth')) {
+    if (user?.userType === 'Client') {
+      return router.parseUrl('/customers/jobs');
     }
-    // Add similar logic for MAKER
+    if (user?.userType === 'MAKER') {
+      return router.parseUrl('/makers/dashboard');
+    }
+    return router.parseUrl('/home');
   }
 
-  return !authService.isAuthenticated();
+  return true;
 };
+

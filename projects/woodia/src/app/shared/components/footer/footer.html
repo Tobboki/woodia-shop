@@ -1,95 +1,86 @@
-<div
-  class="bg-background flex-col gap-[16px] border-2 container mx-auto p-[24px] rounded-[24px]"
->
-  <!-- Links: Desktop  -->
-  <div
-    class="flex gap-[16px] col-span-4 justify-between max-md:grid max-md:grid-cols-2 max-md:hidden"
-  >
+<footer class="w-full bg-background lg:pt-16 p-4 border-t" *transloco="let t">
+  <div class="container mx-auto px-4 md:px-4 ">
 
-    <!-- Main Menu-->
-    <div class="flex flex-col gap-[16px]">
-      <h2 class="font-link font-bold">
-        Woodia
-      </h2>
+    <div class="flex flex-col lg:flex-row justify-between max-lg:items-center lg:gap-8 max-lg:gap-4 mb-4">
 
-      <div class="flex flex-col gap-[8px]">
-        @for (menuItem of menu; track menuItem.id) {
-          <a
-            [routerLink]="menuItem.path"
-            class="font-link hover:text-primary"
-          >
-            {{ menuItem.label }}
-          </a>
-        }
+      <!-- Brand & Info (Always visible, top on mobile, left on desktop) -->
+      <div class="flex flex-col gap-4 max-lg:max-w-md max-md:max-w-sm max-lg:text-center">
+        <logo [wText]="true" class="lg:self-start" />
+        <p class="font-link text-muted-foreground text-sm leading-relaxed">
+          {{ t('app.footer.description') }}
+        </p>
       </div>
-    </div>
 
-    <!-- Dynamic Link Groups -->
-    @for (linkGroup of linkGroups; track linkGroup.name) {
-      <div class="flex flex-col gap-[16px]">
-        <h2 class="font-link font-bold">
-          {{ linkGroup.name }}
-        </h2>
-
-        <div class="flex flex-col gap-[8px]">
-          @for (link of linkGroup.links; track link.id) {
-            <a
-              [routerLink]="link.path"
-              class="font-link hover:text-primary"
-            >
-              {{ link.label }}
-            </a>
-          }
-        </div>
-      </div>
-    }
-  </div>
-
-  <!-- Links: Mobile -->
-  <div class="hidden max-md:block">
-    <z-accordion>
-      <!-- Navigation Menu -->
-      <z-accordion-item zTitle="Woodia" zTitleIcon="lucideLink">
-        <div class="flex flex-col gap-2">
-          @for (menuItem of menu; track menuItem.id) {
-            <a
-              z-button
-              zType="ghost"
-              zSize="lg"
-              [routerLink]="menuItem.path"
-              class="justify-start ps-6"
-            >
-              {{ menuItem.label }}
-            </a>
-          }
-        </div>
-      </z-accordion-item>
-
-      <!-- Dynamic Link Groups -->
-      @for (linkGroup of linkGroups; track linkGroup.name) {
-        <z-accordion-item [zTitle]="linkGroup.name" zTitleIcon="lucideLink">
+      <!-- Desktop Links -->
+      <div class="hidden md:flex w-full flex-nowrap justify-between">
+        @if (menu.length > 0) {
+        <div class="flex flex-col gap-4">
+          <h3 class="font-link font-bold text-foreground">{{ t('app.appTitle') }}</h3>
           <div class="flex flex-col gap-2">
-            @for (link of linkGroup.links; track link.id) {
-              <a
-                z-button
-                zType="ghost"
-                zSize="lg"
-                [routerLink]="link.path"
-                class="justify-start ps-6"
-              >
-                {{ link.label }}
-              </a>
+            @for (menuItem of menu; track menuItem.id) {
+            <a [routerLink]="menuItem.path"
+              class="font-link text-sm text-muted-foreground hover:text-foreground transition-colors">
+              {{ t(menuItem.label) }}
+            </a>
             }
           </div>
-        </z-accordion-item>
-      }
+        </div>
+        }
 
-    </z-accordion>
+        @for (linkGroup of linkGroups; track linkGroup.name) {
+        <div class="flex flex-col gap-4">
+          <h3 class="font-link font-bold text-foreground">{{ t(linkGroup.name) }}</h3>
+          <div class="flex flex-col gap-2">
+            @for (link of linkGroup.links; track link.id) {
+            <a [routerLink]="link.path"
+              class="font-link text-sm text-muted-foreground hover:text-foreground transition-colors">
+              {{ t(link.label) }}
+            </a>
+            }
+          </div>
+        </div>
+        }
+      </div>
+
+      <!-- Mobile Links (Accordion) -->
+      <div class="block md:hidden w-full">
+        <z-accordion zDefaultValue="app-menu">
+          @if (menu.length > 0) {
+          <z-accordion-item [zTitle]="t('app.appTitle')" zValue="app-menu">
+            <div class="flex flex-col gap-2 pt-2">
+              @for (menuItem of menu; track menuItem.id) {
+              <a z-button zType="ghost" zSize="sm" [routerLink]="menuItem.path"
+                class="justify-start font-normal font-link text-muted-foreground hover:text-foreground">
+                {{ t(menuItem.label) }}
+              </a>
+              }
+            </div>
+          </z-accordion-item>
+          }
+
+          @for (linkGroup of linkGroups; track linkGroup.name; let i = $index) {
+          <z-accordion-item [zTitle]="t(linkGroup.name)" [zValue]="linkGroup.name">
+            <div class="flex flex-col gap-2 pt-2">
+              @for (link of linkGroup.links; track link.id) {
+              <a z-button zType="ghost" zSize="sm" [routerLink]="link.path"
+                class="justify-start font-normal font-link text-muted-foreground hover:text-foreground">
+                {{ t(link.label) }}
+              </a>
+              }
+            </div>
+          </z-accordion-item>
+          }
+        </z-accordion>
+      </div>
+
+    </div>
+
+    <!-- Bottom section -->
+    <z-divider class="mb-8 max-md:hidden" />
+
+    <div class="flex flex-col sm:flex-row max-md:text-center justify-center items-center text-sm text-muted-foreground gap-4">
+      <p class="font-link">&#64; {{ t('app.currentYear') }} {{ t('app.appTitle') }}. {{ t('app.footer.message') }}</p>
+    </div>
+
   </div>
-
-  <z-divider class="h-[2px]" />
-
-  <p class="font-link text-center">
-    &#64; 2026 Woodia. All right reserved.
-  </p>
-</div>
+</footer>

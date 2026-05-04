@@ -1,4 +1,4 @@
-<section>
+<section *transloco="let t">
   @if (!showMobileSettings()) {
     <a
       z-button
@@ -8,12 +8,12 @@
       (click)="toggleMobileSettings()"
     >
       <ng-icon name="lucideArrowLeft" />
-      Back to settings
+      {{ t('features.customers.settings.backToSettings') }}
     </a>
   }
   @if (showMobileSettings()) {
     <nav class="lg:hidden flex h-full flex-col overflow-hidden gap-[8px] px-[8px] pb-[16px] my-[16px] rounded-[12px] border">
-      <h1 class="font-h1">Settings</h1>
+      <h1 class="font-h1">{{ t('features.customers.settings.title') }}</h1>
 
       @for (item of mainMenuItems; track item.label) {
         <div
@@ -25,21 +25,21 @@
         >
           <div class="flex flex-nowrap items-center gap-[8px]">
             <ng-icon [name]="item.icon" class="size[42px]" />
-            <h4 class="font-h4 font-thin">{{ item.label }}</h4>
+            <h4 class="font-h4 font-thin">{{ t('features.customers.settings.menu.' + item.link) }}</h4>
           </div>
 
-          <ng-icon name="lucideArrowLeft" class="size[42px]" />
+          <ng-icon name="lucideArrowLeft" class="size-8" />
         </div>
       }
     </nav>
   }
-  <z-layout class="overflow-hidden rounded-[12px] border">
+  <z-layout class="overflow-hidden rounded-lg border-2">
     <z-sidebar
       [zWidth]="200"
       class="p-0! max-lg:hidden"
     >
-      <nav class="flex h-full flex-col overflow-hidden gap-[8px] p-[8px]">
-          <h1 class="font-h3">Settings</h1>
+      <nav class="flex h-full flex-col overflow-hidden gap-2 p-2">
+          <h1 class="font-h3">{{ t('features.customers.settings.title') }}</h1>
 
           @for (item of mainMenuItems; track item.label) {
             <a
@@ -52,7 +52,7 @@
               [routerLinkActiveOptions]="{ exact: false }"
             >
               <ng-icon [name]="item.icon" class="size-4" />
-              {{ item.label }}
+              {{ t('features.customers.settings.menu.' + item.link) }}
             </a>
           }
       </nav>

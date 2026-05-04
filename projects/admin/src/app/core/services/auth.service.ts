@@ -156,10 +156,13 @@ export class AuthService {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user');
+    localStorage.removeItem('expires_at');
+    localStorage.removeItem('refresh_token_expiration');
     sessionStorage.removeItem('auth_token');
     sessionStorage.removeItem('refresh_token');
     sessionStorage.removeItem('user');
-    this.router.navigate(['/']);
+    sessionStorage.removeItem('expires_at');
+    this.router.navigate(['/auth/login']);
   }
 
   /**

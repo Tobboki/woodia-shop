@@ -1,50 +1,126 @@
-<div class="jobs-grid p-4">
+<div *transloco="let t">
 
   <!-- Empty State -->
-  @if (jobs.length !>= 0) {
-    <div class="flex flex-col items-center justify-center py-20 text-center">
-      <div class="text-5xl mb-4">📭</div>
-      <h2 class="text-xl font-semibold text-gray-700">No jobs found</h2>
-      <p class="text-gray-500 mt-2">Try creating a new job or adjusting filters</p>
-    </div>
+  @if (jobs.length === 0) {
+  <div class="flex flex-col items-center justify-center py-20 text-center">
+    <div class="text-6xl mb-6">👀</div>
+    <h2 class="text-2xl font-bold text-foreground">{{ t('features.customers.jobs.noJobsFound') }}</h2>
+    <p class="text-muted-foreground mt-2 max-w-sm mx-auto">{{ t('features.customers.jobs.noJobsFoundDesc') }}</p>
+  </div>
   }
 
-  <!-- Grid of jobs -->
+  <!-- Jobs Grid -->
   @if (jobs.length > 0) {
-    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    @for (job of jobs; track job.id) {
+    <div
+      class="group relative bg-card rounded-2xl border border-border shadow-sm transition-all duration-300 hover:shadow-lg hover:border-primary/10 overflow-hidden flex flex-col min-h-[320px]">
 
-      @for (job of jobs; track job.id) {
-        <div class="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-lg transition transform hover:-translate-y-1">
+      <!-- Left Accent Bar -->
+      <div class="absolute left-0 top-0 bottom-0 w-1 transition-all duration-300 group-hover:w-1.5"
+        [ngClass]="getAccentColor(job.status)"></div>
 
-          <!-- Header -->
-          <div class="flex items-start justify-between mb-3">
-            <h3 class="text-lg font-semibold text-gray-800">{{ job.title }}</h3>
-            <span
-              class="text-xs font-medium px-3 py-1 rounded-full"
-              [ngClass]="{
-                'bg-yellow-100 text-yellow-700': job.status === 'pending',
-                'bg-green-100 text-green-700': job.status === 'completed',
-                'bg-blue-100 text-blue-700': job.status === 'inProgress',
-                'bg-gray-100 text-gray-600': job.status === 'canceled'
-              }"
-            >
-              {{ job.status }}
+      <div class="p-5 flex flex-col flex-1 gap-4">
+
+        <!-- Card Header -->
+        <div class="flex items-start justify-between">
+          <div class="flex items-center justify-between gap-1 w-full">
+            <span class="font-bold tracking-[0.05em] text-muted-foreground uppercase">
+              {{ t('features.customers.jobs.id') }}: #{{ job.id }}
             </span>
+
+            <div class="flex items-center gap-2 mt-1" (click)="$event.stopPropagation()">
+              <z-badge zShape="pill" [class]="getStatusColor(job.status)"
+                class="!text-xs !font-bold !tracking-wider !uppercase !px-2 !py-0.5 !border w-fit">
+                {{ t('features.customers.jobs.jobStatus.' + (job.status || 'pending')) }}
+              </z-badge>
+
+              @if (job.status !== 'Completed' && job.status !== 'Canceled') {
+              <button z-button zType="ghost" zSize="sm" class="!h-6 !w-6 !p-0 !rounded-full hover:!bg-muted"
+                (click)="handleStatusChange(job)" [zTooltip]="t('features.customers.jobs.changeStatus')">
+                <ng-icon name="lucideSettings" class="size-3.5" />
+              </button>
+              }
+            </div>
           </div>
-
-          <!-- Description -->
-          <p class="text-sm text-gray-600 line-clamp-3 mb-4">{{ job.description }}</p>
-
-          <!-- Footer -->
-          <div class="flex items-center justify-between text-xs text-gray-500 border-t pt-3">
-            <span class="font-medium">#{{ job.id }}</span>
-            <span>{{ job.createdAt | date:'mediumDate' }}</span>
-          </div>
-
         </div>
-      }
 
+        <!-- Title & Description -->
+        <div class="space-y-2 flex-1 overflow-hidden">
+          <h3
+            class="text-base font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1 break-words"
+            [class.text-left]="getTextDir(job.title) === 'ltr'" [class.text-right]="getTextDir(job.title) === 'rtl'"
+            [dir]="getTextDir(job.title)">
+            {{ job.title.trim() ? job.title : t('features.customers.jobs.details.placeholders.noTitle') }}
+          </h3>
+
+          @if (job.description) {
+          <div class="relative w-full" [class.text-left]="getTextDir(job.description) === 'ltr'"
+            [class.text-right]="getTextDir(job.description) === 'rtl'" [dir]="getTextDir(job.description)">
+            <p class="text-xs text-muted-foreground line-clamp-2 leading-relaxed break-words">
+              {{ job.description }}
+            </p>
+            <div
+              class="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-card to-transparent pointer-events-none">
+            </div>
+          </div>
+          }
+        </div>
+
+        <!-- Card Footer -->
+        <div class="flex flex-col gap-4 mt-auto">
+          <div class="h-px bg-border/50"></div>
+
+          <div class="flex flex-row items-center justify-between gap-3">
+            <!-- Delivery -->
+            <div class="flex items-center gap-3 text-muted-foreground">
+              <div class="flex items-center justify-center size-8 bg-muted rounded-lg text-muted-foreground">
+                <ng-icon name="lucideCalendar" size="18" />
+              </div>
+              <div class="flex flex-col">
+                <span class="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{{
+                  t('features.customers.jobs.delivery') }}</span>
+                <span class="text-xs font-bold text-foreground/90">
+                  {{ job.deliveryDay > 0 ? job.deliveryDay + ' ' + t('features.customers.jobs.details.labels.days') :
+                  t('features.customers.jobs.notSpecified') }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Budget -->
+            <div class="flex items-center gap-3 text-muted-foreground">
+              <div class="flex items-center justify-center size-8 bg-muted rounded-lg text-muted-foreground">
+                <ng-icon name="lucideDollarSign" size="18" />
+              </div>
+              <div class="flex flex-col">
+                <span class="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{{
+                  t('features.customers.jobs.expectedBudget') }}</span>
+                <div class="flex items-baseline gap-1">
+                  @if (job.expectedBudget) {
+                  <span class="text-xs font-bold text-foreground/90">{{ job.expectedBudget |
+                    currency:'USD':'symbol':'1.0-0' }}</span>
+                  } @else {
+                  <span class="text-xs font-bold text-foreground/90">{{ t('features.customers.jobs.notSpecified')
+                    }}</span>
+                  <span class="text-[8px] text-muted-foreground font-medium">{{
+                    t('features.customers.jobs.details.labels.negotiable') }}</span>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-2">
+          <z-button zType="default" zFull zSize="lg" class="rounded-lg" (click)="navigateToDetails(job.id)">
+            {{ t('features.customers.jobs.viewDetails') }}
+          </z-button>
+        </div>
+
+      </div>
     </div>
+    }
+  </div>
   }
 
 </div>

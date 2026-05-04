@@ -22,17 +22,17 @@ export const inputGroupVariants = cva(
 );
 
 export const inputGroupAddonVariants = cva(
-  'addon inline-flex items-center justify-center whitespace-nowrap text-sm font-medium border border-black/25 bg-muted text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border-border',
+  'addon inline-flex items-center justify-center whitespace-nowrap text-sm font-medium border-2 border-black/25 bg-muted text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border-border',
   {
     variants: {
       zSize: {
-        default: 'h-[48px] px-3 text-sm',
+        default: 'h-12 px-3 text-sm',
         sm: 'h-9 px-3 text-xs',
         lg: 'h-11 px-4 text-base',
       },
       zPosition: {
-        before: 'rounded-l-md border-r-0',
-        after: 'rounded-r-md border-l-0',
+        before: 'rounded-s-md border-e-0',
+        after: 'rounded-e-md border-s-0',
       },
       zDisabled: {
         true: 'cursor-not-allowed opacity-50 pointer-events-none',
@@ -60,8 +60,8 @@ export const inputGroupAffixVariants = cva('absolute inset-y-0 flex items-center
       lg: 'text-base',
     },
     zPosition: {
-      prefix: 'left-0 pl-3',
-      suffix: 'right-0 pr-3',
+      prefix: 'start-0 ps-3',
+      suffix: 'end-0 pe-3',
     },
   },
   defaultVariants: {
@@ -71,12 +71,12 @@ export const inputGroupAffixVariants = cva('absolute inset-y-0 flex items-center
 });
 
 export const inputGroupInputVariants = cva(
-  'flex w-full rounded-[8px] border font-normal border-border bg-transparent font-placeholder file:border-0 file:text-foreground file:bg-transparent file:font-medium placeholder:text-foreground/50 disabled:cursor-not-allowed disabled:opacity-50 focus:ring-2 focus:ring-primary-200',
+  'flex w-full rounded-[8px] border-2 font-medium border-border bg-transparent font-placeholder file:border-0 file:text-foreground file:bg-transparent file:font-medium placeholder:text-foreground/50 disabled:cursor-not-allowed disabled:opacity-50 focus:ring-2 focus:ring-primary-200',
   {
     variants: {
       zSize: {
-        default: 'h-[48px] px-[16px] py-[8px] max-sm:h-fit file:max-md:py-0',
-        sm: 'h-[48px] px-[16px] py-[8px] file:max-md:py-0',
+        default: 'h-12 px-[16px] py-[8px] file:max-md:py-0',
+        sm: 'h-9 px-[16px] py-[8px] file:max-md:py-0',
         lg: 'h-11 px-4 py-2 text-base',
       },
       zHasPrefix: {
@@ -88,11 +88,11 @@ export const inputGroupInputVariants = cva(
         false: '',
       },
       zHasAddonBefore: {
-        true: 'border-l-0 rounded-l-none',
+        true: 'border-s-0 rounded-s-none',
         false: '',
       },
       zHasAddonAfter: {
-        true: 'border-r-0 rounded-r-none',
+        true: 'border-e-0 rounded-e-none',
         false: '',
       },
       zDisabled: {
@@ -113,32 +113,32 @@ export const inputGroupInputVariants = cva(
       {
         zHasPrefix: true,
         zSize: 'sm',
-        class: 'pl-7',
+        class: 'ps-7',
       },
       {
         zHasPrefix: true,
         zSize: 'default',
-        class: 'pl-8',
+        class: 'ps-8',
       },
       {
         zHasPrefix: true,
         zSize: 'lg',
-        class: 'pl-9',
+        class: 'ps-9',
       },
       {
         zHasSuffix: true,
         zSize: 'sm',
-        class: 'pr-12',
+        class: 'pe-12',
       },
       {
         zHasSuffix: true,
         zSize: 'default',
-        class: 'pr-14',
+        class: 'pe-14',
       },
       {
         zHasSuffix: true,
         zSize: 'lg',
-        class: 'pr-16',
+        class: 'pe-16',
       },
     ],
     defaultVariants: {

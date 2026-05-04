@@ -1,14 +1,17 @@
 import { Component, OnInit, signal } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
+
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ZardBreadcrumbComponent, ZardBreadcrumbItemComponent } from '@shared-components/breadcrumb';
 import { ZardButtonComponent } from '@shared-components/button/button.component';
-import { ZardLoaderComponent } from '@shared-components/loader/loader.component';
+import { ZardSkeletonComponent } from '@shared-components/skeleton';
 import { ProductCard } from '@woodia-shared/components/product-card/product-card';
 import { CategoryService } from '../../core/services/category.service';
 import { ProductService } from '../../core/services/product.service';
 import { ICategoryCard, IChildCategoryResponse } from '@woodia-types/category';
 import { IProductCard } from '@woodia-types/product';
 import { toast } from 'ngx-sonner';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'woodia-designs',
@@ -16,11 +19,14 @@ import { toast } from 'ngx-sonner';
   imports: [
     ProductCard,
     ZardButtonComponent,
-    ZardLoaderComponent,
+    ZardSkeletonComponent,
     RouterLink,
     ZardBreadcrumbComponent,
-    ZardBreadcrumbItemComponent
+    ZardBreadcrumbItemComponent,
+    TranslocoDirective,
+    NgOptimizedImage
   ],
+
   templateUrl: './designs.html',
   styleUrl: './designs.scss',
 })
@@ -43,7 +49,8 @@ export class Designs implements OnInit {
     private productService: ProductService,
     private categoryService: CategoryService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private translocoService: TranslocoService
   ) { }
 
   ngOnInit(): void {
@@ -101,8 +108,7 @@ export class Designs implements OnInit {
         const errors = err.error?.errors || [];
 
         if (errors.includes('Category.CategoryNotFound')) {
-          toast.error('Category Does not Exist', {
-            description: 'Try choosing a category from designs',
+          toast.error(this.translocoService.translate('features.designs.errors.categoryNotFound'), {
             position: 'bottom-center',
           });
         }
@@ -135,8 +141,7 @@ export class Designs implements OnInit {
         const errors = err.error?.errors || [];
 
         if (errors.includes('Category.CategoryNotFound')) {
-          toast.error('Category Does not Exist', {
-            description: 'Try choosing a category from designs',
+          toast.error(this.translocoService.translate('features.designs.errors.categoryNotFound'), {
             position: 'bottom-center',
           });
         }

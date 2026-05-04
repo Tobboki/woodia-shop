@@ -26,7 +26,9 @@ import {IconType, NgIcon} from '@ng-icons/core';
       (click)="toggle()"
     >
       <div class="flex flex-nowrap items-center gap-2">
-        <ng-icon [name]="zTitleIcon()" />
+        @if (zTitleIcon()) {
+          <ng-icon [name]="zTitleIcon()!" />
+        }
         {{ zTitle() }}
       </div>
       <ng-icon
@@ -60,7 +62,7 @@ import {IconType, NgIcon} from '@ng-icons/core';
 })
 export class ZardAccordionItemComponent {
   readonly zTitle = input<string>('');
-  readonly zTitleIcon = input<IconType>('lucideCircle');
+  readonly zTitleIcon = input<IconType>();
   readonly zValue = input<string>('');
   readonly class = input<ClassValue>('');
 

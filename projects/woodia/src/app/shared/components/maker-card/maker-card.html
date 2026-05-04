@@ -1,12 +1,17 @@
 <z-card
    class="relative w-[70vw] sm:w-[320px] md:w-[360px] lg:w-[400px] aspect-[2/3] overflow-hidden rounded-2xl group cursor-pointer bg-white select-none"
+   *transloco="let t"
 >
   <!-- Background Image -->
   <img
-    [src]="maker.imgPath"
+    [ngSrc]="maker.imgPath"
     [alt]="maker.name"
-    class="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.05] tranision-all duration-500 ease-out"
+    fill
+    class="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.05] transition-all duration-500 ease-out will-change-transform"
   />
+
+
+
 
   <!-- Gradient Overlay -->
   <div
@@ -30,7 +35,7 @@
     </h3>
 
     <p class="font-caption text-white/80 line-clamp-2">
-      {{ maker.quote }}
+      {{ t(maker.quote) }}
     </p>
   </div>
 </z-card>

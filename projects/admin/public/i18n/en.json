@@ -1,5 +1,6 @@
 {
   "app": {
+    "appTitle": "Woodia",
     "footer": {
       "message": "All Rights Reserved.",
       "company": "Woodia"
@@ -11,7 +12,145 @@
     }
   },
   "modules": {
-    
+    "designStudio": {
+      "title": "Design Studio",
+      "step1": {
+        "title": "Step 1: Configure your model",
+        "next": "Next Details",
+        "nextShort": "Next",
+        "designIsReady": "Design is ready!"
+      },
+      "step2": {
+        "title": "Publish Design",
+        "subtitle": "Step 2: Add metadata & details",
+        "save": "Save Design",
+        "saving": "Saving...",
+        "translating": "Translating...",
+        "basicInfo": "Basic Info",
+        "designName": "Product Line",
+        "productLines": {
+          "OriginalClassic": "Original Classic",
+          "OriginalModern": "Original Modern",
+          "Edge": "Edge",
+          "Tone": "Tone"
+        },
+        "descEn": "English description",
+        "descAr": "Arabic description",
+        "category": "Category",
+        "images": "Images",
+        "addImage": "Add Image",
+        "imageUrl": "Image URL",
+        "imagePlace": "Image Position (main/detail)",
+        "delete": "Delete",
+        "mandatoryTitle": "Mandatory Images",
+        "optionalTitle": "Optional Detail Images",
+        "thumbnailLabel": "Thumbnail Image",
+        "hoverLabel": "Hover Image",
+        "detailLarge": "Detail {{n}} (Large)",
+        "detailSmall": "Detail {{n}}",
+        "imageHint": "For best quality, use high-resolution images (min 400x400px, 1:1 ratio). Supported formats: JPG, PNG. Max file size: 5MB.",
+        "imageHintTitle": "Image Requirements",
+        "productLinePlaceholder": "Select product line",
+        "categoryPlaceholder": "Select a sub-category",
+        "categories": {
+          "Bookcase": "Bookcase",
+          "Desk": "Desk",
+          "TvStand": "TV Stand",
+          "ShoeRack": "Shoe Rack",
+          "BedsideTable": "Bedside Table"
+        }
+      }
+    }
+  },
+  "sharedLib": {
+    "designConfigurator": {
+      "cm": "cm",
+      "showDimensions": "Show Dimensions",
+      "hideDimensions": "Hide Dimensions",
+      "controls": {
+        "row": "Row",
+        "rowHeight": "Row Height",
+        "column": "Column",
+        "colHeight": "Column Height",
+        "title": "Design Controls",
+        "mainTabs": {
+          "model": "Model",
+          "rowsConfig": "Rows",
+          "colsConfig": "Columns"
+        },
+        "Compartments": {
+          "drawers": "Drawers",
+          "doors": "Doors",
+          "none": "None",
+          "some": "Some",
+          "max": "Max"
+        },
+        "color": "Color",
+        "dimensions": "Dimensions",
+        "width": "Width",
+        "widthCm": "Width",
+        "height": "Height",
+        "heightCm": "Height",
+        "depth": "Depth",
+        "depthCm": "Depth",
+        "rowDensity": "Density",
+        "styles": {
+          "label": "Styles",
+          "grid": "Grid",
+          "slant": "Slant",
+          "stagger": "Stagger",
+          "gradient": "Gradient",
+          "mosaic": "Mosaic"
+        },
+        "heightOptions": {
+          "small": "small",
+          "medium": "medium",
+          "large": "large"
+        },
+        "storageOptions": {
+          "label": "Storage Options",
+          "topStorage": "Top Storage",
+          "bottomStorage": "Bottom Storage",
+          "none": "None",
+          "small": "Small",
+          "medium": "Medium",
+          "large": "Large"
+        },
+        "density": "Density",
+        "legroom": "Legroom",
+        "backPanel": "Back Panel",
+        "withBack": "Back Panel",
+        "overhang": "Tabletop overhang",
+        "overhangHint": "0 = flush with legs | higher = tabletop extends beyond legs.",
+        "legroomPosition": "Legroom Position",
+        "legroomPositionHint": "Position of the empty legroom space (0 = leftmost, {max} = rightmost).",
+        "shelfDensity": "Shelf density",
+        "deskDensityHint": "0% = fewest shelves (1 row) | 100% = most shelves (5 rows).",
+        "legs": "Legs",
+        "legsHint": "Add four square corner legs below the cabinet body.",
+        "defaultColumnHeight": "Default column height",
+        "defaultColumnHeightHint": "Sets all columns to this height. Fine-tune individual columns in the Columns config tab.",
+        "columnHeight": "Column height",
+        "columnHeightHint": "Each column can have a different height for a staggered profile.",
+        "dimensionsAndDensity": "Dimensions & density",
+        "bedsideDensityHint": "0% = spacious shelves | 100% = maximum shelves.",
+        "selectColumn": "Select column",
+        "columnSettings": "settings",
+        "hugeCellDoor": "Huge cell door",
+        "hugeCellDoorHint": "Adds a full-height door covering the entire opening.",
+        "maxDoorsHint": "Max doors cannot be combined with max drawers.",
+        "noColumnsAvailable": "No columns available. Adjust the width to add columns.",
+        "noRowsAvailable": "No rows available. Adjust the bookcase height to add rows.",
+        "hugeCellLabel": "Huge cell (no shelves)",
+        "hugeCellDescription": "Removes internal horizontal shelves, making the column one tall opening.",
+        "openCubbyLabel": "Open cubby (no shelves)",
+        "openCubbyDescription": "One tall opening — ideal for books or a lamp."
+      },
+      "errors": {
+        "invalidConfig": "Invalid Configuration",
+        "invalidConfigDesc": "The model configuration is missing or invalid."
+      }
+    }
   },
   "themeMode": {
     "light": "light",
@@ -21,6 +160,56 @@
   "navigation": {
     "dashboard": "Dashboard",
     "design": "Designs",
-    "category": "Categories"
+    "category": "Categories",
+    "logout": "Logout"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Enter your credentials to access your account",
+      "email": "Email",
+      "emailPlaceholder": "name@example.com",
+      "emailRequired": "Email is required.",
+      "emailInvalid": "Please enter a valid email address.",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "passwordRequired": "Password is required.",
+      "passwordMinLength": "Password must be at least 8 characters.",
+      "forgotPassword": "Forgot password?",
+      "rememberMe": "Remember me",
+      "submit": "Login",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign Up"
+    }
+  },
+  "shared": {
+    "add": "Add",
+    "show": "Show",
+    "entries": "entries",
+    "reset": "Reset",
+    "previous": "Previous",
+    "next": "Next",
+    "showing": "Showing",
+    "to": "to",
+    "of": "of",
+    "noData": "No data available."
+  },
+  "crud": {
+    "actions": "Actions",
+    "viewDetails": "View Details",
+    "edit": "Edit",
+    "delete": "Delete",
+    "searchIn": "Search in {{model}}...",
+    "addModel": "Add {{model}}",
+    "editModel": "Edit {{model}}",
+    "headers": {
+      "id": "ID",
+      "nameEn": "Name (EN)",
+      "nameAr": "Name (AR)",
+      "createdAt": "Created At",
+      "role": "Role",
+      "email": "Email",
+      "name": "Name"
+    }
   }
 }

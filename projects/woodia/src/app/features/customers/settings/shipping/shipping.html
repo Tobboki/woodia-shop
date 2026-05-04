@@ -1,13 +1,36 @@
-<section class="space-y-[24px]">
+<section class="space-y-[24px]" *transloco="let t">
   <div>
     <h3 class="font-h3">
-     Shipping Details
+     {{ t('features.customers.settings.shippingDetails') }}
     </h3>
 
     <z-divider class="bg-black/25 mt-[8px]"></z-divider>
   </div>
   @if(shippingDetailsLoading()) {
-    <z-loader zSize="lg" />
+    <div class="space-y-[24px] my-[40px]">
+      <div class="grid grid-cols-2 max-sm:grid-cols-1 gap-[20px]">
+        <div class="space-y-2">
+            <z-skeleton class="h-5 w-[100px]" />
+            <z-skeleton class="h-[48px] w-full" />
+        </div>
+        <div class="space-y-2">
+            <z-skeleton class="h-5 w-[100px]" />
+            <z-skeleton class="h-[48px] w-full" />
+        </div>
+      </div>
+      <div class="space-y-2">
+          <z-skeleton class="h-5 w-[100px]" />
+          <z-skeleton class="h-[48px] w-full" />
+      </div>
+      <div class="space-y-2">
+          <z-skeleton class="h-5 w-[100px]" />
+          <z-skeleton class="h-[48px] w-full" />
+      </div>
+      <div class="flex flex-row justify-end gap-[12px]">
+        <z-skeleton class="h-10 w-[80px]" />
+        <z-skeleton class="h-10 w-[120px]" />
+      </div>
+    </div>
   }
   @else if (!haveShippingDetails()) {
     <button
@@ -15,7 +38,7 @@
       type="button"
       (click)="handleAddDetails()"
     >
-      Add Details
+      {{ t('features.customers.settings.addDetails') }}
     </button>
   }
   @else {
@@ -25,9 +48,9 @@
         <div class="grid grid-cols-2 max-sm:grid-cols-1 gap-[20px]">
           <!-- governorate Selector -->
           <z-form-field>
-            <label class="font-label" z-form-label for="governorate">Governorate</label>
+            <label class="font-label" z-form-label for="governorate">{{ t('features.customers.settings.governorate') }}</label>
             <z-form-control>
-              <z-select id="governorate" formControlName="governorate" placeholder="Select your Governorate">
+              <z-select id="governorate" formControlName="governorate" [zPlaceholder]="'features.customers.settings.governoratePlaceholder' | transloco">
                 @for (Governorate of Governorates(); track Governorate) {
                   <z-select-item [zValue]="Governorate.id.toString()">{{ Governorate.nameEn }}</z-select-item>
                 }
@@ -37,28 +60,28 @@
 
           <z-form-field>
             <label class="font-label" z-form-label>
-              Phone
+              {{ t('features.customers.settings.phone') }}
             </label>
             <z-form-control>
               <input
                 z-input
                 type="text"
-                placeholder="Your phone number"
+                [placeholder]="t('features.customers.settings.phonePlaceholder')"
                 formControlName="phone"
               />
             </z-form-control>
           </z-form-field>
         </div>
-        
+
         <z-form-field>
           <label class="font-label" z-form-label>
-            Address Line
+            {{ t('features.customers.settings.addressLine') }}
           </label>
           <z-form-control>
             <input
               z-input
               type="text"
-              placeholder="Ex: Kafr Saad, Nasr Street"
+              [placeholder]="t('features.customers.settings.addressLinePlaceholder')"
               formControlName="addressLine"
             />
           </z-form-control>
@@ -66,13 +89,13 @@
 
         <z-form-field>
           <label class="font-label" z-form-label>
-            Additional Details
+            {{ t('features.customers.settings.additionalDetails') }}
           </label>
           <z-form-control>
             <input
               z-input
               type="text"
-              placeholder="Ex: Tawheed Tower by Kafr Saad's Train Station"
+              [placeholder]="t('features.customers.settings.additionalDetailsPlaceholder')"
               formControlName="additionalDetails"
             />
           </z-form-control>
@@ -85,7 +108,7 @@
             type="button"
             [disabled]="!shippingForm.dirty || shippingDetailsFormLoading()"
           >
-            Reset
+            {{ t('features.customers.settings.reset') }}
           </button>
           <button
             z-button
@@ -94,7 +117,7 @@
             [disabled]="shippingForm.invalid"
             [zLoading]="shippingDetailsFormLoading()"
           >
-            Save Changes
+            {{ t('features.customers.settings.saveChanges') }}
           </button>
         </div>
       </form>

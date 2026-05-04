@@ -1,4 +1,4 @@
-<div class="flex flex-col gap-[24px]">
+<div class="flex flex-col gap-[24px]" *transloco="let t">
   <z-carousel [zOptions]="zardCarouselOptions" zControls="none">
     <z-carousel-content>
 
@@ -15,12 +15,11 @@
     <!-- Header -->
     <div class="flex flex-col items-center text-center max-w-[720px]">
       <h1 class="font-h1">
-        Become a maker
+        {{ t('features.home.makers.title') }}
       </h1>
 
       <span class="font-caption text-foreground/50">
-        Have a talent or love making furniture? Join our elite force and
-        showcase your skills and connect with clients who value custom craftsmanship.
+        {{ t('features.home.makers.description') }}
       </span>
     </div>
 
@@ -30,7 +29,7 @@
       class="rounded-full"
       (click)="navigateToAuth()"
     >
-      Join Now
+      {{ t('features.home.makers.joinNow') }}
     </z-button>
   </div>
 </div>

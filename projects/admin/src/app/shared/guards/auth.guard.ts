@@ -11,13 +11,14 @@ export const authGuard: CanActivateFn = (route, state) => {
 
   // Not logged in → go to login
   if (!isAuth) {
-    return router.parseUrl('auth/login');
+    return router.parseUrl('/auth/login');
   }
 
-  // Logged in but NOT admin → block or redirect
-  if (isAuth && user?.userType !== 'admin') {
-    return router.parseUrl('home'); // or '/not-authorized'
+  // Logged in but NOT admin → logout and go to login
+  if (isAuth && user?.userType?.toLowerCase() !== 'admin') {
+    authService.logout();
+    return router.parseUrl('/auth/login'); 
   }
 
-  return false;
+  return true;
 };

@@ -3,6 +3,7 @@ import { ComponentPortal, TemplatePortal } from '@angular/cdk/portal';
 import { isPlatformBrowser } from '@angular/common';
 import { inject, Injectable, InjectionToken, Injector, PLATFORM_ID, TemplateRef } from '@angular/core';
 import { ZardDialogRef } from './dialog-ref';
+export { ZardDialogRef };
 import { ZardDialogComponent, ZardDialogOptions } from './dialog.component';
 
 type ContentType<T> = ComponentType<T> | TemplateRef<T> | string;

@@ -76,6 +76,7 @@ export class ShoeRack {
 
   // â”€â”€ appearance â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   private material: THREE.Material
+  private backMaterial: THREE.Material
   private edgeColor: string = '#ffffff'
   private edgeMaterial: THREE.MeshStandardMaterial
   private invisibleHitboxMaterial: THREE.MeshBasicMaterial
@@ -100,7 +101,8 @@ export class ShoeRack {
     depth: number = 30 * CM,
     thickness: number = 2 * CM,
     origin: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 },
-    material: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xd2b48c }),
+    material: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xd4cfc9 }),
+    backMaterial: THREE.Material = material,
     meshIdStart: number = 0,
     withBack: boolean = true
   ) {
@@ -111,6 +113,7 @@ export class ShoeRack {
     this.thickness = thickness
     this.origin = origin
     this.material = material
+    this.backMaterial = backMaterial
     this.edgeMaterial = new THREE.MeshStandardMaterial({ color: this.edgeColor })
     this.invisibleHitboxMaterial = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -243,7 +246,7 @@ export class ShoeRack {
     this.ensureColumnConfigs()
 
     const idRef = { id: this.meshIdStart }
-    const { width, depth, thickness, columns, origin, material, withBack } = this
+    const { width, depth, thickness, columns, origin, material, backMaterial, withBack } = this
 
     // Column widths â€” equal distribution
     // Opening area = width - 2*thickness (outer side walls) - (columns-1)*thickness (dividers)
@@ -356,7 +359,7 @@ export class ShoeRack {
             new Blank(
               xLeft, yLow, EPS,
               xRight, yHigh, thickness,
-              origin, this.getMaterialArray(material), idRef.id++
+              origin, this.getMaterialArray(backMaterial), idRef.id++
             ).build()
           )
         }
@@ -434,7 +437,7 @@ export class ShoeRack {
             new Blank(
               xLeft, yLow, EPS,
               xRight, yHigh, thickness,
-              origin, this.getMaterialArray(material), idRef.id++
+              origin, this.getMaterialArray(backMaterial), idRef.id++
             ).build()
           )
         }

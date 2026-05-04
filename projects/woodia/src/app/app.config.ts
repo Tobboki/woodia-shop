@@ -77,7 +77,21 @@ import {
   lucideShoppingBag,
   lucideHammer,
   lucidePencil,
-  lucideClipboardList
+  lucideClipboardList,
+  lucideWand2,
+  lucideBookOpen,
+  lucideBriefcase,
+  lucideDollarSign,
+  lucideMoreVertical,
+  lucideClock,
+  lucideAlertCircle,
+  lucideRefreshCw,
+  lucideEdit3,
+  lucideFileText,
+  lucideCoins,
+  lucideSettings2,
+  lucideFileWarning,
+  lucideCheck,
 } from '@ng-icons/lucide';
 
 export const appConfig: ApplicationConfig = {
@@ -134,7 +148,21 @@ export const appConfig: ApplicationConfig = {
       lucideShoppingBag,
       lucideHammer,
       lucidePencil,
-      lucideClipboardList
+      lucideClipboardList,
+      lucideWand2,
+      lucideBookOpen,
+      lucideBriefcase,
+      lucideDollarSign,
+      lucideMoreVertical,
+      lucideClock,
+      lucideAlertCircle,
+      lucideRefreshCw,
+      lucideEdit3,
+      lucideFileText,
+      lucideCoins,
+      lucideSettings2,
+      lucideFileWarning,
+      lucideCheck,
     }),
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
@@ -155,6 +183,6 @@ export const appConfig: ApplicationConfig = {
       },
       loader: TranslocoHttpLoader,
     }),
-    provideHttpClient(),
+
   ]
 };

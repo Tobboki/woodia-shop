@@ -5,12 +5,12 @@ import { ZardButtonComponent } from '@shared-components/button/button.component'
 import { ZardDividerComponent } from '@shared-components/divider/divider.component';
 import { ZardFormModule } from '@shared-components/form/form.module';
 import { ZardInputDirective } from '@shared-components/input/input.directive';
-import { ZardLoaderComponent } from '@shared-components/loader/loader.component';
+import { ZardSkeletonComponent } from '@shared-components/skeleton/skeleton.component';
 import { ZardSelectItemComponent } from '@shared-components/select/select-item.component';
 import { ZardSelectComponent } from '@shared-components/select/select.component';
-import { AuthService } from '@woodia-core/services/auth.service';
 import { CustomerSettingsService } from '@woodia-core/services/customer-settings-service';
 import { toast } from 'ngx-sonner';
+import { TranslocoDirective, TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 
 interface IGovernorate {
   id: number
@@ -28,14 +28,17 @@ interface IGovernorate {
     ZardButtonComponent,
     ZardSelectComponent,
     ZardSelectItemComponent,
-    ZardLoaderComponent
-],
+    ZardSkeletonComponent,
+    TranslocoDirective,
+    TranslocoPipe
+  ],
   templateUrl: './shipping.html',
   styleUrl: './shipping.scss',
 })
 export class Shipping implements OnInit {
   constructor(
     private settingsService: CustomerSettingsService,
+    private translocoService: TranslocoService
   ) { }
 
   shippingDetailsLoading = signal<boolean>(true)
@@ -107,7 +110,7 @@ export class Shipping implements OnInit {
           next: () => {
             this.shippingDetailsFormLoading.set(false)
 
-            toast.success('shipping details added successful', {
+            toast.success(this.translocoService.translate('features.customers.settings.messages.addSuccess'), {
               position: 'bottom-center',
             });
 
@@ -116,7 +119,7 @@ export class Shipping implements OnInit {
           error: (err) => {
             this.shippingDetailsFormLoading.set(false)
 
-            toast.error('shipping detail add failed', {
+            toast.error(this.translocoService.translate('features.customers.settings.errors.addFailed'), {
               position: 'bottom-center',
             });
 
@@ -128,7 +131,7 @@ export class Shipping implements OnInit {
         next: () => {
           this.shippingDetailsFormLoading.set(false)
 
-          toast.success('shipping details updated successful', {
+          toast.success(this.translocoService.translate('features.customers.settings.messages.updateSuccess'), {
             position: 'bottom-center',
           });
 
@@ -137,7 +140,7 @@ export class Shipping implements OnInit {
         error: (err) => {
           this.shippingDetailsFormLoading.set(false)
 
-          toast.error('shipping details update failed', {
+          toast.error(this.translocoService.translate('features.customers.settings.errors.updateFailed'), {
             position: 'bottom-center',
           });
 

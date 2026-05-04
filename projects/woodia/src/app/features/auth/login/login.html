@@ -1,178 +1,135 @@
-<div class="h-[100dvh] grid grid-cols-2 max-lg:grid-cols-1 gap-[16px]">
-    <div class="h-full flex flex-col">
-      <!-- Logo -->
-      <logo class="mb-[40px]" />
+<div class="h-[calc(100dvh-16px)] grid grid-cols-2 max-lg:grid-cols-1 gap-4 max-md:p-4" *transloco="let t">
+  <div class="h-full flex flex-col">
+    <!-- Logo -->
+    <logo [wText]="true" class="md:self-start max-md:mb-4" />
 
-      <div class="w-[80%] max-xl:w-full max-lg:w-[60%] max-md:w-[80%] max-sm:w-full my-auto mx-auto space-y-[40px]">
-        <!-- Title -->
-        <div class="flex flex-col gap-[16px] max-2xl:text-center">
-          <h3 class="font-h3 leading-1">
-            Welcome Back
-          </h3>
-          <p class="font-body">
-            Enter your Credentials to access your account
-          </p>
+    <div class="w-[80%] max-xl:w-full max-lg:w-[60%] max-md:w-[80%] max-sm:w-full my-auto mx-auto space-y-[40px]">
+      <!-- Title -->
+      <div class="flex flex-col max-2xl:text-center">
+        <h3 class="font-h3">
+          {{ t('features.auth.login.welcomeBack') }}
+        </h3>
+        <p class="font-body">
+          {{ t('features.auth.login.enterCredentials') }}
+        </p>
+      </div>
+
+      <!-- Social Login -->
+      <button class="bg-white text-foreground/50" zFull z-button zType="outline" zSize="xl"
+        (click)="handleGoogleSignIn()">
+        <img ngSrc="/icons/google-logo.svg" alt="Google logo" width="24" height="24"
+          class="size-[24px] object-fit-cover">
+        {{ t('features.auth.login.loginWithGoogle') }}
+      </button>
+
+      <!-- Divider -->
+      <div class="flex flex-row flex-nowrap items-center gap-[16px]">
+        <z-divider />
+        <p class="font-body">
+          {{ t('features.auth.login.or') }}
+        </p>
+        <z-divider />
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6 my-[40px]">
+        <!-- Email Control -->
+        <z-form-field>
+          <label class="font-label" z-form-label zRequired>
+            {{ t('features.auth.login.email') }}
+          </label>
+          <z-form-control>
+            <input z-input type="email" [placeholder]="t('features.auth.login.emailPlaceholder')" formControlName="email"
+              [zStatus]="emailControl.invalid && emailControl.touched ? 'error' : undefined" />
+          </z-form-control>
+
+          @if (emailControl.hasError('required') && emailControl.touched) {
+          <z-form-message class="font-caption" zType="error">{{ t('features.auth.login.emailRequired')
+            }}</z-form-message>
+          } @else if (emailControl.hasError('email') && emailControl.touched) {
+          <z-form-message class="font-caption" zType="error">{{ t('features.auth.login.emailInvalid')
+            }}</z-form-message>
+          }
+        </z-form-field>
+
+        <!-- Password Control -->
+        <z-form-field>
+          <label class="font-label" z-form-label zRequired>
+            {{ t('features.auth.login.password') }}
+          </label>
+          <z-form-control>
+            <z-input-group [zAddOnAfter]="showPasswordIcon">
+              <input z-input [type]="showPassword() ? 'text' : 'password'"
+                [placeholder]="t('features.auth.login.passwordPlaceholder')" formControlName="password"
+                [zStatus]="passwordControl.invalid && passwordControl.touched ? 'error' : undefined" />
+            </z-input-group>
+
+            <ng-template #showPasswordIcon>
+              <ng-icon class="text-foreground/50" [name]="showPassword() ? 'lucideEyeOff': 'lucideEye'"
+                (click)="togglePasswordVisibility()" />
+            </ng-template>
+          </z-form-control>
+          @if (passwordControl.hasError('required') && passwordControl.touched) {
+          <z-form-message class="font-caption" zType="error">{{ t('features.auth.login.passwordRequired')
+            }}</z-form-message>
+          } @else if (passwordControl.hasError('minlength') && passwordControl.touched) {
+          <z-form-message class="font-caption" zType="error">{{ t('features.auth.login.passwordMinlength')
+            }}</z-form-message>
+          } @else if (passwordControl.hasError('backend') && passwordControl.touched) {
+          <z-form-message class="font-caption" zType="error">{{ passwordControl.getError('backend') }}</z-form-message>
+          }
+        </z-form-field>
+
+        <div class="flex flex-row content-center justify-between">
+          <z-form-field>
+            <z-form-control class="flex flex-col justify-center">
+              <div class="flex items-center space-x-2">
+                <z-checkbox id="rememberMe" formControlName="rememberMe" zSize="lg" />
+                <label class="font-label text-nowrap" z-form-label for="rememberMe">
+                  {{ t('features.auth.login.rememberMe') }}
+                </label>
+              </div>
+            </z-form-control>
+          </z-form-field>
+
+          <button class="text-primary font-label" z-button zSize="sm" zType="link">{{
+            t('features.auth.login.forgetPassword') }}</button>
         </div>
 
-        <!-- Social Login -->
-        <button
-            class="bg-white text-foreground/50"
-            zFull
-            z-button
-            zType="outline"
-            zSize="xl"
-            (click)="handleGoogleSignIn()"
-          >
-            <img
-              src="/icons/google-logo.svg"
-              alt="Google logo"
-              class="size-[24px] object-fit-cover"
-            >
-            Login with Google
+        <div class="space-y-[4px]">
+          <button zFull z-button zType="default" zSize="xl" type="submit" [disabled]="loginForm.invalid"
+            [zLoading]="loginFormLoading()" class="h-12">
+            {{ t('features.auth.login.loginButton') }}
           </button>
 
-        <!-- Divider -->
-        <div class="flex flex-row flex-nowrap items-center gap-[16px]">
-          <z-divider  />
-          <p class="font-body">
-            or
-          </p>
-          <z-divider />
+          <div class="flex flex-row justify-center items-center">
+            <p>
+              {{ t('features.auth.login.dontHaveAccount') }}
+            </p>
+            <button class="text-primary font-body" z-button zSize="sm" zType="link" (click)="goToLRegister()">{{
+              t('features.auth.login.signUp') }}</button>
+          </div>
         </div>
-
-        <!-- Form -->
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6 my-[40px]">
-          <!-- Email Control -->
-          <z-form-field>
-            <label
-              class="font-label"
-              z-form-label
-              zRequired
-            >
-              Email
-            </label>
-            <z-form-control>
-              <input
-                z-input
-                type="email"
-                placeholder="Enter your email"
-                formControlName="email"
-                [zStatus]="emailControl.invalid && emailControl.touched ? 'error' : undefined"
-              />
-            </z-form-control>
-
-            @if (emailControl.hasError('required') && emailControl.touched) {
-              <z-form-message class="font-caption" zType="error">Email is required.</z-form-message>
-            } @else if (emailControl.hasError('email') && emailControl.touched) {
-              <z-form-message class="font-caption" zType="error">Enter a valid email address.</z-form-message>
-            }
-          </z-form-field>
-
-          <!-- Password Control -->
-          <z-form-field>
-            <label
-              class="font-label"
-              z-form-label
-              zRequired
-            >
-              Password
-            </label>
-            <z-form-control>
-                <z-input-group [zAddOnAfter]="showPasswordIcon" class="mb-4">
-                  <input
-                    z-input
-                    [type]="showPassword() ? 'text' : 'password'"
-                    placeholder="min 8 characters"
-                    formControlName="password"
-                    [zStatus]="passwordControl.invalid && passwordControl.touched ? 'error' : undefined"
-                  />
-                </z-input-group>
-
-                <ng-template #showPasswordIcon>
-                  <ng-icon
-                    class="text-foreground/50"
-                    [name]="showPassword() ? 'lucideEyeOff': 'lucideEye'"
-                    (click)="togglePasswordVisibility()"
-                  />
-                </ng-template>
-            </z-form-control>
-            @if (passwordControl.hasError('required') && passwordControl.touched) {
-              <z-form-message class="font-caption" zType="error">Password is required.</z-form-message>
-            } @else if (passwordControl.hasError('minlength') && passwordControl.touched) {
-              <z-form-message class="font-caption" zType="error">Password must be at least 8 characters.</z-form-message>
-            } @else if (passwordControl.hasError('backend') && passwordControl.touched) {
-              <z-form-message class="font-caption" zType="error">{{ passwordControl.getError('backend') }}</z-form-message>
-            }
-          </z-form-field>
-
-          <div class="flex flex-row content-center justify-between">
-            <z-form-field>
-              <z-form-control class="flex flex-col justify-center">
-                <div class="flex items-center space-x-2">
-                  <z-checkbox
-                    id="rememberMe"
-                    formControlName="rememberMe"
-                    zSize="lg"
-                  />
-                  <label
-                    class="font-label text-nowrap"
-                    z-form-label
-                    for="rememberMe"
-                  >
-                    Remember me
-                  </label>
-                </div>
-              </z-form-control>
-            </z-form-field>
-
-            <button class="text-primary font-label" z-button zSize="sm" zType="link">Forget Password?</button>
-          </div>
-
-          <div class="space-y-[4px]">
-            <button
-              zFull
-              z-button
-              zType="default"
-              zSize="xl"
-              type="submit"
-              [disabled]="loginForm.invalid"
-              [zLoading]="loginFormLoading()"
-              class="h-12"
-            >
-              Login
-            </button>
-
-            <div class="flex flex-row justify-center items-center">
-              <p>
-                Don't have an account?
-              </p>
-              <button class="text-primary font-body" z-button zSize="sm" zType="link" (click)="goToLRegister()">Sign Up</button>
-            </div>
-          </div>
-        </form>
-      </div>
+      </form>
     </div>
+  </div>
 
+  <div class="overflow-hidden relative w-full h-full rounded-xl max-lg:hidden bg-muted">
+    @if (isInitialVideoLoading()) {
+    <div
+      class="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm z-10 transition-opacity duration-300">
+      <ng-icon name="lucideLoaderCircle" class="animate-spin text-4xl text-primary" />
+    </div>
+    }
     <div class="overflow-hidden relative w-full h-full rounded-xl max-lg:hidden bg-muted">
-      @if (videoLoading()) {
-        <div class="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm z-10 transition-opacity duration-300">
-           <ng-icon name="lucideLoaderCircle" class="animate-spin text-4xl text-primary" />
-        </div>
-      }
-      <video
-        #videoPlayer
-        class="w-full h-full object-cover transition-opacity duration-500"
-        [class.opacity-0]="videoLoading()"
-        [class.opacity-100]="!videoLoading()"
-        [src]="currentVideo"
-        autoplay
-        muted
-        playsinline
-        preload="auto"
-        (ended)="playNext()"
-        (canplay)="videoLoading.set(false)"
-        (waiting)="videoLoading.set(true)"
-        (playing)="videoLoading.set(false)"
-      ></video>
+      <!-- Video A -->
+      <video #videoA class="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+        [class.opacity-100]="activeIndex === 0" [class.opacity-0]="activeIndex !== 0" autoplay muted playsinline
+        (ended)="playNext()"></video>
+      <!-- Video B -->
+      <video #videoB class="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+        [class.opacity-100]="activeIndex === 1" [class.opacity-0]="activeIndex !== 1" autoplay muted playsinline
+        (ended)="playNext()"></video>
     </div>
+  </div>
 </div>

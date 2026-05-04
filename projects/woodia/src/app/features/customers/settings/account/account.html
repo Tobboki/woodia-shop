@@ -1,15 +1,40 @@
-<section class="space-y-[24px]">
+<section class="space-y-[24px]" *transloco="let t">
   <section class="space-y-[24px]">
     <div>
       <h3 class="font-h3">
-        My Profile
+        {{ t('features.customers.settings.myProfile') }}
       </h3>
 
       <z-divider class="mt-[8px]"></z-divider>
     </div>
 
     @if(infoLoading()) {
-    <z-loader zSize="lg" />
+    <div class="flex max-md:flex-col items-center justify-between gap-2 mb-[40px]">
+      <div class="flex max-md:flex-col flex-nowrap items-center max-md:justify-center gap-[8px]">
+        <z-skeleton class="size-[64px] rounded-full shrink-0" />
+        <div class="max-md:text-center space-y-2">
+          <z-skeleton class="h-5 w-[120px] max-md:mx-auto" />
+          <z-skeleton class="h-4 w-[200px]" />
+        </div>
+      </div>
+      <z-skeleton class="h-10 w-[150px] max-md:w-full" />
+    </div>
+
+    <div class="grid grid-cols-2 max-md:grid-cols-1 gap-[20px] mb-[20px]">
+      <div class="space-y-2">
+          <z-skeleton class="h-5 w-[100px]" />
+          <z-skeleton class="h-[48px] w-full" />
+      </div>
+      <div class="space-y-2">
+          <z-skeleton class="h-5 w-[100px]" />
+          <z-skeleton class="h-[48px] w-full" />
+      </div>
+    </div>
+
+    <div class="flex gap-[12px]">
+      <z-skeleton class="h-10 w-[120px]" />
+      <z-skeleton class="h-10 w-[100px]" />
+    </div>
     } @else {
     <div class="flex max-md:flex-col items-center justify-between max-md:justify-center gap-2">
       <div class="flex max-md:flex-col flex-nowrap items-center max-md:justify-center gap-[8px]">
@@ -27,7 +52,7 @@
           <!-- Default hover -->
           <div
             class="absolute inset-0 bg-black/30 opacity-0 hover:opacity-100 transition flex items-center justify-center text-white text-xs rounded-full">
-            Change
+            {{ t('features.customers.settings.change') }}
           </div>
           }
 
@@ -39,9 +64,9 @@
 
 
         <div class="max-md:text-center">
-          <h4 class="font-medium">Profile Picture</h4>
+          <h4 class="font-medium">{{ t('features.customers.settings.profilePicture') }}</h4>
           <p class="text-foreground/50">
-            PNG, JPEG, JPG under 10MB
+            {{ t('features.customers.settings.profilePictureDesc') }}
           </p>
         </div>
       </div>
@@ -50,7 +75,7 @@
       <button z-button zType="default" zSize="lg" class="max-md:w-full"
         (click)="hasPreview ? onSavePicture() : fileInput.click()" [zDisabled]="profilePictureLoading()"
         [zLoading]="profilePictureLoading()">
-        {{ hasPreview ? 'Save' : (userDataHolder.photoUrl ? 'Change Picture' : 'Add Picture') }}
+        {{ hasPreview ? t('features.customers.settings.save') : (userDataHolder.photoUrl ? t('features.customers.settings.changePicture') : t('features.customers.settings.addPicture')) }}
       </button>
     </div>
 
@@ -60,31 +85,31 @@
         <div class="grid grid-cols-2 max-md:grid-cols-1 gap-[20px]">
           <z-form-field>
             <label class="font-label" z-form-label zRequired>
-              First Name
+              {{ t('features.customers.settings.firstName') }}
             </label>
             <z-form-control>
-              <input z-input type="text" placeholder="Your first name" formControlName="firstName" />
+              <input z-input type="text" [placeholder]="t('features.customers.settings.firstNamePlaceholder')" formControlName="firstName" />
             </z-form-control>
           </z-form-field>
 
           <z-form-field>
             <label class="font-label" z-form-label zRequired>
-              Last Name
+              {{ t('features.customers.settings.lastName') }}
             </label>
             <z-form-control>
-              <input z-input type="text" placeholder="Your last name" formControlName="lastName" />
+              <input z-input type="text" [placeholder]="t('features.customers.settings.lastNamePlaceholder')" formControlName="lastName" />
             </z-form-control>
           </z-form-field>
         </div>
 
         <div class="flex flex-row max-sm:flex-col gap-[12px]">
           <button z-button zType="default" type="submit" [disabled]="!infoForm.dirty" [zLoading]="infoFormLoading()">
-            Save Changes
+            {{ t('features.customers.settings.saveChanges') }}
           </button>
 
           <button z-button zType="outline" type="button" [disabled]="!infoForm.dirty || infoFormLoading()"
             (click)="cancelInfoUpdate()">
-            Cancel
+            {{ t('features.customers.settings.cancel') }}
           </button>
         </div>
       </form>
@@ -95,39 +120,57 @@
   <section class="space-y-[24px]">
     <div>
       <h3 class="font-h3">
-        Account Security
+        {{ t('features.customers.settings.accountSecurity') }}
       </h3>
-
-      <div class="flex fle-row flex-nowrap items-center gap-[8px] mb-[8px]">
-        <ng-icon name="lucideTriangleAlert" />
-        <p class="font-caption text-warning-600 text-center">this action is currently disabled</p>
-      </div>
 
       <z-divider class="bg-black/25 mt-[8px]"></z-divider>
     </div>
 
     @if(infoLoading()) {
-    <z-loader zSize="lg" />
+    <div class="flex flex-col flex-nowrap gap-[24px]">
+      <div class="space-y-2 w-[60%] max-sm:w-full">
+          <z-skeleton class="h-5 w-[100px]" />
+          <z-skeleton class="h-[48px] w-full" />
+      </div>
+      <div class="w-full flex gap-[12px] max-sm:flex-col">
+        <z-skeleton class="h-10 w-[120px]" />
+        <z-skeleton class="h-10 w-[100px]" />
+      </div>
+    </div>
     } @else {
     <!-- Form -->
     <form [formGroup]="emailForm" (ngSubmit)="handleEmailUpdate()" class="flex flex-col flex-nowrap gap-[24px]">
       <z-form-field class="w-[60%] max-sm:w-[100%]">
         <label class="font-label" z-form-label zRequired>
-          Email
+          {{ t('features.customers.settings.email') }}
         </label>
         <z-form-control>
-          <input z-input type="email" placeholder="Your email" formControlName="email" [zDisabled]="true" />
+          <input z-input type="email" [placeholder]="t('features.customers.settings.emailPlaceholder')" formControlName="email"
+            [zStatus]="emailControl.invalid && emailControl.touched ? 'error' : undefined" />
         </z-form-control>
+        @if (emailControl.hasError('duplicated')) {
+        <z-form-message class="font-caption" zType="error">
+          {{ t('features.customers.settings.emailDuplicated') }}
+        </z-form-message>
+        } @else if (emailControl.hasError('required') && emailControl.touched) {
+        <z-form-message class="font-caption" zType="error">
+          {{ t('features.auth.login.emailRequired') }}
+        </z-form-message>
+        } @else if (emailControl.hasError('email') && emailControl.touched) {
+        <z-form-message class="font-caption" zType="error">
+          {{ t('features.auth.login.emailInvalid') }}
+        </z-form-message>
+        }
       </z-form-field>
 
       <div class="w-full flex gap-[12px] max-sm:flex-col">
-        <button z-button type="submit" [disabled]="!emailForm.dirty || emailForm.invalid || true"
+        <button z-button type="submit" [disabled]="!emailForm.dirty || emailForm.invalid"
           [zLoading]="emailFormLoading()">
-          Save Changes
+          {{ t('features.customers.settings.saveChanges') }}
         </button>
-        <button z-button zType="outline" type="button" [disabled]="!emailForm.dirty || true"
+        <button z-button zType="outline" type="button" [disabled]="!emailForm.dirty"
           (click)="cancelEmailUpdate()">
-          Cancel
+          {{ t('features.customers.settings.cancel') }}
         </button>
       </div>
     </form>

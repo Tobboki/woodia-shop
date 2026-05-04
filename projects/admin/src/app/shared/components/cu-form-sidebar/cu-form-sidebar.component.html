@@ -1,0 +1,44 @@
+<ng-container *transloco="let t">
+  <!-- Backdrop -->
+  <div *ngIf="isOpen" 
+       class="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm transition-opacity"
+       (click)="onClose()">
+  </div>
+
+  <!-- Sidebar Panel -->
+  <div class="fixed inset-y-0 right-0 z-50 w-full max-w-[400px] bg-background border-l shadow-lg transform transition-transform duration-300 ease-in-out flex flex-col"
+       [class.translate-x-full]="!isOpen"
+       [class.translate-x-0]="isOpen">
+    
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b shrink-0">
+      <h3 class="text-lg font-semibold">
+        {{ title || (mode === 'add' ? t('crud.addModel', { model: modelName }) : t('crud.editModel', { model: modelName })) }}
+      </h3>
+      <button z-button zType="ghost" zSize="sm" class="size-8 p-0" (click)="onClose()">
+        <ng-icon name="lucideX" class="size-4"></ng-icon>
+      </button>
+    </div>
+
+    <!-- Body (Scrollable) -->
+    <div class="flex-1 overflow-y-auto p-6 relative">
+      <!-- We project the form content here -->
+      <ng-content></ng-content>
+    </div>
+
+    <!-- Footer -->
+    <div class="border-t p-4 flex gap-4 shrink-0 bg-muted/20">
+      <button z-button zType="outline" class="flex-1"
+              [disabled]="disableReset || isLoading"
+              (click)="onReset()">
+        {{ t('shared.reset') }}
+      </button>
+      <button z-button zType="default" class="flex-1"
+              [disabled]="disableSubmit || isLoading"
+              [zLoading]="isLoading"
+              (click)="onSubmit()">
+        {{ submitText || (mode === 'add' ? t('shared.add') : t('crud.edit')) }}
+      </button>
+    </div>
+  </div>
+</ng-container>

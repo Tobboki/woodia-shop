@@ -46,6 +46,7 @@ export class Desk {
   private thickness: number
   private origin: { x: number; y: number; z: number }
   private material: THREE.Material
+  private backMaterial: THREE.Material
   private meshIdStart: number
   private hoveredColumn: number | null = null
   private hoveredDoor: { col: number; cell: number } | null = null
@@ -65,7 +66,8 @@ export class Desk {
     depth: number = 60 * CM,
     thickness: number = 2 * CM,
     origin: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 },
-    material: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xd2b48c }),
+    material: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xd4cfc9 }),
+    backMaterial: THREE.Material = material,
     meshIdStart: number = 0,
     legroomPosition: number = 0
   ) {
@@ -78,6 +80,7 @@ export class Desk {
     this.thickness = thickness
     this.origin = origin
     this.material = material
+    this.backMaterial = backMaterial
     this.meshIdStart = meshIdStart
     this.invisibleHitboxMaterial = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })
     this.legroomPosition = legroomPosition
@@ -361,6 +364,7 @@ export class Desk {
           thickness,
           origin,
           material,
+          this.backMaterial,
           idRef,
           storageColIndex,
           columns,
@@ -385,6 +389,7 @@ export class Desk {
     thickness: number,
     origin: { x: number; y: number; z: number },
     material: THREE.Material,
+    backMaterial: THREE.Material,
     idRef: { id: number },
     colIndex: number,
     totalColumns: number,
@@ -421,7 +426,7 @@ export class Desk {
         new Blank(
           x + thickness, 0, 0,
           x + width - thickness, yHigh, thickness,
-          origin, this.getMaterialArray(material), idRef.id++
+          origin, this.getMaterialArray(backMaterial), idRef.id++
         ).build()
       )
       // Bottom shelf
@@ -522,7 +527,7 @@ export class Desk {
       new Blank(
         x + thickness, 0, 0,
         x + width - thickness, internalHeight, thickness,
-        origin, this.getMaterialArray(material), idRef.id++
+        origin, this.getMaterialArray(backMaterial), idRef.id++
       ).build()
     )
     // Horizontal shelves

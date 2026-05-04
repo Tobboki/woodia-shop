@@ -78,6 +78,7 @@ export class BedsideTable {
 
   // ── appearance ─────────────────────────────────────────────────────────────
   private material: THREE.Material
+  private backMaterial: THREE.Material
   private edgeColor: string = '#ffffff'
   private edgeMaterial: THREE.MeshStandardMaterial
   private invisibleHitboxMaterial: THREE.MeshBasicMaterial
@@ -105,7 +106,8 @@ export class BedsideTable {
     depth: number = 40 * CM,
     thickness: number = 1 * CM,
     origin: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 },
-    material: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xd2b48c }),
+    material: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xd4cfc9 }),
+    backMaterial: THREE.Material = material,
     meshIdStart: number = 0,
     withBack: boolean = true,
     density: number = 50
@@ -119,6 +121,7 @@ export class BedsideTable {
     this.thickness = thickness
     this.origin = origin
     this.material = material
+    this.backMaterial = backMaterial
     this.edgeMaterial = new THREE.MeshStandardMaterial({ color: this.edgeColor })
     this.invisibleHitboxMaterial = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -219,9 +222,8 @@ export class BedsideTable {
     this.ensureColumnConfigs()
 
     const idRef = { id: this.meshIdStart }
-    const { width, height, depth, thickness, columns, origin, withBack } = this
+    const { width, height, depth, thickness, columns, origin, material, backMaterial, withBack } = this
     const overhang = this.topOverhang
-    const material = this.material
 
     // Effective inner height for shelf calculation
     const innerH = height - thickness // above the base plate

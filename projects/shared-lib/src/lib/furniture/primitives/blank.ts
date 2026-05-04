@@ -43,6 +43,8 @@ export class Blank {
     const depth = Math.abs(this.z2 - this.z1)
     const geometry = new THREE.BoxGeometry(width, height, depth)
     const mesh = new THREE.Mesh(geometry, this.material)
+    mesh.castShadow = true
+    mesh.receiveShadow = true
     const cx = (this.x1 + this.x2) / 2
     const cy = (this.y1 + this.y2) / 2
     const cz = (this.z1 + this.z2) / 2

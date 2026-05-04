@@ -2,10 +2,10 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ZardAvatarComponent } from '@shared-components/avatar/avatar.component';
 import { ZardButtonComponent } from '@shared-components/button/button.component';
-import { Z_MODAL_DATA, ZardDialogService } from '@shared-components/dialog/dialog.service';
+import { Z_MODAL_DATA, ZardDialogRef, ZardDialogService } from '@shared-components/dialog/dialog.service';
 import { ZardDividerComponent } from '@shared-components/divider/divider.component';
 import { ZardFormModule } from '@shared-components/form/form.module'
-import { ZardLoaderComponent } from '@shared-components/loader/loader.component';
+import { ZardSkeletonComponent } from '@shared-components/skeleton/skeleton.component';
 import { CustomerSettingsService } from '@woodia-core/services/customer-settings-service';
 import { toast } from 'ngx-sonner';
 import { ZardInputDirective } from '@shared-components/input/input.directive';
@@ -13,6 +13,7 @@ import { NgIcon } from '@ng-icons/core';
 import { ThemeService } from '@woodia-core/services/theme.service';
 import { UploadService } from '@woodia-core/services/upload.service';
 import { isImage } from '@woodia-shared/utils/helpers';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 
 interface IVerifyEmailChangeData {
   email: string;
@@ -36,20 +37,21 @@ interface IUserData {
     ReactiveFormsModule,
     ZardInputDirective,
     ZardFormModule,
-    ZardButtonComponent
+    ZardButtonComponent,
+    TranslocoDirective
   ],
   standalone: true,
   template: `
-    <form [formGroup]="verifyEmailChangeForm" (ngSubmit)="handleVerificationSubmit()" class="space-y-6 my-[40px]">
+    <form [formGroup]="verifyEmailChangeForm" (ngSubmit)="handleVerificationSubmit()" class="space-y-6 my-[40px]" *transloco="let t">
       <z-form-field>
         <label class="font-label" z-form-label zRequired>
-          Code
+          {{ t('features.customers.settings.emailVerificationCode') }}
         </label>
         <z-form-control>
           <input
             z-input
             type="text"
-            placeholder="max 6 chars or digits"
+            [placeholder]="t('features.customers.settings.emailVerificationCodePlaceholder')"
             formControlName="code"
           />
         </z-form-control>
@@ -63,13 +65,13 @@ interface IUserData {
         [disabled]="verifyEmailChangeForm.invalid"
         [zLoading]="codeVerificationLoading()"
       >
-        Verify Account
+        {{ t('features.customers.settings.verifyEmail') }}
       </button>
     </form>
 
-    <div class="flex flex-row justify-center items-center gap-[4px]">
+    <div class="flex flex-row justify-center items-center gap-[4px]" *transloco="let t">
       <p class="font-body">
-        Didn't receive code?
+        {{ t('features.customers.settings.didntReceiveCode') }}
       </p>
       <button
         class="text-primary font-body"
@@ -78,7 +80,7 @@ interface IUserData {
         zType="link"
         (click)="resendConfirmation()"
       >
-        Resend
+        {{ t('features.customers.settings.resend') }}
       </button>
     </div>
   `,
@@ -86,10 +88,12 @@ interface IUserData {
 })
 export class VerifyEmailChangeDialog {
   private zData: IVerifyEmailChangeData = inject(Z_MODAL_DATA);
+  private dialogRef = inject(ZardDialogRef<VerifyEmailChangeDialog>);
   codeVerificationLoading = signal<boolean>(false)
 
   constructor(
     private settingsService: CustomerSettingsService,
+    private transloco: TranslocoService
   ) { }
 
   verifyEmailChangeForm = new FormGroup({
@@ -112,18 +116,17 @@ export class VerifyEmailChangeDialog {
       next: () => {
         this.codeVerificationLoading.set(false);
 
-        toast.success('Email changed successfully', {
+        toast.success(this.transloco.translate('features.customers.settings.emailChangedSuccess'), {
           position: 'bottom-center',
           duration: 2000,
         });
+
+        this.dialogRef.close(true);
       },
       error: (err: any) => {
         this.codeVerificationLoading.set(false);
 
-        //! fix
-        // this.userDataHolder.email = this.infoForm.value.email!
-
-        toast.success('Code does not match', {
+        toast.error(this.transloco.translate('features.customers.settings.codeMismatch'), {
           position: 'bottom-center',
           duration: 2000,
         });
@@ -139,13 +142,13 @@ export class VerifyEmailChangeDialog {
 
     this.settingsService.resendEmailVerificationCode(email).subscribe({
       next: () => {
-        toast.success('Code resent successfully', {
+        toast.success(this.transloco.translate('features.customers.settings.resendSuccess'), {
           position: 'bottom-center',
           duration: 2000,
         });
       },
       error: (err: any) => {
-        toast.success('Resending confirmation code failed', {
+        toast.error(this.transloco.translate('features.customers.settings.resendFailed'), {
           position: 'bottom-center',
           duration: 2000,
         });
@@ -165,8 +168,9 @@ export class VerifyEmailChangeDialog {
     ZardFormModule,
     ZardButtonComponent,
     ZardAvatarComponent,
-    ZardLoaderComponent,
+    ZardSkeletonComponent,
     NgIcon,
+    TranslocoDirective
   ],
   templateUrl: './account.html',
   styleUrl: './account.scss',
@@ -180,6 +184,7 @@ export class Account implements OnInit {
     private dialogService: ZardDialogService,
     private uploadService: UploadService,
     private themeService: ThemeService,
+    private transloco: TranslocoService,
   ) { }
 
   userDataHolder: IUserData = { firstName: '', lastName: '', email: '', photoUrl: '' };
@@ -222,7 +227,7 @@ export class Account implements OnInit {
         this.infoLoading.set(false)
       },
       error: (err) => {
-        toast.error('Error fetching user data', {
+        toast.error(this.transloco.translate('features.customers.settings.errors.fetchUserDataFailed'), {
           position: 'bottom-center',
         });
 
@@ -271,7 +276,7 @@ export class Account implements OnInit {
 
     // Validate Type
     if (!['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)) {
-      toast.error('Invalid file type', {
+      toast.error(this.transloco.translate('features.customers.settings.errors.invalidFileType'), {
         position: 'bottom-center',
       });
       return;
@@ -280,7 +285,7 @@ export class Account implements OnInit {
     // Validate size (10MB)
     const maxSize = 10 * 1024 * 1024;
     if (file.size > maxSize) {
-      toast.error('File is too large', {
+      toast.error(this.transloco.translate('features.customers.settings.errors.fileTooLarge'), {
         position: 'bottom-center',
       });
       return;
@@ -319,14 +324,14 @@ export class Account implements OnInit {
             this.selectedFile.set(null);
             this.hasPersistedPhoto.set(true);
 
-            toast.success('Profile picture saved', {
+            toast.success(this.transloco.translate('features.customers.settings.messages.profilePictureSaved'), {
               position: 'bottom-center',
             });
           },
           error: () => {
             this.profilePictureLoading.set(false);
 
-            toast.error('Failed to save picture', {
+            toast.error(this.transloco.translate('features.customers.settings.errors.savePictureFailed'), {
               position: 'bottom-center',
             });
           }
@@ -335,7 +340,7 @@ export class Account implements OnInit {
       error: () => {
         this.profilePictureLoading.set(false);
 
-        toast.error('Upload failed', {
+        toast.error(this.transloco.translate('features.customers.settings.errors.uploadFailed'), {
           position: 'bottom-center',
         });
       }
@@ -367,7 +372,7 @@ export class Account implements OnInit {
       next: () => {
         this.infoFormLoading.set(false)
 
-        toast.success('Name updated successful', {
+        toast.success(this.transloco.translate('features.customers.settings.messages.nameUpdateSuccess'), {
           position: 'bottom-center',
         });
 
@@ -379,7 +384,7 @@ export class Account implements OnInit {
       error: () => {
         this.infoFormLoading.set(false)
 
-        toast.error('Name update was not successful', {
+        toast.error(this.transloco.translate('features.customers.settings.errors.nameUpdateFailed'), {
           position: 'bottom-center',
         });
       },
@@ -403,20 +408,23 @@ export class Account implements OnInit {
   emailFormLoading = signal<boolean>(false)
 
   verifyEmailChange() {
-    this.dialogService.create({
-      zTitle: 'Enter Code',
-      zDescription: `Make changes to your profile here. Click save when you're done.`,
+    const dialogRef = this.dialogService.create({
+      zTitle: this.transloco.translate('features.customers.settings.emailVerificationTitle'),
+      zDescription: this.transloco.translate('features.customers.settings.emailVerificationDesc', { email: this.emailForm.value.email }),
       zContent: VerifyEmailChangeDialog,
       zData: {
         email: this.emailForm.value.email
       } as IVerifyEmailChangeData,
-      zOkText: 'Verify Email',
-      // zOkDisabled: (instance) => instance.authenticateForm.invalid,
-      zOnOk: (instance: any) => {
-        console.log('Form submitted:', instance.authenticateForm.value);
-      },
+      zHideFooter: true,
       zWidth: '425px',
-    })
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.userDataHolder.email = this.emailForm.value.email!;
+        this.emailForm.markAsPristine();
+      }
+    });
   }
 
   handleEmailUpdate() {
@@ -441,12 +449,16 @@ export class Account implements OnInit {
         this.emailFormLoading.set(false)
         const errors = err.error?.errors || [];
 
-        if (errors.includes('User.InvalidCredentials') || errors.includes('Invalid email/password')) {
-          this.emailControl.setErrors({ backend: 'Invalid email or password' });
+        if (errors.includes('User.DuplicatedEmail')) {
+          this.emailControl.setErrors({ duplicated: true });
           return;
         }
 
-        toast.error('Email update was not successful', {
+        if (errors.includes('User.InvalidCredentials') || errors.includes('Invalid email/password')) {
+          return;
+        }
+
+        toast.error(this.transloco.translate('features.customers.settings.errors.emailUpdateFailed'), {
           position: 'bottom-center',
         })
         console.error('Email change error:', err)

@@ -8,11 +8,15 @@ import { ZardFormModule } from '@shared-components/form/form.module';
 import { ZardCheckboxComponent } from '@shared-components/checkbox/checkbox.component';
 import { ZardDividerComponent } from '@shared-components/divider/divider.component';
 import { LogoComponent } from '@shared-components/custom/logo/logo.component';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { toast } from 'ngx-sonner';
 import { ZardInputGroupComponent } from '@shared-components/input-group/input-group.component';
 import { NgIcon } from '@ng-icons/core';
+import {ZardSkeletonComponent} from '@shared-components/skeleton';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
+import { NgOptimizedImage } from '@angular/common';
+
 
 @Component({
   selector: 'app-login',
@@ -27,69 +31,111 @@ import { NgIcon } from '@ng-icons/core';
     LogoComponent,
     ZardInputGroupComponent,
     ZardInputDirective,
+    TranslocoDirective,
+    NgOptimizedImage
   ],
+
   templateUrl: './login.html',
   styleUrls: ['./login.scss'],
 })
 export class Login implements OnInit, AfterViewInit {
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute,
+    private translocoService: TranslocoService
   ) { }
 
-  @ViewChild('videoPlayer') videoRef!: ElementRef<HTMLVideoElement>;
 
-  private nextVideoEl: HTMLVideoElement | null = null;
-  videoLoading = signal<boolean>(true);
+  // Videos Panel
+  @ViewChild('videoA') videoARef!: ElementRef<HTMLVideoElement>;
+  @ViewChild('videoB') videoBRef!: ElementRef<HTMLVideoElement>;
 
-  // panels
+  activeIndex = 0; // 0 = A visible, 1 = B visible
+  currentIndex = 0;
+  isInitialVideoLoading = signal(true);
+
+  videoReady = signal<boolean>(false);
+
   panels: string[] = [
     'https://res.cloudinary.com/drzda0ka9/video/upload/v1774013506/x7diii1amr8ixw2u0frn.mp4',
     'https://res.cloudinary.com/drzda0ka9/video/upload/v1774013395/kokhxqy7i3egvsncbktw.mp4',
     'https://res.cloudinary.com/drzda0ka9/video/upload/v1774013449/viw0aw1kf9n2vzpmhyq6.mp4',
-    'https://res.cloudinary.com/drzda0ka9/video/upload/v1774013506/x7diii1amr8ixw2u0frn.mp4',
   ];
 
-  currentIndex = 0;
-  currentVideo = this.panels[this.currentIndex];
-
   ngAfterViewInit() {
-    const video = this.videoRef.nativeElement;
-    video.muted = true;
-    video.play().catch(() => {});
+    const videoA = this.videoARef.nativeElement;
+    const videoB = this.videoBRef.nativeElement;
+
+    videoA.onended = () => this.playNext();
+    videoB.onended = () => this.playNext();
+
+    videoA.src = this.panels[0];
+    videoA.muted = true;
+
+    videoA.oncanplaythrough = () => {
+      this.isInitialVideoLoading.set(false);
+      videoA.play().catch(() => {});
+    };
+
+    videoA.load();
+
+    this.preloadNext();
   }
 
-  preloadNext(index: number) {
-    const nextIndex = (index + 1) % this.panels.length;
+  preloadNext() {
+    const nextIndex = (this.currentIndex + 1) % this.panels.length;
+    const hiddenVideo = this.getHiddenVideo();
 
-    const vid = document.createElement('video');
-    vid.src = this.panels[nextIndex];
-    vid.preload = 'auto';
-    vid.muted = true;
+    hiddenVideo.src = this.panels[nextIndex];
+    hiddenVideo.muted = true;
+    hiddenVideo.playsInline = true;
+    hiddenVideo.preload = 'auto';
 
-    vid.load();
+    hiddenVideo.oncanplaythrough = () => {
+      hiddenVideo.play().catch(() => {});
+      this.videoReady.set(true);
+    };
 
-    this.nextVideoEl = vid;
+    hiddenVideo.load();
   }
 
   playNext() {
+    if (!this.videoReady()) return;
+
+    const currentVideo = this.getActiveVideo();
+    const nextVideo = this.getHiddenVideo();
+
+    // reset next video BEFORE showing it
+    nextVideo.currentTime = 0;
+
+    // ensure it's playing
+    nextVideo.play().catch(() => {});
+
+    // swap visibility
+    this.activeIndex = this.activeIndex === 0 ? 1 : 0;
+
     this.currentIndex = (this.currentIndex + 1) % this.panels.length;
+    this.videoReady.set(false);
 
-    const video = this.videoRef.nativeElement;
-
-    if (this.nextVideoEl) {
-      video.src = this.nextVideoEl.src;
-    } else {
-      video.src = this.panels[this.currentIndex];
-    }
-
-    video.load();
-
+    // delay pause for smooth crossfade
     setTimeout(() => {
-      video.play().catch(() => { });
-    });
+      currentVideo.pause();
+    }, 700);
 
-    this.preloadNext(this.currentIndex);
+    this.preloadNext();
+  }
+
+  getActiveVideo(): HTMLVideoElement {
+    return this.activeIndex === 0
+      ? this.videoARef.nativeElement
+      : this.videoBRef.nativeElement;
+  }
+
+  getHiddenVideo(): HTMLVideoElement {
+    return this.activeIndex === 0
+      ? this.videoBRef.nativeElement
+      : this.videoARef.nativeElement;
   }
 
   // Strongly typed form
@@ -144,21 +190,27 @@ export class Login implements OnInit, AfterViewInit {
 
           if (userType?.toLowerCase() === 'admin') {
             this.authService.logout();
-            toast.error('Access Denied', {
-              description: 'Admins cannot login to the client app.',
+            toast.error(this.translocoService.translate('features.auth.login.errors.accessDenied'), {
               position: 'bottom-center',
             });
             return;
           }
 
-          toast.success('Login Successful', {
+          toast.success(this.translocoService.translate('features.auth.login.messages.loginSuccess'), {
             position: 'bottom-center',
             duration: 2000,
           });
 
+          const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+          if (returnUrl) {
+            this.router.navigateByUrl(returnUrl);
+            return;
+          }
+
           if (userType === 'Client') {
             this.router.navigate(['/customers']);
           }
+
         },
         error: (err) => {
           this.loginFormLoading.set(false)
@@ -174,9 +226,7 @@ export class Login implements OnInit, AfterViewInit {
           }
 
           else {
-            toast.error('Something went wrong', {
-              description: 'There was a problem with your request.',
-            });
+            toast.error(this.translocoService.translate('features.auth.login.errors.genericError'));
             console.log('login failed: ', err)
             this.passwordControl.markAsTouched();
           }

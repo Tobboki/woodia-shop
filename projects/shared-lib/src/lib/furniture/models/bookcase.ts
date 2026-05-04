@@ -47,6 +47,7 @@ export class Bookcase {
   private thickness: number
   private origin: { x: number; y: number; z: number }
   private material: THREE.Material
+  private backMaterial: THREE.Material
   private meshIdStart: number
   private withBack: boolean
   private hoveredRow: number | null = null
@@ -68,7 +69,8 @@ export class Bookcase {
     depth: number = 35 * CM,
     thickness: number = 2 * CM,
     origin: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 },
-    material: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xd2b48c }),
+    material: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xd4cfc9 }),
+    backMaterial: THREE.Material = material,
     meshIdStart: number = 0,
     withBack: boolean = true
   ) {
@@ -81,6 +83,7 @@ export class Bookcase {
     this.thickness = thickness
     this.origin = origin
     this.material = material
+    this.backMaterial = backMaterial
     this.edgeMaterial = new THREE.MeshStandardMaterial({ color: this.edgeColor })
     this.invisibleHitboxMaterial = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })
     this.meshIdStart = meshIdStart
@@ -201,6 +204,7 @@ export class Bookcase {
     thickness: number,
     origin: { x: number; y: number; z: number },
     material: THREE.Material,
+    backMaterial: THREE.Material,
     withBack: boolean,
     columns: number,
     sectionKind: 'top' | 'bottom',
@@ -288,7 +292,7 @@ export class Bookcase {
             yBase + sectionHeight - thickness,
             thickness,
             origin,
-            this.getMaterialArray(material),
+            this.getMaterialArray(backMaterial),
             idRef.id++
           ).build()
         )
@@ -371,7 +375,7 @@ export class Bookcase {
     this.rowsGroup = []
     this.ensureRowConfigs()
     const idRef = { id: this.meshIdStart }
-    const { width, height, depth, thickness, rows, columns, origin, material, withBack } = this
+    const { width, height, depth, thickness, rows, columns, origin, material, backMaterial, withBack } = this
     const innerHeight = height - thickness * 2
     // Horizontal opening between inner edges of side walls (left wall ends at 2*thickness, right starts at width-2*thickness)
     const openingWidth = width - thickness * 4
@@ -413,6 +417,7 @@ export class Bookcase {
           thickness,
           origin,
           material,
+          backMaterial,
           withBack,
           columns,
           'bottom',
@@ -632,7 +637,7 @@ export class Bookcase {
               yHigh,
               thickness,
               origin,
-              this.getMaterialArray(material),
+              this.getMaterialArray(backMaterial),
               idRef.id++
             ).build()
           )
@@ -742,6 +747,7 @@ export class Bookcase {
           thickness,
           origin,
           material,
+          backMaterial,
           withBack,
           columns,
           'top',

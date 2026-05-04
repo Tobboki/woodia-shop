@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, signal, ViewEncapsulation } from '@angular/core';
 
+
 import { avatarVariants, imageVariants, type ZardImageVariants, type ZardAvatarVariants } from './avatar.variants';
 import { mergeClasses } from '../../utils/merge-classes';
 
@@ -9,7 +10,9 @@ export type ZardAvatarStatus = 'online' | 'offline' | 'doNotDisturb' | 'away';
   selector: 'z-avatar, [z-avatar]',
   exportAs: 'zAvatar',
   standalone: true,
+  imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
+
   encapsulation: ViewEncapsulation.None,
   template: `
     @if (zFallback() && (!zSrc() || !imageLoaded())) {
@@ -19,6 +22,7 @@ export type ZardAvatarStatus = 'online' | 'offline' | 'doNotDisturb' | 'away';
     @if (zSrc() && !imageError()) {
       <img [src]="zSrc()" [alt]="zAlt()" [class]="imgClasses()" [hidden]="!imageLoaded()" (load)="onImageLoad()" (error)="onImageError()" />
     }
+
 
     @if (zStatus()) {
       @switch (zStatus()) {

@@ -1,202 +1,385 @@
 @if (productLoading()) {
-<div class="flex flex-col h-screen w-full">
-  <div class="flex-1 min-h-0 flex">
-    <div class="flex-1 bg-muted animate-pulse rounded-lg m-4"></div>
-    <div class="w-[320px] bg-muted/60 animate-pulse rounded-lg m-4 ml-0"></div>
+<div class="flex flex-col w-full gap-4 p-2">
+
+  <!-- Configurator placeholder -->
+  <div class="bg-card rounded-lg p-4">
+    <div class="grid grid-cols-4 max-md:grid-cols-1 max-md:grid-rows-4 h-[calc(100dvh-164px)] gap-4">
+      <z-skeleton class="col-span-3 max-md:col-span-1 max-md:row-span-3 h-full max-md:max-h-[50dvh] rounded-lg" />
+      <z-skeleton class="col-span-1 max-md:col-span-1 max-md:row-span-1  h-full rounded-lg" />
+    </div>
   </div>
 
-  <div class="p-6 grid grid-cols-3 gap-2" style="grid-template-rows: 240px 160px">
-    <div class="row-span-2 bg-muted animate-pulse rounded-lg"></div>
-    <div class="bg-muted/70 animate-pulse rounded-lg"></div>
-    <div class="bg-muted/70 animate-pulse rounded-lg"></div>
-    <div class="col-span-2 bg-muted/50 animate-pulse rounded-lg"></div>
+  <!-- Images section -->
+  <section class="w-full flex flex-col gap-2 max-lg:hidden">
+
+    <!-- Title -->
+    <z-skeleton class="w-48 h-6 rounded-md mb-2" />
+
+    <!-- Top grid -->
+    <div class="grid grid-cols-5 gap-2">
+      <z-skeleton class="col-span-3 h-[300px] rounded-lg" />
+
+      <div class="col-span-2 grid grid-rows-2 gap-2">
+        <z-skeleton class="w-full h-full rounded-lg" />
+        <z-skeleton class="w-full h-full rounded-lg" />
+      </div>
+    </div>
+
+    <!-- Bottom grid -->
+    <div class="grid grid-cols-2 gap-2">
+      <div class="grid grid-cols-2 grid-rows-2 gap-2">
+        <z-skeleton class="w-full h-[120px] rounded-lg" />
+        <z-skeleton class="w-full h-[120px] rounded-lg" />
+        <z-skeleton class="w-full h-[120px] rounded-lg" />
+        <z-skeleton class="w-full h-[120px] rounded-lg" />
+      </div>
+
+      <z-skeleton class="w-full h-full rounded-lg" />
+    </div>
+
+  </section>
+
+  <!-- Bottom sticky bar -->
+  <div class="fixed bottom-0 right-0 w-full p-2 flex items-center justify-between border-t bg-background">
+    <z-skeleton class="w-40 h-4 rounded-md" />
+    <z-skeleton class="w-32 h-10 rounded-full" />
   </div>
+
 </div>
-
 } @else if (productError()) {
 
-<div class="flex flex-col items-center justify-center h-screen gap-6 text-center px-4">
+<div class="flex flex-col items-center justify-center h-screen gap-6 text-center px-4" *transloco="let t">
   <div class="size-20 rounded-full bg-muted flex items-center justify-center">
     <ng-icon name="lucideTriangleAlert" class="size-10 text-muted-foreground" />
   </div>
 
   <div>
-    <h2 class="font-h3">Product not found</h2>
+    <h2 class="font-h3">{{ t('features.designStudio.productNotFound') }}</h2>
     <p class="text-muted-foreground">
-      We couldn't load this product.
+      {{ t('features.designStudio.productNotFoundDesc') }}
     </p>
   </div>
 
-  <a routerLink="/designs/Bookcase" class="px-6 py-3 bg-primary text-white rounded-full">
-    Back
+  <a z-button zSize="xl" routerLink="/designs/all">
+    {{ t('features.designStudio.back') }}
   </a>
 </div>
 
 } @else {
-
-@if (step() === 1) {
-
-<!-- STEP 1 -->
-<div class="flex flex-col border bg-card rounded-lg">
-  <woodia-design-configurator [product]="product()" [modelType]="modelType()" />
-
-  <div class="p-2 flex items-center justify-between border-t">
-    <span>Design is ready?</span>
-    <z-button zSize="lg" (click)="nextStep()">
-      Next Step
-      <ng-icon name="lucideArrowRight" class="size-4" />
+<ng-container *transloco="let t">
+  @if (step() === 1) {
+  @if (configError()) {
+  <div class="fixed bg-background bottom-0 right-0 w-full p-2 flex items-center justify-between border-t z-40">
+    <span class="text-destructive font-medium px-2">{{ t('features.designStudio.invalidConfigPrompt') }}</span>
+    <z-button zSize="lg" routerLink="/designs/all" zType="secondary">
+      {{ t('features.designStudio.back') }}
     </z-button>
   </div>
-</div>
-
-<section class="p-6 max-w-7xl mx-auto">
-  <h1 class="text-3xl font-bold">In the room</h1>
-
-  @if (images.length === 0) {
-  <div class="text-center py-20">
-    No images
-  </div>
-  } @else {
-  <div class="grid grid-cols-3 gap-2">
-    @for (img of images; track img; let i = $index) {
-    <div class="bg-muted rounded overflow-hidden">
-      @if (!imageErrors()[i]) {
-      <img [src]="img" (error)="onImageError(i)" class="w-full h-full object-cover" />
-      } @else {
-      <div class="p-4 text-center">Error</div>
-      }
-    </div>
-    }
+  } @else if (configuratorRef()?.store?.modelLoaded()) {
+  <div class="fixed bg-background bottom-0 right-0 w-full p-2 flex items-center justify-between border-t z-40">
+    <span>{{ t('features.designStudio.designIsReady') }}</span>
+    <z-button zSize="lg" (click)="nextStep()">
+      {{ t('features.designStudio.nextStep') }}
+      <ng-icon [name]="langService.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight' " class="size-4" />
+    </z-button>
   </div>
   }
-</section>
 
-} @else {
-
-<!--  STEP 2 (REACTIVE FORM) -->
-<form [formGroup]="form" class="min-h-[calc(100vh-92px)] bg-muted/20 py-8 px-4 flex flex-col items-center">
-
-  <!-- Top nav -->
-  <div class="w-full max-w-[600px] mb-6 flex items-center text-sm font-medium text-muted-foreground gap-2">
-    <button type="button" class="flex items-center gap-1 hover:text-foreground transition-colors" (click)="prevStep()">
-      <ng-icon name="lucideArrowLeft" class="size-4" />
-      Back to Configurator
-    </button>
-    <span class="text-foreground ml-4">Post your job</span>
+  <!-- STEP 1 -->
+  <div class="bg-card mt-4 mb-4">
+    <woodia-design-configurator [product]="product()" />
   </div>
 
-  <div class="w-full max-w-[600px] bg-card rounded-2xl shadow-sm border p-8 md:p-10 space-y-8">
+  <section class="w-full flex flex-col gap-2">
 
     <!-- Header -->
-    <div class="space-y-3">
-      <h1 class="text-4xl font-extrabold tracking-tight text-foreground">Post your job</h1>
+    @if (images.length !== 0) {
+    <h1 class="text-3xl font-bold">
+      {{ t('features.designStudio.imagesTitle') }}
+    </h1>
+    }
+
+    @if (images.length === 0) {
+    <div
+      class="flex flex-col items-center justify-center py-16 text-center border border-dashed rounded-xl bg-muted/20">
+
+      <!-- Icon -->
+      <div class="size-16 rounded-full bg-background flex items-center justify-center mb-4 shadow-sm border">
+        <ng-icon name="lucideImageOff" class="size-8 text-muted-foreground" />
+      </div>
+
+      <!-- Text -->
+      <h3 class="text-lg font-semibold mb-1">
+        {{ t('features.designStudio.noImagesTitle') }}
+      </h3>
+
+      <p class="text-sm text-muted-foreground max-w-sm mb-6">
+        {{ t('features.designStudio.noImagesDesc') }}
+      </p>
+
+      <!-- CTA -->
+      <z-button zType="secondary" (click)="scrollToConfigurator()">
+        {{ t('features.designStudio.startDesigning') }}
+        <ng-icon name="lucideWand2" class="size-4 ml-1" />
+      </z-button>
+
     </div>
+    } @else {
+    <div class="max-md:hidden">
+      @if (images.length === 1) {
+      <div class="relative w-full aspect-video rounded-lg overflow-hidden">
+        <img [ngSrc]="getImageSrc(images[0])" [alt]="t('features.designStudio.imagesTitle')" fill class="object-cover"
+          priority />
+      </div>
+      } @else if (images.length === 3) {
+      <div class="grid grid-cols-3 gap-2 h-[400px]">
+        <div class="relative col-span-2 rounded-lg overflow-hidden">
+          <img [ngSrc]="getImageSrc(images[0])" [alt]="t('features.designStudio.imagesTitle')" fill
+            class="object-cover" />
+        </div>
 
-    <div class="space-y-6">
-      <!-- Job Title -->
-      <div class="space-y-2">
-        <label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">Job Title</label>
-        <div class="relative">
-          <input type="text" formControlName="jobTitle"
-            class="w-full bg-muted/30 border border-muted-foreground/10 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-shadow"
-            placeholder="Unit 01: Custom Shelving" />
-          <ng-icon name="lucidePencil" class="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground size-4" />
+        <div class="grid grid-rows-2 gap-2">
+          @for (img of images.slice(1); track img) {
+          <div class="relative rounded-lg overflow-hidden">
+            <img [ngSrc]="getImageSrc(img)" [alt]="t('features.designStudio.imagesTitle')" fill class="object-cover" />
+          </div>
+          }
         </div>
       </div>
-
-      <!-- Description -->
-      <div class="space-y-2">
-        <label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">Description</label>
-        <textarea formControlName="jobDescription"
-          class="w-full bg-muted/30 border border-muted-foreground/10 rounded-lg px-4 py-3 text-sm resize-none focus:ring-2 focus:ring-primary/20 outline-none transition-shadow"
-          rows="4"
-          placeholder="Describe the specific finish, installation requirements, or any architectural constraints..."></textarea>
+      } @else if (images.length === 2 || images.length === 4) {
+      <div class="grid grid-cols-2 gap-2 h-[400px]">
+        @for (img of images.slice(0); track img) {
+        <div class="relative rounded-lg overflow-hidden">
+          <img [ngSrc]="getImageSrc(img)" [alt]="t('features.designStudio.imagesTitle')" fill class="object-cover" />
+        </div>
+        }
+      </div>
+      } @else if (images.length === 6) {
+      <div class="relative col-span-2 aspect-video rounded-lg overflow-hidden mb-2">
+        <img [ngSrc]="getImageSrc(images[0])" [alt]="t('features.designStudio.imagesTitle')" fill
+          class="object-cover" />
       </div>
 
-      <!-- Budget + Delivery -->
-      <div class="grid grid-cols-2 gap-6">
-        <div class="space-y-2">
-          <label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">Budget</label>
-          <div class="relative">
-            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
-            <input type="number" formControlName="expectedBudget"
-              class="w-full bg-muted/30 border border-muted-foreground/10 rounded-lg pl-8 pr-10 py-3 text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-shadow"
-              placeholder="0.00" />
-            <div class="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col items-center">
-              <ng-icon name="lucideChevronUp" class="size-3 text-muted-foreground cursor-pointer" />
-              <ng-icon name="lucideChevronDown" class="size-3 text-muted-foreground cursor-pointer" />
-            </div>
+      <div class="grid grid-cols-2 gap-2 h-[400px] mb-2">
+        @for (img of images.slice(1, 5); track img) {
+        <div class="relative rounded-lg overflow-hidden">
+          <img [ngSrc]="getImageSrc(img)" [alt]="t('features.designStudio.imagesTitle')" fill class="object-cover" />
+        </div>
+        }
+      </div>
+
+      <div class="relative col-span-2 aspect-video rounded-lg overflow-hidden">
+        <img [ngSrc]="getImageSrc(images[5])" [alt]="t('features.designStudio.imagesTitle')" fill
+          class="object-cover" />
+      </div>
+      <div class="relative col-span-2 aspect-video rounded-lg overflow-hidden mb-2">
+        <img [ngSrc]="getImageSrc(images[0])" [alt]="t('features.designStudio.imagesTitle')" fill
+          class="object-cover" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 h-[400px]">
+        @for (img of images.slice(1); track img) {
+        <div class="relative rounded-lg overflow-hidden">
+          <img [ngSrc]="getImageSrc(img)" [alt]="t('features.designStudio.imagesTitle')" fill class="object-cover" />
+        </div>
+        }
+      </div>
+
+      } @else {
+      <div class="grid grid-cols-5 gap-2 max-h-[calc(100dvh-164px)]">
+
+        <div class="col-span-3 relative rounded-lg overflow-hidden">
+          <img [ngSrc]="getImageSrc(images[0])" [alt]="t('features.designStudio.imagesTitle')" fill
+            class="object-cover" />
+        </div>
+
+        <div class="col-span-2 grid grid-rows-2 gap-2">
+          <div class="relative rounded-lg overflow-hidden">
+            <img [ngSrc]="getImageSrc(images[1])" [alt]="t('features.designStudio.imagesTitle')" fill
+              class="object-cover" />
+          </div>
+          <div class="relative rounded-lg overflow-hidden">
+            <img [ngSrc]="getImageSrc(images[2])" [alt]="t('features.designStudio.imagesTitle')" fill
+              class="object-cover" />
           </div>
         </div>
 
-        <div class="space-y-2">
-          <label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">Delivery Preference</label>
-          <div class="relative bg-muted/30 rounded-lg border border-muted-foreground/10">
-            <select
-              class="w-full bg-transparent border-0 px-4 py-3 pr-10 text-sm appearance-none focus:ring-2 focus:ring-primary/20 outline-none transition-shadow cursor-pointer z-10 relative"
-              [value]="form.get('deliveryDay')?.value" (change)="onDeliveryDayChange($any($event).target.value)">
-              <option value="7">White Glove Installation</option>
-              <option value="14">Standard Delivery</option>
-              <option value="30">Economical</option>
-              <option value="60">Flexible</option>
-            </select>
-            <ng-icon name="lucideChevronDown"
-              class="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground size-4 z-0 pointer-events-none" />
-          </div>
-        </div>
       </div>
 
-      <!-- Included Configuration -->
-      <div class="bg-muted/30 border border-muted-foreground/10 rounded-xl p-4 space-y-3 -mx-2 md:mx-0">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2 text-sm font-medium">
-            <ng-icon name="lucideClipboardList" class="size-4 text-blue-600" />
-            Included Configuration
-          </div>
-          <span
-            class="text-[10px] font-bold text-blue-800 bg-blue-100 px-2 py-0.5 rounded uppercase tracking-wider">Ready
-            to build</span>
-        </div>
+      <div class="grid grid-cols-2 gap-2 mt-2 h-[400px]">
 
-        <div class="flex gap-4">
-          <div class="size-20 bg-[#D4C3A3] rounded-lg overflow-hidden shrink-0 border border-muted/50">
-            @if (images.length > 0 && !imageErrors()[0]) {
-            <img [src]="images[0]" (error)="onImageError(0)"
-              class="w-full h-full object-cover mix-blend-multiply opacity-80" />
+        <div class="grid grid-cols-2 grid-rows-2 gap-2">
+          @for (idx of [3, 4, 5, 6]; track idx) {
+          <div class="relative rounded-lg overflow-hidden">
+            @if (images[idx]) {
+            <img [ngSrc]="getImageSrc(images[idx])" [alt]="t('features.designStudio.imagesTitle')" fill
+              class="object-cover" />
             }
           </div>
-          <div class="flex flex-col justify-center space-y-1">
-            <p class="text-xs text-muted-foreground">
-              Dimensions: 100x120cm &bull; {{ (product() | keyvalue)?.[0]?.value ? 'Solid Oak' : 'Solid Oak' }}
-            </p>
-            <div
-              class="flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-white/60 dark:bg-black/20 w-fit px-1.5 py-0.5 rounded border border-muted-foreground/10">
-              <ng-icon name="lucideLink" class="size-3" />
-              ATTACHED_ASSET_{{ product()?.id ?? '4321' }}.json
+          }
+        </div>
+
+        <div class="relative rounded-lg overflow-hidden">
+          <img [ngSrc]="getImageSrc(images[7])" [alt]="t('features.designStudio.imagesTitle')" fill
+            class="object-cover" />
+        </div>
+
+      </div>
+      }
+    </div>
+
+    <div class="flex flex-col gap-3 md:hidden">
+
+      <!-- HERO IMAGE -->
+      <div class="w-full aspect-square rounded-lg overflow-hidden bg-muted relative">
+        <img [ngSrc]="getImageSrc(activeImage())" [alt]="t('features.designStudio.imagesTitle')" fill
+          class="object-cover transition-all duration-300" />
+      </div>
+
+      <!-- PREVIEW CAROUSEL -->
+      <z-carousel zControls="none" [zOptions]="{ align: 'start', containScroll: 'trimSnaps' }" class="w-full">
+        <z-carousel-content>
+          @for (img of images; track img; let i = $index) {
+          <z-carousel-item class="!basis-auto pr-2">
+
+            <button type="button" (click)="setActive(i)"
+              class="relative size-16 rounded-lg overflow-hidden border transition-all"
+              [class.border-primary]="i === activeIndex()" [class.opacity-60]="i !== activeIndex()">
+              <img [ngSrc]="getImageSrc(img)" [alt]="t('features.designStudio.imagesTitle')" fill
+                class="object-cover" />
+            </button>
+
+          </z-carousel-item>
+          }
+        </z-carousel-content>
+      </z-carousel>
+
+    </div>
+
+    }
+
+  </section>
+
+  } @else {
+
+  <!--  STEP 2 (REACTIVE FORM) -->
+  <form [formGroup]="form" class="min-h-[calc(100vh-92px)] bg-muted/20 py-8 px-4 flex flex-col items-center">
+
+    <!-- Top nav -->
+    <div class="w-full max-w-[600px] mb-6 flex items-center text-sm font-medium text-muted-foreground gap-2">
+      <button type="button" class="flex items-center gap-1 hover:text-foreground transition-colors"
+        (click)="prevStep()">
+        <ng-icon [name]="langService.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'" class="size-4" />
+        {{ t('features.designStudio.backToConfigurator') }}
+      </button>
+      <span class="text-foreground ml-4">{{ t('features.designStudio.postYourJob') }}</span>
+    </div>
+
+    <div class="w-full max-w-[600px] bg-card rounded-2xl shadow-sm border p-8 lg:p-10 space-y-8">
+
+      <!-- Header -->
+      <div class="space-y-3">
+        <h1 class="text-4xl font-extrabold tracking-tight text-foreground">{{ t('features.designStudio.postYourJob') }}
+        </h1>
+      </div>
+
+      <div class="space-y-6">
+        <z-form-field>
+          <label z-form-label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">{{
+            t('features.designStudio.jobTitle') }}</label>
+          <z-form-control>
+            <input z-input type="text" formControlName="jobTitle" class="opacity-70 cursor-not-allowed"
+              [placeholder]="t('features.designStudio.jobTitlePlaceholder')" />
+          </z-form-control>
+        </z-form-field>
+
+        <!-- Description -->
+        <z-form-field>
+          <label z-form-label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">{{
+            t('features.designStudio.description') }}</label>
+          <z-form-control>
+            <textarea z-input formControlName="jobDescription" class="resize-none" rows="4"
+              [placeholder]="t('features.designStudio.descriptionPlaceholder')"></textarea>
+          </z-form-control>
+        </z-form-field>
+
+        <!-- Budget + Delivery -->
+        <div class="grid grid-cols-2 max-lg:grid-cols-1 gap-4">
+          <z-form-field>
+            <label z-form-label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">{{
+              t('features.designStudio.budget') }}</label>
+            <z-form-control>
+              <div class="relative">
+                <span class="absolute top-1/2 -translate-y-1/2 text-muted-foreground font-bold text-sm z-10"
+                  [class.left-4]="langService.lang() === 'en'" [class.right-4]="langService.lang() === 'ar'">EGP</span>
+                <input z-input type="number" formControlName="expectedBudget" placeholder="0.00"
+                  [class.pl-12]="langService.lang() === 'en'" [class.pr-12]="langService.lang() === 'ar'" />
+              </div>
+            </z-form-control>
+          </z-form-field>
+
+          <z-form-field>
+            <label z-form-label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">{{
+              t('features.designStudio.deliveryDay') }}</label>
+            <z-form-control>
+              <div class="relative">
+                <input z-input type="number" formControlName="deliveryDay" placeholder="7" min="1"
+                  [class.pr-14]="langService.lang() === 'en'" [class.pl-14]="langService.lang() === 'ar'" />
+                <span class="absolute top-1/2 -translate-y-1/2 text-muted-foreground text-sm z-10 font-bold"
+                  [class.right-4]="langService.lang() === 'en'" [class.left-4]="langService.lang() === 'ar'">
+                  {{ t('features.customers.jobs.details.labels.days') }}
+                </span>
+              </div>
+            </z-form-control>
+          </z-form-field>
+        </div>
+
+        <!-- Included Configuration -->
+        <div class="bg-muted/30 border border-muted-foreground/10 rounded-xl p-4 space-y-3 -mx-2 lg:mx-0">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2 text-sm font-medium">
+              <ng-icon name="lucideClipboardList" class="size-4 text-blue-600" />
+              {{ t('features.designStudio.includedConfiguration') }}
+            </div>
+          </div>
+
+          <div class="flex gap-4">
+            <div class="relative size-20 bg-[#D4C3A3] rounded-lg overflow-hidden shrink-0 border border-muted/50">
+              @if (images.length > 0 && !imageErrors()[0]) {
+              <img [ngSrc]="getImageSrc(images[0])" (error)="onImageError(0)"
+                [alt]="t('features.designStudio.includedConfiguration')" fill
+                class="object-cover mix-blend-multiply opacity-80" />
+              }
+            </div>
+            <div class="flex flex-col justify-center space-y-1">
+              <p class="text-xs text-muted-foreground">
+                {{ t('features.designStudio.dimensions') }}: {{ dimensionString }}
+              </p>
+              <div
+                class="flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-white/60 dark:bg-black/20 w-fit px-1.5 py-0.5 rounded border border-muted-foreground/10">
+                <ng-icon name="lucideLink" class="size-3" />
+                {{ t('features.designStudio.attachedAsset') }}{{ product()?.id ?? '4321' }}.json
+              </div>
             </div>
           </div>
         </div>
+
+        <!-- Submit Button -->
+        <z-button (click)="submitJob()" zFull zSize="xl" [zDisabled]="submitting()">
+          {{ submitting() ? t('features.designStudio.submitting') : t('features.designStudio.submitJobRequest') }}
+        </z-button>
       </div>
 
-      <!-- Submit Button -->
-      <button type="button" (click)="submitJob()" [disabled]="submitting()"
-        class="w-full bg-[#4A5568] hover:bg-[#3A4558] text-white font-medium py-3.5 rounded-lg flex items-center justify-center gap-2 transition-colors disabled:opacity-70 disabled:cursor-not-allowed mt-2">
-        {{ submitting() ? 'Submitting...' : 'Submit Job Request' }}
-        @if (!submitting()) {
-        <ng-icon name="lucideArrowRight" class="size-4" />
-        }
-      </button>
+      <!-- Footer terms -->
+      <p class="text-center text-[11px] text-muted-foreground">
+        {{ t('features.designStudio.termsAgreement1') }}<a href="#"
+          class="italic hover:text-foreground transition-colors">{{ t('features.designStudio.termsAgreement2') }}</a>{{
+        t('features.designStudio.termsAgreement3') }}
+        <a href="#" class="italic hover:text-foreground transition-colors">{{ t('features.designStudio.termsAgreement4')
+          }}</a>
+      </p>
     </div>
-
-    <!-- Footer terms -->
-    <p class="text-center text-[11px] text-muted-foreground">
-      By submitting, you agree to the <a href="#" class="italic hover:text-foreground transition-colors">Woodia Customer
-        Agreement</a> and <a href="#" class="italic hover:text-foreground transition-colors">Privacy Policy</a>.
-    </p>
-
-  </div>
-</form>
-
-}
-
+  </form>
+  }
+</ng-container>
 }

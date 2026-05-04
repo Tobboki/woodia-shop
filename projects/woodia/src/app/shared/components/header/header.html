@@ -1,66 +1,63 @@
-<header id="app-header" class="container mx-auto relative" *transloco="let t">
-  <nav class="relative bg-background border border-border rounded-[12px] px-[16px] max-md:flex max-md:items-center justify-between py-[12px] max-sm:px-[12px]">
+<header id="app-header" class="container mx-auto sticky top-4 z-50 transition-transform duration-300 ease-out px-4"
+        [style.transform]="isHeaderHidden() ? 'translateY(-150%)' : 'translateY(0)'" *transloco="let t">
+  <nav
+    class="relative bg-background border border-border rounded-lg max-md:flex max-md:items-center justify-between py-4 max-md:py-2 px-4 max-md:px-2">
 
-    <logo class="md:hidden mr-4"/>
+    <logo [wText]="true" class="md:hidden"/>
 
     <!-- Desktop Menu -->
     <div class="max-md:hidden container flex items-center justify-between mx-auto">
       <!-- Desktop Navigation -->
       <div class="flex items-center">
-        <logo class="mr-4"/>
+        <logo [wText]="true" class="mr-4"/>
 
         @for (menuItem of menu; track menuItem.id) {
           @if (menuItem.children) {
-            <div class="relative">
-              <a
-                z-button
-                zType="ghost"
-                [routerLink]="menuItem.path"
-                routerLinkActive="text-primary"
-                [routerLinkActiveOptions]="{ exact: false }"
-                z-menu
-                zPlacement="bottomCenter"
-                zTrigger="hover"
-                [zMenuTriggerFor]="designsCategories"
-              >
-                {{ menuItem.label }}
-                <ng-icon name="lucideChevronDown" />
+            <div class="relative px-4">
+              <a z-button zType="ghost" [routerLink]="menuItem.path" routerLinkActive="text-primary"
+                 [routerLinkActiveOptions]="{ exact: false }" z-menu zPlacement="bottomCenter" zTrigger="hover"
+                 [zMenuTriggerFor]="designsCategories">
+                {{ t(menuItem.label) }}
+                <ng-icon name="lucideChevronDown"/>
               </a>
 
               <ng-template #designsCategories>
                 <div z-menu-content>
                   @for (menuItemChild of menuItem.children; track menuItemChild.id) {
                     @if (menuItemChild.children) {
-                      <a
-                        z-menu-item
-                        [routerLink]="menuItemChild.path"
-                        routerLinkActive="text-primary"
-                        [routerLinkActiveOptions]="{ exact: false }"
-                      >
-                        {{ menuItemChild.label }}
-                      </a>
+                      <div class="flex flex-col gap-2">
+                        <a
+                          z-menu-item
+                          [routerLink]="menuItemChild.path"
+                          routerLinkActive="text-primary"
+                          [routerLinkActiveOptions]="{ exact: false }"
+                          class="font-medium text-md"
+                        >
+                          {{ t(menuItemChild.label) }}
+                        </a>
 
-                      <ul class="pl-6">
-                        @for (menuItemChild of menuItemChild.children; track menuItemChild.id) {
-                          <li z-menu-item>
-                            <a
-                              [routerLink]="menuItemChild.path"
-                              routerLinkActive="text-primary"
-                              [routerLinkActiveOptions]="{ exact: false }"
-                            >
-                              {{ menuItemChild.label }}
-                            </a>
-                          </li>
-                        }
-                      </ul>
+                        <ul class="ps-6 flex flex-col gap-2">
+                          @for (menuItemChild of menuItemChild.children; track menuItemChild.id) {
+                            <li z-menu-item class="border-s-4 border-border text-nowrap">
+                              <a
+                                [routerLink]="menuItemChild.path"
+                                routerLinkActive="text-primary"
+                                [routerLinkActiveOptions]="{ exact: false }"
+                              >
+                                {{ t(menuItemChild.label) }}
+                              </a>
+                            </li>
+                          }
+                        </ul>
+                      </div>
                     } @else {
                       <a
-                        z-menu-item
-                        [routerLink]="menuItemChild.path"
+                        z-menu-item [routerLink]="menuItemChild.path"
                         routerLinkActive="text-primary"
                         [routerLinkActiveOptions]="{ exact: false }"
+                        class="font-medium text-md"
                       >
-                        {{ menuItemChild.label }}
+                        {{ t(menuItemChild.label) }}
                       </a>
                     }
                   }
@@ -68,14 +65,9 @@
               </ng-template>
             </div>
           } @else {
-            <a
-              z-button
-              zType="ghost"
-              [routerLink]="menuItem.path"
-              routerLinkActive="text-primary"
-              [routerLinkActiveOptions]="{ exact: false }"
-            >
-              {{ menuItem.label }}
+            <a z-button zType="ghost" [routerLink]="menuItem.path" routerLinkActive="text-primary"
+               [routerLinkActiveOptions]="{ exact: false }">
+              {{ t(menuItem.label) }}
             </a>
           }
         }
@@ -91,48 +83,33 @@
             <!-- Theme Manager -->
             <div class="relative">
               <button type="button" z-button zType="ghost" z-menu zTrigger="click" [zMenuTriggerFor]="themeMenu">
-                <ng-icon [name]="themeService.icon()" />
+                <ng-icon [name]="themeService.icon()"/>
               </button>
 
               <ng-template #themeMenu>
                 <div z-menu-content>
-                  <button
-                    type="button"
-                    z-menu-item
-                    (click)="setThemeMode('light')"
-                    class="flex gap-2 items-center"
-                    [class.text-primary]="themeService.mode() === 'light'"
-                  >
-                    <ng-icon name="lucideSun" />
+                  <button type="button" z-menu-item (click)="setThemeMode('light')" class="flex gap-2 items-center"
+                          [class.text-primary]="themeService.mode() === 'light'">
+                    <ng-icon name="lucideSun"/>
                     <span>
-                  {{ t('themeMode.light') }}
-                </span>
+                      {{ t('themeMode.light') }}
+                    </span>
                   </button>
 
-                  <button
-                    type="button"
-                    z-menu-item
-                    (click)="setThemeMode('dark')"
-                    class="flex gap-2 items-center"
-                    [class.text-primary]="themeService.mode() === 'dark'"
-                  >
-                    <ng-icon name="lucideMoon" />
+                  <button type="button" z-menu-item (click)="setThemeMode('dark')" class="flex gap-2 items-center"
+                          [class.text-primary]="themeService.mode() === 'dark'">
+                    <ng-icon name="lucideMoon"/>
                     <span>
-                  {{ t('themeMode.dark') }}
-                </span>
+                      {{ t('themeMode.dark') }}
+                    </span>
                   </button>
 
-                  <button
-                    type="button"
-                    z-menu-item
-                    (click)="setThemeMode('system')"
-                    class="flex gap-2 items-center"
-                    [class.text-primary]="themeService.mode() === 'system'"
-                  >
-                    <ng-icon name="lucideMonitor" />
+                  <button type="button" z-menu-item (click)="setThemeMode('system')" class="flex gap-2 items-center"
+                          [class.text-primary]="themeService.mode() === 'system'">
+                    <ng-icon name="lucideMonitor"/>
                     <span>
-                  {{ t('themeMode.system') }}
-                </span>
+                      {{ t('themeMode.system') }}
+                    </span>
                   </button>
                 </div>
               </ng-template>
@@ -141,32 +118,24 @@
             <!-- Language Manager -->
             <div class="relative">
               <button type="button" z-button zType="ghost" z-menu zTrigger="click" [zMenuTriggerFor]="languageMEnu">
-                <ng-icon name="lucideLanguages" />
+                <ng-icon name="lucideLanguages"/>
                 {{ langService.label() }}
               </button>
 
               <ng-template #languageMEnu>
                 <div z-menu-content>
-                  <button
-                    type="button"
-                    z-menu-item
-                    (click)="langService.setLanguage('en')"
-                    [class.text-primary]="langService.lang() === 'en'"
-                  >
-                <span>
-                  English
-                </span>
+                  <button type="button" z-menu-item (click)="langService.setLanguage('en')"
+                          [class.text-primary]="langService.lang() === 'en'">
+                    <span>
+                      English
+                    </span>
                   </button>
 
-                  <button
-                    type="button"
-                    z-menu-item
-                    (click)="langService.setLanguage('ar')"
-                    [class.text-primary]="langService.lang() === 'ar'"
-                  >
-                <span>
-                  العربية
-                </span>
+                  <button type="button" z-menu-item (click)="langService.setLanguage('ar')"
+                          [class.text-primary]="langService.lang() === 'ar'">
+                    <span>
+                      العربية
+                    </span>
                   </button>
                 </div>
               </ng-template>
@@ -176,12 +145,7 @@
           <z-divider zOrientation="vertical" class="h-8"/>
 
           <!-- Desktop Menu Button -->
-          <a
-            class="max-md:hidden"
-            z-button
-            zSize="lg"
-            [routerLink]="['/auth']"
-          >
+          <a class="max-md:hidden" z-button zSize="lg" [routerLink]="['/auth']">
             Join Now
           </a>
         </div>
@@ -191,101 +155,62 @@
       <ng-template #customerActions>
         <div class="flex items-center gap-1">
           <!-- Notification Button -->
-          <button
-            z-button
-            zType="ghost"
-            zSize="icon"
-          >
-            <ng-icon name="lucideBell" />
+          <button z-button zType="ghost" zSize="icon">
+            <ng-icon name="lucideBell"/>
           </button>
 
-          <button
-            z-button
-            zType="ghost"
-            zSize="icon"
-          >
-            <ng-icon name="lucideMessageSquare" />
+          <button z-button zType="ghost" zSize="icon">
+            <ng-icon name="lucideMessageSquare"/>
           </button>
 
           <z-divider zOrientation="vertical" class="h-8"/>
 
           <!-- Managers -->
           <div class="relative flex items-center">
-            <button
-              z-menu
-              [zMenuTriggerFor]="userManager"
-              [zPlacement]=" isRtl() ? 'bottomRight' : 'bottomLeft' "
-            >
-              <z-avatar
-                zSrc="/images/auth/customer.jpg"
-                zAlt="Image"
-                zSize="sm"
-              />
+            <button z-menu [zMenuTriggerFor]="userManager" [zPlacement]=" isRtl() ? 'bottomRight' : 'bottomLeft' ">
+              <z-avatar [zSrc]="userPFP()" zAlt="Image" zSize="sm"/>
             </button>
 
             <ng-template #userManager>
               <div z-menu-content>
-                <a
-                  z-menu-item
-                  [routerLink]="['/customers/settings']"
-                >
-                  <ng-icon name="lucideSettings" />
+                <a z-menu-item [routerLink]="[settingsPath()]">
+                  <ng-icon name="lucideSettings"/>
                   <span>
                     {{ t('app.header.menu.settings') }}
                   </span>
                 </a>
                 <!-- Theme Manager -->
                 <div class="relative">
-                  <button
-                    z-menu-item
-                    z-menu
-                    zTrigger="click"
-                    [zMenuTriggerFor]="themeMenu"
-                    [zPlacement]="langService.lang() === 'ar' ? 'rightTop' : 'leftTop'"
-                  >
-                    <ng-icon [name]="themeService.icon()" />
+                  <button z-menu-item z-menu zTrigger="click" [zMenuTriggerFor]="themeMenu"
+                          [zPlacement]="langService.lang() === 'ar' ? 'rightTop' : 'leftTop'">
+                    <ng-icon [name]="themeService.icon()"/>
                     <span>
                       {{ t('themeMode.title') }}: {{ t(`themeMode.${themeService.mode()}`) }}
                     </span>
-                    <ng-icon name="lucideChevronDown" class="ml-1" />
+                    <ng-icon name="lucideChevronDown" class="ml-1"/>
                   </button>
 
                   <ng-template #themeMenu>
                     <div z-menu-content>
-                      <button
-                        type="button"
-                        z-menu-item
-                        (click)="setThemeMode('light')"
-                        class="flex gap-2 items-center"
-                        [class.text-primary]="themeService.mode() === 'light'"
-                      >
-                        <ng-icon name="lucideSun" />
+                      <button type="button" z-menu-item (click)="setThemeMode('light')" class="flex gap-2 items-center"
+                              [class.text-primary]="themeService.mode() === 'light'">
+                        <ng-icon name="lucideSun"/>
                         <span>
                           {{ t('themeMode.light') }}
                         </span>
                       </button>
 
-                      <button
-                        type="button"
-                        z-menu-item
-                        (click)="setThemeMode('dark')"
-                        class="flex gap-2 items-center"
-                        [class.text-primary]="themeService.mode() === 'dark'"
-                      >
-                        <ng-icon name="lucideMoon" />
+                      <button type="button" z-menu-item (click)="setThemeMode('dark')" class="flex gap-2 items-center"
+                              [class.text-primary]="themeService.mode() === 'dark'">
+                        <ng-icon name="lucideMoon"/>
                         <span>
                           {{ t('themeMode.dark') }}
                         </span>
                       </button>
 
-                      <button
-                        type="button"
-                        z-menu-item
-                        (click)="setThemeMode('system')"
-                        class="flex gap-2 items-center"
-                        [class.text-primary]="themeService.mode() === 'system'"
-                      >
-                        <ng-icon name="lucideMonitor" />
+                      <button type="button" z-menu-item (click)="setThemeMode('system')" class="flex gap-2 items-center"
+                              [class.text-primary]="themeService.mode() === 'system'">
+                        <ng-icon name="lucideMonitor"/>
                         <span>
                           {{ t('themeMode.system') }}
                         </span>
@@ -296,39 +221,26 @@
 
                 <!-- Language Manager -->
                 <div class="relative">
-                  <button
-                    z-menu-item
-                    z-menu
-                    zTrigger="click"
-                    [zMenuTriggerFor]="languageMEnu"
-                    [zPlacement]="langService.lang() === 'ar' ? 'rightTop' : 'leftTop'"
-                  >
-                    <ng-icon name="lucideLanguages" />
+                  <button z-menu-item z-menu zTrigger="click" [zMenuTriggerFor]="languageMEnu"
+                          [zPlacement]="langService.lang() === 'ar' ? 'rightTop' : 'leftTop'">
+                    <ng-icon name="lucideLanguages"/>
                     <span>
                       {{ langService.label() }}
                     </span>
-                    <ng-icon name="lucideChevronDown" class="ml-1" />
+                    <ng-icon name="lucideChevronDown" class="ml-1"/>
                   </button>
 
                   <ng-template #languageMEnu>
                     <div z-menu-content>
-                      <button
-                        type="button"
-                        z-menu-item
-                        (click)="langService.setLanguage('en')"
-                        [class.text-primary]="langService.lang() === 'en'"
-                      >
+                      <button type="button" z-menu-item (click)="langService.setLanguage('en')"
+                              [class.text-primary]="langService.lang() === 'en'">
                         <span>
                           English
                         </span>
                       </button>
 
-                      <button
-                        type="button"
-                        z-menu-item
-                        (click)="langService.setLanguage('ar')"
-                        [class.text-primary]="langService.lang() === 'ar'"
-                      >
+                      <button type="button" z-menu-item (click)="langService.setLanguage('ar')"
+                              [class.text-primary]="langService.lang() === 'ar'">
                         <span>
                           العربية
                         </span>
@@ -338,14 +250,10 @@
                 </div>
 
                 <!-- Logout Button -->
-                <button
-                  z-menu-item
-                  zType="destructive"
-                  (click)="handleLogout()"
-                >
-                  <ng-icon name="lucideLogOut" />
+                <button z-menu-item zType="destructive" (click)="handleLogout()">
+                  <ng-icon name="lucideLogOut"/>
                   <span>
-                    Logout
+                    {{ t('app.header.menu.logout') }}
                   </span>
                 </button>
               </div>
@@ -356,399 +264,239 @@
     </div>
 
     <!-- Mobile Hamburger -->
-    <button
-      z-button
-      zType="ghost"
-      zSize="icon-lg"
-      class="md:hidden"
-      (click)="isMenuOpen.set(true)"
-    >
-      <ng-icon [name]=" isMenuOpen() ? 'lucideX' : 'lucideMenu' " />
+    <button z-button zType="ghost" zSize="icon-lg" class="md:hidden" (click)="isMenuOpen.set(true)">
+      <ng-icon [name]=" isMenuOpen() ? 'lucideX' : 'lucideMenu' "/>
     </button>
 
     <!-- Mobile Menu -->
-    <aside
-      class="fixed top-0 z-50 h-full !w-full max-sm:w-48 bg-sidebar transform md:hidden"
-      [ngClass]="mobileSidebarClasses()"
-      [class.translate-x-0]="isMenuOpen()"
-      [class.opacity-0]="!isMenuOpen()"
-      [class.-translate-x-full]="!isMenuOpen()"
-    >
-      <!-- Header -->
-      <div class="flex items-center justify-between px-4 py-2 py-[12px]">
-        <logo></logo>
-
-        <button
-          type="button"
-          z-button
-          zType="ghost"
-          zSize="icon-lg"
-          (click)="isMenuOpen.set(false)"
-        >
-          <ng-icon name="lucideX"/>
-        </button>
-      </div>
-
-      <!-- Mobile Menu Content -->
-      <ng-container *ngTemplateOutlet="currentMobileMenu()"></ng-container>
-
-      <!-- Landing Mobile Menu -->
-      <ng-template #landingMobileMenu >
-        <z-accordion class="px-4  [&_[z-button]]:mt-2">
-          <!-- Navigation -->
-          @for (menuItem of menu; track menuItem.id) {
-            @if (menuItem.children) {
-              <z-accordion-item [zTitle]="menuItem.label" zTitleIcon="lucideLink">
-                @for (menuItem of menuItem.children; track menuItem.id) {
-                  @if (menuItem.children) {
-                    <z-accordion-item
-                      [zTitle]="menuItem.label"
-                      zTitleIcon="lucideLink"
-                      class="!border-none ps-6"
-                    >
-                      @for (menuItem of menuItem.children; track menuItem.id) {
-                        <a
-                          z-button
-                          zType="ghost"
-                          zSize="xl"
-                          zFull
-                          class="justify-start px-1 ps-6"
-                          [routerLink]="menuItem.path"
-                          routerLinkActive="text-primary"
-                          [routerLinkActiveOptions]="{ exact: false }"
-                          (click)="isMenuOpen.set(false)"
-                        >
-                          <ng-icon name="lucideLink2" />
-                          {{ menuItem.label }}
-                        </a>
-                      }
-                    </z-accordion-item>
-                  } @else {
-                    <a
-                      z-button
-                      zType="ghost"
-                      zSize="xl"
-                      class="justify-start px-1"
-                      [routerLink]="menuItem.path"
-                      routerLinkActive="text-primary"
-                      [routerLinkActiveOptions]="{ exact: false }"
-                      (click)="isMenuOpen.set(false)"
-                    >
-                      <ng-icon name="lucideLink" />
-                      {{ menuItem.label }}
-                    </a>
-                  }
-                }
-              </z-accordion-item>
-            } @else {
-              <a
-                z-button
-                zType="ghost"
-                zSize="xl"
-                class="justify-start px-1"
-                [routerLink]="menuItem.path"
-                routerLinkActive="text-primary"
-                [routerLinkActiveOptions]="{ exact: false }"
-                (click)="isMenuOpen.set(false)"
-              >
-                <ng-icon name="lucideLink" />
-                {{ menuItem.label }}
-              </a>
-            }
-          }
-
-          <!-- Theme Manager -->
-          <z-accordion-item zTitle="Theme" [zTitleIcon]="themeService.icon()" class="px-1">
-            <div class="flex flex-col gap-1">
-              <button
-                z-button
-                zType="ghost"
-                zSize="xl"
-                (click)="setThemeMode('light')"
-                [class.text-primary]="themeService.mode() === 'light'"
-                class="ps-6 justify-start"
-              >
-                <ng-icon name="lucideSun" />
-                <span>
-                    {{ t('themeMode.light') }}
-                  </span>
-              </button>
-
-              <button
-                z-button
-                zType="ghost"
-                zSize="xl"
-                (click)="setThemeMode('dark')"
-                [class.text-primary]="themeService.mode() === 'dark'"
-                class="ps-6 justify-start"
-              >
-                <ng-icon name="lucideMoon" />
-                <span>
-                    {{ t('themeMode.dark') }}
-                  </span>
-              </button>
-
-              <button
-                z-button
-                zType="ghost"
-                zSize="xl"
-                (click)="setThemeMode('system')"
-                [class.text-primary]="themeService.mode() === 'system'"
-                class="ps-6 justify-start"
-              >
-                <ng-icon name="lucideMonitor" />
-                <span>
-                    {{ t('themeMode.system') }}
-                  </span>
-              </button>
-            </div>
-          </z-accordion-item>
-
-          <!-- Language Manager -->
-          <z-accordion-item zTitle="Language" zTitleIcon="lucideGlobe" class="px-1">
-            <div class="flex flex-col gap-1">
-              <button
-                z-button
-                zType="ghost"
-                zSize="xl"
-                lang="en"
-                dir="ltr"
-                (click)="langService.setLanguage('en')"
-                [class.text-primary]="langService.lang() === 'en'"
-                class="justify-start px-1 py-4"
-              >
-                <span>
-                  English
-                </span>
-              </button>
-
-              <button
-                z-button
-                zType="ghost"
-                zSize="xl"
-                lang="ar"
-                dir="rtl"
-                (click)="langService.setLanguage('ar')"
-                [class.text-primary]="langService.lang() === 'ar'"
-                class="justify-start px-1 py-4"
-              >
-                <span>
-                  العربية
-                </span>
-              </button>
-            </div>
-          </z-accordion-item>
-
-          <a
-            z-button
-            [routerLink]="['/auth']"
-            (click)="isMenuOpen.set(false)"
-            zSize="xl"
-          >
-            Join Now
-          </a>
-        </z-accordion>
-      </ng-template>
-
-      <!-- Customer Mobile Menu -->
-      <ng-template #customerMobileMenu>
-        <z-accordion class="px-4  [&_[z-button]]:mt-2">
-          <!-- Navigation -->
-          @for (menuItem of menu; track menuItem.id) {
-            @if (menuItem.children) {
-              <z-accordion-item [zTitle]="menuItem.label" zTitleIcon="lucideLink">
-                @for (menuItem of menuItem.children; track menuItem.id) {
-                  @if (menuItem.children) {
-                    <z-accordion-item
-                      [zTitle]="menuItem.label"
-                      zTitleIcon="lucideLink"
-                      class="!border-none ps-6"
-                    >
-                      @for (menuItem of menuItem.children; track menuItem.id) {
-                        <a
-                          z-button
-                          zType="ghost"
-                          zSize="xl"
-                          zFull
-                          class="justify-start px-1 ps-6"
-                          [routerLink]="menuItem.path"
-                          routerLinkActive="text-primary"
-                          [routerLinkActiveOptions]="{ exact: false }"
-                          (click)="isMenuOpen.set(false)"
-                        >
-                          <ng-icon name="lucideLink2" />
-                          {{ menuItem.label }}
-                        </a>
-                      }
-                    </z-accordion-item>
-                  } @else {
-                    <a
-                      z-button
-                      zType="ghost"
-                      zSize="xl"
-                      class="justify-start px-1"
-                      [routerLink]="menuItem.path"
-                      routerLinkActive="text-primary"
-                      [routerLinkActiveOptions]="{ exact: false }"
-                      (click)="isMenuOpen.set(false)"
-                    >
-                      <ng-icon name="lucideLink" />
-                      {{ menuItem.label }}
-                    </a>
-                  }
-                }
-              </z-accordion-item>
-            } @else {
-              <a
-                z-button
-                zType="ghost"
-                zSize="xl"
-                class="justify-start px-1"
-                [routerLink]="menuItem.path"
-                routerLinkActive="text-primary"
-                [routerLinkActiveOptions]="{ exact: false }"
-                (click)="isMenuOpen.set(false)"
-              >
-                <ng-icon name="lucideLink" />
-                {{ menuItem.label }}
-              </a>
-            }
-          }
-
-          <!-- Messages Button -->
-          <button
-            z-button
-            zSize="xl"
-            zType="ghost"
-            class="justify-start px-1 py-4"
-            (click)="handleLogout()"
-          >
-            <ng-icon name="lucideMessageSquare" />
-              Messages
-          </button>
-
-          <!-- Notification Button -->
-          <button
-            z-button
-            zType="ghost"
-            zSize="xl"
-            class="justify-start px-1 py-4"
-          >
-            <ng-icon name="lucideBell" />
-            Notifications
-          </button>
-
-          <!-- Theme Manager -->
-          <z-accordion-item zTitle="Theme" [zTitleIcon]="themeService.icon()" class="px-1">
-            <div class="flex flex-col gap-1">
-              <button
-                z-button
-                zType="ghost"
-                zSize="xl"
-                (click)="setThemeMode('light')"
-                [class.text-primary]="themeService.mode() === 'light'"
-                class="ps-6 justify-start"
-              >
-                <ng-icon name="lucideSun" />
-                <span>
-                    {{ t('themeMode.light') }}
-                  </span>
-              </button>
-
-              <button
-                z-button
-                zType="ghost"
-                zSize="xl"
-                (click)="setThemeMode('dark')"
-                [class.text-primary]="themeService.mode() === 'dark'"
-                class="ps-6 justify-start"
-              >
-                <ng-icon name="lucideMoon" />
-                <span>
-                    {{ t('themeMode.dark') }}
-                  </span>
-              </button>
-
-              <button
-                z-button
-                zType="ghost"
-                zSize="xl"
-                (click)="setThemeMode('system')"
-                [class.text-primary]="themeService.mode() === 'system'"
-                class="ps-6 justify-start"
-              >
-                <ng-icon name="lucideMonitor" />
-                <span>
-                    {{ t('themeMode.system') }}
-                  </span>
-              </button>
-            </div>
-          </z-accordion-item>
-
-          <!-- Language Manager -->
-          <z-accordion-item zTitle="Language" zTitleIcon="lucideGlobe" class="px-1">
-            <div class="flex flex-col gap-1">
-              <button
-                z-button
-                zType="ghost"
-                zSize="xl"
-                lang="en"
-                dir="ltr"
-                (click)="langService.setLanguage('en')"
-                [class.text-primary]="langService.lang() === 'en'"
-                class="justify-start px-1 py-4"
-              >
-                <span>
-                  English
-                </span>
-              </button>
-
-              <button
-                z-button
-                zType="ghost"
-                zSize="xl"
-                lang="ar"
-                dir="rtl"
-                (click)="langService.setLanguage('ar')"
-                [class.text-primary]="langService.lang() === 'ar'"
-                class="justify-start px-1 py-4"
-              >
-                <span>
-                  العربية
-                </span>
-              </button>
-            </div>
-          </z-accordion-item>
-
-          <!-- Logout Button -->
-          <a
-            z-button
-            zSize="xl"
-            zType="ghost"
-            class="justify-start px-1 py-4"
-            [routerLink]="['/customers/settings']"
-          >
-            <ng-icon name="lucideSettings" />
-            <span>
-              Settings
-            </span>
-          </a>
-
-          <!-- Logout Button -->
-          <button
-            z-button
-            zSize="xl"
-            zType="ghost"
-            class="hover:text-destructive justify-start px-1 py-4"
-            (click)="handleLogout()"
-          >
-            <ng-icon name="lucideLogOut" />
-            <span>
-                Logout
-              </span>
-          </button>
-        </z-accordion>
-      </ng-template>
-    </aside>
   </nav>
 </header>
+
+<ng-container *transloco="let t">
+  <aside class="fixed top-0 z-50 h-full !w-full max-sm:w-48 bg-sidebar transform md:hidden"
+         [ngClass]="mobileSidebarClasses()" [class.translate-x-0]="isMenuOpen()" [class.opacity-0]="!isMenuOpen()"
+         [class.-translate-x-full]="!isMenuOpen()" [class.pointer-events-none]="!isMenuOpen()">
+    <!-- Header -->
+    <div class="flex items-center justify-between max-md:py-4 max-md:px-4">
+      <logo></logo>
+
+      <button type="button" z-button zType="ghost" zSize="icon-lg" (click)="isMenuOpen.set(false)">
+        <ng-icon name="lucideX"/>
+      </button>
+    </div>
+
+    <!-- Mobile Menu Content -->
+    <ng-container *ngTemplateOutlet="currentMobileMenu()"></ng-container>
+
+    <!-- Landing Mobile Menu -->
+    <ng-template #landingMobileMenu>
+      <z-accordion class="px-4  [&_[z-button]]:mt-2">
+        <!-- Navigation -->
+        @for (menuItem of menu; track menuItem.id) {
+          @if (menuItem.children) {
+            <z-accordion-item [zTitle]="t(menuItem.label)" [zTitleIcon]="menuItem.icon">
+              @for (menuItem of menuItem.children; track menuItem.id) {
+                @if (menuItem.children?.length !== 0) {
+                  <z-accordion-item [zTitle]="t(menuItem.label)" [zTitleIcon]="menuItem.icon" class="!border-none ps-6">
+                    @for (menuItem of menuItem.children; track menuItem.id) {
+                      <a z-button zType="ghost" zSize="xl" zFull class="justify-start px-1 ps-6"
+                         [routerLink]="menuItem.path"
+                         routerLinkActive="text-primary" [routerLinkActiveOptions]="{ exact: false }"
+                         (click)="isMenuOpen.set(false)">
+                        {{ t(menuItem.label) }}
+                      </a>
+                    }
+                  </z-accordion-item>
+                } @else {
+                  <a z-button zType="ghost" zSize="xl" class="justify-start px-1" [routerLink]="menuItem.path"
+                     routerLinkActive="text-primary" [routerLinkActiveOptions]="{ exact: false }"
+                     (click)="isMenuOpen.set(false)">
+                    <ng-icon [name]="menuItem.icon"/>
+                    {{ t(menuItem.label) }}
+                  </a>
+                }
+              }
+            </z-accordion-item>
+          } @else {
+            <a z-button zType="ghost" zSize="xl" class="justify-start px-1" [routerLink]="menuItem.path"
+               routerLinkActive="text-primary" [routerLinkActiveOptions]="{ exact: false }"
+               (click)="isMenuOpen.set(false)">
+              <ng-icon [name]="menuItem.icon"/>
+              {{ t(menuItem.label) }}
+            </a>
+          }
+        }
+
+        <!-- Theme Manager -->
+        <z-accordion-item [zTitle]="t('app.header.menu.theme')" [zTitleIcon]="themeService.icon()" class="px-1">
+          <div class="flex flex-col gap-1">
+            <button z-button zType="ghost" zSize="xl" (click)="setThemeMode('light')"
+                    [class.text-primary]="themeService.mode() === 'light'" class="ps-6 justify-start">
+              <ng-icon name="lucideSun"/>
+              <span>
+                {{ t('themeMode.light') }}
+              </span>
+            </button>
+
+            <button z-button zType="ghost" zSize="xl" (click)="setThemeMode('dark')"
+                    [class.text-primary]="themeService.mode() === 'dark'" class="ps-6 justify-start">
+              <ng-icon name="lucideMoon"/>
+              <span>
+                {{ t('themeMode.dark') }}
+              </span>
+            </button>
+
+            <button z-button zType="ghost" zSize="xl" (click)="setThemeMode('system')"
+                    [class.text-primary]="themeService.mode() === 'system'" class="ps-6 justify-start">
+              <ng-icon name="lucideMonitor"/>
+              <span>
+                {{ t('themeMode.system') }}
+              </span>
+            </button>
+          </div>
+        </z-accordion-item>
+
+        <!-- Language Manager -->
+        <z-accordion-item [zTitle]="t('app.header.menu.language')" zTitleIcon="lucideGlobe" class="px-1 border-none">
+          <div class="flex flex-col gap-1">
+            <button z-button zType="ghost" zSize="xl" lang="en" dir="ltr" (click)="langService.setLanguage('en')"
+                    [class.text-primary]="langService.lang() === 'en'" class="justify-start px-1 py-4">
+              <span>
+                English
+              </span>
+            </button>
+
+            <button z-button zType="ghost" zSize="xl" lang="ar" dir="rtl" (click)="langService.setLanguage('ar')"
+                    [class.text-primary]="langService.lang() === 'ar'" class="justify-start px-1 py-4">
+              <span>
+                العربية
+              </span>
+            </button>
+          </div>
+        </z-accordion-item>
+
+        <a z-button [routerLink]="['/auth']" (click)="isMenuOpen.set(false)" zSize="xl">
+          {{ t('app.header.menu.joinNow') }}
+        </a>
+      </z-accordion>
+    </ng-template>
+
+    <!-- Customer Mobile Menu -->
+    <ng-template #customerMobileMenu>
+      <z-accordion class="px-4  [&_[z-button]]:mt-2">
+        <!-- Navigation -->
+        @for (menuItem of menu; track menuItem.id) {
+          @if (menuItem.children) {
+            <z-accordion-item [zTitle]="t(menuItem.label)" [zTitleIcon]="menuItem.icon">
+              @for (menuItem of menuItem.children; track menuItem.id) {
+                @if (menuItem.children) {
+                  <z-accordion-item [zTitle]="t(menuItem.label)" [zTitleIcon]="menuItem.icon" class="!border-none ps-6">
+                    @for (menuItem of menuItem.children; track menuItem.id) {
+                      <a z-button zType="ghost" zSize="xl" zFull class="justify-start px-1 ps-6"
+                         [routerLink]="menuItem.path"
+                         routerLinkActive="text-primary" [routerLinkActiveOptions]="{ exact: false }"
+                         (click)="isMenuOpen.set(false)">
+                        {{ t(menuItem.label) }}
+                      </a>
+                    }
+                  </z-accordion-item>
+                } @else {
+                  <a z-button zType="ghost" zSize="xl" class="justify-start px-1" [routerLink]="menuItem.path"
+                     routerLinkActive="text-primary" [routerLinkActiveOptions]="{ exact: false }"
+                     (click)="isMenuOpen.set(false)">
+                    <ng-icon [name]="menuItem.icon"/>
+                    {{ t(menuItem.label) }}
+                  </a>
+                }
+              }
+            </z-accordion-item>
+          } @else {
+            <a z-button zType="ghost" zSize="xl" class="justify-start px-1" [routerLink]="menuItem.path"
+               routerLinkActive="text-primary" [routerLinkActiveOptions]="{ exact: false }"
+               (click)="isMenuOpen.set(false)">
+              <ng-icon [name]="menuItem.icon"/>
+              {{ t(menuItem.label) }}
+            </a>
+          }
+        }
+
+        <!-- Messages Button -->
+        <button z-button zSize="xl" zType="ghost" class="justify-start px-1 py-4" (click)="handleLogout()">
+          <ng-icon name="lucideMessageSquare"/>
+          {{ t('app.header.menu.messages') }}
+        </button>
+
+        <!-- Notification Button -->
+        <button z-button zType="ghost" zSize="xl" class="justify-start px-1 py-4">
+          <ng-icon name="lucideBell"/>
+          {{ t('app.header.menu.notifications') }}
+        </button>
+
+        <!-- Theme Manager -->
+        <z-accordion-item zTitle="Theme" [zTitleIcon]="themeService.icon()" class="px-1">
+          <div class="flex flex-col gap-1">
+            <button z-button zType="ghost" zSize="xl" (click)="setThemeMode('light')"
+                    [class.text-primary]="themeService.mode() === 'light'" class="ps-6 justify-start">
+              <ng-icon name="lucideSun"/>
+              <span>
+                {{ t('themeMode.light') }}
+              </span>
+            </button>
+
+            <button z-button zType="ghost" zSize="xl" (click)="setThemeMode('dark')"
+                    [class.text-primary]="themeService.mode() === 'dark'" class="ps-6 justify-start">
+              <ng-icon name="lucideMoon"/>
+              <span>
+                {{ t('themeMode.dark') }}
+              </span>
+            </button>
+
+            <button z-button zType="ghost" zSize="xl" (click)="setThemeMode('system')"
+                    [class.text-primary]="themeService.mode() === 'system'" class="ps-6 justify-start">
+              <ng-icon name="lucideMonitor"/>
+              <span>
+                {{ t('themeMode.system') }}
+              </span>
+            </button>
+          </div>
+        </z-accordion-item>
+
+        <!-- Language Manager -->
+        <z-accordion-item zTitle="Language" zTitleIcon="lucideGlobe" class="px-1 border-none">
+          <div class="flex flex-col gap-1">
+            <button z-button zType="ghost" zSize="xl" lang="en" dir="ltr" (click)="langService.setLanguage('en')"
+                    [class.text-primary]="langService.lang() === 'en'" class="justify-start px-1 py-4">
+              <span>
+                English
+              </span>
+            </button>
+
+            <button z-button zType="ghost" zSize="xl" lang="ar" dir="rtl" (click)="langService.setLanguage('ar')"
+                    [class.text-primary]="langService.lang() === 'ar'" class="justify-start px-1 py-4">
+              <span>
+                العربية
+              </span>
+            </button>
+          </div>
+        </z-accordion-item>
+
+        <!-- Logout Button -->
+        <a z-button zSize="xl" zType="ghost" class="justify-start px-1 py-4" [routerLink]="[settingsPath()]">
+          <ng-icon name="lucideSettings"/>
+          <span>
+            {{ t('app.header.menu.settings') }}
+          </span>
+        </a>
+
+        <!-- Logout Button -->
+        <button z-button zSize="xl" zType="ghost" class="hover:text-destructive justify-start px-1 py-4"
+                (click)="handleLogout()">
+          <ng-icon name="lucideLogOut"/>
+          <span>
+            {{ t('app.header.menu.logout') }}
+          </span>
+        </button>
+      </z-accordion>
+    </ng-template>
+  </aside>
+</ng-container>

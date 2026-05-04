@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, tap, catchError, throwError, firstValueFrom } from 'rxjs';
+import { Observable, tap, catchError, throwError, firstValueFrom, BehaviorSubject, filter, take, switchMap, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '@woodia-environments/environment';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -47,7 +47,24 @@ export class AuthService {
     private http: HttpClient,
     private router: Router,
     private oauthService: OAuthService,
-  ) { }
+  ) {
+    // Initialize user from storage
+    const storedUser = this.getStoredUser();
+    this.user.set(storedUser);
+  }
+
+  readonly user = signal<IUserData | null>(null);
+
+  readonly isAuthenticated = computed(() => {
+    const user = this.user();
+    if (!user) return false;
+
+    return !!this.getToken() && !this.isAccessTokenExpired();
+  });
+
+
+  private isRefreshing = false;
+  private refreshTokenSubject: BehaviorSubject<AuthResponse | null> = new BehaviorSubject<AuthResponse | null>(null);
 
   // Helpers
   storeUser(response: AuthResponse, rememberMe: boolean = true) {
@@ -66,11 +83,13 @@ export class AuthService {
       email: response.email,
       firstName: response.firstName,
       lastName: response.lastName,
-      userType: response.userType,
+      userType: response.userType as TUserType,
     };
 
     storage.setItem('user', JSON.stringify(user));
+    this.user.set(user);
   }
+
 
   /**
    * Google Login logic
@@ -228,11 +247,16 @@ export class AuthService {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user');
+    localStorage.removeItem('expires_at');
     sessionStorage.removeItem('auth_token');
     sessionStorage.removeItem('refresh_token');
     sessionStorage.removeItem('user');
+    sessionStorage.removeItem('expires_at');
+
+    this.user.set(null);
     this.router.navigate(['/']);
   }
+
 
   /**
    * Get stored access token
@@ -269,44 +293,38 @@ export class AuthService {
   }
 
 
-  /**
-   * Get current user from storage
-   */
   getCurrentUser(): IUserData | null {
+    return this.user();
+  }
+
+  private getStoredUser(): IUserData | null {
+    if (typeof window === 'undefined') return null;
     const userStr = localStorage.getItem('user') || sessionStorage.getItem('user');
 
     if (!userStr) return null;
 
     try {
-      // Parse the user data and return the updated structure
-      const user = JSON.parse(userStr);
-      return {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        userType: user.userType,
-      };
+      return JSON.parse(userStr);
     } catch (e) {
-      console.error('Invalid user JSON in storage:', userStr);
-      localStorage.removeItem('user');
-      sessionStorage.removeItem('user');
       return null;
     }
   }
 
 
   /**
- * Check if user is authenticated
- */
-  isAuthenticated(): boolean {
-    return !!this.getToken() && !this.isAccessTokenExpired();
-  }
-
-  /**
    * Refresh authentication token
    */
   refreshToken(): Observable<AuthResponse> {
+    if (this.isRefreshing) {
+      return this.refreshTokenSubject.pipe(
+        filter(res => res !== null),
+        take(1)
+      ) as Observable<AuthResponse>;
+    }
+
+    this.isRefreshing = true;
+    this.refreshTokenSubject.next(null);
+
     const token = this.getToken()
     const refreshToken = this.getRefreshToken();
 
@@ -318,9 +336,12 @@ export class AuthService {
       },
     ).pipe(
       tap(response => {
+        this.isRefreshing = false;
         this.storeUser(response);
+        this.refreshTokenSubject.next(response);
       }),
       catchError(error => {
+        this.isRefreshing = false;
         this.logout();
         console.log(error);
         return throwError(() => error);

@@ -6,7 +6,8 @@ import {
   signal,
   effect
 } from '@angular/core';
-import { ActivatedRoute, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 import { Footer } from '@woodia-shared/components/footer/footer';
 import { Header } from '@woodia-shared/components/header/header';
 import {
@@ -33,31 +34,37 @@ export class MainLayout implements OnInit {
     landing: [
       {
         id: 'home',
-        label: 'Home',
+        label: 'app.header.menu.home',
         path: '/home',
+        icon: 'lucideHouse'
       },
       {
         id: 'designs',
-        label: 'Designs',
+        label: 'app.header.menu.designs',
         path: '/designs',
+        icon: 'lucideArmchair',
         children: [],
       },
       {
         id: 'our-story',
-        label: 'Our Story',
+        label: 'app.header.menu.ourStory',
         path: '/our-story',
+        icon: 'lucideBookOpen',
       },
     ],
     customer: [
       {
         id: 'designs',
-        label: 'Designs',
-        path: '/customers/designs',
+        label: 'app.header.menu.designs',
+        path: '/designs',
+        icon: 'lucideArmchair',
       },
+
       {
         id: 'jobs',
-        label: 'Jobs',
+        label: 'app.header.menu.jobs',
         path: '/customers/jobs',
+        icon: 'lucideBriefcase'
       },
     ],
     maker: [],
@@ -75,10 +82,17 @@ export class MainLayout implements OnInit {
   // ---------------------------
   menu = computed<IMenuItem[]>(() => {
     const isAuthenticated = this.authService.isAuthenticated();
+    const user = this.authService.getCurrentUser();
 
-    const baseMenu = isAuthenticated
-      ? this.menus['customer']
-      : this.menus['landing'];
+    let baseMenu = this.menus['landing'];
+
+    if (isAuthenticated) {
+      if (user?.userType === 'Client') {
+        baseMenu = this.menus['customer'];
+      } else if (user?.userType === 'MAKER') {
+        baseMenu = this.menus['maker'];
+      }
+    }
 
     return baseMenu.map(item => {
       if (item.id !== 'designs') return item;
@@ -100,17 +114,44 @@ export class MainLayout implements OnInit {
     });
   });
 
+
   constructor(
     private http: HttpClient,
     private route: ActivatedRoute,
+    private router: Router,
     private authService: AuthService
   ) {
-    // React to route changes properly
-    effect(() => {
-      const variant =
-        this.route.snapshot.data['layoutVariant'] ?? 'default';
+    // React to route changes properly by traversing to the deepest child
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      let activeRoute = this.route;
+      while (activeRoute.firstChild) {
+        activeRoute = activeRoute.firstChild;
+      }
+      
+      const variant = activeRoute.snapshot.data['layoutVariant'] || 
+                     this.route.snapshot.data['layoutVariant'] || 
+                     'plain';
       this.layoutVariant.set(variant);
     });
+
+    // Initial check
+    const initialVariant = this.getDeepestData(this.route.snapshot, 'layoutVariant') || 'plain';
+    this.layoutVariant.set(initialVariant);
+  }
+
+  private getDeepestData(snapshot: any, key: string): any {
+    let current = snapshot;
+    let value = current.data ? current.data[key] : undefined;
+    
+    while (current.firstChild) {
+      current = current.firstChild;
+      if (current.data && current.data[key]) {
+        value = current.data[key];
+      }
+    }
+    return value;
   }
 
   // ---------------------------

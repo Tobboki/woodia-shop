@@ -1,0 +1,337 @@
+<div class="min-h-screen" *transloco="let t; read: 'features.customers.jobs.details'">
+  <!-- Skeleton Loader -->
+  @if (isLoading()) {
+  <div class="flex flex-col gap-6 pb-32 md:pb-24 animate-pulse">
+    <!-- Section 1: Job Details Skeleton -->
+    <section class="bg-card rounded-2xl p-4 border border-border/50 shadow-sm space-y-8">
+      <div class="flex flex-col gap-4">
+        <div class="flex items-center gap-2">
+          <z-skeleton class="h-5 w-32 rounded-full" />
+          <z-skeleton class="h-7 w-24 rounded-full" />
+        </div>
+        <z-skeleton class="h-12 w-3/4 rounded-xl" />
+      </div>
+
+      <div class="space-y-6">
+        <div class="space-y-2">
+          <z-skeleton class="h-4 w-24" />
+          <z-skeleton class="h-32 w-full rounded-xl" />
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <z-skeleton class="h-4 w-20" />
+            <z-skeleton class="h-12 w-full rounded-xl" />
+          </div>
+          <div class="space-y-2">
+            <z-skeleton class="h-4 w-20" />
+            <z-skeleton class="h-12 w-full rounded-xl" />
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Section 2: Model Preview Skeleton -->
+    <section class="bg-card flex flex-col gap-4 p-4 rounded-2xl border border-border/50 shadow-sm">
+      <div class="border-b border-border/30 pb-4">
+        <z-skeleton class="h-8 w-48 rounded-md" />
+      </div>
+      <z-skeleton class="h-[400px] lg:h-[500px] w-full rounded-xl" />
+    </section>
+
+    <!-- Section 3: Specs Skeleton -->
+    <section class="bg-card rounded-2xl p-4 border border-border/50 shadow-sm space-y-8">
+      <div class="flex items-center gap-3">
+        <z-skeleton class="h-8 w-48 rounded-md" />
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        @for (i of [1,2,3,4]; track i) {
+        <z-skeleton class="h-24 w-full rounded-2xl" />
+        }
+      </div>
+    </section>
+  </div>
+  } @else if (isError()) {
+  <!-- Error State -->
+  <div class="container mx-auto px-4 py-20 text-center space-y-6">
+    <div class="flex justify-center">
+      <div class="p-6 rounded-full bg-destructive/10 text-destructive">
+        <ng-icon name="lucideAlertCircle" size="48" />
+      </div>
+    </div>
+    <h1 class="font-h3">{{ t('errors.loadFailed') }}</h1>
+    <z-button zType="default" (click)="loadJob()">
+      <ng-icon name="lucideRefreshCw" class="mr-2" />
+      {{ t('actions.retry') || 'Retry' }}
+    </z-button>
+  </div>
+  } @else if (job(); as job) {
+  <main class="flex flex-col gap-6 pb-32 md:pb-24" *transloco="let globalT">
+
+    <!-- Section 1: Job Details -->
+    <section class="bg-card rounded-2xl p-4 border border-border/50 shadow-sm">
+
+      <!-- ID and Status Layout -->
+      <div class="flex items-center gap-2">
+        <!-- Job ID -->
+        <span class="font-bold tracking-[0.05em] text-muted-foreground uppercase">
+          {{ globalT('features.customers.jobs.id') }}: #{{ job.id }}
+        </span>
+
+        <!-- Status Badge -->
+        <div class="flex items-center gap-1" (click)="$event.stopPropagation()">
+          <z-badge zShape="pill" [class]="getStatusColor(job.status)"
+            class="!text-xs !font-bold !tracking-wider !uppercase !px-2.5 !py-1 !border">
+            {{ globalT('features.customers.jobs.jobStatus.' + (job.status)) }}
+          </z-badge>
+
+          @if (job.status !== 'Completed' && job.status !== 'Canceled') {
+          <button z-button zType="ghost" zSize="icon-lg" class="hover:!bg-muted" (click)="handleStatusChange(job)"
+            [zTooltip]="globalT('features.customers.jobs.changeStatus')">
+            <ng-icon name="lucideSettings" class="size-4" />
+          </button>
+          }
+        </div>
+      </div>
+
+      <!-- Title  -->
+      <h1 class="font-h1 font-medium m-0" [class.text-left]="getTextDir(job.title) === 'ltr'"
+        [class.text-right]="getTextDir(job.title) === 'rtl'" [dir]="getTextDir(job.title)">
+        {{ job.title || t('placeholders.noTitle') }}
+      </h1>
+
+      <!-- Form similar to Design Studio Step 2 -->
+      <div class="space-y-6">
+        <!-- Description -->
+        <z-form-field>
+          <label z-form-label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+            {{ t('labels.jobDescription') }}
+          </label>
+          <z-form-control>
+            <textarea z-input zType="textarea" [(ngModel)]="draftDescription"
+              [dir]="getTextDir(draftDescription() || '')"
+              [placeholder]="globalT('features.designStudio.descriptionPlaceholder')"></textarea>
+          </z-form-control>
+        </z-form-field>
+
+        <!-- Budget + Delivery -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <z-form-field>
+            <label z-form-label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+              {{ t('labels.budget') }}
+            </label>
+            <z-form-control>
+              <div class="relative">
+                <input z-input type="number" [(ngModel)]="draftBudget" placeholder="0.00"
+                  [class.pr-12]="langService.lang() === 'en'" [class.pl-12]="langService.lang() === 'ar'" />
+                <span class="absolute top-1/2 -translate-y-1/2 text-muted-foreground font-bold text-sm z-10"
+                  [class.right-4]="langService.lang() === 'en'" [class.left-4]="langService.lang() === 'ar'">EGP</span>
+              </div>
+            </z-form-control>
+          </z-form-field>
+
+          <z-form-field>
+            <label z-form-label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+              {{ t('labels.deliveryTime') }}
+            </label>
+            <z-form-control>
+              <div class="relative">
+                <input z-input type="number" [(ngModel)]="draftDelivery" placeholder="7" min="1"
+                  [class.pr-14]="langService.lang() === 'en'" [class.pl-14]="langService.lang() === 'ar'" />
+                <span class="absolute top-1/2 -translate-y-1/2 text-muted-foreground text-sm z-10 font-bold"
+                  [class.right-4]="langService.lang() === 'en'" [class.left-4]="langService.lang() === 'ar'">
+                  {{ t('labels.days') }}
+                </span>
+              </div>
+            </z-form-control>
+          </z-form-field>
+        </div>
+      </div>
+
+      <!-- Section Error State -->
+      @if (detailsError()) {
+      <div
+        class="p-4 rounded-xl bg-destructive/10 border border-destructive/20 flex items-center gap-3 text-destructive">
+        <ng-icon name="lucideAlertCircle" class="size-5" />
+        <p class="text-sm font-bold">{{ t('errors.invalidDetails') }}</p>
+      </div>
+      }
+    </section>
+
+    <!-- Section 2: Model Preview -->
+    <section
+      class="bg-card flex flex-col gap-4 p-4 rounded-2xl border border-border/50 shadow-sm overflow-hidden group">
+      <div class="border-b border-border/30 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-1.5 bg-primary rounded-full shadow-[0_0_15px_rgba(var(--primary-rgb),0.5)]"></div>
+          <h3 class="text-2xl font-black text-foreground tracking-tight uppercase">{{ t('sections.modelPreview') }}</h3>
+        </div>
+      </div>
+
+      <div class="relative min-h-[400px] lg:min-h-[500px] flex flex-col">
+        @if (configuratorProduct() && !modelError()) {
+        <woodia-design-configurator [product]="configuratorProduct()" (configChange)="onConfigChange()"
+          class="w-full h-full flex-1" />
+        } @else if (modelError()) {
+        <!-- Model Error State -->
+        <div
+          class="flex-1 flex flex-col items-center justify-center bg-destructive/5 backdrop-blur-[2px] p-8 text-center space-y-6">
+          <div class="relative">
+            <div class="absolute -inset-4 bg-destructive/10 rounded-full blur-xl animate-pulse"></div>
+            <div
+              class="relative size-20 rounded-full bg-destructive/10 flex items-center justify-center text-destructive">
+              <ng-icon name="lucideSettings2" class="size-10" />
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <h4 class="text-xl font-black text-foreground uppercase tracking-tight">{{ t('errors.invalidConfig') }}</h4>
+            <p class="text-muted-foreground max-w-md text-sm font-medium">{{ t('errors.invalidConfigDesc') }}</p>
+          </div>
+
+          <z-button zType="default" zSize="sm" class="!rounded-full px-8" routerLink="/designs">
+            <ng-icon name="lucideLayoutGrid" class="mr-2 size-4" />
+            {{ t('errors.backToDesigns') }}
+          </z-button>
+        </div>
+        } @else if (!job.productId) {
+        <div
+          class="flex-1 flex flex-col items-center justify-center bg-muted/10 backdrop-blur-sm p-8 text-center space-y-4">
+          <div class="p-4 rounded-full bg-muted/20 text-muted-foreground">
+            <ng-icon name="lucideEyeOff" size="48" />
+          </div>
+          <p class="text-muted-foreground font-bold text-lg uppercase tracking-widest">{{ t('labels.modelNotAvailable')
+            }}</p>
+        </div>
+        }
+      </div>
+    </section>
+
+    <!-- Section 3: Model Specifications -->
+    <section class="bg-card rounded-2xl p-4 border border-border/50 shadow-sm space-y-8">
+      <div class="flex items-center gap-3">
+        <div class="h-10 w-1.5 bg-primary rounded-full shadow-[0_0_15px_rgba(var(--primary-rgb),0.5)]"></div>
+        <h3 class="text-2xl font-black text-foreground tracking-tight uppercase">{{ t('sections.designDetails') }}</h3>
+      </div>
+
+      @if (draftModelConfig() && !modelError()) {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Core Specifications -->
+        <div class="col-span-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Model Type -->
+          <div
+            class="bg-muted/20 rounded-2xl p-4 border border-border/30 hover:border-primary/30 transition-colors group/item">
+            <span class="text-[10px] text-muted-foreground uppercase font-black tracking-widest block mb-2">{{
+              t('placeholders.category') }}</span>
+            <div class="flex items-center gap-2">
+              <div class="size-2 rounded-full bg-primary animate-pulse"></div>
+              <p class="text-lg font-black text-foreground">{{ globalT('features.designStudio.categories.' +
+                inferModelType(draftModelConfig())) }}</p>
+            </div>
+          </div>
+
+          <!-- Color -->
+          @if (draftModelConfig().color) {
+          <div class="bg-muted/20 rounded-2xl p-4 border border-border/30 hover:border-primary/30 transition-colors">
+            <span class="text-[10px] text-muted-foreground uppercase font-black tracking-widest block mb-2">{{
+              t('config.color') }}</span>
+            <div class="flex items-center gap-3">
+              <div class="size-6 rounded-lg shadow-inner border border-white/10"
+                [style.background-color]="draftModelConfig().color"></div>
+              <p class="text-lg font-black text-foreground uppercase">{{ draftModelConfig().color }}</p>
+            </div>
+          </div>
+          }
+
+          <!-- Flat Config Items -->
+          @for (spec of getFlatSpecifications(draftModelConfig()); track spec.label) {
+          <div class="bg-muted/20 rounded-2xl p-4 border border-border/30 hover:border-primary/30 transition-colors">
+            <span class="text-[10px] text-muted-foreground uppercase font-black tracking-widest block mb-2">{{
+              spec.label }}</span>
+            <p class="text-lg font-black text-foreground">{{ spec.value }}</p>
+          </div>
+          }
+        </div>
+
+        <!-- Nested Config Sections (Rows/Columns etc) -->
+        @for (section of getNestedSpecifications(draftModelConfig()); track section.section) {
+        <div class="col-span-full space-y-4">
+          <div class="flex items-center gap-4">
+            <h4 class="text-xs font-black text-primary uppercase tracking-[0.3em] whitespace-nowrap">{{ section.section
+              }}</h4>
+            <div class="h-px w-full bg-gradient-to-r from-primary/30 to-transparent"></div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            @for (spec of section.specs; track spec.label) {
+            <div
+              class="bg-muted/10 rounded-xl p-4 border border-border/20 hover:bg-muted/20 transition-all duration-300">
+              <span class="text-[9px] text-muted-foreground/60 uppercase font-bold block mb-1">{{ spec.label }}</span>
+              <p class="text-sm font-bold text-foreground">{{ spec.value }}</p>
+            </div>
+            }
+          </div>
+        </div>
+        }
+      </div>
+      } @if (modelError()) {
+      <!-- User-Friendly Error State for Specs -->
+      <div
+        class="flex flex-col items-center justify-center p-12 bg-muted/10 rounded-2xl border-2 border-dashed border-border/30 text-center space-y-6">
+        <div class="relative">
+          <div class="absolute -inset-4 bg-destructive/10 rounded-full blur-xl animate-pulse"></div>
+          <div
+            class="relative size-20 rounded-full bg-destructive/10 flex items-center justify-center text-destructive">
+            <ng-icon name="lucideFileWarning" class="size-10" />
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <h4 class="text-xl font-black text-foreground uppercase tracking-tight">{{ t('errors.invalidConfig') }}</h4>
+          <p class="text-muted-foreground max-w-sm text-sm font-medium">
+            {{ t('errors.invalidConfigDesc') }}
+          </p>
+        </div>
+
+        <z-button zType="default" zSize="sm" class="!rounded-full px-8" routerLink="/designs">
+          <ng-icon name="lucideLayoutGrid" class="mr-2 size-4" />
+          {{ t('errors.backToDesigns') }}
+        </z-button>
+      </div>
+      } @else if (!draftModelConfig()) {
+      <div class="p-12 rounded-2xl bg-muted/5 border-2 border-dashed border-border/30 text-center">
+        <p class="text-muted-foreground font-bold tracking-widest uppercase">{{ t('labels.notSpecified') }}</p>
+      </div>
+      }
+    </section>
+
+  </main>
+  }
+  <!-- Floating Bottom Action Bar (Dirty State) -->
+  <div
+    class="fixed bottom-0 right-0 w-full p-3 md:p-2 border-t bg-background z-50 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1)"
+    [class.translate-y-0]="isDirty()" [class.opacity-100]="isDirty()" [class.translate-y-full]="!isDirty()"
+    [class.opacity-0]="!isDirty()">
+
+    <div class="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0">
+      <div class="flex items-center gap-3 md:gap-4 px-2 w-full md:w-auto">
+        <div
+          class="flex items-center justify-center size-9 md:size-10 rounded-full bg-primary/10 text-primary shrink-0">
+          <ng-icon name="lucideRotateCw" class="animate-spin-slow size-4 md:size-5" />
+        </div>
+        <div class="flex flex-col">
+          <span class="text-xs md:text-sm font-bold text-foreground">{{ t('actions.unsavedChanges') }}</span>
+          <span class="text-[9px] md:text-[10px] text-muted-foreground font-medium uppercase tracking-widest">{{
+            t('actions.changesDetected') }}</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 md:gap-3 w-full md:w-auto">
+        <z-button zType="outline" zSize="lg" class="flex-1 md:flex-none" (click)="onCancel()" [zDisabled]="isSaving()">
+          {{ t('actions.discard') }}
+        </z-button>
+        <z-button zType="default" zSize="lg" class="flex-1 md:flex-none" (click)="onSave()" [zLoading]="isSaving()">
+          <ng-icon name="lucideCheck" class="mr-2 size-4" />
+          <span class="whitespace-nowrap">{{ t('actions.saveChanges') }}</span>
+        </z-button>
+      </div>
+    </div>
+  </div>
+</div>

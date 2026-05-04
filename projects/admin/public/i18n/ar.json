@@ -1,5 +1,6 @@
 {
   "app": {
+    "appTitle": "ووديا",
     "footer": {
       "message": "جميع حقوق الطبع والنشر محفوظة",
       "company": "ووديا"
@@ -11,7 +12,146 @@
     }
   },
   "modules": {
-    
+    "designStudio": {
+      "title": "استوديو التصميم",
+      "step1": {
+        "title": "الخطوة 1: تهيئة النموذج الخاص بك",
+        "next": "التفاصيل التالية",
+        "nextShort": "التالي",
+        "designIsReady": "التصميم جاهز!"
+      },
+      "step2": {
+        "title": "نشر التصميم",
+        "subtitle": "الخطوة 2: إضافة البيانات الوصفية والتفاصيل",
+        "save": "حفظ التصميم",
+        "saving": "جاري الحفظ...",
+        "translating": "جاري الترجمة...",
+        "basicInfo": "المعلومات الأساسية",
+        "designName": "خط الإنتاج",
+        "productLines": {
+          "OriginalClassic": "الأصلي الكلاسيكي",
+          "OriginalModern": "الأصلي الحديث",
+          "Edge": "إيدج",
+          "Tone": "تون"
+        },
+        "descEn": "الوصف بالإنجليزية",
+        "descAr": "الوصف بالعربية",
+        "category": "الفئة",
+        "images": "الصور",
+        "addImage": "إضافة صورة",
+        "imageUrl": "رابط الصورة",
+        "imagePlace": "مكان الصورة (رئيسية/تفاصيل)",
+        "delete": "حذف",
+        "mandatoryTitle": "الصور الإجبارية",
+        "optionalTitle": "صور التفاصيل الاختيارية",
+        "thumbnailLabel": "صورة مصغرة",
+        "hoverLabel": "صورة عند التمرير",
+        "detailLarge": "تفاصيل {{n}} (كبيرة)",
+        "detailSmall": "تفاصيل {{n}}",
+        "imageHint": "للحصول على أفضل جودة، استخدم صوراً عالية الدقة (على الأقل 400x400 بكسل، بنسبة 1:1). التنسيقات المدعومة: JPG، PNG. الحد الأقصى لحجم الملف: 5 ميجابايت.",
+        "imageHintTitle": "متطلبات الصور",
+        "productLinePlaceholder": "اختر خط الإنتاج",
+        "categoryPlaceholder": "اختر فئة فرعية",
+        "categories": {
+          "Bookcase": "خزانة كتب",
+          "Desk": "مكتب",
+          "TvStand": "طاولة تلفاز",
+          "ShoeRack": "خزانة أحذية",
+          "BedsideTable": "طاولة سرير"
+        }
+      }
+    }
+  },
+  "sharedLib": {
+    "designConfigurator": {
+      "cm": "سم",
+      "showDimensions": "عرض الأبعاد",
+      "hideDimensions": "إخفاء الأبعاد",
+      "controls": {
+        "title": "إعدادات التصميم",
+        "row": "صف",
+        "rowHeight": "ارتفاع الصف",
+        "column": "العمود",
+        "colHeight": "ارتفاع العمود",
+        "mainTabs": {
+          "model": "التصميم",
+          "rowsConfig": "الصفوف",
+          "colsConfig": "الأعمدة"
+        },
+        "Compartments": {
+          "drawers": "الأدراج",
+          "doors": "الأبواب",
+          "none": "بلا",
+          "some": "بعض",
+          "max": "الكل"
+        },
+        "heightOptions": {
+          "small": "صغير",
+          "medium": "متوسط",
+          "large": "كبير"
+        },
+        "color": "اللون",
+        "dimensions": "الأبعاد",
+        "width": "العرض",
+        "widthCm": "العرض",
+        "height": "الأرتفاع",
+        "heightCm": "الأرتفاع",
+        "depth": "السماكه",
+        "depthCm": "السماكه",
+        "style": "الطراز",
+        "rowDensity": "كثافه الصفوف",
+        "styles": {
+          "label": "الطراز",
+          "grid": "شبكي",
+          "slant": "مائل",
+          "stagger": "متدرج",
+          "gradient": "متفاوت",
+          "mosaic": "فسيفساء"
+        },
+        "storageOptions": {
+          "label": "خيارات التخزين",
+          "topStorage": "خزانه علويه",
+          "bottomStorage": "خزانه سفليه",
+          "none": "بلا",
+          "small": "صغير",
+          "medium": "متوسط",
+          "large": "كبير"
+        },
+        "density": "الكثافة",
+        "legroom": "مساحة الأرجل",
+        "backPanel": "لوح خلفي",
+        "withBack": "لوح خلفي",
+        "overhang": "بروز سطح الطاولة",
+        "overhangHint": "0 = متدفق مع الأرجل | أعلى = السطح يمتد خارج الأرجل.",
+        "legroomPosition": "موضع مساحة الأرجل",
+        "legroomPositionHint": "موضع مساحة الأرجل الفارغة (0 = أقصى اليسار، {max} = أقصى اليمين).",
+        "shelfDensity": "كثافة الرفوف",
+        "deskDensityHint": "0% = أقل عدد رفوف (صف واحد) | 100% = أقصى عدد رفوف (5 صفوف).",
+        "legs": "أرجل",
+        "legsHint": "إضافة أربعة أرجل مربعة في الزوايا أسفل الهيكل.",
+        "defaultColumnHeight": "الارتفاع الافتراضي للعمود",
+        "defaultColumnHeightHint": "يحدد هذا الارتفاع لجميع الأعمدة. يمكن ضبط كل عمود على حدة من علامة تبويب إعدادات الأعمدة.",
+        "columnHeight": "ارتفاع العمود",
+        "columnHeightHint": "يمكن أن يكون لكل عمود ارتفاع مختلف لشكل متدرج.",
+        "dimensionsAndDensity": "الأبعاد والكثافة",
+        "bedsideDensityHint": "0% = رفوف واسعة | 100% = أقصى عدد رفوف.",
+        "selectColumn": "اختر العمود",
+        "columnSettings": "الإعدادات",
+        "hugeCellDoor": "باب الخلية الكبيرة",
+        "hugeCellDoorHint": "يضيف بابًا بارتفاع كامل يغطي الفتحة بأكملها.",
+        "maxDoorsHint": "لا يمكن الجمع بين الحد الأقصى للأبواب والحد الأقصى للأدراج.",
+        "noColumnsAvailable": "لا توجد أعمدة. قم بتعديل العرض لإضافة أعمدة.",
+        "noRowsAvailable": "لا توجد صفوف متاحة. قم بتعديل ارتفاع المكتبة لإضافة صفوف.",
+        "hugeCellLabel": "خلية كبيرة (بدون رفوف)",
+        "hugeCellDescription": "يزيل الرفوف الأفقية الداخلية، مما يجعل العمود فتحة واحدة طويلة.",
+        "openCubbyLabel": "حجرة مفتوحة (بدون رفوف)",
+        "openCubbyDescription": "فتحة واحدة طويلة — مثالية للكتب أو مصباح."
+      },
+      "errors": {
+        "invalidConfig": "شكل غير صالح",
+        "invalidConfigDesc": "شكل التصميم مفقود أو غير صالح."
+      }
+    }
   },
   "themeMode": {
     "light": "مضيئ",
@@ -21,6 +161,56 @@
   "navigation": {
     "dashboard": "اللوحة الرئيسية",
     "design": "التصاميم",
-    "category": "الأنواع"
+    "category": "الأنواع",
+    "logout": "تسجيل الخروج"
+  },
+  "auth": {
+    "login": {
+      "title": "مرحباً بعودتك",
+      "subtitle": "أدخل بياناتك للوصول إلى حسابك",
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "name@example.com",
+      "emailRequired": "البريد الإلكتروني مطلوب.",
+      "emailInvalid": "يرجى إدخال بريد إلكتروني صحيح.",
+      "password": "كلمة المرور",
+      "passwordPlaceholder": "أدخل كلمة المرور",
+      "passwordRequired": "كلمة المرور مطلوبة.",
+      "passwordMinLength": "كلمة المرور يجب أن تكون 8 أحرف على الأقل.",
+      "forgotPassword": "نسيت كلمة المرور؟",
+      "rememberMe": "تذكرني",
+      "submit": "تسجيل الدخول",
+      "noAccount": "ليس لديك حساب؟",
+      "signUp": "إنشاء حساب"
+    }
+  },
+  "shared": {
+    "add": "إضافة",
+    "show": "عرض",
+    "entries": "عنصر",
+    "reset": "إعادة تعيين",
+    "previous": "السابق",
+    "next": "التالي",
+    "showing": "عرض",
+    "to": "إلى",
+    "of": "من",
+    "noData": "لا توجد بيانات متاحة."
+  },
+  "crud": {
+    "actions": "الإجراءات",
+    "viewDetails": "عرض التفاصيل",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "searchIn": "البحث في {{model}}...",
+    "addModel": "إضافة {{model}}",
+    "editModel": "تعديل {{model}}",
+    "headers": {
+      "id": "المعرف",
+      "nameEn": "الاسم (EN)",
+      "nameAr": "الاسم (AR)",
+      "createdAt": "تاريخ الإنشاء",
+      "role": "الدور",
+      "email": "البريد الإلكتروني",
+      "name": "الاسم"
+    }
   }
 }

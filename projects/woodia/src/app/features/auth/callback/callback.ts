@@ -1,14 +1,32 @@
 import { Component } from '@angular/core';
+import { ZardLoaderComponent } from '@shared-components/loader/loader.component';
+import { LogoComponent } from '@shared-components/custom/logo/logo.component';
+import { TranslocoDirective } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-auth-callback',
-  imports: [],
+  imports: [
+    ZardLoaderComponent,
+    LogoComponent,
+    TranslocoDirective
+  ],
   template: `
-    <div class="flex items-center justify-center w-full h-screen">
-      <div class="flex flex-col items-center gap-[16px]">
-        <h3 class="font-h3 text-foreground/50">Completing Sign-In...</h3>
-        <!-- Simple spinner inline -->
-        <div class="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+    <div class="flex flex-col items-center justify-center w-full h-screen gap-12" *transloco="let t">
+      <logo [wText]="true" class="scale-150 animate-pulse" />
+      
+      <div class="flex flex-col justify-center items-center gap-6">
+        <div class="relative w-20 h-20 flex justify-center items-center">
+          <z-loader zSize="lg" class="text-primary" />
+        </div>
+        
+        <div class="flex flex-col items-center gap-2 text-center">
+          <h1 class="font-h1 text-foreground">
+            {{ t('features.auth.callback.processing') }}
+          </h1>
+          <p class="font-body text-foreground-muted">
+            {{ t('features.auth.callback.pleaseWait') }}
+          </p>
+        </div>
       </div>
     </div>
   `,
@@ -17,3 +35,4 @@ import { Component } from '@angular/core';
 export class Callback {
   // Processing logic is handled globally by app.ts subscribing to oauthService.events
 }
+

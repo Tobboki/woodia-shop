@@ -12,6 +12,8 @@ import { toast } from 'ngx-sonner';
 import { ZardInputGroupComponent } from '@shared-components/input-group/input-group.component';
 import { NgIcon } from '@ng-icons/core';
 
+import { TranslocoDirective } from '@jsverse/transloco';
+
 @Component({
   selector: 'app-login',
   imports: [
@@ -23,7 +25,7 @@ import { NgIcon } from '@ng-icons/core';
     ZardFormModule,
     LogoComponent,
     ZardInputGroupComponent,
-    ZardInputDirective,
+    TranslocoDirective,
   ],
   templateUrl: './login.html',
   styleUrls: ['./login.scss'],

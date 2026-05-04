@@ -5,13 +5,16 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { LogoComponent } from "@shared-components/custom/logo/logo.component";
 import { ZardMenuImports } from '@shared-components/menu';
 import { ZardTooltipImports } from '@shared-components/tooltip';
-import { ThemeService } from '@admin-shared/services/theme.service';
+import { ThemeService } from '@admin-core/services/theme.service';
 import { TThemeMode } from '@admin-types/data-table.types';
 import navGroups from '@admin-shared/navigation'
-import { LanguageService } from '@admin-shared/services/language.service';
+import { LanguageService } from '@admin-core/services/language.service';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { CommonModule, NgTemplateOutlet } from '@angular/common';
 import {NgIcon} from '@ng-icons/core';
+import { AuthService } from '@admin-core/services/auth.service';
+import { LayoutService } from '@admin-core/services/layout.service';
+import { inject } from '@angular/core';
 
 @Component({
   selector: 'app-main',
@@ -36,7 +39,8 @@ export class MainLayout {
 
   navGroups = navGroups
 
-  readonly sidebarCollapsed = signal(false);
+  private layoutService = inject(LayoutService);
+  sidebarCollapsed = this.layoutService.sidebarCollapsed;
   readonly mobileNavOpen = signal(false);
   readonly isRtl = computed(() => this.langService.lang() === 'ar');
 
@@ -57,14 +61,21 @@ export class MainLayout {
   constructor(
     public themeService: ThemeService,
     public langService: LanguageService,
+    private authService: AuthService,
   ) {}
 
+  currentUser = computed(() => this.authService.getCurrentUser());
+
+  logout() {
+    this.authService.logout();
+  }
+
   toggleSidebar() {
-    this.sidebarCollapsed.update(c => !c);
+    this.layoutService.toggleSidebar();
   }
 
   onCollapsedChange(collapsed: boolean) {
-    this.sidebarCollapsed.set(collapsed);
+    this.layoutService.setCollapsed(collapsed);
   }
 
   setThemeMode(mode: TThemeMode) {

@@ -1,144 +1,236 @@
-<div class="flex flex-col gap-[24px] h-fit max-w-4xl mx-auto bg-card p-4 rounded-lg">
-    <div class="flex flex-col">
-      <h1 class="font-h1">
-        Furniture used to be personal
+<div class="min-h-screen bg-background overflow-hidden" *transloco="let t; read: 'features.ourStory'">
+  <!-- Hero Section -->
+  <section class="relative pt-24 pb-16 px-4 md:px-8 overflow-hidden">
+    <div class="absolute -top-24 -left-24 size-96 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
+    <div class="absolute top-1/2 -right-24 size-64 bg-accent/20 rounded-full blur-3xl"></div>
+
+    <div class="max-w-5xl mx-auto relative">
+      <span
+        class="inline-block px-4 py-1.5 mb-6 rounded-full bg-primary/5 border border-primary/10 text-primary text-xs font-black uppercase tracking-[0.2em] animate-in fade-in slide-in-from-bottom-4 duration-1000">
+        {{ t('mission') }}
+      </span>
+      <h1
+        class="text-5xl md:text-7xl font-black tracking-tight text-foreground leading-[1.1] mb-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+        {{ t('title1') }}
       </h1>
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 gap-8 text-muted-foreground animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
+        <p class="text-xl md:text-2xl font-medium leading-relaxed">
+          {{ t('p1') }}
+        </p>
+        <div class="space-y-6">
+          <p class="text-lg leading-relaxed opacity-80">
+            {{ t('p2') }}
+          </p>
+          <div class="flex items-center gap-4">
+            <div class="h-px flex-1 bg-gradient-to-r from-border to-transparent"></div>
+            <span class="text-primary font-black uppercase tracking-widest text-sm">{{ t('p3') }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-      <p class="font-caption">
-        It carried the mark of the craftsman — the subtle curve of a hand-finished edge, the precision of a joint cut with care, the pride of someone who built it to last.
+  <!-- Problem Section -->
+  <section class="py-24 bg-muted/30 relative">
+    <div class="max-w-5xl mx-auto px-4 md:px-8">
+      <div class="mb-16">
+        <h2 class="text-3xl md:text-4xl font-black text-foreground tracking-tight uppercase mb-4">{{ t('title2') }}</h2>
+        <div class="h-1.5 w-24 bg-primary rounded-full"></div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div
+          class="bg-card p-8 rounded-3xl border border-border/50 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500 group">
+          <div
+            class="size-12 rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <ng-icon name="lucideShoppingBag" class="size-6" />
+          </div>
+          <p class="font-bold text-foreground leading-snug">{{ t('p4') }}</p>
+        </div>
+
+        <div
+          class="bg-card p-8 rounded-3xl border border-border/50 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500 group">
+          <div
+            class="size-12 rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <ng-icon name="lucideClock" class="size-6" />
+          </div>
+          <p class="font-bold text-foreground leading-snug">{{ t('p5') }}</p>
+        </div>
+
+        <div
+          class="bg-card p-8 rounded-3xl border border-border/50 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500 group">
+          <div
+            class="size-12 rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <ng-icon name="lucideEyeOff" class="size-6" />
+          </div>
+          <p class="font-bold text-foreground leading-snug">{{ t('p6') }}</p>
+        </div>
+
+        <div
+          class="bg-card p-8 rounded-3xl border border-border/50 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500 group">
+          <div
+            class="size-12 rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <ng-icon name="lucideHammer" class="size-6" />
+          </div>
+          <p class="font-bold text-foreground leading-snug">{{ t('p7') }}</p>
+        </div>
+      </div>
+
+      <div class="mt-12 text-center">
+        <p class="text-2xl font-black text-foreground/40 italic">"{{ t('title3') }}"</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Idea Section -->
+  <section class="py-24 relative overflow-hidden bg-primary text-primary-foreground">
+    <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/wood-pattern.png')]">
+    </div>
+    <div class="absolute -bottom-24 -left-24 size-96 bg-white/10 rounded-full blur-3xl"></div>
+
+    <div class="max-w-4xl mx-auto px-4 md:px-8 relative text-center">
+      <h2 class="text-4xl md:text-6xl font-black tracking-tight mb-8">{{ t('title4') }}</h2>
+      <p class="text-xl md:text-2xl font-medium leading-relaxed opacity-90">
+        {{ t('p8') }}
       </p>
-
-      <p class="font-caption">
-        Today, much of the furniture industry is controlled by large galleries and showrooms. Mass production replaced craftsmanship. Customers choose from what’s available — not from what they truly want. Meanwhile, thousands of skilled carpenters remain unseen, competing for limited exposure rather than for their actual talent.
-      </p>
-
-      <p class="font-caption">
-        We believe there is a better way!
-      </p>
     </div>
+  </section>
 
-    <div class="flex flex-col">
-      <h3 class="font-h3">
-        The Problem We Saw
-      </h3>
+  <!-- How It Works Section -->
+  <section class="py-24 bg-background">
+    <div class="max-w-5xl mx-auto px-4 md:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div>
+          <h2 class="text-4xl md:text-5xl font-black text-foreground tracking-tight uppercase mb-6">{{ t('title5') }}
+          </h2>
+          <div class="space-y-8 mt-12">
+            <div class="flex gap-6 group">
+              <div
+                class="size-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black text-2xl shrink-0 group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                1</div>
+              <div>
+                <p class="text-xl font-bold text-foreground mb-2">{{ t('p9') }}</p>
+                <div class="h-1 w-0 bg-primary group-hover:w-full transition-all duration-500"></div>
+              </div>
+            </div>
+            <div class="flex gap-6 group">
+              <div
+                class="size-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black text-2xl shrink-0 group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                2</div>
+              <div>
+                <p class="text-xl font-bold text-foreground mb-2">{{ t('p10') }}</p>
+                <div class="h-1 w-0 bg-primary group-hover:w-full transition-all duration-500"></div>
+              </div>
+            </div>
+            <div class="flex gap-6 group">
+              <div
+                class="size-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black text-2xl shrink-0 group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                3</div>
+              <div>
+                <p class="text-xl font-bold text-foreground mb-2">{{ t('p11') }}</p>
+                <div class="h-1 w-0 bg-primary group-hover:w-full transition-all duration-500"></div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      <ul class="font-caption list-disc pl-6">
-        <li>
-          <p>
-            Customers are forced to buy what galleries display.
-          </p>
-        </li>
-        <li>
-          <p>
-            Custom furniture is expensive, slow, and often inaccessible.
-          </p>
-        </li>
-        <li>
-          <p>
-            Skilled carpenters struggle to find consistent, fair opportunities.
-          </p>
-        </li>
-        <li>
-          <p>
-            Talent exists — but visibility does not.
-          </p>
-        </li>
-      </ul>
+        <div class="relative">
+          <div class="absolute inset-0 bg-primary/20 rounded-[40px] rotate-3 blur-sm"></div>
+          <div class="relative bg-card border border-border p-8 rounded-[40px] shadow-2xl space-y-8">
+            <h3 class="text-xl font-black uppercase tracking-widest text-primary">{{ t('title6') }}</h3>
+            <div class="space-y-4">
+              <div class="flex items-center gap-4 p-4 rounded-2xl bg-muted/50 border border-border/50">
+                <ng-icon name="lucideDollarSign" class="text-primary size-5" />
+                <span class="font-bold">{{ t('p12') }}</span>
+              </div>
+              <div class="flex items-center gap-4 p-4 rounded-2xl bg-muted/50 border border-border/50">
+                <ng-icon name="lucideCalendar" class="text-primary size-5" />
+                <span class="font-bold">{{ t('p13') }}</span>
+              </div>
+              <div class="flex items-center gap-4 p-4 rounded-2xl bg-muted/50 border border-border/50">
+                <ng-icon name="lucideImage" class="text-primary size-5" />
+                <span class="font-bold">{{ t('p14') }}</span>
+              </div>
+              <div class="flex items-center gap-4 p-4 rounded-2xl bg-muted/50 border border-border/50">
+                <ng-icon name="lucideBadge" class="text-primary size-5" />
+                <span class="font-bold">{{ t('p15') }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <h4 class="font-h4">
-        The system favors middlemen, not makers.
-    </h4>
+  <!-- Result Section -->
+  <section class="py-24 bg-muted/20">
+    <div class="max-w-5xl mx-auto px-4 md:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-5xl font-black text-foreground tracking-tight">{{ t('title7') }}</h2>
+      </div>
 
-    <div class="flex flex-col">
-      <h3 class="font-h3">
-        Our Idea
-      </h3>
-
-      <p class="font-caption">
-        We built a platform that brings craftsmanship back to the center.Instead of browsing finished products, customers start with an idea.
-      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+        <div
+          class="flex items-start gap-6 p-8 rounded-3xl bg-card border border-border shadow-sm hover:border-primary/50 transition-colors">
+          <div class="size-10 rounded-full bg-success/10 text-success flex items-center justify-center shrink-0">
+            <ng-icon name="lucideCheck" class="size-6" />
+          </div>
+          <div>
+            <h4 class="text-xl font-bold mb-1">{{ t('p16') }}</h4>
+            <p class="text-muted-foreground text-sm">{{ t('p16Desc') }}</p>
+          </div>
+        </div>
+        <div
+          class="flex items-start gap-6 p-8 rounded-3xl bg-card border border-border shadow-sm hover:border-primary/50 transition-colors">
+          <div class="size-10 rounded-full bg-success/10 text-success flex items-center justify-center shrink-0">
+            <ng-icon name="lucideCheck" class="size-6" />
+          </div>
+          <div>
+            <h4 class="text-xl font-bold mb-1">{{ t('p17') }}</h4>
+            <p class="text-muted-foreground text-sm">{{ t('p17Desc') }}</p>
+          </div>
+        </div>
+        <div
+          class="flex items-start gap-6 p-8 rounded-3xl bg-card border border-border shadow-sm hover:border-primary/50 transition-colors">
+          <div class="size-10 rounded-full bg-success/10 text-success flex items-center justify-center shrink-0">
+            <ng-icon name="lucideCheck" class="size-6" />
+          </div>
+          <div>
+            <h4 class="text-xl font-bold mb-1">{{ t('p18') }}</h4>
+            <p class="text-muted-foreground text-sm">{{ t('p18Desc') }}</p>
+          </div>
+        </div>
+        <div
+          class="flex items-start gap-6 p-8 rounded-3xl bg-card border border-border shadow-sm hover:border-primary/50 transition-colors">
+          <div class="size-10 rounded-full bg-success/10 text-success flex items-center justify-center shrink-0">
+            <ng-icon name="lucideCheck" class="size-6" />
+          </div>
+          <div>
+            <h4 class="text-xl font-bold mb-1">{{ t('p19') }}</h4>
+            <p class="text-muted-foreground text-sm">{{ t('p19Desc') }}</p>
+          </div>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <div class="flex flex-col">
-      <h3 class="font-h3">
-        They can
-      </h3>
-
-      <ul class="font-caption list-disc pl-6">
-        <li>
-          <p>
-            Select a base furniture piece
-          </p>
-        </li>
-        <li>
-          <p>
-            Customize dimensions, materials, finishes, and details
-          </p>
-        </li>
-        <li>
-          <p>
-            Post their project to a community of verified carpenters
-          </p>
-        </li>
-      </ul>
+  <!-- CTA -->
+  <section class="py-24 px-4">
+    <div
+      class="max-w-4xl mx-auto bg-foreground text-background rounded-[40px] p-12 md:p-20 text-center relative overflow-hidden">
+      <div class="absolute top-0 right-0 size-64 bg-primary/20 rounded-full blur-[100px]"></div>
+      <h2 class="text-4xl md:text-6xl font-black mb-8 relative">{{ t('ctaTitle') }}</h2>
+      <div class="flex flex-wrap justify-center gap-4 relative">
+        <button
+          class="px-10 py-5 bg-primary text-white rounded-2xl font-black text-xl hover:scale-105 transition-transform shadow-xl shadow-primary/20">
+          {{ t('ctaPrimary') }}
+        </button>
+        <button
+          class="px-10 py-5 bg-background text-foreground rounded-2xl font-black text-xl hover:scale-105 transition-transform border-2 border-white/10">
+          {{ t('ctaSecondary') }}
+        </button>
+      </div>
     </div>
-
-    <div class="flex flex-col">
-      <h3 class="font-h3">
-        From there, professional craftsmen compete by submitting
-      </h3>
-
-      <ul class="font-caption list-disc pl-6">
-        <li>
-          <p>
-            Their proposed price
-          </p>
-        </li>
-        <li>
-          <p>
-            Estimated completion time
-          </p>
-        </li>
-        <li>
-          <p>
-            Portfolio samples
-          </p>
-        </li>
-        <li>
-          <p>
-            Customer ratings
-          </p>
-        </li>
-      </ul>
-    </div>
-
-    <div class="flex flex-col">
-      <h3 class="font-h3">
-        The result?
-      </h3>
-
-      <ul class="font-caption list-disc pl-6">
-        <li>
-          <p>
-            Competitive pricing.
-          </p>
-        </li>
-        <li>
-          <p>
-            Transparent timelines
-          </p>
-        </li>
-        <li>
-          <p>
-            True customization.
-          </p>
-        </li>
-        <li>
-          <p>
-            Direct connection between maker and customer.
-          </p>
-        </li>
-      </ul>
-    </div>
+  </section>
 </div>

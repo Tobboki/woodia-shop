@@ -41,8 +41,7 @@ export class App implements OnInit {
       if (e.type === 'token_received') {
         this.processGoogleToken();
       } else if (e.type === 'token_error') {
-        toast.error('Authentication Failed', {
-          description: 'An error occurred during authentication.',
+        toast.error(this.langService.translate('features.auth.login.errors.authFailed'), {
           position: 'bottom-center'
         });
         localStorage.removeItem('google_auth_intent');
@@ -56,8 +55,7 @@ export class App implements OnInit {
     const search = window.location.search;
 
     if (hash.includes('error=') || search.includes('error=')) {
-      toast.error('Authentication Canceled', {
-        description: 'You canceled the login process or access was denied.',
+      toast.error(this.langService.translate('features.auth.login.errors.authCanceled'), {
         position: 'bottom-center'
       });
       localStorage.removeItem('google_auth_intent');
@@ -118,20 +116,19 @@ export class App implements OnInit {
             this.oauthService.logOut();
             localStorage.removeItem('google_auth_intent');
 
-            toast.error('Access Denied', {
-              description: 'Admins cannot login to the client app.',
+            toast.error(this.langService.translate('features.auth.login.errors.accessDenied'), {
               position: 'bottom-center',
             });
             return;
           }
 
           if (isSignupSuccess) {
-            toast.success('Registration Successful', {
+            toast.success(this.langService.translate('features.auth.register.messages.registrationSuccess'), {
               position: 'bottom-center',
               duration: 2000,
             });
           } else {
-            toast.success('Login Successful', {
+            toast.success(this.langService.translate('features.auth.login.messages.loginSuccess'), {
               position: 'bottom-center',
               duration: 2000,
             });
@@ -145,8 +142,7 @@ export class App implements OnInit {
             this.router.navigate(['/customers']);
           }
         } catch (error) {
-          toast.error('Google Auth failed', {
-            description: 'There was a problem with your request.',
+          toast.error(this.langService.translate('features.auth.login.errors.googleAuthFailed'), {
             position: 'bottom-center',
           });
           console.error('Google Auth error', error);
@@ -177,8 +173,7 @@ export class App implements OnInit {
             console.log('Access token refreshed successfully');
           },
           error: (err) => {
-            toast.error('Session expired', {
-              description: 'Please login again to continue.',
+            toast.error(this.langService.translate('features.auth.login.errors.sessionExpired'), {
               position: 'bottom-center',
             });
             console.log('Authentication failed: ', err);

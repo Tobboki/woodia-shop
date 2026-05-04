@@ -9,7 +9,9 @@ import {
   viewChild,
   type InputSignal,
   type Signal,
+  inject,
 } from '@angular/core';
+import { Directionality } from '@angular/cdk/bidi';
 
 import type { ClassValue } from 'clsx';
 import type { EmblaCarouselType, EmblaEventType, EmblaOptionsType, EmblaPluginType } from 'embla-carousel-angular';
@@ -102,6 +104,7 @@ import {NgIcon} from '@ng-icons/core';
   },
 })
 export class ZardCarouselComponent {
+  private readonly dir = inject(Directionality, { optional: true });
   protected readonly emblaRef = viewChild(EmblaCarouselDirective);
 
   readonly class = input<ClassValue>('');
@@ -120,6 +123,7 @@ export class ZardCarouselComponent {
   protected readonly scrollSnaps = signal<number[]>([]);
   protected readonly subscribeToEvents: EmblaEventType[] = ['init', 'select', 'reInit'];
   protected readonly options: Signal<EmblaOptionsType> = computed(() => ({
+    direction: this.dir?.value === 'rtl' ? 'rtl' : 'ltr',
     ...this.zOptions(),
     axis: this.zOrientation() === 'horizontal' ? 'x' : 'y',
   }));

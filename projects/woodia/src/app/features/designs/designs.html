@@ -1,55 +1,82 @@
-<div class="flex flex-col gap-[24px]">
-  @if(isLoadingCategories()) {
-    <z-loader class="self-center" />
-  } @else {
+<div class="flex flex-col gap-8 py-4" *transloco="let t">
+  <!-- Breadcrumbs & Category Skeleton -->
+  <div class="flex flex-col gap-6">
+    @if(isLoadingCategories()) {
+    <z-skeleton class="h-6 w-48 rounded-md" />
+    } @else {
     <z-breadcrumb zWrap="wrap" zAlign="start">
       <z-breadcrumb-item [routerLink]="['/designs']">
-        All Designs
+        {{ t('features.designs.allDesigns') }}
       </z-breadcrumb-item>
       @if (currentCategory() !== 'all') {
-        <z-breadcrumb-item [routerLink]="[`/designs/${currentCategory().toLowerCase()}`]">
-          {{ currentCategory() }}
-        </z-breadcrumb-item>
+      <z-breadcrumb-item [routerLink]="[`/designs/${currentCategory().toLowerCase()}`]">
+        {{ currentCategory() }}
+      </z-breadcrumb-item>
       }
     </z-breadcrumb>
-  }
-
-  <div class="flex gap-[16px]">
-    @for (category of categories(); track category.slug) {
-      <a
-        class="font-medium text-[24px] "
-        [routerLink]="[`/designs/${category.slug}`]"
-      >
-        <div class="flex flex-col items-center">
-          <img [src]="category.imageUrl" [alt]="category.name" width="128" height="128">
-
-          <p class="font-caption">
-            {{ category.name }}
-          </p>
-        </div>
-      </a>
     }
+
+    <div class="flex gap-6 overflow-x-auto pb-2 scrollbar-hide">
+      @if (isLoadingCategories()) {
+      @for (i of [1,2,3,4,5]; track i) {
+      <div class="flex flex-col items-center gap-3">
+        <z-skeleton class="w-24 h-24 rounded-sm" />
+        <z-skeleton class="h-4 w-16 rounded-md" />
+      </div>
+      }
+      } @else {
+      @for (category of categories(); track category.slug) {
+      <a class="group flex flex-col items-center gap-3" [routerLink]="[`/designs/${category.slug}`]">
+        <div
+          class="w-24 h-24 rounded-full overflow-hidden border border-border group-hover:border-primary transition-colors">
+          <img [ngSrc]="category.imageUrl" [alt]="category.name" width="96" height="96"
+            class="object-cover w-full h-full">
+        </div>
+        <p class="font-caption group-hover:text-primary transition-colors text-center">
+          {{ category.name }}
+        </p>
+      </a>
+      }
+      }
+    </div>
   </div>
 
-  <div class="grid grid-cols-4 max-lg:grid-cols-3 max-md:grid-cols-1 place-items-center gap-[16px]">
+  <!-- Products Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    @if (isLoadingProducts() && productCards().length === 0) {
+    @for (i of [1,2,3,4,5,6,7,8]; track i) {
+    <div class="bg-card rounded-2xl p-4 border border-border space-y-4">
+      <z-skeleton class="aspect-square w-full rounded-xl" />
+      <div class="space-y-2">
+        <z-skeleton class="h-5 w-3/4 rounded-md" />
+        <z-skeleton class="h-4 w-1/2 rounded-md" />
+      </div>
+      <div class="flex justify-between items-center pt-2">
+        <z-skeleton class="h-6 w-20 rounded-md" />
+        <z-skeleton class="h-8 w-8 rounded-full" />
+      </div>
+    </div>
+    }
+    } @else {
     @for (product of productCards(); track product.id) {
-      <woodia-product-card [product]="product" />
+    <woodia-product-card [product]="product" />
+    }
     }
   </div>
 
   @if (hasMoreProducts()) {
-    <div class="flex justify-center mt-6">
-      @if (isLoadingProducts()) {
-        <z-loader />
-      } @else {
-        <button
-        z-button
-        (click)="loadMoreProducts()"
-        [disabled]="isLoadingProducts()"
-      >
-        Load More'
-      </button>
-      }
+  <div class="flex justify-center mt-8 pb-10">
+    @if (isLoadingProducts() && productCards().length > 0) {
+    <div class="flex gap-2">
+      <div class="w-2 h-2 rounded-full bg-primary animate-bounce"></div>
+      <div class="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:0.2s]"></div>
+      <div class="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:0.4s]"></div>
     </div>
+    } @else if (productCards().length > 0) {
+    <button z-button zSize="xl" (click)="loadMoreProducts()" [disabled]="isLoadingProducts()">
+      {{ t('features.designs.loadMore') }}
+    </button>
+    }
+  </div>
   }
 </div>

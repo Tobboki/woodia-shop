@@ -1,9 +1,10 @@
 
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ZardButtonComponent } from '@shared-components/button/button.component';
 import { ZardCarouselComponent, ZardCarouselContentComponent, ZardCarouselItemComponent } from '@shared-components/carousel';
 import { MakerCard } from "@woodia-shared/components/maker-card/maker-card";
+import { TranslocoDirective } from '@jsverse/transloco';
 
 @Component({
   selector: 'woodia-makers-section',
@@ -12,11 +13,14 @@ import { MakerCard } from "@woodia-shared/components/maker-card/maker-card";
     ZardCarouselContentComponent,
     ZardCarouselItemComponent,
     ZardButtonComponent,
-    MakerCard
+    MakerCard,
+    TranslocoDirective
 ],
   templateUrl: './makers-section.html',
   styleUrl: './makers-section.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
+
 export class MakersSection {
 
   zardCarouselOptions = {
@@ -29,55 +33,55 @@ export class MakersSection {
       id: 1,
       imgPath: '/images/home/makers-section/maker-1.webp',
       name: 'Laila Asmr',
-      quote: "Good furniture starts with honest wood, careful hands, and patience in every cut."
+      quote: "features.home.makers.quotes.1"
     },
     {
       id: 2,
       imgPath: '/images/home/makers-section/maker-2.webp',
       name: 'Mohamed Ali',
-      quote: "Every joint tells a story — strong craftsmanship turns simple wood into lasting furniture."
+      quote: "features.home.makers.quotes.2"
     },
     {
       id: 3,
       imgPath: '/images/home/makers-section/maker-3.webp',
       name: 'Omar Hassan',
-      quote: "Measure twice, cut once — precision is what makes a piece stand the test of time."
+      quote: "features.home.makers.quotes.3"
     },
     {
       id: 4,
       imgPath: '/images/home/makers-section/maker-4.webp',
       name: 'Nour Ahmed',
-      quote: "Design is important, but true beauty appears when the wood grain guides the craft."
+      quote: "features.home.makers.quotes.4"
     },
     {
       id: 5,
       imgPath: '/images/home/makers-section/maker-5.webp',
       name: 'Sara Mahmoud',
-      quote: "Handcrafted furniture carries character — every curve and edge shaped with intention."
+      quote: "features.home.makers.quotes.5"
     },
     {
       id: 6,
       imgPath: '/images/home/makers-section/maker-6.webp',
       name: 'Ahmed Khaled',
-      quote: "A well-built table isn't just furniture — it's where families gather for years."
+      quote: "features.home.makers.quotes.6"
     },
     {
       id: 7,
       imgPath: '/images/home/makers-section/maker-7.webp',
       name: 'Mona Adel',
-      quote: "Craftsmanship is the balance between strength, simplicity, and the natural beauty of wood."
+      quote: "features.home.makers.quotes.7"
     },
     {
       id: 8,
       imgPath: '/images/home/makers-section/maker-8.webp',
       name: 'Youssef Samir',
-      quote: "The best furniture pieces are built slowly, shaped by skill rather than machines."
+      quote: "features.home.makers.quotes.8"
     },
     {
       id: 9,
       imgPath: '/images/home/makers-section/maker-9.webp',
       name: 'Dina Fathy',
-      quote: "Every handcrafted piece carries the mark of the maker behind it."
+      quote: "features.home.makers.quotes.9"
     },
   ]
   constructor(

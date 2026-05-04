@@ -4,6 +4,7 @@ export const environment = {
   googleSignInClientId: import.meta.env["NG_APP_GOOGLE_SIGN_IN_CLIENT_ID"],
   endpoints: {
     upload: "/admin/Upload",
+    translation: "/api/Translation/translate",
     constants: {
       governorate: '/api/Governorate',
     },

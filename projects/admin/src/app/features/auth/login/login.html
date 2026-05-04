@@ -1,127 +1,84 @@
-<div class="h-[100dvh] flex items-center justifu-center">
-  <div class="h-full flex flex-col bg-card mx-auto">
+<div class="min-h-[100dvh] flex items-center justify-center p-4" *transloco="let t">
+  <div class="w-full max-w-[440px] bg-card p-8 rounded-3xl border shadow-2xl flex flex-col">
     <!-- Logo -->
-    <logo class="mb-[40px]" />
+    <div class="flex justify-center mb-8">
+      <logo [wText]="true" />
+    </div>
 
-    <div class="w-[80%] max-xl:w-full max-lg:w-[60%] max-md:w-[80%] max-sm:w-full my-auto mx-auto space-y-[40px]">
+    <div class="w-full space-y-8">
       <!-- Title -->
-      <div class="flex flex-col gap-[16px] max-2xl:text-center">
-        <h3 class="font-h3 leading-1">
-          Welcome Back
-        </h3>
-        <p class="font-body">
-          Enter your Credentials to access your account
+      <div class="text-center space-y-2">
+        <h1 class="text-3xl font-bold tracking-tight text-foreground">
+          {{ t('auth.login.title') }}
+        </h1>
+        <p class="text-muted-foreground font-medium">
+          {{ t('auth.login.subtitle') }}
         </p>
       </div>
 
-      <!-- Form -->
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6 my-[40px]">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
         <!-- Email Control -->
         <z-form-field>
-          <label
-            class="font-label"
-            z-form-label
-            zRequired
-          >
-            Email
+          <label class="font-semibold text-sm mb-1 block" z-form-label zRequired>
+            {{ t('auth.login.email') }}
           </label>
           <z-form-control>
-            <input
-              z-input
-              type="email"
-              placeholder="Enter your email"
-              formControlName="email"
-              [zStatus]="emailControl.invalid && emailControl.touched ? 'error' : undefined"
-            />
+            <input z-input type="email" [placeholder]="t('auth.login.emailPlaceholder')" formControlName="email"
+              [zStatus]="emailControl.invalid && emailControl.touched ? 'error' : undefined" class="h-11" />
           </z-form-control>
 
           @if (emailControl.hasError('required') && emailControl.touched) {
-            <z-form-message class="font-caption" zType="error">Email is required.</z-form-message>
+          <z-form-message class="text-xs mt-1" zType="error">{{ t('auth.login.emailRequired') }}</z-form-message>
           } @else if (emailControl.hasError('email') && emailControl.touched) {
-            <z-form-message class="font-caption" zType="error">Enter a valid email address.</z-form-message>
+          <z-form-message class="text-xs mt-1" zType="error">{{ t('auth.login.emailInvalid') }}</z-form-message>
           }
         </z-form-field>
 
         <!-- Password Control -->
         <z-form-field>
-          <label
-            class="font-label"
-            z-form-label
-            zRequired
-          >
-            Password
-          </label>
+          <div class="flex items-center justify-between mb-1">
+            <label class="font-semibold text-sm" z-form-label zRequired>
+              {{ t('auth.login.password') }}
+            </label>
+            <button type="button" class="text-xs font-medium text-primary hover:underline" zType="link">
+              {{ t('auth.login.forgotPassword') }}
+            </button>
+          </div>
           <z-form-control>
-            <z-input-group [zAddOnAfter]="showPasswordIcon" class="mb-4">
-              <input
-                z-input
-                [type]="showPassword() ? 'text' : 'password'"
-                placeholder="min 8 characters"
-                formControlName="password"
-                [zStatus]="passwordControl.invalid && passwordControl.touched ? 'error' : undefined"
-              />
+            <z-input-group [zAddOnAfter]="showPasswordIcon">
+              <input z-input [type]="showPassword() ? 'text' : 'password'"
+                [placeholder]="t('auth.login.passwordPlaceholder')" formControlName="password"
+                [zStatus]="passwordControl.invalid && passwordControl.touched ? 'error' : undefined" class="h-11" />
             </z-input-group>
 
             <ng-template #showPasswordIcon>
-              <ng-icon
-                class="text-foreground/50"
-                [name]="showPassword() ? 'lucideEyeOff': 'lucideEye'"
-                (click)="togglePasswordVisibility()"
-              />
+              <button type="button" (click)="togglePasswordVisibility()"
+                class="flex items-center justify-center p-2 text-muted-foreground hover:text-foreground transition-colors">
+                <ng-icon [name]="showPassword() ? 'lucideEyeOff': 'lucideEye'" />
+              </button>
             </ng-template>
           </z-form-control>
           @if (passwordControl.hasError('required') && passwordControl.touched) {
-            <z-form-message class="font-caption" zType="error">Password is required.</z-form-message>
+          <z-form-message class="text-xs mt-1" zType="error">{{ t('auth.login.passwordRequired') }}</z-form-message>
           } @else if (passwordControl.hasError('minlength') && passwordControl.touched) {
-            <z-form-message class="font-caption" zType="error">Password must be at least 8 characters.</z-form-message>
+          <z-form-message class="text-xs mt-1" zType="error">{{ t('auth.login.passwordMinLength') }}</z-form-message>
           } @else if (passwordControl.hasError('backend') && passwordControl.touched) {
-            <z-form-message class="font-caption" zType="error">{{ passwordControl.getError('backend') }}</z-form-message>
+          <z-form-message class="text-xs mt-1" zType="error">{{ passwordControl.getError('backend') }}</z-form-message>
           }
         </z-form-field>
 
-        <div class="flex flex-row content-center justify-between">
-          <z-form-field>
-            <z-form-control class="flex flex-col justify-center">
-              <div class="flex items-center space-x-2">
-                <z-checkbox
-                  id="rememberMe"
-                  formControlName="rememberMe"
-                  zSize="lg"
-                />
-                <label
-                  class="font-label text-nowrap"
-                  z-form-label
-                  for="rememberMe"
-                >
-                  Remember me
-                </label>
-              </div>
-            </z-form-control>
-          </z-form-field>
-
-          <button class="text-primary font-label" z-button zSize="sm" zType="link">Forget Password?</button>
+        <div class="flex items-center space-x-2">
+          <z-checkbox id="rememberMe" formControlName="rememberMe" zSize="lg" />
+          <label for="rememberMe" class="text-sm font-medium leading-none">
+            {{ t('auth.login.rememberMe') }}
+          </label>
         </div>
 
-        <div class="space-y-[4px]">
-          <button
-            zFull
-            z-button
-            zType="default"
-            zSize="xl"
-            type="submit"
-            [disabled]="loginForm.invalid"
-            [zLoading]="loginFormLoading()"
-            class="h-12"
-          >
-            Login
+        <div class="pt-2">
+          <button zFull z-button zType="default" zSize="xl" type="submit" [disabled]="loginForm.invalid"
+            [zLoading]="loginFormLoading()" class="h-11 w-full font-bold">
+            {{ t('auth.login.submit') }}
           </button>
-
-          <div class="flex flex-row justify-center items-center">
-            <p>
-              Don't have an account?
-            </p>
-            <button class="text-primary font-body" z-button zSize="sm" zType="link" (click)="goToLRegister()">Sign Up</button>
-          </div>
         </div>
       </form>
     </div>

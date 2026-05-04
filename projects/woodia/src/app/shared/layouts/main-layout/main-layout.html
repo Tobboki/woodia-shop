@@ -5,21 +5,17 @@
       : ''
   ]"
 >
-  <woodia-header [menu]="menu()"></woodia-header>
+  <div class="relative z-10">
+    <woodia-header [menu]="menu()"></woodia-header>
 
-  <div
-    [ngClass]="[
-      'relative z-10 container mx-auto my-4',
-      layoutVariant() === 'default'
-        ? 'py-[72px] px-[24px] max-sm:px-[12px]'
-        : 'py-[16px max-sm:px-[12px]'
-    ]"
-  >
-    <router-outlet></router-outlet>
+    <div
+      [ngClass]="[
+        'container mx-auto my-4 p-4 max-sm:px-4'
+      ]"
+    >
+      <router-outlet></router-outlet>
+    </div>
+
+    <woodia-footer [menu]="menu()" />
   </div>
-
-  <woodia-footer
-    [menu]="menu()"
-    class="relative z-10"
-  />
 </div>

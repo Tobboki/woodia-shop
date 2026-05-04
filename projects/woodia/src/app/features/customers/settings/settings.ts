@@ -7,6 +7,7 @@ import { SidebarComponent } from '@shared-components/layout/sidebar.component';
 import { LayoutComponent } from '@shared-components/layout/layout.component';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import {IconType, NgIcon} from '@ng-icons/core';
+import { TranslocoDirective } from '@jsverse/transloco';
 
 interface IMenuItem {
   icon: IconType
@@ -26,7 +27,8 @@ interface IMenuItem {
     NgIcon,
     RouterOutlet,
     RouterLink,
-    RouterLinkActive
+    RouterLinkActive,
+    TranslocoDirective
 ],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
