@@ -26,10 +26,10 @@ import { TranslocoDirective } from '@jsverse/transloco'
     <div *transloco="let t">
       @if (store.activeMainTab() === 'model') {
         <div class="space-y-6">
-          <div [class.hidden]="store.activeControlTab() !== 'color'" class="md:block space-y-3">
+          <div [class.hidden]="store.activeControlTab() !== 'color'" class="lg:block space-y-3">
             <z-form-field>
-              <label class="font-label hidden md:block" z-form-label>{{ t('sharedLib.designConfigurator.controls.color') }}</label>
-            <div class="flex max-md:hidden flex-wrap gap-2 pt-1">
+              <label class="font-label hidden lg:block" z-form-label>{{ t('sharedLib.designConfigurator.controls.color') }}</label>
+            <div class="flex max-lg:hidden flex-wrap gap-2 pt-1">
               @for (c of store.FURNITURE_COLORS; track c.name) {
                 <button type="button" class="size-8 rounded-full border-3 border-border transition-transform shadow-sm"
                   [class.border-primary]="store.bedsideColor() === c.value"
@@ -39,7 +39,7 @@ import { TranslocoDirective } from '@jsverse/transloco'
                   [title]="c.name"></button>
               }
             </div>
-            <div class="hidden max-md:block w-full min-w-0">
+            <div class="hidden max-lg:block w-full min-w-0">
               <z-carousel zControls="none" [zOptions]="{ align: 'start', containScroll: 'trimSnaps' }">
                 <z-carousel-content>
                   @for (c of store.FURNITURE_COLORS; track c.name) {
@@ -58,10 +58,10 @@ import { TranslocoDirective } from '@jsverse/transloco'
           </z-form-field>
         </div>
         <div [class.hidden]="!['width','height','depth','density'].includes(store.activeControlTab())"
-          class="md:block space-y-4">
-          <h5 class="font-label text-foreground/60 hidden md:block">{{ t('sharedLib.designConfigurator.controls.dimensionsAndDensity') }}</h5>
+          class="lg:block space-y-4">
+          <h5 class="font-label text-foreground/60 hidden lg:block">{{ t('sharedLib.designConfigurator.controls.dimensionsAndDensity') }}</h5>
           
-          <div [class.hidden]="store.activeControlTab() !== 'width'" class="md:block">
+          <div [class.hidden]="store.activeControlTab() !== 'width'" class="lg:block">
             <z-form-field>
               <label class="font-label" z-form-label>{{ t('sharedLib.designConfigurator.controls.width') }} ({{ store.bedsideWidthCm() }} {{ t('sharedLib.designConfigurator.cm') }})</label>
               <z-form-control>
@@ -71,7 +71,7 @@ import { TranslocoDirective } from '@jsverse/transloco'
             </z-form-field>
           </div>
           
-          <div [class.hidden]="store.activeControlTab() !== 'height'" class="md:block">
+          <div [class.hidden]="store.activeControlTab() !== 'height'" class="lg:block">
             <z-form-field>
               <label class="font-label" z-form-label>{{ t('sharedLib.designConfigurator.controls.height') }} ({{ store.bedsideHeightCm() }} {{ t('sharedLib.designConfigurator.cm') }})</label>
               <z-form-control>
@@ -81,7 +81,7 @@ import { TranslocoDirective } from '@jsverse/transloco'
             </z-form-field>
           </div>
           
-          <div [class.hidden]="store.activeControlTab() !== 'depth'" class="md:block">
+          <div [class.hidden]="store.activeControlTab() !== 'depth'" class="lg:block">
             <z-form-field>
               <label class="font-label" z-form-label>{{ t('sharedLib.designConfigurator.controls.depth') }} ({{ store.bedsideDepthCm() }} {{ t('sharedLib.designConfigurator.cm') }})</label>
               <z-form-control>
@@ -91,7 +91,7 @@ import { TranslocoDirective } from '@jsverse/transloco'
             </z-form-field>
           </div>
           
-          <div [class.hidden]="store.activeControlTab() !== 'density'" class="md:block">
+          <div [class.hidden]="store.activeControlTab() !== 'density'" class="lg:block">
             <z-form-field>
               <label class="font-label" z-form-label>{{ t('sharedLib.designConfigurator.controls.shelfDensity') }} ({{ store.bedsideDensity() }}%)</label>
               <z-form-control>
@@ -102,7 +102,7 @@ import { TranslocoDirective } from '@jsverse/transloco'
             </z-form-field>
           </div>
         </div>
-        <z-form-field class="md:block">
+        <z-form-field class="lg:block">
           <z-form-control class="flex items-center">
             <z-checkbox [ngModel]="store.bedsideWithBack()" (ngModelChange)="store.onBedsideBackPanelToggle($event)" zShape="circle"
               zSize="lg">{{ t('sharedLib.designConfigurator.controls.backPanel') }}</z-checkbox>

@@ -19,6 +19,7 @@ import { ICategory } from '../../types/category';
 import { environment } from '@woodia-environments/environment';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '@woodia-core/services/auth.service';
+import { LanguageService } from '@woodia-core/services/language.service';
 
 @Component({
   selector: 'woodia-main-layout',
@@ -119,7 +120,8 @@ export class MainLayout implements OnInit {
     private http: HttpClient,
     private route: ActivatedRoute,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private langService: LanguageService
   ) {
     // React to route changes properly by traversing to the deepest child
     this.router.events.pipe(
@@ -139,6 +141,12 @@ export class MainLayout implements OnInit {
     // Initial check
     const initialVariant = this.getDeepestData(this.route.snapshot, 'layoutVariant') || 'plain';
     this.layoutVariant.set(initialVariant);
+
+    // Re-fetch categories when language changes
+    effect(() => {
+      this.langService.lang();
+      this.fetchCategories();
+    }, { allowSignalWrites: true });
   }
 
   private getDeepestData(snapshot: any, key: string): any {
@@ -158,7 +166,6 @@ export class MainLayout implements OnInit {
   // Lifecycle
   // ---------------------------
   ngOnInit(): void {
-    this.fetchCategories();
   }
 
   // ---------------------------
@@ -169,7 +176,8 @@ export class MainLayout implements OnInit {
 
     this.http
       .get<ICategory[]>(
-        `${environment.apiUrl}${environment.endpoints.customer.category.getAll}`
+        `${environment.apiUrl}${environment.endpoints.customer.category.getAll}`,
+        { headers: { 'Accept-Language': this.langService.lang() } }
       )
       .subscribe({
         next: (data) => {

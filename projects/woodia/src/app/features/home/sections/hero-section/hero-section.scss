@@ -1,0 +1,82 @@
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+@keyframes border-flow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+@keyframes gradient-rotate {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float 8s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.animate-float-slow {
+  animation: float 10s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.animate-gradient-slow {
+  background-size: 200% 200%;
+  animation: gradient-rotate 5s linear infinite;
+}
+
+.hero-image-container {
+  position: relative;
+  border-radius: 1.5rem;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: visible; // To allow glow to spread
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -4px; // Border thickness
+    border-radius: 1.75rem; // Slightly larger to cover the edge
+    padding: 4px;
+    background: linear-gradient(
+      90deg, 
+      var(--primary) 0%, 
+      #3b82f6 25%, 
+      #8b5cf6 50%, 
+      #3b82f6 75%, 
+      var(--primary) 100%
+    );
+    background-size: 200% auto;
+    animation: border-flow 2s linear infinite;
+    -webkit-mask: 
+       linear-gradient(#fff 0 0) content-box, 
+       linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  &.active {
+    &::before {
+      opacity: 1;
+    }
+  }
+}
+
+.image-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  background: var(--card);
+}

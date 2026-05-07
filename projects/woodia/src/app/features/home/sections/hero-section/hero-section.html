@@ -1,75 +1,88 @@
-<div class="flex flex-col items-center gap-2 mt-[96px] max-md:mt-0" *transloco="let t">
-  <!-- Header -->
-  <h1
-    class="uppercase font-h1 font-medium flex flex-col items-center gap-2 max-md:gap-0"
-  >
-    <div class="flex flex-row flex-wrap justify-center items-center gap-1">
-      <span class="text-nowrap">{{ t('features.home.hero.centuriesOf') }}</span>
-      <div class="group relative inline-block max-md:hidden">
-        <img
-          ngSrc="/images/home/hero-hover-1.webp"
-          alt="Craftsman"
-          width="128"
-          height="192"
-          priority
-          class="h-[48px] w-[128px] object-cover rounded-full border-2 border-foreground"
-        />
+<div class="container mx-auto px-4 mt-8 max-md:mt-8 flex flex-col gap-24" *transloco="let t">
 
-        <!-- Expanded -->
-        <div class="absolute left-1/2 top-1/2
-                -translate-x-1/2 -translate-y-1/2
-                h-[400px]
-                aspect-[3183/4774]
-                opacity-0 scale-75
-                transition-all duration-500 ease-out
-                group-hover:opacity-100 group-hover:scale-100
-                z-50 pointer-events-none">
-          <img
-            ngSrc="/images/home/hero-hover-1.webp"
-            alt="Craftsman Focus Img"
-            fill
-            class="w-full h-full object-cover rounded-2xl shadow-2xl border-2 border-foreground"
-          />
+  <!-- Header: Two Parts -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+    <!-- Left Part: Content -->
+    <div class="flex flex-col items-center lg:items-start text-center lg:text-start gap-4 max-w-2xl mx-auto lg:mx-0">
+      <!-- Badge -->
+      <div
+        class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold uppercase tracking-widest text-primary animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+        </span>
+        {{ t('features.home.hero.badge') }}
+      </div>
+
+      <!-- Title -->
+      <h1
+        class="text-3xl md:text-5xl font-bold tracking-tight leading-[1.1] animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100">
+        {{ t('features.home.hero.centuriesOf') }}
+        <span class="text-primary hover:text-foreground transition-colors cursor-default"
+          (mouseenter)="hoveredPart.set('craftsmanship')" (mouseleave)="hoveredPart.set('none')">
+          {{ t('features.home.hero.craftsmanship') }}
+        </span>
+        <span class="block">
+          {{ t('features.home.hero.presentedWith') }}
+          <span class="text-primary hover:text-foreground transition-colors cursor-default"
+            (mouseenter)="hoveredPart.set('modernity')" (mouseleave)="hoveredPart.set('none')">
+            {{ t('features.home.hero.modernity') }}
+          </span>
+        </span>
+      </h1>
+
+      <!-- Description -->
+      <p
+        class="text-lg md:text-xl text-muted-foreground leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+        {{ t('features.home.hero.description') }}
+      </p>
+
+      <!-- Actions -->
+      <div
+        class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
+        <a z-button [routerLink]="['/designs']" zSize="xl" class="group">
+          {{ t('features.home.hero.ctaPrimary') }}
+          <ng-icon [name]="langService.isRtl() ? 'lucideArrowRight' : 'lucideArrowLeft'" class="ml-2"></ng-icon>
+        </a>
+        <a z-button zType="outline" [routerLink]="['/our-story']" zSize="xl">
+          {{ t('features.home.hero.ctaSecondary') }}
+        </a>
+      </div>
+    </div>
+
+    <!-- Right Part: The Two Pics -->
+    <div class="relative flex gap-4 h-[400px] md:h-[500px]">
+      <!-- Image 1: Craftsmanship -->
+      <div class="flex-1 hero-image-container" [class.active]="hoveredPart() === 'craftsmanship'"
+        [class.scale-105]="hoveredPart() === 'craftsmanship'" [class.z-20]="hoveredPart() === 'craftsmanship'">
+
+        <div class="absolute inset-0 bg-primary/20 blur-2xl opacity-0 transition-opacity duration-500"
+          [class.opacity-100]="hoveredPart() === 'craftsmanship'"></div>
+
+        <div class="image-inner shadow-2xl">
+          <img ngSrc="/images/home/hero-hover-1.webp" fill priority class="object-cover" alt="Craftsmanship" />
         </div>
       </div>
-      <span class="text-nowrap">{{ t('features.home.hero.craftsmanship') }}</span>
-    </div>
-    <div class="flex flex-row flex-wrap justify-center items-center gap-[8px]">
-      <Span class="text-nowrap">{{ t('features.home.hero.presentedWith') }}</Span>
-      <div class="group relative inline-block  max-md:hidden">
-        <img
-          ngSrc="/images/home/hero-hover-2.webp"
-          alt="Modern Team Focus Img"
-          width="128"
-          height="192"
-          priority
-          class="h-[48px] w-[128px] object-cover rounded-full border-2 border-foreground"
-        />
 
-        <!-- Expanded -->
-        <div class="absolute left-1/2 top-1/2
-                -translate-x-1/2 -translate-y-1/2
-                h-[400px]
-                aspect-[3183/4774]
-                opacity-0 scale-75
-                transition-all duration-500 ease-out
-                group-hover:opacity-100 group-hover:scale-100
-                z-50 pointer-events-none">
-          <img
-            ngSrc="/images/home/hero-hover-2.webp"
-            alt="Modern Team Img"
-            fill
-            class="w-full h-full object-cover rounded-2xl shadow-2xl border-2 border-foreground"
-          />
+      <!-- Image 2: Modernity -->
+      <div class="flex-1 hero-image-container translate-y-12" [class.active]="hoveredPart() === 'modernity'"
+        [class.scale-105]="hoveredPart() === 'modernity'" [class.z-20]="hoveredPart() === 'modernity'">
+
+        <div class="absolute inset-0 bg-primary/20 blur-2xl opacity-0 transition-opacity duration-500"
+          [class.opacity-100]="hoveredPart() === 'modernity'"></div>
+
+        <div class="image-inner shadow-2xl">
+          <img ngSrc="/images/home/hero-hover-2.webp" fill priority class="object-cover" alt="Modernity" />
         </div>
-
       </div>
-      <span class="text-nowrap">{{ t('features.home.hero.modernity') }}</span>
     </div>
-  </h1>
+
+  </div>
 
   <!-- Editor -->
-  <div class="relative w-full rounded-xl shadow-2xl border">
+  <div class="relative w-full rounded-xl shadow-2xl border bg-card">
     <woodia-design-configurator [product]="heroTestProduct" class="w-full h-full block" />
   </div>
+
 </div>

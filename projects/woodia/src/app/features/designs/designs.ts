@@ -13,6 +13,9 @@ import { ICategoryCard, IChildCategoryResponse } from '@woodia-types/category';
 import { IProductCard } from '@woodia-types/product';
 import { toast } from 'ngx-sonner';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
+import { NgIcon } from '@ng-icons/core';
+import { ZardDialogService } from '@shared-components/dialog/dialog.service';
+import { AiWizardComponent } from './components/ai-wizard/ai-wizard.component';
 
 @Component({
   selector: 'woodia-designs',
@@ -25,7 +28,8 @@ import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
     ZardBreadcrumbComponent,
     ZardBreadcrumbItemComponent,
     TranslocoDirective,
-    NgOptimizedImage
+    NgOptimizedImage,
+    NgIcon
   ],
 
   templateUrl: './designs.html',
@@ -51,7 +55,8 @@ export class Designs implements OnInit {
     private categoryService: CategoryService,
     private route: ActivatedRoute,
     private router: Router,
-    private translocoService: TranslocoService
+    private translocoService: TranslocoService,
+    private dialogService: ZardDialogService
   ) { }
 
   ngOnInit(): void {
@@ -161,5 +166,13 @@ export class Designs implements OnInit {
 
   loadMoreProducts(): void {
     this.loadProducts();
+  }
+
+  openAiWizard(): void {
+    this.dialogService.create({
+      zContent: AiWizardComponent,
+      zWidth: 'min(1200px, 95vw)',
+      zHideFooter: true
+    });
   }
 }

@@ -27,8 +27,7 @@
       } @else {
       @for (category of categories(); track category.slug) {
       <a class="group flex flex-col items-center gap-3" [routerLink]="[`/designs/${category.slug}`]">
-        <div
-          class="w-24 h-24 rounded-full overflow-hidden border border-border group-hover:border-primary transition-colors">
+        <div class="w-24 h-24 overflow-hidden">
           <img [ngSrc]="category.imageUrl" [alt]="category.name" width="96" height="96"
             class="object-cover w-full h-full">
         </div>
@@ -38,6 +37,34 @@
       </a>
       }
       }
+    </div>
+  </div>
+
+  <!-- AI Banner -->
+  <div
+    class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary/10 via-blue-500/10 to-primary/10 border border-primary/20 p-4 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm group mb-4">
+    <div
+      class="absolute -right-20 -top-20 w-64 h-64 bg-primary/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-primary/30 transition-colors">
+    </div>
+    <div class="z-10 space-y-2 text-center sm:text-start">
+      <h3 class="flex items-center gap-1 justify-center sm:justify-start">
+        <ng-icon name="lucideSparkles" class="text-primary text-2xl"></ng-icon>
+        <span class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-500">
+          {{ t('features.designs.aiAssistant.title') }}
+        </span>
+      </h3>
+      <p class="text-foreground/70 max-w-xl">
+        {{ t('features.designs.aiAssistant.description') }}
+      </p>
+    </div>
+    <div class="z-10 shrink-0">
+      <button z-button zSize="xl"
+        class="rounded-full px-8 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-shadow"
+        (click)="openAiWizard()">
+        <span class="flex items-center gap-2">
+          {{ t('features.designs.aiAssistant.button') }} <ng-icon name="lucideWand2"></ng-icon>
+        </span>
+      </button>
     </div>
   </div>
 

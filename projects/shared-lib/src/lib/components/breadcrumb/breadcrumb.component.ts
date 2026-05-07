@@ -25,7 +25,8 @@ import {
 } from './breadcrumb.variants';
 import { mergeClasses } from '../../utils/merge-classes';
 import { ZardStringTemplateOutletDirective } from '../core/directives/string-template-outlet/string-template-outlet.directive';
-import {NgIcon} from '@ng-icons/core';
+import { NgIcon } from '@ng-icons/core';
+import { LanguageService } from '@woodia-core/services/language.service';
 
 @Component({
   selector: 'z-breadcrumb-ellipsis, [z-breadcrumb-ellipsis]',
@@ -83,7 +84,7 @@ export class ZardBreadcrumbEllipsisComponent {
         } @else if (separator()) {
           {{ separator() }}
         } @else {
-          <ng-icon name="lucideChevronDown" />
+          <ng-icon [name]="langService.isRtl() ? 'lucideChevronRight' : 'lucideChevronLeft'" class="-mb-1" />
         }
       </li>
     }
@@ -96,6 +97,8 @@ export class ZardBreadcrumbEllipsisComponent {
   exportAs: 'zBreadcrumbItem',
 })
 export class ZardBreadcrumbItemComponent {
+  readonly langService = inject(LanguageService);
+
   private readonly breadcrumbComponent = inject(ZardBreadcrumbComponent);
 
   private readonly content = contentChild(ZardBreadcrumbEllipsisComponent);

@@ -361,6 +361,30 @@ export class ShoeRack {
           colGroup.add(bp)
         }
 
+        // Huge cell door spanning the full opening height
+        if (colCfg.hugeCellDoor) {
+          const clear = DOOR_DRAWER_CLEARANCE
+          const cellW = colNetWidth
+          const doorW = Math.max(0, cellW - 2 * clear)
+          const doorH = Math.max(0, openH - 2 * clear)
+          if (doorW > 0 && doorH > 0) {
+            const doorThickness = this.thickness * 0.5
+            const doorGroup = new THREE.Group()
+            doorGroup.position.set(xLeft + clear, yLow + clear, depth - doorThickness)
+            doorGroup.userData['door'] = true
+            doorGroup.userData['colIndex'] = c
+            doorGroup.userData['rowIndex'] = 0
+            const doorMesh = new Blank(
+              0, 0, 0,
+              doorW, doorH, doorThickness,
+              { x: 0, y: 0, z: 0 },
+              this.getMaterialArray(material), idRef.id++
+            ).build()
+            doorGroup.add(doorMesh)
+            colGroup.add(doorGroup)
+          }
+        }
+
         const hitbox = new Blank(
           xLeft, yLow, 0,
           xRight, yHigh, depth,
@@ -614,13 +638,24 @@ export class ShoeRack {
       this.cellHasDrawer(colIndex, rowIndex) && colIndex !== null && rowIndex !== null
         ? { col: colIndex, row: rowIndex }
         : null
+
+    // Huge-cell door: rowIndex is always 0; set hoveredDoor even when rowIndex was null
+    if (colIndex !== null && rowIndex === null) {
+      const cfg = this.columnConfigs[colIndex]
+      if (cfg?.hugeCell && cfg?.hugeCellDoor) {
+        this.hoveredDoor = { col: colIndex, row: 0 }
+      }
+    }
   }
 
   private cellHasDoor(colIndex: number | null, rowIndex: number | null): boolean {
     if (colIndex === null || rowIndex === null) return false
     this.ensureColumnConfigs()
     const cfg = this.columnConfigs[colIndex]
-    if (!cfg || cfg.doors === 'none' || cfg.hugeCell) return false
+    if (!cfg) return false
+    // Huge-cell door is a special case: rowIndex is always 0
+    if (cfg.hugeCell) return cfg.hugeCellDoor === true && rowIndex === 0
+    if (cfg.doors === 'none') return false
     return cfg.doors === 'all' || (cfg.doors === 'some' && rowIndex % 2 === 0)
   }
 

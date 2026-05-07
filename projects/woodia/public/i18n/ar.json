@@ -269,16 +269,98 @@
     "designs": {
       "allDesigns": "كل التصاميم",
       "loadMore": "تحميل المزيد",
+      "aiAssistant": {
+        "title": "مساعد التصميم بالذكاء الاصطناعي",
+        "description": "لست متأكداً من أين تبدأ؟ دع الذكاء الاصطناعي المتقدم لدينا يشكل الأثاث المثالي لمساحتك بناءً على احتياجاتك وأسلوبك الخاص.",
+        "button": "صمم بالذكاء الاصطناعي"
+      },
       "errors": {
         "categoryNotFound": "التصنيف غير موجود"
       }
     },
+    "aiWizard": {
+      "back": "رجوع",
+      "step1": {
+        "title": "ماذا تود أن تصمم؟",
+        "subtitle": "اختر نوع الأثاث لبدء التخصيص.",
+        "continue": "متابعة"
+      },
+      "step2": {
+        "title": "تخصيص التصميم",
+        "subtitle": "سنستخدم هذا لتخصيص {{product}} الخاص بك.",
+        "freeSpace": "ما هي المساحة المتاحة؟ (سم)",
+        "freeSpacePlaceholder": "مثال 150",
+        "roomType": "ما هو نوع الغرفة؟",
+        "roomStyle": "ما هو طراز الغرفة؟",
+        "wallColor": "ما هو لون الحائط؟",
+        "bookcaseSpecifics": "مواصفات المكتبة",
+        "needsStorage": "هل تحتاج إلى مساحة تخزين إضافية (أدراج أو أبواب)؟",
+        "deskSpecifics": "مواصفات المكتب",
+        "primaryUsage": "الاستخدام الأساسي؟",
+        "primaryUsageDesk": "الاستخدام الأساسي للمكتب؟",
+        "tvStandSpecifics": "مواصفات طاولة التلفزيون",
+        "tvSize": "ما هو حجم التلفزيون الخاص بك؟ (بوصة)",
+        "shoeRackSpecifics": "مواصفات جزامة الأحذية",
+        "shoeCount": "كم عدد أزواج الأحذية؟",
+        "mixedHeights": "مزيج من الأحذية الطويلة والمسطحة (ارتفاعات مختلفة)؟",
+        "bedsideSpecifics": "مواصفات الكومودينو",
+        "fillAllFields": "املأ جميع الحقول للحصول على أفضل النتائج",
+        "generateDesign": "إنشاء التصميم"
+      },
+      "common": {
+        "storage": "تخزين إضافي"
+      },
+      "loading": {
+        "thinking": "الذكاء الاصطناعي يفكر...",
+        "analyzing": "يتم تحليل مساحتك وصياغة التكوين المثالي."
+      },
+      "messages": {
+        "success": "تم إنشاء التصميم بنجاح!",
+        "error": "فشل الذكاء الاصطناعي في إنشاء التصميم. يرجى المحاولة مرة أخرى."
+      },
+      "products": {
+        "Bookcase": "مكتبة",
+        "Desk": "مكتب",
+        "TvStand": "طاولة تلفزيون",
+        "ShoeRack": "جزامة",
+        "BedsideTable": "كومودينو"
+      },
+      "options": {
+        "bedroom": "غرفة نوم",
+        "home_office": "مكتب منزلي",
+        "kids_room": "غرفة أطفال",
+        "living_room": "غرفة معيشة",
+        "studio": "استوديو",
+        "bohemian": "بوهيمي",
+        "classic": "كلاسيكي",
+        "industrial": "صناعي",
+        "minimal": "بسيط",
+        "modern": "عصري",
+        "scandinavian": "إسكندنافي",
+        "beige": "بيج",
+        "charcoal": "فحمي",
+        "light_blue": "أزرق فاتح",
+        "navy": "كحلي",
+        "sage": "حكيم",
+        "terracotta": "تيراكوتا",
+        "white": "أبيض",
+        "display": "عرض",
+        "entertainment": "ترفيه",
+        "storage": "تخزين",
+        "study": "دراسة",
+        "work": "عمل"
+      }
+    },
     "home": {
       "hero": {
+        "badge": "قمة الحرفة",
         "centuriesOf": "قرون من",
         "craftsmanship": "الحرفية",
         "presentedWith": "مقدمة بـ",
-        "modernity": "حداثة"
+        "modernity": "حداثة",
+        "description": "ديجيتال كيوراتور يربط بين تراث النجارة التقليدي والتصور الرقمي المتطور. اختبر تصميم الأثاث المخصص من خلال منظور معماري للدقة والتراث.",
+        "ctaPrimary": "شاهد التصاميم",
+        "ctaSecondary": "تعرف على قصتنا"
       },
       "guide": {
         "subtitle": "صمم في بضع نقرات",

@@ -65,6 +65,7 @@ export class DesignStudio implements OnInit {
   protected langService = inject(LanguageService);
   private authService = inject(AuthService);
   private dialogService = inject(ZardDialogService);
+  private categoryService = inject(CategoryService);
 
   configuratorRef = viewChild(DesignConfigurator);
   configError = computed(() => this.configuratorRef()?.store?.configError() ?? false);
@@ -122,6 +123,36 @@ export class DesignStudio implements OnInit {
     const id = idStr != null ? parseInt(idStr, 10) : NaN;
 
     if (Number.isNaN(id)) {
+      if (idStr === 'ai' && this.savedModelConfig) {
+        const categoryName = 'category' in this.savedModelConfig ? (this.savedModelConfig as any).category : 'Design';
+        const config = (this.savedModelConfig as any).modelConfig || this.savedModelConfig;
+
+        this.productLoading.set(true);
+        this.categoryService.getAllCategories().subscribe({
+          next: (catObj: any) => {
+            let catId = 1; // Fallback
+            const children = catObj?.childCategory || [];
+            const matched = children.find((c: any) => c.name.toLowerCase() === categoryName.toLowerCase() || c.slug === categoryName.toLowerCase());
+            if (matched) {
+              catId = matched.id;
+            }
+
+            this.product.set({
+              id: 0, // 0 signifies custom AI model
+              category: { id: catId, name: categoryName, slug: categoryName.toLowerCase() } as any,
+              images: [],
+              modelConfig: config
+            } as Product);
+            this.imageErrors.set([]);
+            this.productLoading.set(false);
+          },
+          error: () => {
+            this.productError.set(true);
+            this.productLoading.set(false);
+          }
+        });
+        return;
+      }
       this.productLoading.set(false);
       this.productError.set(true);
       return;

@@ -1,18 +1,26 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { DesignConfigurator } from '@shared-components/custom/design-configurator/design-configurator';
 import type { Product, BookcaseModelConfig } from '@shared-types/product';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { NgOptimizedImage } from '@angular/common';
 
 
+import { RouterLink } from '@angular/router';
+import { ZardButtonComponent } from 'shared-lib/components/button';
+import { NgIcon } from '@ng-icons/core';
+import { LanguageService } from '@woodia-core/services/language.service';
+
+
 @Component({
   selector: 'woodia-hero-section',
-  imports: [DesignConfigurator, TranslocoDirective, NgOptimizedImage],
+  imports: [DesignConfigurator, TranslocoDirective, NgOptimizedImage, RouterLink, ZardButtonComponent, NgIcon],
 
   templateUrl: './hero-section.html',
   styleUrl: './hero-section.scss',
 })
 export class HeroSection {
+  readonly langService = inject(LanguageService);
+
   heroTestProduct: Product = {
     id: 999,
     category: 'Bookcase',
@@ -36,4 +44,6 @@ export class HeroSection {
     } as BookcaseModelConfig,
     images: []
   };
+
+  hoveredPart = signal<'none' | 'craftsmanship' | 'modernity'>('none');
 }

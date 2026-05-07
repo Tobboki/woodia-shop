@@ -1,46 +1,37 @@
 <a
-  class="relative w-full max-w-[360px] aspect-[4/5] p-[8px] border-2 bg-muted rounded-[16px]
-         flex flex-col gap-[8px] overflow-hidden group"
+  class="relative w-full flex flex-col overflow-hidden group bg-card border border-border rounded-2xl hover:shadow-xl transition-all duration-300"
   [routerLink]="`/designs/model/${product.id}`"
 >
-
   <!-- Image Section -->
-  <div
-    class="relative flex items-center justify-center overflow-hidden rounded-[12px]"
-  >
-
+  <div class="relative w-full aspect-square overflow-hidden bg-muted/50">
     <!-- Default Image -->
     <img
-      [ngSrc]="isImagePath(product.thumbnailImage) ?  product.thumbnailImage : '/images/placeholders/product-placeholder.png'"
+      [ngSrc]="isImagePath(product.thumbnailImage) ? product.thumbnailImage : '/images/placeholders/product-placeholder.png'"
       [alt]="product.productLine"
-      height="372"
-      width="372"
-      class="object-contain rounded-[12px]"
-      [class]="isImagePath(product.hoverImage) && isImagePath(product.thumbnailImage) ? 'transition-opacity duration-300 group-hover:opacity-0' : ''"
+      fill
+      priority
+      class="object-cover transition-all duration-500 group-hover:scale-105"
+      [class.group-hover:opacity-0]="isImagePath(product.hoverImage)"
     />
 
     <!-- Hover Image -->
-    @if (isImagePath(product.hoverImage) && isImagePath(product.thumbnailImage)) {
+    @if (isImagePath(product.hoverImage)) {
       <img
         [ngSrc]="product.hoverImage"
         [alt]="product.productLine"
-        height="372"
-        width="372"
-        class="object-contain absolute inset-0 m-auto rounded-[12px]
-               opacity-0 transition-opacity duration-300
-               group-hover:opacity-100"
+        fill
+        class="object-cover absolute inset-0 opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:scale-105"
       />
     }
-
-
   </div>
 
   <!-- Content -->
-  <div class="flex flex-col gap-[8px] py-[16px]">
-    <h6 class="font-h6 select-none" [dir]="getTextDir(product.productLine)">{{ product.productLine }}</h6>
-    <p class="font-caption text-foreground/50 dark:text-white/50 line-clamp-2 select-none" [dir]="getTextDir(product.description)">
+  <div class="flex flex-col gap-1.5 p-4">
+    <h3 class="font-bold text-lg leading-tight select-none truncate" [dir]="getTextDir(product.productLine)">
+      {{ product.productLine }}
+    </h3>
+    <p class="text-sm text-foreground/60 line-clamp-2 select-none min-h-[40px]" [dir]="getTextDir(product.description)">
       {{ product.description }}
     </p>
   </div>
-
 </a>

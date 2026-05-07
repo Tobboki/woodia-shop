@@ -126,7 +126,11 @@ export class ConfiguratorStore {
   applyProductConfig(val: Product | null): void {
     this.product.set(val)
     if (val) {
-      const category = (val.modelConfig as any)?.modelType ?? val.category;
+      let category = (val.modelConfig as any)?.modelType ?? val.category;
+      if (typeof category === 'object' && category !== null && 'name' in category) {
+        category = category.name;
+      }
+
       if (!category || !DESIGN_CATEGORIES.includes(category as ProductCategory)) {
         this.configError.set(true);
         return;

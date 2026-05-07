@@ -66,6 +66,7 @@ export class Header implements OnInit, AfterViewInit {
       filter(e => e instanceof NavigationEnd)
     ).subscribe(() => {
       this.isMenuOpen.set(false);
+      this.mobileView.set('main');
     });
 
     // Reactive Profile Picture
@@ -114,7 +115,20 @@ export class Header implements OnInit, AfterViewInit {
   });
 
 
-  isMenuOpen = signal(false)
+  isMenuOpen = signal(false);
+  readonly mobileView = signal<'main' | 'designs' | 'language' | 'theme'>('main');
+  
+  toggleMenu(open: boolean) {
+    this.isMenuOpen.set(open);
+    if (!open) {
+      // Delay reset to avoid jumping during slide-out animation
+      setTimeout(() => this.mobileView.set('main'), 300);
+    }
+  }
+
+  setMobileView(view: 'main' | 'designs' | 'language' | 'theme') {
+    this.mobileView.set(view);
+  }
   readonly landingMobileMeniRef = viewChild<TemplateRef<any>>('landingMobileMenu');
   readonly customerMobileMenuRef = viewChild<TemplateRef<any>>('customerMobileMenu');
   readonly currentMobileMenu = computed(() => {

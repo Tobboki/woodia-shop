@@ -1,102 +1,87 @@
-<div class="w-full md:max-h-[calc(100dvh-164px)] flex flex-col rounded-lg border border-border md:flex-row min-h-0 gap-0" *transloco="let t">
+<div
+  class="w-full lg:max-h-[calc(100dvh-164px)] flex flex-col rounded-lg border border-border lg:flex-row min-h-0 gap-0"
+  *transloco="let t">
   @if (store.configError()) {
-    <div class="flex-1 flex flex-col items-center justify-center p-8 bg-card text-center min-h-[50dvh] rounded-lg">
-      <ng-icon name="lucideTriangleAlert" class="size-16 text-destructive mb-4" />
-      <h3 class="text-xl font-bold mb-2">{{ t('sharedLib.designConfigurator.errors.invalidConfig') }}</h3>
-      <p class="text-muted-foreground">{{ t('sharedLib.designConfigurator.errors.invalidConfigDesc') }}</p>
-    </div>
+  <div class="flex-1 flex flex-col items-center justify-center p-8 bg-card text-center min-h-[50dvh] rounded-lg">
+    <ng-icon name="lucideTriangleAlert" class="size-16 text-destructive mb-4" />
+    <h3 class="text-xl font-bold mb-2">{{ t('sharedLib.designConfigurator.errors.invalidConfig') }}</h3>
+    <p class="text-muted-foreground">{{ t('sharedLib.designConfigurator.errors.invalidConfigDesc') }}</p>
+  </div>
   } @else {
   <!-- Model -->
-  <div
-    class="relative shrink-0 overflow-hidden md:flex-1 select-none"
-  >
+  <div class="relative shrink-0 overflow-hidden lg:flex-1 select-none">
     @if (store.designLoading()) {
-      <z-loader zSize="lg" class="absolute inset-0 flex items-center justify-center bg-white/80"/>
+    <z-loader zSize="lg" class="absolute inset-0 flex items-center justify-center bg-white/80" />
     }
     @if (!store.modelLoaded()) {
-      <z-skeleton />
+    <z-skeleton />
     }
-    <canvas #designConfiguratorCanvas class="block w-full min-h-[50dvh] bg-white rounded-s-lg max-md:rounded-s-none max-md:rounded-t-lg"></canvas>
-    <div
-      class="absolute inset-0 pointer-events-none z-[1]"
-      [class.invisible]="!store.showDimensions()"
-      [class.visible]="store.showDimensions()"
-      aria-hidden="true"
-    >
-      <z-dimension-overlay
-        [lines]="dimensionLines()"
-        [labels]="dimensionLabels()"
-        [width]="dimensionOverlayWidth()"
-        [height]="dimensionOverlayHeight()"
-      />
+    <canvas #designConfiguratorCanvas
+      class="block w-full min-h-[50dvh] bg-white rounded-s-lg max-lg:rounded-s-none max-lg:rounded-t-lg"></canvas>
+    <div class="absolute inset-0 pointer-events-none z-[1]" [class.invisible]="!store.showDimensions()"
+      [class.visible]="store.showDimensions()" aria-hidden="true">
+      <z-dimension-overlay [lines]="dimensionLines()" [labels]="dimensionLabels()" [width]="dimensionOverlayWidth()"
+        [height]="dimensionOverlayHeight()" />
     </div>
     <div class="absolute bottom-4 left-4 z-1">
       <button z-button zType="outline" (click)="store.showDimensions.set(!store.showDimensions())" class="rounded-full">
-        <ng-icon [name]="store.showDimensions() ? 'lucideEyeOff' : 'lucideEye'" class="size-4"/>
-        {{ store.showDimensions() ? t('sharedLib.designConfigurator.hideDimensions') : t('sharedLib.designConfigurator.showDimensions') }}
+        <ng-icon [name]="store.showDimensions() ? 'lucideEyeOff' : 'lucideEye'" class="size-4" />
+        {{ store.showDimensions() ? t('sharedLib.designConfigurator.hideDimensions') :
+        t('sharedLib.designConfigurator.showDimensions') }}
       </button>
     </div>
   </div>
 
   <!-- Controls: fixed width, scrollable content, never taller than view -->
   @if (store.showControls()) {
-    <div
-      class="w-full shrink-0 md:w-[320px] md:min-w-[320px] max-w-[100vw] min-h-0 flex flex-col md:mb-0 bg-card">
-      <div class="flex-1 md:min-h-0 md:overflow-y-auto p-4 flex flex-col gap-4">
-        <h4 class="font-h4 hidden md:block">
-          {{ t('sharedLib.designConfigurator.controls.title') }}
-        </h4>
+  <div class="w-full shrink-0 lg:w-[320px] lg:min-w-[320px] max-w-[100vw] min-h-0 flex flex-col lg:mb-0 bg-card">
+    <div class="flex-1 lg:min-h-0 lg:overflow-y-auto p-4 flex flex-col gap-4">
+      <h4 class="font-h4 hidden lg:block">
+        {{ t('sharedLib.designConfigurator.controls.title') }}
+      </h4>
 
-        <!-- ===== Top-level tabs: data-driven from MODEL_TABS ===== -->
-        <div class="flex gap-2">
-          @for (tab of store.currentMainTabs(); track tab.id) {
-            <button
-              z-button
-              [zType]="store.activeMainTab() === tab.id ? 'default' : 'outline'"
-              class="rounded-full flex-1"
-              (click)="store.setMainTab(tab.id)"
-            >
-              {{ t('sharedLib.designConfigurator.controls.mainTabs.' + tab.label) }}
-            </button>
-          }
-        </div>
-
-        <!-- ===== Mobile sub-tabs (data-driven, only visible in Model tab) ===== -->
-        @if (store.activeMainTab() === 'model') {
-          <div class="flex overflow-x-auto gap-2 pb-2 snap-x no-scrollbar md:hidden">
-            @for (tab of store.currentControlTabs(); track tab.id) {
-              <button
-                z-button
-                [zType]="store.activeControlTab() === tab.id ? 'default' : 'outline'"
-                class="rounded-full whitespace-nowrap snap-start"
-                (click)="store.setControlTab(tab.id)"
-              >
-                {{ t('sharedLib.designConfigurator.controls.' + tab.label) }}
-              </button>
-            }
-          </div>
-        }
-
-        <!-- ===== Child Control Components ===== -->
-        @switch (store.modelType()) {
-          @case ('Bookcase') {
-            <woodia-bookcase-controls/>
-          }
-          @case ('Desk') {
-            <woodia-desk-controls/>
-          }
-          @case ('TvStand') {
-            <woodia-tvstand-controls/>
-          }
-          @case ('ShoeRack') {
-            <woodia-shoerack-controls/>
-          }
-          @case ('BedsideTable') {
-            <woodia-bedside-controls/>
-          }
+      <!-- ===== Top-level tabs: data-driven from MODEL_TABS ===== -->
+      <div class="flex gap-2">
+        @for (tab of store.currentMainTabs(); track tab.id) {
+        <button z-button [zType]="store.activeMainTab() === tab.id ? 'default' : 'outline'" class="rounded-full flex-1"
+          (click)="store.setMainTab(tab.id)">
+          {{ t('sharedLib.designConfigurator.controls.mainTabs.' + tab.label) }}
+        </button>
         }
       </div>
+
+      <!-- ===== Mobile sub-tabs (data-driven, only visible in Model tab) ===== -->
+      @if (store.activeMainTab() === 'model') {
+      <div class="flex overflow-x-auto gap-2 pb-2 snap-x no-scrollbar lg:hidden">
+        @for (tab of store.currentControlTabs(); track tab.id) {
+        <button z-button [zType]="store.activeControlTab() === tab.id ? 'default' : 'outline'"
+          class="rounded-full whitespace-nowrap snap-start" (click)="store.setControlTab(tab.id)">
+          {{ t('sharedLib.designConfigurator.controls.' + tab.label) }}
+        </button>
+        }
+      </div>
+      }
+
+      <!-- ===== Child Control Components ===== -->
+      @switch (store.modelType()) {
+      @case ('Bookcase') {
+      <woodia-bookcase-controls />
+      }
+      @case ('Desk') {
+      <woodia-desk-controls />
+      }
+      @case ('TvStand') {
+      <woodia-tvstand-controls />
+      }
+      @case ('ShoeRack') {
+      <woodia-shoerack-controls />
+      }
+      @case ('BedsideTable') {
+      <woodia-bedside-controls />
+      }
+      }
     </div>
+  </div>
   }
   }
 </div>

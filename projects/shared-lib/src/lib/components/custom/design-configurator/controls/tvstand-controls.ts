@@ -28,10 +28,10 @@ import { TranslocoDirective } from '@jsverse/transloco'
     <div *transloco="let t">
       @if (store.activeMainTab() === 'model') {
         <div class="space-y-6">
-          <div [class.hidden]="store.activeControlTab() !== 'color'" class="md:block space-y-3">
+          <div [class.hidden]="store.activeControlTab() !== 'color'" class="lg:block space-y-3">
             <z-form-field>
-              <label class="font-label hidden md:block" z-form-label>{{ t('sharedLib.designConfigurator.controls.color') }}</label>
-            <div class="flex max-md:hidden flex-wrap gap-2 pt-1">
+              <label class="font-label hidden lg:block" z-form-label>{{ t('sharedLib.designConfigurator.controls.color') }}</label>
+            <div class="flex max-lg:hidden flex-wrap gap-2 pt-1">
               @for (c of store.FURNITURE_COLORS; track c.name) {
                 <button type="button" class="size-8 rounded-full border-3 border-border transition-transform shadow-sm"
                   [class.border-primary]="store.tvStandColor() === c.value"
@@ -41,7 +41,7 @@ import { TranslocoDirective } from '@jsverse/transloco'
                   [title]="c.name"></button>
               }
             </div>
-            <div class="hidden max-md:block w-full min-w-0">
+            <div class="hidden max-lg:block w-full min-w-0">
               <z-carousel zControls="none" [zOptions]="{ align: 'start', containScroll: 'trimSnaps' }">
                 <z-carousel-content>
                   @for (c of store.FURNITURE_COLORS; track c.name) {
@@ -60,10 +60,10 @@ import { TranslocoDirective } from '@jsverse/transloco'
           </z-form-field>
         </div>
 
-        <div [class.hidden]="!['width', 'height', 'depth'].includes(store.activeControlTab())" class="md:block space-y-4">
-            <h5 class="font-label text-foreground/60 hidden md:block">{{ t('sharedLib.designConfigurator.controls.dimensions') }} ({{ t('sharedLib.designConfigurator.cm') }})</h5>
+        <div [class.hidden]="!['width', 'height', 'depth'].includes(store.activeControlTab())" class="lg:block space-y-4">
+            <h5 class="font-label text-foreground/60 hidden lg:block">{{ t('sharedLib.designConfigurator.controls.dimensions') }} ({{ t('sharedLib.designConfigurator.cm') }})</h5>
 
-            <div [class.hidden]="store.activeControlTab() !== 'width'" class="md:block">
+            <div [class.hidden]="store.activeControlTab() !== 'width'" class="lg:block">
               <z-form-field>
                 <label class="font-label" z-form-label>{{ t('sharedLib.designConfigurator.controls.width') }} ({{ store.tvStandWidthCm() }} {{ t('sharedLib.designConfigurator.cm') }})</label>
               <z-form-control>
@@ -73,7 +73,7 @@ import { TranslocoDirective } from '@jsverse/transloco'
             </z-form-field>
           </div>
 
-            <div [class.hidden]="store.activeControlTab() !== 'height'" class="md:block">
+            <div [class.hidden]="store.activeControlTab() !== 'height'" class="lg:block">
               <z-form-field>
                 <label class="font-label" z-form-label>{{ t('sharedLib.designConfigurator.controls.height') }} ({{ store.tvStandHeightCm() }} {{ t('sharedLib.designConfigurator.cm') }})</label>
               <z-form-control>
@@ -83,7 +83,7 @@ import { TranslocoDirective } from '@jsverse/transloco'
             </z-form-field>
           </div>
 
-            <div [class.hidden]="store.activeControlTab() !== 'depth'" class="md:block">
+            <div [class.hidden]="store.activeControlTab() !== 'depth'" class="lg:block">
               <z-form-field>
                 <label class="font-label" z-form-label>{{ t('sharedLib.designConfigurator.controls.depth') }} ({{ store.tvStandDepthCm() }} {{ t('sharedLib.designConfigurator.cm') }})</label>
               <z-form-control>
@@ -94,8 +94,8 @@ import { TranslocoDirective } from '@jsverse/transloco'
           </div>
         </div>
 
-          <div [class.hidden]="store.activeControlTab() !== 'style'" class="md:block space-y-3">
-            <h5 class="font-label text-foreground/60 hidden md:block">{{ t('sharedLib.designConfigurator.controls.styles.label') }}</h5>
+          <div [class.hidden]="store.activeControlTab() !== 'style'" class="lg:block space-y-3">
+            <h5 class="font-label text-foreground/60 hidden lg:block">{{ t('sharedLib.designConfigurator.controls.styles.label') }}</h5>
           <z-carousel zControls="none" [zSelectedIndex]="store.styleCarouselIndex()" [zOptions]="{ align: 'start', containScroll: 'trimSnaps' }" class="-ms-4">
             <z-carousel-content>
               @for (style of store.TV_STAND_STYLES; track style) {
@@ -114,14 +114,14 @@ import { TranslocoDirective } from '@jsverse/transloco'
           </z-carousel>
         </div>
 
-          <z-form-field class="md:block">
+          <z-form-field class="lg:block">
             <z-form-control class="flex items-center">
               <z-checkbox [ngModel]="store.tvStandWithBack()" (ngModelChange)="store.onTvStandBackPanelToggle($event)" zShape="circle"
                 zSize="lg">{{ t('sharedLib.designConfigurator.controls.backPanel') }}</z-checkbox>
           </z-form-control>
         </z-form-field>
 
-          <div [class.hidden]="store.activeControlTab() !== 'legs'" class="md:block">
+          <div [class.hidden]="store.activeControlTab() !== 'legs'" class="lg:block">
             <z-form-field>
               <z-form-control class="flex items-center">
                 <z-checkbox [ngModel]="store.tvStandWithLegs()" (ngModelChange)="store.onTvStandWithLegsChange($event)"

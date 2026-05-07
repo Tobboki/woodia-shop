@@ -269,16 +269,98 @@
     "designs": {
       "allDesigns": "All Designs",
       "loadMore": "Load More",
+      "aiAssistant": {
+        "title": "AI Design Assistant",
+        "description": "Not sure where to start? Let our advanced AI configure the perfect furniture for your space based on your specific needs and style.",
+        "button": "Design with AI"
+      },
       "errors": {
         "categoryNotFound": "Category Does not Exist"
       }
     },
+    "aiWizard": {
+      "back": "Back",
+      "step1": {
+        "title": "What would you like to design?",
+        "subtitle": "Select a furniture type to begin the configuration.",
+        "continue": "Continue"
+      },
+      "step2": {
+        "title": "Customize your design",
+        "subtitle": "We'll use this to customize your {{product}}.",
+        "freeSpace": "How much space is available? (cm)",
+        "freeSpacePlaceholder": "e.g. 150",
+        "roomType": "What type of room is it?",
+        "roomStyle": "What is the room style?",
+        "wallColor": "What is the wall color?",
+        "bookcaseSpecifics": "Bookcase Specifics",
+        "needsStorage": "Do you need additional storage (drawers or doors)?",
+        "deskSpecifics": "Desk Specifics",
+        "primaryUsage": "Primary usage?",
+        "primaryUsageDesk": "Primary usage of the desk?",
+        "tvStandSpecifics": "TV Stand Specifics",
+        "tvSize": "What size is your TV? (inches)",
+        "shoeRackSpecifics": "Shoe Rack Specifics",
+        "shoeCount": "How many pairs of shoes?",
+        "mixedHeights": "Mix of boots and flat shoes (different heights)?",
+        "bedsideSpecifics": "Bedside Table Specifics",
+        "fillAllFields": "Fill all fields to get best results",
+        "generateDesign": "Generate Design"
+      },
+      "common": {
+        "storage": "Additional Storage"
+      },
+      "loading": {
+        "thinking": "AI is thinking...",
+        "analyzing": "Analyzing your space and crafting the perfect configuration."
+      },
+      "messages": {
+        "success": "Design generated successfully!",
+        "error": "AI API failed to generate design. Please try again."
+      },
+      "products": {
+        "Bookcase": "Bookcase",
+        "Desk": "Desk",
+        "TvStand": "TV Stand",
+        "ShoeRack": "Shoe Rack",
+        "BedsideTable": "Bedside Table"
+      },
+      "options": {
+        "bedroom": "Bedroom",
+        "home_office": "Home Office",
+        "kids_room": "Kids Room",
+        "living_room": "Living Room",
+        "studio": "Studio",
+        "bohemian": "Bohemian",
+        "classic": "Classic",
+        "industrial": "Industrial",
+        "minimal": "Minimal",
+        "modern": "Modern",
+        "scandinavian": "Scandinavian",
+        "beige": "Beige",
+        "charcoal": "Charcoal",
+        "light_blue": "Light Blue",
+        "navy": "Navy",
+        "sage": "Sage",
+        "terracotta": "Terracotta",
+        "white": "White",
+        "display": "Display",
+        "entertainment": "Entertainment",
+        "storage": "Storage",
+        "study": "Study",
+        "work": "Work"
+      }
+    },
     "home": {
       "hero": {
-        "centuriesOf": "Centuries Of",
+        "badge": "Pinnacle of Craft",
+        "centuriesOf": "Centuries of",
         "craftsmanship": "Craftsmanship",
-        "presentedWith": "Presented With",
-        "modernity": "Modernity"
+        "presentedWith": "Presented with",
+        "modernity": "Modernity",
+        "description": "Digital Curator bridges traditional woodworking heritage with cutting-edge digital visualization. Experience bespoke furniture design through an architectural lens of precision and heritage.",
+        "ctaPrimary": "See Designs",
+        "ctaSecondary": "View Our Story"
       },
       "guide": {
         "subtitle": "Create in just a few clicks",
