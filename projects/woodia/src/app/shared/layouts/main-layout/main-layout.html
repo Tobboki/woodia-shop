@@ -1,18 +1,14 @@
-<div
-  [ngClass]="[
+<div [ngClass]="[
     layoutVariant() === 'default'
       ? 'relative bg-[url(/images/app-abstraction.webp)] dark:bg-[url(/images/app-abstraction-dark.webp)] bg-cover bg-center before:content-[\'\'] before:absolute before:inset-0 before:bg-background before:opacity-80 dark:before:opacity-70 before:pointer-events-none'
       : ''
-  ]"
->
+  ]">
   <div class="relative z-10">
     <woodia-header [menu]="menu()"></woodia-header>
 
-    <div
-      [ngClass]="[
-        'container mx-auto my-4 p-4 max-sm:px-4'
-      ]"
-    >
+    <div [ngClass]="[
+        'container mx-auto my-4 p-4 max-sm:px-2'
+      ]">
       <router-outlet></router-outlet>
     </div>
 

@@ -1,9 +1,9 @@
 <a
-  class="relative w-full flex flex-col overflow-hidden group bg-card border border-border rounded-2xl hover:shadow-xl transition-all duration-300"
+  class="relative w-full h-full flex flex-col overflow-hidden group bg-card border border-border rounded-2xl hover:shadow-xl transition-all duration-300"
   [routerLink]="`/designs/model/${product.id}`"
 >
   <!-- Image Section -->
-  <div class="relative w-full aspect-square overflow-hidden bg-muted/50">
+  <div class="relative w-full aspect-square overflow-hidden bg-muted/50 shrink-0">
     <!-- Default Image -->
     <img
       [ngSrc]="isImagePath(product.thumbnailImage) ? product.thumbnailImage : '/images/placeholders/product-placeholder.png'"
@@ -26,7 +26,7 @@
   </div>
 
   <!-- Content -->
-  <div class="flex flex-col gap-1.5 p-4">
+  <div class="flex flex-col gap-1.5 p-4 flex-grow">
     <h3 class="font-bold text-lg leading-tight select-none truncate" [dir]="getTextDir(product.productLine)">
       {{ product.productLine }}
     </h3>

@@ -208,7 +208,8 @@
         },
         "errors": {
           "codeMismatch": "Code does not match",
-          "codeResendFailed": "Resending confirmation code failed"
+          "codeResendFailed": "Resending confirmation code failed",
+          "emailDuplicated": "Another user with the same email already exists"
         }
       },
       "callback": {
@@ -358,7 +359,7 @@
         "craftsmanship": "Craftsmanship",
         "presentedWith": "Presented with",
         "modernity": "Modernity",
-        "description": "Digital Curator bridges traditional woodworking heritage with cutting-edge digital visualization. Experience bespoke furniture design through an architectural lens of precision and heritage.",
+        "description": "Transform your space with bespoke furniture crafted by master artisans. Design, customize, and bring your vision to life with architectural precision.",
         "ctaPrimary": "See Designs",
         "ctaSecondary": "View Our Story"
       },
@@ -670,6 +671,48 @@
         "menu": {
           "account": "Account",
           "shipping": "Shipping"
+        }
+      },
+      "makers": {
+        "onboarding": {
+          "success": "Onboarding completed successfully! Welcome to Woodia.",
+          "error": "Failed to save profile. Please try again.",
+          "steps": {
+            "1": {
+              "title": "Welcome to Woodia",
+              "subtitle": "Let's set up your professional maker profile.",
+              "welcome": "Ready to Start Crafting?",
+              "description": "Woodia connects you with customers looking for custom furniture. To start bidding on jobs, we need to know a bit more about your skills and professional rates."
+            },
+            "2": {
+              "title": "Professional Profile",
+              "subtitle": "This information will be visible to potential clients.",
+              "uploadPhoto": "Professional Photo",
+              "hourlyRate": "Hourly Rate ($)",
+              "hourlyRatePlaceholder": "e.g. 50",
+              "overview": "Profile Overview",
+              "overviewPlaceholder": "Describe your experience, specialty, and workshop...",
+              "overviewHint": "Minimum 20 characters.",
+              "fillAllFields": "All fields are required to continue."
+            },
+            "3": {
+              "title": "Contact Information",
+              "subtitle": "We'll use this for business communications.",
+              "phoneNumber": "Phone Number",
+              "phonePlaceholder": "e.g. +1234567890",
+              "governorate": "Governorate",
+              "selectGov": "Select Governorate",
+              "address": "Workshop Address",
+              "addressPlaceholder": "Street, Building, etc.",
+              "additional": "Additional Info (Optional)",
+              "additionalPlaceholder": "Floor, landmarks, etc."
+            }
+          },
+          "common": {
+            "back": "Back",
+            "continue": "Continue",
+            "finish": "Finish & Join"
+          }
         }
       }
     }

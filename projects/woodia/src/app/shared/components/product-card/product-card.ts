@@ -18,6 +18,9 @@ import { NgOptimizedImage } from '@angular/common';
 
   templateUrl: './product-card.html',
   styleUrl: './product-card.scss',
+  host: {
+    class: 'block w-full h-full'
+  }
 })
 export class ProductCard {
   @Input() product: IProductCard = {} as IProductCard;

@@ -227,6 +227,15 @@ export class Register implements OnInit, AfterViewInit {
       },
       error: (err) => {
         this.registerFormLoading.set(false);
+        if (err.status === 409) {
+          toast.error(this.translocoService.translate('features.auth.register.errors.emailDuplicated'), {
+            position: 'bottom-center',
+          });
+        } else {
+          toast.error(this.translocoService.translate('features.auth.login.errors.genericError'), {
+            position: 'bottom-center',
+          });
+        }
         console.log('register failed', err);
       }
     });

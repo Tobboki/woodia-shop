@@ -55,5 +55,22 @@ export const environment = {
         updateStatusInProgress: (id: number) => `/api/Job/${id}/inprogress`,
       },
     },
+    maker: {
+      me: '/me',
+      info: '/me/info',
+      profile: {
+        professional: '/Carpenter/professional-profile',
+        portfolio: '/Carpenter/Portfolio-Item',
+        portfolioItems: '/Carpenter/Portfolio-Items',
+      },
+      jobs: {
+        available: '/api/carpenter/Job/available',
+        getById: (id: number) => `/api/carpenter/Job/${id}`,
+        submitOffer: (jobId: number) => `/api/carpenter/jobs/${jobId}/offers`,
+        myOffers: '/api/carpenter/Offers',
+        offerDetails: (id: number) => `/api/carpenter/Offers/${id}`,
+        withdrawOffer: (id: number) => `/api/carpenter/Offers/${id}/withdraw`,
+      }
+    },
   },
 };

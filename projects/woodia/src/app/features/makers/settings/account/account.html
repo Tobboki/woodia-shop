@@ -1,0 +1,89 @@
+<section class="space-y-[24px]" *transloco="let t">
+  <section class="space-y-[24px]">
+    <div>
+      <div class="flex items-center gap-3">
+        <h3 class="font-h3">
+          {{ t('features.customers.settings.myProfile') }}
+        </h3>
+        @if(userType()) {
+        <z-badge zType="secondary" zShape="pill" class="px-3">
+          {{ userType() === 'Client' ? t('features.customers.settings.client') : t('features.makers.settings.maker') }}
+        </z-badge>
+        }
+      </div>
+
+      <z-divider class="mt-[8px]"></z-divider>
+    </div>
+
+    @if(infoLoading()) {
+    <div class="flex max-md:flex-col items-center justify-between gap-2 mb-[40px]">
+      <div class="flex max-md:flex-col flex-nowrap items-center max-md:justify-center gap-[8px]">
+        <z-skeleton class="size-[64px] rounded-full shrink-0" />
+        <div class="max-md:text-center space-y-2">
+          <z-skeleton class="h-5 w-[120px] max-md:mx-auto" />
+          <z-skeleton class="h-4 w-[200px]" />
+        </div>
+      </div>
+      <z-skeleton class="h-10 w-[150px] max-md:w-full" />
+    </div>
+    } @else {
+    <div class="flex max-md:flex-col items-center justify-between max-md:justify-center gap-2">
+      <div class="flex max-md:flex-col flex-nowrap items-center max-md:justify-center gap-[8px]">
+        <div class="relative cursor-pointer" (click)="fileInput.click()">
+          <z-avatar [zSrc]="avatarSrc" zAlt="Profile Picture" class="size-[64px]" />
+          @if(profilePictureLoading()) {
+          <div class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full">
+            <ng-icon name="lucideLoaderCircle" class="animate-spin text-white" />
+          </div>
+          } @else {
+          <div
+            class="absolute inset-0 bg-black/30 opacity-0 hover:opacity-100 transition flex items-center justify-center text-white text-xs rounded-full">
+            {{ t('features.customers.settings.change') }}
+          </div>
+          }
+        </div>
+        <input #fileInput type="file" accept="image/png, image/jpeg, image/jpg" class="hidden"
+          (change)="onFileSelected($event)" />
+        <div class="max-md:text-center">
+          <h4 class="font-medium">{{ t('features.customers.settings.profilePicture') }}</h4>
+          <p class="text-foreground/50">{{ t('features.customers.settings.profilePictureDesc') }}</p>
+        </div>
+      </div>
+      <button z-button zType="default" zSize="lg" class="max-md:w-full"
+        (click)="hasPreview ? onSavePicture() : fileInput.click()" [zDisabled]="profilePictureLoading()"
+        [zLoading]="profilePictureLoading()">
+        {{ hasPreview ? t('features.customers.settings.save') : (userDataHolder.photoUrl ?
+        t('features.customers.settings.changePicture') : t('features.customers.settings.addPicture')) }}
+      </button>
+    </div>
+
+    <form [formGroup]="infoForm" (ngSubmit)="handleInfoSubmit()" class="space-y-6 my-[40px]">
+      <div class="grid grid-cols-2 max-md:grid-cols-1 gap-[20px]">
+        <z-form-field>
+          <label class="font-label" z-form-label zRequired>{{ t('features.customers.settings.firstName') }}</label>
+          <z-form-control>
+            <input z-input type="text" [placeholder]="t('features.customers.settings.firstNamePlaceholder')"
+              formControlName="firstName" />
+          </z-form-control>
+        </z-form-field>
+        <z-form-field>
+          <label class="font-label" z-form-label zRequired>{{ t('features.customers.settings.lastName') }}</label>
+          <z-form-control>
+            <input z-input type="text" [placeholder]="t('features.customers.settings.lastNamePlaceholder')"
+              formControlName="lastName" />
+          </z-form-control>
+        </z-form-field>
+      </div>
+      <div class="flex flex-row max-sm:flex-col gap-[12px]">
+        <button z-button zType="default" type="submit" [disabled]="!infoForm.dirty" [zLoading]="infoFormLoading()">
+          {{ t('features.customers.settings.saveChanges') }}
+        </button>
+        <button z-button zType="outline" type="button" [disabled]="!infoForm.dirty || infoFormLoading()"
+          (click)="cancelInfoUpdate()">
+          {{ t('features.customers.settings.cancel') }}
+        </button>
+      </div>
+    </form>
+    }
+  </section>
+</section>

@@ -102,7 +102,7 @@
 
       <!-- Form -->
       <form [formGroup]="registerForm" (ngSubmit)="handleCredentialsSubmit()" class="space-y-6 my-[40px]">
-        <div class="grid grid-cols-2 max-md:grid-cols-1 gap-2">
+        <div class="grid grid-cols-2 max-md:grid-cols-1 items-start gap-2">
           <z-form-field>
             <label class="font-label w-full" z-form-label zRequired>
               {{ t('features.auth.register.firstName') }}
@@ -151,7 +151,7 @@
           }
         </z-form-field>
 
-        <div class="grid grid-cols-2 md:place-items-center max-md:grid-cols-1 gap-[20px]">
+        <div class="grid grid-cols-2 items-start max-md:grid-cols-1 gap-[20px]">
           <z-form-field>
             <label class="font-label" z-form-label zRequired>
               {{ t('features.auth.login.password') }}

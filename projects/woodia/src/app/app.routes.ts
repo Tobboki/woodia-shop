@@ -101,10 +101,17 @@ export const routes: Routes = [
         children: [
           {
             path: '',
-            redirectTo: 'jobs', // Or dashboard when ready
+            redirectTo: 'onboarding',
             pathMatch: 'full',
           },
-          // Future maker routes go here
+          {
+            path: 'onboarding',
+            loadComponent: () => import('./features/makers/onboarding/onboarding').then(m => m.Onboarding)
+          },
+          {
+            path: 'jobs',
+            loadComponent: () => import('./features/makers/jobs/jobs').then(m => m.Jobs)
+          }
         ]
       },
     ]
