@@ -100,6 +100,8 @@ import {
   lucideCpu,
   lucideInfo,
   lucideLamp,
+  lucideSend,
+  lucideWrench
 } from '@ng-icons/lucide';
 
 export const appConfig: ApplicationConfig = {
@@ -179,6 +181,8 @@ export const appConfig: ApplicationConfig = {
       lucideCpu,
       lucideInfo,
       lucideLamp,
+      lucideSend,
+      lucideWrench
     }),
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),

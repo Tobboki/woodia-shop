@@ -13,17 +13,18 @@ export interface LoginCredentials {
 
 export interface AuthResponse {
   token: string;
-  refreshToken?: string;
-  refreshTokenExpiration?: string;
+  refreshToken: string;
+  refreshTokenExpiration: string;
   expiresIn: number;
   id: string;
   email: string;
   firstName: string;
   lastName: string;
   userType: string;
+  isProfileComplete: boolean;
 }
 
-export type TUserType = 'Client' | 'MAKER'
+export type TUserType = 'CLIENT' | 'MAKER' | 'ADMIN'
 
 export interface IUserData {
   id: string
@@ -31,6 +32,7 @@ export interface IUserData {
   lastName: string
   email: string
   userType: TUserType
+  isProfileComplete?: boolean
 }
 
 export interface IEmailVerificationData {
@@ -67,14 +69,29 @@ export class AuthService {
   private refreshTokenSubject: BehaviorSubject<AuthResponse | null> = new BehaviorSubject<AuthResponse | null>(null);
 
   // Helpers
+  private mapUserType(type: string): TUserType {
+    const t = type?.toUpperCase();
+    if (t === 'CARPENTER' || t === 'MAKER') return 'MAKER';
+    if (t === 'CLIENT' || t === 'CUSTOMER') return 'CLIENT';
+    if (t === 'ADMIN') return 'ADMIN';
+    return t as TUserType;
+  }
+
+
+  setIsPofileComplete(isProfileComplete: boolean) {
+    const user = this.user();
+    if (!user) return;
+    user.isProfileComplete = isProfileComplete;
+    this.user.set(user);
+  }
+
   storeUser(response: AuthResponse, rememberMe: boolean = true) {
     const storage = rememberMe ? localStorage : sessionStorage;
 
     storage.setItem('auth_token', response.token);
-    if (response.refreshToken) storage.setItem('refresh_token', response.refreshToken);
-    if (response.refreshTokenExpiration) storage.setItem('refresh_token_expiration', response.refreshTokenExpiration);
+    storage.setItem('refresh_token', response.refreshToken);
+    storage.setItem('refresh_token_expiration', response.refreshTokenExpiration);
 
-    // Calculate the absolute expiration time (Current Time + ExpiresIn minutes)
     const expiresAt = Date.now() + (response.expiresIn * 60 * 1000);
     storage.setItem('expires_at', expiresAt.toString());
 
@@ -83,7 +100,8 @@ export class AuthService {
       email: response.email,
       firstName: response.firstName,
       lastName: response.lastName,
-      userType: response.userType as TUserType,
+      userType: this.mapUserType(response.userType),
+      isProfileComplete: response.isProfileComplete,
     };
 
     storage.setItem('user', JSON.stringify(user));
@@ -244,14 +262,12 @@ export class AuthService {
    * Logout user and clear storage
    */
   logout(): void {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('expires_at');
-    sessionStorage.removeItem('auth_token');
-    sessionStorage.removeItem('refresh_token');
-    sessionStorage.removeItem('user');
-    sessionStorage.removeItem('expires_at');
+    const items = ['auth_token', 'refresh_token', 'user', 'expires_at', 'remember_me', 'google_auth_intent']
+
+    for (let item of items) {
+      localStorage.removeItem(item)
+      sessionStorage.removeItem(item)
+    }
 
     this.user.set(null);
     this.router.navigate(['/']);

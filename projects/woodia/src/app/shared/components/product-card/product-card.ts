@@ -1,11 +1,12 @@
-import { Component, Input } from '@angular/core';
+import { Component, computed, inject, Input } from '@angular/core';
 
 import { IProductCard } from 'shared-lib/types/product';
 
 import { isImagePath } from 'shared-lib/utils/is-image-path';
 import { getTextDir } from '@woodia-shared/utils/helpers';
-import {RouterLink} from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
+import { AuthService } from '@woodia-core/services/auth.service';
 
 
 @Component({
@@ -23,6 +24,9 @@ import { NgOptimizedImage } from '@angular/common';
   }
 })
 export class ProductCard {
+  private authService = inject(AuthService)
+  readonly isCustomer = computed(() => this.authService.getCurrentUser()?.userType === 'CLIENT');
+
   @Input() product: IProductCard = {} as IProductCard;
 
   isImagePath = isImagePath;

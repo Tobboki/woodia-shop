@@ -6,7 +6,7 @@ import { AuthService } from './auth.service';
 
 export interface IGovernorate {
   id: number;
-  name: string;
+  nameEn: string;
   nameAr: string;
 }
 
@@ -17,7 +17,7 @@ export class ConstantsService {
   constructor(
     private http: HttpClient,
     private authService: AuthService
-  ) {}
+  ) { }
 
   private get headers() {
     return {

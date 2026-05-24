@@ -1,27 +1,17 @@
-<a
-  class="relative w-full h-full flex flex-col overflow-hidden group bg-card border border-border rounded-2xl hover:shadow-xl transition-all duration-300"
-  [routerLink]="`/designs/model/${product.id}`"
->
+<a class="relative w-full h-full flex flex-col overflow-hidden group bg-card border border-border rounded-2xl hover:shadow-xl transition-all duration-300"
+  [routerLink]="isCustomer() ? `/customers/designs/model/${product.id}` : `/designs/model/${product.id}`">
   <!-- Image Section -->
   <div class="relative w-full aspect-square overflow-hidden bg-muted/50 shrink-0">
     <!-- Default Image -->
     <img
       [ngSrc]="isImagePath(product.thumbnailImage) ? product.thumbnailImage : '/images/placeholders/product-placeholder.png'"
-      [alt]="product.productLine"
-      fill
-      priority
-      class="object-cover transition-all duration-500 group-hover:scale-105"
-      [class.group-hover:opacity-0]="isImagePath(product.hoverImage)"
-    />
+      [alt]="product.productLine" fill priority class="object-cover transition-all duration-500 group-hover:scale-105"
+      [class.group-hover:opacity-0]="isImagePath(product.hoverImage)" />
 
     <!-- Hover Image -->
     @if (isImagePath(product.hoverImage)) {
-      <img
-        [ngSrc]="product.hoverImage"
-        [alt]="product.productLine"
-        fill
-        class="object-cover absolute inset-0 opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:scale-105"
-      />
+    <img [ngSrc]="product.hoverImage" [alt]="product.productLine" fill
+      class="object-cover absolute inset-0 opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:scale-105" />
     }
   </div>
 

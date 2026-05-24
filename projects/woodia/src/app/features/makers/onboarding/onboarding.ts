@@ -14,6 +14,9 @@ import { ZardInputDirective } from '@shared-components/input/input.directive';
 import { ZardAvatarComponent } from '@shared-components/avatar/avatar.component';
 import { UploadService } from '@woodia-core/services/upload.service';
 import { ThemeService } from '@woodia-core/services/theme.service';
+import { ZardSelectImports } from 'shared-lib/components/select';
+import { ZardInputGroupComponent } from 'shared-lib/components/input-group/input-group.component';
+import { AuthService } from '@woodia-core/services/auth.service';
 
 @Component({
   selector: 'woodia-maker-onboarding',
@@ -27,9 +30,10 @@ import { ThemeService } from '@woodia-core/services/theme.service';
     ZardFormModule,
     ZardInputDirective,
     ZardAvatarComponent,
+    ZardSelectImports,
+    ZardInputGroupComponent
   ],
   templateUrl: './onboarding.html',
-  styleUrls: ['./onboarding.scss'],
 })
 export class Onboarding implements OnInit {
   private fb = inject(FormBuilder);
@@ -39,13 +43,14 @@ export class Onboarding implements OnInit {
   private themeService = inject(ThemeService);
   private transloco = inject(TranslocoService);
   private router = inject(Router);
+  private authService = inject(AuthService);
 
   currentStep = signal<number>(1);
   loading = signal<boolean>(false);
   submitting = signal<boolean>(false);
-  
+
   governorates = signal<IGovernorate[]>([]);
-  
+
   // Forms
   profForm: FormGroup;
   contactForm: FormGroup;
@@ -144,20 +149,32 @@ export class Onboarding implements OnInit {
         }
       }
 
-      // 2. Save Professional Profile
-      await this.makerService.createProfessionalProfile(this.profForm.value as IProfessionalProfile).toPromise();
+      // 2. Save Professional Profile (skip if already exists)
+      try {
+        await this.makerService.createProfessionalProfile(this.profForm.value as IProfessionalProfile).toPromise();
+      } catch (profError: any) {
+        const message = profError?.error?.message ?? profError?.message ?? '';
+        if (!message.includes('User Already Has A Professional Profile')) {
+          throw profError; // re-throw unexpected errors
+        }
+      }
 
-      // 3. Save Contact Info
-      await this.makerService.createContactInfo(this.contactForm.value as IContactInfo).toPromise();
+      // 3. Save Contact Info (skip if already exists)
+      try {
+        await this.makerService.createContactInfo(this.contactForm.value as IContactInfo).toPromise();
+      } catch (contactError: any) {
+        const message = contactError?.error?.message ?? contactError?.message ?? '';
+        if (!message.includes('User Already Has A')) {
+          throw contactError; // re-throw unexpected errors
+        }
+      }
 
-      // 4. Update completion signal
-      this.makerService.profileCompleted.set(true);
-
-      toast.success(this.transloco.translate('features.makers.onboarding.success'));
+      toast.success(this.transloco.translate('features.makers.onboarding.messages.onboardingSuccess'));
+      this.authService.setIsPofileComplete(true);
       this.router.navigate(['/makers/jobs']);
     } catch (error) {
       console.error('Onboarding failed', error);
-      toast.error(this.transloco.translate('features.makers.onboarding.error'));
+      toast.error(this.transloco.translate('features.makers.onboarding.errors.onboardingError'));
     } finally {
       this.submitting.set(false);
     }

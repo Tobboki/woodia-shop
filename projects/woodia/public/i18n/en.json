@@ -2,6 +2,7 @@
   "app": {
     "appTitle": "Woodia",
     "currentYear": "2026",
+    "currency": "EGP",
     "dialogs": {
       "loginPrompt": {
         "title": "Login Required",
@@ -162,6 +163,7 @@
         "errors": {
           "accessDenied": "Access Denied",
           "genericError": "Something went wrong",
+          "emailNotConfirmed": "Please verify your email before logging in",
           "authFailed": "Authentication Failed",
           "authCanceled": "Authentication Canceled",
           "googleAuthFailed": "Google Auth failed",
@@ -204,7 +206,8 @@
         "messages": {
           "registrationSuccess": "Registration Successful",
           "verificationSuccess": "Verification Successful",
-          "codeResentSuccess": "Code resent successfully"
+          "codeResentSuccess": "Code resent successfully",
+          "alreadyVerified": "Email already verified"
         },
         "errors": {
           "codeMismatch": "Code does not match",
@@ -713,6 +716,181 @@
             "continue": "Continue",
             "finish": "Finish & Join"
           }
+        }
+      }
+    },
+    "makers": {
+      "onboarding": {
+        "messages": {
+          "onboardingSuccess": "Profile setup complete! Welcome to Woodia."
+        },
+        "errors": {
+          "onboardingError": "Failed to save profile. Please try again."
+        },
+        "steps": {
+          "1": {
+            "title": "Welcome",
+            "subtitle": "Let's get your maker profile ready",
+            "welcome": "Welcome to the Maker Platform",
+            "description": "Showcase your craftsmanship, connect with customers, and start receiving project requests tailored to your skills."
+          },
+          "2": {
+            "title": "Professional Profile",
+            "subtitle": "Tell customers about your expertise",
+            "uploadPhoto": "Upload Profile Photo",
+            "hourlyRate": "Hourly Rate",
+            "hourlyRatePlaceholder": "Enter your hourly rate",
+            "overview": "Profile Overview",
+            "overviewPlaceholder": "Describe your experience, specialties, and services...",
+            "overviewHint": "A strong overview helps customers trust your skills and experience."
+          },
+          "3": {
+            "title": "Contact Information",
+            "subtitle": "Help customers reach you easily",
+            "phoneNumber": "Phone Number",
+            "phonePlaceholder": "Enter your phone number",
+            "governorate": "Governorate",
+            "selectGov": "Select governorate",
+            "address": "Address",
+            "addressPlaceholder": "Enter your address",
+            "additional": "Additional Information",
+            "additionalPlaceholder": "Any extra details you'd like to share"
+          }
+        },
+        "lang": "en",
+        "common": {
+          "back": "Back",
+          "continue": "Continue",
+          "finish": "Finish",
+          "currency": "EGP"
+        }
+      },
+      "jobs": {
+        "title": "Available Jobs",
+        "description": "Browse open job requests from customers and submit your offer to start crafting.",
+        "displayModeOptions": {
+          "list": "List",
+          "grid": "Grid"
+        },
+        "categoryOptions": {
+          "all": "All",
+          "TV Stand": "TV Stand",
+          "Bookcase": "Bookcase",
+          "Desk": "Desk",
+          "Beside Table": "Beside Table",
+          "Shoe Rack": "Shoe Rack"
+        },
+        "noJobsFound": "No jobs available",
+        "noJobsFoundDesc": "There are no open job requests at the moment. Check back soon!",
+        "loadMore": "Load More",
+        "newPosting": "New",
+        "uncategorized": "General",
+        "delivery": "Delivery",
+        "budget": "Budget",
+        "offers": "Offers",
+        "offersSubmitted": "offers submitted",
+        "notSpecified": "Not Specified",
+        "viewDetails": "View Details",
+        "empty": {
+          "title": "No jobs available",
+          "description": "There are no open job requests at the moment. Check back soon!"
+        },
+        "details": {
+          "placeholders": {
+            "noTitle": "Untitled Job"
+          },
+          "labels": {
+            "days": "Days",
+            "negotiable": "Negotiable"
+          }
+        },
+        "errors": {
+          "loadFailed": "Failed to load available jobs"
+        }
+      },
+      "jobDetails": {
+        "actions": {
+          "backToJobs": "Back to Projects",
+          "retry": "Retry",
+          "cancel": "Cancel"
+        },
+        "labels": {
+          "budget": "Budget",
+          "timeline": "Timeline",
+          "days": "Days",
+          "notSpecified": "Not Specified",
+          "negotiable": "Negotiable",
+          "estimatedCost": "Estimated Project Cost",
+          "expectedCompletion": "Expected Completion",
+          "verifiedClient": "Verified Client",
+          "noPreview": "No Preview Available"
+        },
+        "placeholders": {
+          "noTitle": "Untitled Job",
+          "category": "Category"
+        },
+        "sections": {
+          "technicalSpecs": "Technical Specifications",
+          "aboutClient": "About the Client"
+        },
+        "offer": {
+          "title": "Submit Your Offer",
+          "price": "Your Price",
+          "estimatedDays": "Estimated Days",
+          "message": "Cover Message",
+          "messagePlaceholder": "Describe your approach, relevant experience, and why you're the right fit for this job...",
+          "messageHint": "Minimum 10 characters. A strong message increases your chances.",
+          "termsHint": "By submitting, you agree to complete the job if your offer is accepted. See our ",
+          "terms": "terms",
+          "bottomHint": "By submitting, you agree to complete the job if your offer is accepted.",
+          "submit": "Submit Offer",
+          "submitMyOffer": "Submit My Offer"
+        },
+        "messages": {
+          "offerSubmitted": "Your offer was submitted successfully!"
+        },
+        "errors": {
+          "loadFailed": "Failed to load job details. Please try again.",
+          "offerFailed": "Failed to submit offer. Please try again.",
+          "invalidConfig": "Invalid Configuration",
+          "invalidConfigDesc": "The design configuration is missing or corrupted."
+        }
+      },
+      "submitOffer": {
+        "title": "Submit Offer for ",
+        "subtitle": "Your craft is the cornerstone of our platform. Provide a competitive, detailed bid to showcase your expertise for this artisan project.",
+        "breadcrumb": {
+          "jobs": "Jobs",
+          "projectDetails": "Project Details",
+          "submitOffer": "Submit Offer"
+        },
+        "form": {
+          "price": "Price (EGP)",
+          "currencySymbol": "$",
+          "deliveryTime": "Delivery Time (Days)",
+          "businessDays": "Business Days",
+          "message": "Detailed Proposal Message",
+          "messagePlaceholder": "Describe your approach, materials selection, and any specific custom details you'll include in this build...",
+          "days": "days",
+          "timeline": "timeline",
+          "termsHint": "By sending this offer, you agree to furnish ",
+          "termsLink": "Terms of Service"
+        },
+        "expertTip": {
+          "label": "Expert Tip",
+          "message": "Be specific about wood grade and finish types for better conversion."
+        },
+        "actions": {
+          "sendOffer": "Send Offer",
+          "cancel": "Cancel",
+          "retry": "Retry"
+        },
+        "messages": {
+          "success": "Your offer was sent successfully!"
+        },
+        "errors": {
+          "loadFailed": "Failed to load job details.",
+          "submitFailed": "Failed to send offer. Please try again."
         }
       }
     }

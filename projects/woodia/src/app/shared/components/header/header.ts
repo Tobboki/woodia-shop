@@ -110,7 +110,7 @@ export class Header implements OnInit, AfterViewInit {
 
   readonly settingsPath = computed(() => {
     const user = this.authService.getCurrentUser();
-    if (user?.userType === 'MAKER') return '/makers/settings';
+    if (user?.userType?.toUpperCase() === 'MAKER') return '/makers/settings';
     return '/customers/settings';
   });
 

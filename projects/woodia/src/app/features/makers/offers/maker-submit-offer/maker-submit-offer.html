@@ -1,0 +1,171 @@
+<div class="min-h-screen pb-28" *transloco="let t; read: 'features.makers.submitOffer'">
+
+    <!-- ── SKELETON ── -->
+    @if (isLoadingJob()) {
+    <div class="flex flex-col gap-6 animate-pulse">
+        <div class="flex items-center gap-3">
+            <z-skeleton class="h-4 w-16 rounded" />
+            <z-skeleton class="h-4 w-4 rounded" />
+            <z-skeleton class="h-4 w-28 rounded" />
+            <z-skeleton class="h-4 w-4 rounded" />
+            <z-skeleton class="h-4 w-24 rounded" />
+        </div>
+        <z-skeleton class="h-14 w-2/3 rounded-2xl" />
+        <z-skeleton class="h-6 w-full max-w-md rounded" />
+        <div class="grid grid-cols-2 max-lg:grid-cols-1 gap-4 mt-4">
+            <z-skeleton class="h-16 rounded-2xl" />
+            <z-skeleton class="h-16 rounded-2xl" />
+        </div>
+        <z-skeleton class="h-40 w-full rounded-2xl" />
+        <z-skeleton class="h-24 w-full rounded-2xl" />
+    </div>
+    }
+
+    <!-- ── ERROR ── -->
+    @else if (isError()) {
+    <div class="py-20 text-center space-y-4">
+        <div class="p-6 rounded-full bg-destructive/10 text-destructive inline-flex">
+            <ng-icon name="lucideAlertCircle" size="40" />
+        </div>
+        <p class="font-bold text-lg">{{ t('errors.loadFailed') }}</p>
+        <z-button zType="default" (click)="loadJob()">
+            <ng-icon name="lucideRefreshCw" class="mr-2" />
+            {{ t('actions.retry') }}
+        </z-button>
+    </div>
+    }
+
+    <!-- ── CONTENT ── -->
+    @else if (job(); as job) {
+
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider mb-6">
+        <button class="text-muted-foreground hover:text-foreground transition-colors" (click)="goToJobs()">
+            {{ t('breadcrumb.jobs') }}
+        </button>
+        <ng-icon name="lucideChevronRight" class="size-3 text-muted-foreground/50" />
+        <button class="text-muted-foreground hover:text-foreground transition-colors" (click)="goToJobDetails()">
+            {{ t('breadcrumb.projectDetails') }}
+        </button>
+        <ng-icon name="lucideChevronRight" class="size-3 text-muted-foreground/50" />
+        <span class="text-primary">{{ t('breadcrumb.submitOffer') }}</span>
+    </nav>
+
+    <!-- Page Title -->
+    <div class="mb-8 space-y-2">
+        <h1 class="font-h1 font-medium leading-tight">
+            {{ t('title') }}
+            <br>
+            <span class="text-primary">{{ job.title }}</span>
+        </h1>
+        <p class="text-muted-foreground max-w-lg">{{ t('subtitle') }}</p>
+    </div>
+
+    <!-- ── FORM ── -->
+    <div class="flex flex-col gap-6 max-w-2xl">
+
+        <!-- Price + Days -->
+        <div class="grid grid-cols-2 max-lg:grid-cols-1 gap-4">
+
+            <z-form-field>
+                <label z-form-label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                    {{ t('form.price') }}
+                </label>
+                <z-form-control>
+                    <z-input-group [zAddOnAfter]="t('form.currencySymbol')">
+                        <input z-input type="number" min="1" step="0.01" [ngModel]="offerPrice()"
+                            (ngModelChange)="offerPrice.set($event)" placeholder="0.00"
+                            [class.pr-14]="langService.lang() === 'en'" [class.pl-14]="langService.lang() === 'ar'" />
+                    </z-input-group>
+                </z-form-control>
+            </z-form-field>
+
+            <z-form-field>
+                <label z-form-label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                    {{ t('form.deliveryTime') }}
+                </label>
+                <z-form-control>
+                    <z-input-group [zAddOnAfter]="t('form.businessDays')">
+                        <input z-input type="number" min="1" [ngModel]="offerDays()"
+                            (ngModelChange)="offerDays.set($event)" placeholder="14"
+                            [class.pr-20]="langService.lang() === 'en'" [class.pl-20]="langService.lang() === 'ar'" />
+                    </z-input-group>
+                </z-form-control>
+            </z-form-field>
+        </div>
+
+        {{ offerDays() }}
+
+        <!-- Message -->
+        <z-form-field>
+            <label z-form-label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                {{ t('form.message') }}
+            </label>
+            <z-form-control>
+                <textarea z-input zType="textarea" [ngModel]="offerMessage()" (ngModelChange)="offerMessage.set($event)"
+                    [placeholder]="t('form.messagePlaceholder')" rows="6"></textarea>
+            </z-form-control>
+            <p class="text-[10px] text-muted-foreground mt-1">{{ t('form.messageHint') }}</p>
+        </z-form-field>
+
+        <!-- Job summary card -->
+        <div class="bg-card rounded-2xl border border-border p-4 flex flex-col sm:flex-row gap-4">
+            <!-- Left: job info -->
+            <div class="flex items-center gap-4 flex-1 min-w-0">
+                <div class="size-16 rounded-xl shrink-0 flex items-center justify-center text-white font-black text-xs
+                      overflow-hidden border border-border"
+                    [style.background-color]="job.modelConfig?.color ?? '#e5e7eb'">
+                    <ng-icon name="lucideBox" class="size-6 opacity-40" />
+                </div>
+
+                <div class="flex flex-col gap-1 min-w-0">
+                    <p class="font-bold text-foreground truncate">{{ job.title }}</p>
+                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                        @if (job.jobClientBriefDto?.governorateName) {
+                        <span class="flex items-center gap-1">
+                            <ng-icon name="lucideMapPin" class="size-3" />
+                            {{ job.jobClientBriefDto.governorateName }}
+                        </span>
+                        <span class="text-border">·</span>
+                        }
+                        <span class="flex items-center gap-1">
+                            <ng-icon name="lucideCalendar" class="size-3" />
+                            {{ job.deliveryDay }} {{ t('form.days') }} {{ t('form.timeline') }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: expert tip -->
+            <div class="shrink-0 sm:max-w-[200px] space-y-1">
+                <p class="text-[9px] font-black uppercase tracking-widest text-primary">{{ t('expertTip.label') }}</p>
+                <p class="text-xs text-muted-foreground leading-relaxed">{{ t('expertTip.message') }}</p>
+            </div>
+        </div>
+
+    </div>
+
+    }
+
+    <!-- ── FLOATING BOTTOM BAR ── -->
+    @if (!isLoadingJob() && !isError() && job()) {
+    <div class="fixed bottom-0 left-0 right-0 p-4 border-t bg-background/95 backdrop-blur-sm z-50">
+        <div class="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p class="text-[10px] text-muted-foreground uppercase tracking-wider text-center sm:text-left max-w-xs">
+                {{ t('form.termsHint') }}
+                <a href="#" class="text-primary underline font-bold">{{ t('form.termsLink') }}</a>.
+            </p>
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <z-button zType="outline" zSize="lg" class="flex-1 sm:flex-none" (click)="goToJobDetails()">
+                    {{ t('actions.cancel') }}
+                </z-button>
+                <z-button zType="default" zSize="lg" class="flex-1 sm:flex-none !rounded-full px-8"
+                    [zDisabled]="!offerFormValid()" [zLoading]="isSubmitting()" (click)="submitOffer()">
+                    {{ t('actions.sendOffer') }}
+                </z-button>
+            </div>
+        </div>
+    </div>
+    }
+
+</div>

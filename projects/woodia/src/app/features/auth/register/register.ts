@@ -82,9 +82,11 @@ export class Register implements OnInit, AfterViewInit {
   currentVideo = this.panels[this.currentIndex];
 
   ngAfterViewInit() {
-    const video = this.videoRef.nativeElement;
-    video.muted = true;
-    video.play().catch(() => { });
+    const video = this.videoRef?.nativeElement;
+    if (video) {
+      video.muted = true;
+      video.play().catch(() => { });
+    }
   }
 
   preloadNext(index: number) {
@@ -103,7 +105,8 @@ export class Register implements OnInit, AfterViewInit {
   playNext() {
     this.currentIndex = (this.currentIndex + 1) % this.panels.length;
 
-    const video = this.videoRef.nativeElement;
+    const video = this.videoRef?.nativeElement;
+    if (!video) return;
 
     // 👇 use preloaded video if available
     if (this.nextVideoEl) {
@@ -189,6 +192,8 @@ export class Register implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.route.queryParamMap.subscribe(params => {
       const type = params.get('type');
+      const step = params.get('step');
+      const email = params.get('email');
 
       if (type === 'maker') {
         this.userType.set('maker');
@@ -199,6 +204,14 @@ export class Register implements OnInit, AfterViewInit {
       }
 
       this.resetVideoLoop();
+
+      // If redirected here from login due to unconfirmed email
+      if (step === 'verification') {
+        if (email) {
+          this.registerForm.patchValue({ email });
+        }
+        this.registerStep.set('verification');
+      }
     });
   }
 
@@ -212,12 +225,12 @@ export class Register implements OnInit, AfterViewInit {
       lastName: this.registerForm.value.lastName!,
       email: this.registerForm.value.email!,
       password: this.registerForm.value.password!,
-      type: this.userType() === 'customer' ? 'client' : 'carpenter',
+      type: this.userType() === 'customer' ? 'Client' : 'Carpenter',
     };
 
     // Call the register method
     this.authService.register(userData).subscribe({
-      next: () => {
+      next: (response: any) => {
         toast.success(this.translocoService.translate('features.auth.register.messages.registrationSuccess'), {
           position: 'bottom-center',
           duration: 2000,
@@ -261,16 +274,25 @@ export class Register implements OnInit, AfterViewInit {
       },
       error: (err: any) => {
         this.codeVerificationLoading.set(false);
-        toast.error(this.translocoService.translate('features.auth.register.errors.codeMismatch'), {
-          position: 'bottom-center',
-        });
+        const errors = err.error?.errors || [];
+
+        if (errors.includes('User.DuplicatedConfirmation') || errors.includes('Email already confirmed')) {
+          toast.error(this.translocoService.translate('features.auth.register.messages.alreadyVerified'), {
+            position: 'bottom-center',
+          });
+          this.router.navigate(['/auth/login'])
+        } else {
+          toast.error(this.translocoService.translate('features.auth.register.errors.codeMismatch'), {
+            position: 'bottom-center',
+          });
+        }
         console.log('verification failed', err);
       }
     });
   }
 
   handleGoogleSignUp() {
-    const type = this.userType() === 'customer' ? 'Client' : 'Maker';
+    const type = this.userType() === 'customer' ? 'Client' : 'Carpenter';
     this.authService.googleSignUp(type);
   }
 

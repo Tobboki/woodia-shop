@@ -109,9 +109,9 @@ export class App implements OnInit {
             await this.authService.sendGoogleTokenToBackend(idToken);
           }
 
-          const userType = this.authService.getCurrentUser()?.userType;
+          const userType = this.authService.getCurrentUser()?.userType?.toUpperCase();
 
-          if (userType?.toLowerCase() === 'admin') {
+          if (userType === 'ADMIN') {
             this.authService.logout();
             this.oauthService.logOut();
             localStorage.removeItem('google_auth_intent');
@@ -138,8 +138,19 @@ export class App implements OnInit {
           this.oauthService.logOut();
           localStorage.removeItem('google_auth_intent');
 
-          if (userType === 'Client') {
+          // Handle redirection
+          const returnUrl = this.router.parseUrl(this.router.url).queryParams['returnUrl'];
+          if (returnUrl) {
+            this.router.navigateByUrl(returnUrl);
+            return;
+          }
+
+          if (userType === 'CLIENT') {
             this.router.navigate(['/customers']);
+          } else if (userType === 'MAKER') {
+            this.router.navigate(['/makers/onboarding']);
+          } else {
+            this.router.navigate(['/home']);
           }
         } catch (error) {
           toast.error(this.langService.translate('features.auth.login.errors.googleAuthFailed'), {

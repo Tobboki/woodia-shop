@@ -64,21 +64,23 @@ export class Login implements OnInit, AfterViewInit {
   ];
 
   ngAfterViewInit() {
-    const videoA = this.videoARef.nativeElement;
-    const videoB = this.videoBRef.nativeElement;
+    const videoA = this.videoARef?.nativeElement;
+    const videoB = this.videoBRef?.nativeElement;
 
-    videoA.onended = () => this.playNext();
-    videoB.onended = () => this.playNext();
+    if (videoA) {
+      videoA.onended = () => this.playNext();
+      videoA.src = this.panels[0];
+      videoA.muted = true;
+      videoA.oncanplaythrough = () => {
+        this.isInitialVideoLoading.set(false);
+        videoA.play().catch(() => { });
+      };
+      videoA.load();
+    }
 
-    videoA.src = this.panels[0];
-    videoA.muted = true;
-
-    videoA.oncanplaythrough = () => {
-      this.isInitialVideoLoading.set(false);
-      videoA.play().catch(() => {});
-    };
-
-    videoA.load();
+    if (videoB) {
+      videoB.onended = () => this.playNext();
+    }
 
     this.preloadNext();
   }
@@ -87,17 +89,19 @@ export class Login implements OnInit, AfterViewInit {
     const nextIndex = (this.currentIndex + 1) % this.panels.length;
     const hiddenVideo = this.getHiddenVideo();
 
-    hiddenVideo.src = this.panels[nextIndex];
-    hiddenVideo.muted = true;
-    hiddenVideo.playsInline = true;
-    hiddenVideo.preload = 'auto';
+    if (hiddenVideo) {
+      hiddenVideo.src = this.panels[nextIndex];
+      hiddenVideo.muted = true;
+      hiddenVideo.playsInline = true;
+      hiddenVideo.preload = 'auto';
 
-    hiddenVideo.oncanplaythrough = () => {
-      hiddenVideo.play().catch(() => {});
-      this.videoReady.set(true);
-    };
+      hiddenVideo.oncanplaythrough = () => {
+        hiddenVideo.play().catch(() => { });
+        this.videoReady.set(true);
+      };
 
-    hiddenVideo.load();
+      hiddenVideo.load();
+    }
   }
 
   playNext() {
@@ -106,11 +110,13 @@ export class Login implements OnInit, AfterViewInit {
     const currentVideo = this.getActiveVideo();
     const nextVideo = this.getHiddenVideo();
 
-    // reset next video BEFORE showing it
-    nextVideo.currentTime = 0;
+    if (nextVideo) {
+      // reset next video BEFORE showing it
+      nextVideo.currentTime = 0;
 
-    // ensure it's playing
-    nextVideo.play().catch(() => {});
+      // ensure it's playing
+      nextVideo.play().catch(() => { });
+    }
 
     // swap visibility
     this.activeIndex = this.activeIndex === 0 ? 1 : 0;
@@ -119,23 +125,25 @@ export class Login implements OnInit, AfterViewInit {
     this.videoReady.set(false);
 
     // delay pause for smooth crossfade
-    setTimeout(() => {
-      currentVideo.pause();
-    }, 700);
+    if (currentVideo) {
+      setTimeout(() => {
+        currentVideo.pause();
+      }, 700);
+    }
 
     this.preloadNext();
   }
 
-  getActiveVideo(): HTMLVideoElement {
+  getActiveVideo(): HTMLVideoElement | null {
     return this.activeIndex === 0
-      ? this.videoARef.nativeElement
-      : this.videoBRef.nativeElement;
+      ? this.videoARef?.nativeElement
+      : this.videoBRef?.nativeElement;
   }
 
-  getHiddenVideo(): HTMLVideoElement {
+  getHiddenVideo(): HTMLVideoElement | null {
     return this.activeIndex === 0
-      ? this.videoBRef.nativeElement
-      : this.videoARef.nativeElement;
+      ? this.videoBRef?.nativeElement
+      : this.videoARef?.nativeElement;
   }
 
   // Strongly typed form
@@ -183,12 +191,13 @@ export class Login implements OnInit, AfterViewInit {
         finalize(() => this.loginFormLoading.set(false))
       )
       .subscribe({
-        next: () => {
+      next: (response) => {
           this.loginFormLoading.set(false);
 
-          const userType = this.authService.getCurrentUser()?.userType;
+          const user = this.authService.getCurrentUser();
+          const userType = user?.userType?.toUpperCase();
 
-          if (userType?.toLowerCase() === 'admin') {
+          if (userType === 'ADMIN') {
             this.authService.logout();
             toast.error(this.translocoService.translate('features.auth.login.errors.accessDenied'), {
               position: 'bottom-center',
@@ -207,14 +216,35 @@ export class Login implements OnInit, AfterViewInit {
             return;
           }
 
-          if (userType === 'Client') {
+          if (userType === 'CLIENT') {
             this.router.navigate(['/customers']);
+          } else if (userType === 'MAKER') {
+            if (response.isProfileComplete) {
+              this.router.navigate(['/makers/jobs']);
+            } else {
+              this.router.navigate(['/makers/onboarding']);
+            }
+          } else {
+            this.router.navigate(['/home']);
           }
 
         },
         error: (err) => {
           this.loginFormLoading.set(false)
           const errors = err.error?.errors || [];
+
+          if (errors.includes('User.EmailNotConfirmed') || errors.includes('Email is not confirmed')) {
+            toast.warning(this.translocoService.translate('features.auth.login.errors.emailNotConfirmed'), {
+              position: 'bottom-center',
+            });
+            this.router.navigate(['/auth/register'], {
+              queryParams: {
+                step: 'verification',
+                email: this.loginForm.value.email
+              }
+            });
+            return;
+          }
 
           if (errors.includes('User.InvalidCredentials') || errors.includes('Invalid email/password')) {
             this.emailControl.setErrors({ backend: 'Invalid email or password' });

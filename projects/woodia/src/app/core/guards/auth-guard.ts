@@ -1,5 +1,5 @@
 import { inject } from '@angular/core';
-import {CanActivateFn, Router} from '@angular/router';
+import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 export const authGuard: CanActivateFn = (route, state) => {
@@ -16,15 +16,14 @@ export const authGuard: CanActivateFn = (route, state) => {
 
   // If user is already logged in and trying to access auth pages, redirect to their dashboard
   if (isAuthenticated && state.url.startsWith('/auth')) {
-    if (user?.userType === 'Client') {
+    if (user?.userType === 'CLIENT') {
       return router.parseUrl('/customers/jobs');
     }
     if (user?.userType === 'MAKER') {
-      return router.parseUrl('/makers/dashboard');
+      return router.parseUrl('/makers/jobs');
     }
     return router.parseUrl('/home');
   }
 
   return true;
 };
-

@@ -20,6 +20,7 @@ export interface AuthResponse {
   firstName: string;
   lastName: string;
   userType: string;
+  isProfileComplete?: boolean;
 }
 
 export interface IUserData {
@@ -28,6 +29,7 @@ export interface IUserData {
   lastName: string
   email: string
   userType: 'admin'
+  isProfileComplete?: boolean
 }
 
 @Injectable({
@@ -60,6 +62,7 @@ export class AuthService {
       firstName: response.firstName,
       lastName: response.lastName,
       userType: response.userType,
+      isProfileComplete: response.isProfileComplete,
     };
 
     storage.setItem('user', JSON.stringify(user));
@@ -87,6 +90,7 @@ export class AuthService {
         firstName: user.firstName,
         lastName: user.lastName,
         userType: user.userType,
+        isProfileComplete: user.isProfileComplete,
       };
     } catch (e) {
       console.error('Invalid user JSON in storage:', userStr);

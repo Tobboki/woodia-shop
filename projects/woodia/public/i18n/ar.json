@@ -2,6 +2,7 @@
   "app": {
     "appTitle": "ووديا",
     "currentYear": "٢٠٢٦",
+    "currency": "جنيه مصري",
     "dialogs": {
       "loginPrompt": {
         "title": "تسجيل الدخول مطلوب",
@@ -162,6 +163,7 @@
         "errors": {
           "accessDenied": "تم رفض الوصول",
           "genericError": "حدث خطأ ما",
+          "emailNotConfirmed": "يرجى إتمام عملية التحقق من بريدك الإلكتروني أولاً",
           "authFailed": "فشل المصادقة",
           "authCanceled": "تم إلغاء المصادقة",
           "googleAuthFailed": "فشل المصادقة عبر جوجل",
@@ -204,7 +206,8 @@
         "messages": {
           "registrationSuccess": "تم التسجيل بنجاح",
           "verificationSuccess": "تم التحقق بنجاح",
-          "codeResentSuccess": "تم إعادة إرسال الرمز بنجاح"
+          "codeResentSuccess": "تم إعادة إرسال الرمز بنجاح",
+          "alreadyVerified": "البريد الإلكتروني مؤكد بالفعل"
         },
         "errors": {
           "codeMismatch": "الرمز غير متطابق",
@@ -713,6 +716,181 @@
             "continue": "متابعة",
             "finish": "إنهاء والانضمام"
           }
+        }
+      }
+    },
+    "makers": {
+      "onboarding": {
+        "steps": {
+          "1": {
+            "title": "مرحبًا",
+            "subtitle": "لنبدأ بإعداد ملفك المهني",
+            "welcome": "مرحبًا بك في منصة الحرفيين",
+            "description": "اعرض مهاراتك، تواصل مع العملاء، وابدأ في استقبال طلبات المشاريع المناسبة لخبراتك."
+          },
+          "2": {
+            "title": "الملف المهني",
+            "subtitle": "أخبر العملاء عن خبراتك ومهاراتك",
+            "uploadPhoto": "رفع صورة الملف الشخصي",
+            "hourlyRate": "السعر بالساعة",
+            "hourlyRatePlaceholder": "أدخل السعر بالساعة",
+            "overview": "نبذة تعريفية",
+            "overviewPlaceholder": "اكتب وصفًا عن خبراتك وتخصصاتك والخدمات التي تقدمها...",
+            "overviewHint": "النبذة الجيدة تساعد العملاء على الثقة بخبراتك ومهاراتك."
+          },
+          "3": {
+            "title": "معلومات التواصل",
+            "subtitle": "ساعد العملاء على الوصول إليك بسهولة",
+            "phoneNumber": "رقم الهاتف",
+            "phonePlaceholder": "أدخل رقم الهاتف",
+            "governorate": "المحافظة",
+            "selectGov": "اختر المحافظة",
+            "address": "العنوان",
+            "addressPlaceholder": "أدخل عنوانك",
+            "additional": "معلومات إضافية",
+            "additionalPlaceholder": "أي تفاصيل إضافية ترغب بمشاركتها"
+          }
+        },
+        "lang": "ar",
+        "messages": {
+          "onboardingSuccess": "تم إكمال ملفك الشخصي بنجاح! مرحباً بك في ووديا."
+        },
+        "errors": {
+          "onboardingError": "فشل حفظ الملف الشخصي. يرجى المحاولة مرة أخرى."
+        },
+        "common": {
+          "back": "رجوع",
+          "continue": "متابعة",
+          "finish": "إنهاء",
+          "currency": "جنيه مصري"
+        }
+      },
+      "jobs": {
+        "title": "الطلبات المتاحة",
+        "description": "تصفح طلبات العملاء المفتوحة وقدم عرضك لبدء التنفيذ.",
+        "displayModeOptions": {
+          "list": "قائمة",
+          "grid": "شبكة"
+        },
+        "categoryOptions": {
+          "all": "الكل",
+          "TV Stand": "طاولة تلفزيون",
+          "Bookcase": "مكتبة",
+          "Desk": "مكتب",
+          "Beside Table": "كومودينو",
+          "Shoe Rack": "جزامة"
+        },
+        "noJobsFound": "لا توجد طلبات متاحة",
+        "noJobsFoundDesc": "لا توجد طلبات مفتوحة في الوقت الحالي. تحقق مرة أخرى قريباً!",
+        "loadMore": "تحميل المزيد",
+        "newPosting": "جديد",
+        "uncategorized": "عام",
+        "delivery": "التسليم",
+        "budget": "الميزانية",
+        "offers": "العروض",
+        "offersSubmitted": "عروض مقدمة",
+        "notSpecified": "غير محدد",
+        "viewDetails": "عرض التفاصيل",
+        "empty": {
+          "title": "لا توجد طلبات متاحة",
+          "description": "لا توجد طلبات مفتوحة في الوقت الحالي. تحقق مرة أخرى قريباً!"
+        },
+        "details": {
+          "placeholders": {
+            "noTitle": "طلب بدون عنوان"
+          },
+          "labels": {
+            "days": "أيام",
+            "negotiable": "قابل للتفاوض"
+          }
+        },
+        "errors": {
+          "loadFailed": "فشل تحميل الطلبات المتاحة"
+        }
+      },
+      "jobDetails": {
+        "actions": {
+          "backToJobs": "العودة إلى المشاريع",
+          "retry": "إعادة المحاولة",
+          "cancel": "إلغاء"
+        },
+        "labels": {
+          "budget": "الميزانية",
+          "timeline": "المدة الزمنية",
+          "days": "أيام",
+          "notSpecified": "غير محدد",
+          "negotiable": "قابل للتفاوض",
+          "estimatedCost": "التكلفة المتوقعة للمشروع",
+          "expectedCompletion": "موعد الإنجاز المتوقع",
+          "verifiedClient": "عميل موثق",
+          "noPreview": "لا يوجد معاينة متاحة"
+        },
+        "placeholders": {
+          "noTitle": "طلب بدون عنوان",
+          "category": "الفئة"
+        },
+        "sections": {
+          "technicalSpecs": "المواصفات التقنية",
+          "aboutClient": "حول العميل"
+        },
+        "offer": {
+          "title": "تقديم عرضك",
+          "price": "سعرك المقترح",
+          "estimatedDays": "عدد الأيام المتوقعة",
+          "message": "رسالة التقديم",
+          "messagePlaceholder": "صف أسلوبك في التنفيذ وخبرتك ذات الصلة وسبب كونك الشخص المناسب لهذا الطلب...",
+          "messageHint": "10 أحرف كحد أدنى. الرسالة القوية تزيد من فرص قبولك.",
+          "termsHint": "بتقديمك العرض، أنت توافق على إنجاز الطلب في حال قبوله. اطّلع على ",
+          "terms": "الشروط",
+          "bottomHint": "بتقديمك العرض، أنت توافق على إنجاز الطلب في حال قبوله.",
+          "submit": "تقديم العرض",
+          "submitMyOffer": "تقديم عرضي"
+        },
+        "messages": {
+          "offerSubmitted": "تم تقديم عرضك بنجاح!"
+        },
+        "errors": {
+          "loadFailed": "فشل تحميل تفاصيل الطلب. يرجى المحاولة مرة أخرى.",
+          "offerFailed": "فشل تقديم العرض. يرجى المحاولة مرة أخرى.",
+          "invalidConfig": "شكل التصميم غير صالح",
+          "invalidConfigDesc": "شكل التصميم مفقود أو تالف."
+        }
+      },
+      "submitOffer": {
+        "title": "تقديم عرض لـ ",
+        "subtitle": "حرفتك هي حجر الأساس في منصتنا. قدّم عرضاً تنافسياً ومفصلاً لإبراز خبرتك في هذا المشروع.",
+        "breadcrumb": {
+          "jobs": "الطلبات",
+          "projectDetails": "تفاصيل المشروع",
+          "submitOffer": "تقديم عرض"
+        },
+        "form": {
+          "price": "السعر (جنيه)",
+          "currencySymbol": "ج",
+          "deliveryTime": "مدة التسليم (أيام)",
+          "businessDays": "أيام عمل",
+          "message": "رسالة العرض التفصيلية",
+          "messagePlaceholder": "صف أسلوبك في التنفيذ، واختيار المواد، وأي تفاصيل مخصصة ستشملها في هذا المشروع...",
+          "days": "يوم",
+          "timeline": "مدة",
+          "termsHint": "بإرسال هذا العرض، أنت توافق على ",
+          "termsLink": "شروط الخدمة"
+        },
+        "expertTip": {
+          "label": "نصيحة خبير",
+          "message": "كن محدداً بشأن درجة الخشب وأنواع التشطيب للحصول على نتائج أفضل."
+        },
+        "actions": {
+          "sendOffer": "إرسال العرض",
+          "cancel": "إلغاء",
+          "retry": "إعادة المحاولة"
+        },
+        "messages": {
+          "success": "تم إرسال عرضك بنجاح!"
+        },
+        "errors": {
+          "loadFailed": "فشل تحميل تفاصيل الطلب.",
+          "submitFailed": "فشل إرسال العرض. يرجى المحاولة مرة أخرى."
         }
       }
     }

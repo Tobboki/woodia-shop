@@ -270,7 +270,7 @@ export class ConfiguratorStore {
     )
     this.desk = desk
     const productVal = this.product()
-    if (this.modelType() === 'Desk' && productVal?.category === 'Desk' && productVal.modelConfig) {
+    if (productVal && productVal.modelConfig) {
       const c = productVal.modelConfig as DeskModelConfig
       if (c.columnConfigs) {
         c.columnConfigs.forEach((cc, i) => this.desk.setColumnConfig(i, cc))
@@ -317,7 +317,7 @@ export class ConfiguratorStore {
     this.bookcase.setTopStorage(this.topStorageConfig())
     this.bookcase.setBottomStorage(this.bottomStorageConfig())
     const productVal = this.product()
-    if (this.modelType() === 'Bookcase' && productVal?.category === 'Bookcase' && productVal.modelConfig) {
+    if (productVal && productVal.modelConfig) {
       const c = productVal.modelConfig as BookcaseModelConfig
       if (c.rowConfigs) {
         c.rowConfigs.forEach((rc, i) => this.bookcase.setRowConfig(i, rc))
@@ -362,7 +362,7 @@ export class ConfiguratorStore {
     this.tvStand.setRowStyle(this.tvStandStyle())
     this.tvStand.setWithLegs(this.tvStandWithLegs())
     const productVal = this.product()
-    if (this.modelType() === 'TvStand' && productVal?.category === 'TvStand' && productVal.modelConfig) {
+    if (productVal && productVal.modelConfig) {
       const c = productVal.modelConfig as TvStandModelConfig
       if (c.columnConfigs) {
         c.columnConfigs.forEach((cc, i) => this.tvStand.setColumnConfig(i, cc))
@@ -404,7 +404,7 @@ export class ConfiguratorStore {
     )
     this.shoeRack = shoeRack
     const productVal = this.product()
-    if (this.modelType() === 'ShoeRack' && productVal?.category === 'ShoeRack' && productVal.modelConfig) {
+    if (productVal && productVal.modelConfig) {
       const c = productVal.modelConfig as ShoeRackModelConfig
       if (c.columnConfigs) {
         c.columnConfigs.forEach((cc, i) => this.shoeRack.setColumnConfig(i, cc))
@@ -450,7 +450,7 @@ export class ConfiguratorStore {
     )
     this.bedsideTable = bedsideTable
     const productVal = this.product()
-    if (this.modelType() === 'BedsideTable' && productVal?.category === 'BedsideTable' && productVal.modelConfig) {
+    if (productVal && productVal.modelConfig) {
       const c = productVal.modelConfig as BedsideTableModelConfig
       if (c.columnConfigs) {
         c.columnConfigs.forEach((cc, i) => this.bedsideTable.setColumnConfig(i, cc))

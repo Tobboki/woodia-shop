@@ -28,12 +28,10 @@ export interface IContactInfo {
   providedIn: 'root',
 })
 export class MakerService {
-  readonly profileCompleted = signal<boolean | null>(null);
-
   constructor(
     private http: HttpClient,
     private authService: AuthService
-  ) {}
+  ) { }
 
   private get headers() {
     return {
@@ -93,25 +91,5 @@ export class MakerService {
     return this.http
       .put(`${environment.apiUrl}${environment.endpoints.customer.settings.shipping.updateShippingDetails}`, body, this.headers)
       .pipe(catchError(err => throwError(() => err)));
-  }
-
-  // Check if profile is completed
-  // We'll consider it completed if they have professional profile and contact info
-  isProfileCompleted(): Observable<boolean> {
-    if (this.profileCompleted() !== null) {
-      return of(this.profileCompleted()!);
-    }
-
-    return this.getProfessionalProfile().pipe(
-      map(profile => {
-        const isComplete = !!profile && !!profile.profileOverview && profile.hourlyRate > 0;
-        this.profileCompleted.set(isComplete);
-        return isComplete;
-      }),
-      catchError(() => {
-        this.profileCompleted.set(false);
-        return of(false);
-      })
-    );
   }
 }

@@ -42,16 +42,13 @@ export class AiDesignService {
     if (productType === 'Bookcase') {
       answers.primary_usage = answers.primary_usage ?? (answers.room_type === 'bedroom' ? 'storage' : 'display');
       answers.storage_preference = answers.storage_preference ?? 'mixed';
-      answers.needs_bottom_storage = answers.needs_bottom_storage ?? false;
     } else if (productType === 'Desk') {
       answers.storage_preference = answers.storage_preference ?? 'hidden';
       answers.needs_cable_management = answers.needs_cable_management ?? false;
-      answers.side_cabinet = answers.side_cabinet ?? false;
     } else if (productType === 'TvStand') {
       answers.primary_usage = answers.primary_usage ?? 'entertainment';
       answers.has_open_display_column = answers.has_open_display_column ?? false;
       answers.needs_cable_management = answers.needs_cable_management ?? true;
-      answers.side_cabinet = answers.side_cabinet ?? false;
     } else if (productType === 'ShoeRack') {
       answers.is_behind_door = true;
       answers.primary_usage = answers.primary_usage ?? 'storage';
@@ -65,23 +62,40 @@ export class AiDesignService {
   }
 
   public predict(productType: string, userAnswers: any): Observable<any> {
+    const fullAnswers = this.fillHiddenAnswers(productType, userAnswers);
     const payload = {
       product_type: productType,
-      answers: this.fillHiddenAnswers(productType, userAnswers)
+      answers: fullAnswers
     };
 
     return this.http.post<any>(this.apiUrl, payload).pipe(
       map(response => {
+        console.log('AI API Raw Response:', response);
         if (!response || !response.config) {
           throw new Error('Invalid response from AI API');
         }
-        return this.normalizeConfig(productType, response.config);
+        const normalized = this.normalizeConfig(productType, response.config, fullAnswers);
+        console.log('Normalized Config sent to Studio:', normalized);
+        return normalized;
       })
     );
   }
 
+  private mapRoomStyleToShelfStyle(roomStyle: string | undefined): string {
+    const styleMap: Record<string, string[]> = {
+      'minimal': ['grid', 'pixel'],
+      'modern': ['mosaic', 'grid', 'gradient'],
+      'classic': ['grid'],
+      'bohemian': ['gradient', 'mosaic', 'pixel', 'slant'],
+      'industrial': ['slant', 'grid', 'mosaic', 'stagger'],
+      'scandinavian': ['pixel', 'grid', 'mosaic']
+    };
+    const options = roomStyle ? (styleMap[roomStyle.toLowerCase()] || ['grid']) : ['grid', 'mosaic', 'pixel', 'slant', 'gradient', 'stagger'];
+    return this.randomItem(options);
+  }
+
   // Normalization logic to correct incorrect AI generated config data
-  private normalizeConfig(productType: string, config: any): any {
+  private normalizeConfig(productType: string, config: any, answers: any): any {
     const safeInt = (val: any, defaultVal = 0) => {
       const num = parseInt(val, 10);
       return isNaN(num) ? defaultVal : num;
@@ -95,26 +109,24 @@ export class AiDesignService {
     if (config.widthCm !== undefined) config.widthCm = safeInt(config.widthCm);
     if (config.heightCm !== undefined) config.heightCm = safeInt(config.heightCm);
     if (config.depthCm !== undefined) config.depthCm = safeInt(config.depthCm);
-    if (config.columns !== undefined) config.columns = safeInt(config.columns, 1);
-    if (config.rows !== undefined) config.rows = safeInt(config.rows, 1);
+    if (config.columns !== undefined) config.columns = Math.max(1, safeInt(config.columns, 1));
+    if (config.rows !== undefined) config.rows = Math.max(1, safeInt(config.rows, 1));
     if (config.thicknessCm !== undefined) config.thicknessCm = safeFloat(config.thicknessCm);
     if (config.density !== undefined) config.density = safeInt(config.density);
 
     // Provide safe fallbacks for required 3D properties if missing from AI
     config.modelType = productType;
     config.color = this.curateColor(config.color);
-    config.style = config.style || 'grid';
+    config.style = this.curateStyle(config.style, answers);
     config.withBack = config.withBack !== undefined ? config.withBack : true;
     config.legroomPosition = config.legroomPosition !== undefined ? safeInt(config.legroomPosition) : 0;
-    
-    // Array normalizations
+
+    // Array normalizations - ONLY length checks, trust the AI's content
     if (productType === 'Bookcase') {
       const expectedRows = config.rows || 1;
       if (!config.rowConfigs) {
-         config.rowConfigs = [];
+        config.rowConfigs = [];
       }
-      
-      // Fix length of rowConfigs
       while (config.rowConfigs.length < expectedRows) {
         config.rowConfigs.push({ height: 'md', doors: 'none', drawers: 'none' });
       }
@@ -124,9 +136,8 @@ export class AiDesignService {
     } else if (['Desk', 'TvStand', 'ShoeRack', 'BedsideTable'].includes(productType)) {
       const expectedCols = config.columns || 1;
       if (!config.columnConfigs) {
-         config.columnConfigs = [];
+        config.columnConfigs = [];
       }
-      
       while (config.columnConfigs.length < expectedCols) {
         config.columnConfigs.push({ doors: 'none', drawers: 'none', hugeCell: false });
       }
@@ -136,6 +147,17 @@ export class AiDesignService {
     }
 
     return config;
+  }
+
+  private curateStyle(style: string | undefined, answers: any): string {
+    const validStyles = ['grid', 'slant', 'stagger', 'gradient', 'mosaic', 'pixel'];
+    const current = style?.toLowerCase();
+
+    // If AI returned a valid style, use it
+    if (current && validStyles.includes(current)) return current;
+
+    // Otherwise map from room style or default
+    return this.mapRoomStyleToShelfStyle(answers?.room_style);
   }
 
   private curateColor(color: string | undefined): string {
@@ -186,9 +208,9 @@ export class AiDesignService {
       if (!rgb) continue;
 
       const distance = Math.sqrt(
-        Math.pow(targetRgb.r - rgb.r, 2) +
-        Math.pow(targetRgb.g - rgb.g, 2) +
-        Math.pow(targetRgb.b - rgb.b, 2)
+        Math.pow(targetRgb.r - rgb.r, 1) + // Using manhattan for simpler nearest matching
+        Math.pow(targetRgb.g - rgb.g, 1) +
+        Math.pow(targetRgb.b - rgb.b, 1)
       );
 
       if (distance < minDistance) {

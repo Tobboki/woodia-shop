@@ -5,7 +5,7 @@ import { PublicLayout } from './shared/layouts/public-layout/public-layout';
 import { authGuard } from './core/guards/auth-guard';
 import { MainLayout } from './shared/layouts/main-layout/main-layout';
 import { Register } from './features/auth/register/register';
-import { customerGuard, makerGuard } from './core/guards/role-guard';
+import { customerGuard, guestGuard, makerGuard } from './core/guards/role-guard';
 import { googleAuthGuard } from './core/guards/google-auth.guard';
 import { Settings as CustomerSettings } from './features/customers/settings/settings'
 import { Account as CustomerAccountSettings } from './features/customers/settings/account/account'
@@ -21,6 +21,8 @@ export const routes: Routes = [
     path: '',
     component: MainLayout,
     data: { layoutVariant: 'plain' },
+    canActivate: [guestGuard],
+    canActivateChild: [guestGuard],
     children: [
       {
         path: '',
@@ -56,11 +58,27 @@ export const routes: Routes = [
       {
         path: 'customers',
         canActivate: [customerGuard],
+        canActivateChild: [customerGuard],
         children: [
           {
             path: '',
             redirectTo: 'jobs',
             pathMatch: 'full',
+          },
+          {
+            path: 'designs',
+            redirectTo: 'designs/all',
+            pathMatch: 'full'
+          },
+          {
+            path: 'designs/:category',
+            component: Designs,
+          },
+          {
+            path: 'designs/model/:id',
+            loadComponent: () =>
+              import('./features/design-studio/design-studio')
+                .then(m => m.DesignStudio)
           },
           {
             path: 'jobs',
@@ -98,10 +116,11 @@ export const routes: Routes = [
       {
         path: 'makers',
         canActivate: [makerGuard],
+        canActivateChild: [makerGuard],
         children: [
           {
             path: '',
-            redirectTo: 'onboarding',
+            redirectTo: 'jobs',
             pathMatch: 'full',
           },
           {
@@ -110,7 +129,19 @@ export const routes: Routes = [
           },
           {
             path: 'jobs',
-            loadComponent: () => import('./features/makers/jobs/jobs').then(m => m.Jobs)
+            loadComponent: () => import('./features/makers/jobs/maker-jobs').then(m => m.MakerJobs)
+          },
+          {
+            path: 'jobs/:id',
+            loadComponent: () =>
+              import('./features/makers/jobs/maker-job-details/maker-job-details')
+                .then(m => m.MakerJobDetails)
+          },
+          {
+            path: 'jobs/:id/submit-offer',
+            loadComponent: () =>
+              import('./features/makers/offers/maker-submit-offer/maker-submit-offer')
+                .then(m => m.MakerSubmitOffer)
           }
         ]
       },
@@ -122,6 +153,7 @@ export const routes: Routes = [
     path: 'auth',
     component: PublicLayout,
     canActivate: [authGuard],
+    canActivateChild: [authGuard],
     children: [
       {
         path: '',

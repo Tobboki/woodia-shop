@@ -10,10 +10,18 @@
     "types": []
   },
   "paths": {
-    "@components/*": ["src/lib/components/*"],
-    "@directives/*": ["src/lib/directives/*"],
-    "@utils/*": ["src/lib/utils/*"],
-    "@models/*": ["src/lib/furniture/models/*"]
+    "@components/*": [
+      "src/lib/components/*"
+    ],
+    "@directives/*": [
+      "src/lib/directives/*"
+    ],
+    "@utils/*": [
+      "src/lib/utils/*"
+    ],
+    "@models/*": [
+      "src/lib/furniture/models/*"
+    ]
   },
   "include": [
     "src/**/*.ts"

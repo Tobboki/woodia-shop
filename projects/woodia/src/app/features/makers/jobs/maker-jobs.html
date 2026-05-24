@@ -1,0 +1,148 @@
+<div class="flex flex-col gap-4 my-4" *transloco="let t">
+    <!-- Header -->
+    <div class="flex max-md:flex-col justify-between items-end max-md:items-center gap-2">
+        <div class="flex flex-col max-md:items-center w-full md:w-1/2">
+            <h1 class="font-h1">
+                {{ t('features.makers.jobs.title') }}
+            </h1>
+            <p class="max-md:hidden">
+                {{ t('features.makers.jobs.description') }}
+            </p>
+        </div>
+
+        <z-segmented [zOptions]="displayModeOptions" [ngModel]="displayMode()" zSize="lg"
+            (ngModelChange)="onDisplayModeChange($event)" />
+    </div>
+
+    <!-- Category Filter Tabs -->
+    <div>
+        <!-- Desktop -->
+        <div class="max-sm:hidden flex gap-2 flex-wrap">
+            @for (option of categoryOptions; track option) {
+            <z-button class="rounded-full px-4" [zType]="currentCategory() === option ? 'default' : 'outline'"
+                (click)="currentCategory.set(option)">
+                {{ t('features.makers.jobs.categoryOptions.' + option) }}
+            </z-button>
+            }
+        </div>
+
+        <!-- Mobile carousel -->
+        <z-carousel [zOptions]="zardCarouselOptions" zControls="none" class="sm:hidden">
+            <z-carousel-content>
+                @for (option of categoryOptions; track option) {
+                <z-carousel-item class="px-1 basis-auto flex-shrink-0">
+                    <z-button class="rounded-full px-4" [zType]="currentCategory() === option ? 'default' : 'outline'"
+                        (click)="currentCategory.set(option)">
+                        {{ t('features.makers.jobs.categoryOptions.' + option) }}
+                    </z-button>
+                </z-carousel-item>
+                }
+            </z-carousel-content>
+        </z-carousel>
+    </div>
+
+    <div class="flex flex-col justify-between w-full gap-2">
+
+        <!-- Loading Skeletons -->
+        @if (isLoadingJobs()) {
+        @if (displayMode() === 'grid') {
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-6 max-sm:p-4">
+            @for (i of [1,2,3,4,5,6,7,8]; track i) {
+            <div class="bg-card rounded-2xl border border-border p-5 space-y-4">
+                <div class="flex justify-between items-start">
+                    <div class="space-y-1">
+                        <z-skeleton class="h-3 w-16 rounded" />
+                        <z-skeleton class="h-4 w-20 rounded-full" />
+                    </div>
+                    <z-skeleton class="h-8 w-8 rounded-lg" />
+                </div>
+                <div class="space-y-2">
+                    <z-skeleton class="h-5 w-3/4 rounded" />
+                    <z-skeleton class="h-3 w-full rounded" />
+                    <z-skeleton class="h-3 w-2/3 rounded" />
+                </div>
+                <div class="h-px bg-border/50"></div>
+                <div class="flex justify-between">
+                    <z-skeleton class="h-6 w-16 rounded" />
+                    <z-skeleton class="h-6 w-16 rounded" />
+                </div>
+            </div>
+            }
+        </div>
+        } @else {
+        <div class="flex flex-col gap-5 px-6 max-sm:p-4">
+            @for (i of [1,2,3,4,5]; track i) {
+            <div class="bg-card rounded-2xl border border-border p-6 space-y-4">
+                <!-- Header Skeleton -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <z-skeleton class="h-4 w-24 rounded" />
+                        <z-skeleton class="h-6 w-20 rounded-full" />
+                    </div>
+                    <z-skeleton class="hidden md:block h-10 w-40 rounded-xl" />
+                </div>
+
+                <!-- Body Skeleton -->
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <z-skeleton class="h-7 w-2/3 rounded" />
+                        <z-skeleton class="h-4 w-full rounded" />
+                        <z-skeleton class="h-4 w-1/2 rounded" />
+                    </div>
+
+                    <!-- Footer Skeleton -->
+                    <div class="flex gap-8 pt-2">
+                        <div class="flex gap-2">
+                            <z-skeleton class="size-8 rounded-lg" />
+                            <div class="space-y-1">
+                                <z-skeleton class="h-2 w-12" />
+                                <z-skeleton class="h-4 w-16" />
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <z-skeleton class="size-8 rounded-lg" />
+                            <div class="space-y-1">
+                                <z-skeleton class="h-2 w-12" />
+                                <z-skeleton class="h-4 w-16" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Button Skeleton -->
+                    <div class="md:hidden pt-4 border-t border-border/50">
+                        <z-skeleton class="h-10 w-full rounded-xl" />
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+        }
+        } @else {
+        <!-- Empty state -->
+        @if (jobs().length === 0) {
+        <div class="flex flex-col items-center justify-center py-20 gap-4 text-muted-foreground">
+            <ng-icon name="lucideBriefcase" class="size-12 opacity-30" />
+            <p class="text-lg font-medium">{{ t('features.makers.jobs.empty.title') }}</p>
+            <p class="text-sm">{{ t('features.makers.jobs.empty.description') }}</p>
+        </div>
+        } @else {
+        @if (displayMode() === 'list') {
+        <woodia-maker-jobs-list [jobs]="jobs()" />
+        } @else if (displayMode() === 'grid') {
+        <woodia-maker-jobs-grid [jobs]="jobs()" />
+        }
+        }
+        }
+
+        <!-- Load More Button -->
+        @if (jobs().length > 0 && hasMoreJobs()) {
+        <div class="mx-auto mt-4">
+            <z-button zSize="xl" [zDisabled]="isLoadingMoreJobs()" [zLoading]="isLoadingMoreJobs()"
+                (click)="loadMoreJobs()">
+                {{ t('features.makers.jobs.loadMore') }}
+                <ng-icon name="lucideRotateCw" [class]="isLoadingMoreJobs() ? 'hidden' : ''" />
+            </z-button>
+        </div>
+        }
+    </div>
+</div>

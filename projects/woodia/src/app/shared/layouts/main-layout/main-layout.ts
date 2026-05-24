@@ -57,7 +57,7 @@ export class MainLayout implements OnInit {
       {
         id: 'designs',
         label: 'app.header.menu.designs',
-        path: '/designs',
+        path: '/customers/designs',
         icon: 'lucideArmchair',
       },
 
@@ -68,7 +68,14 @@ export class MainLayout implements OnInit {
         icon: 'lucideBriefcase'
       },
     ],
-    maker: [],
+    maker: [
+      {
+        id: 'jobs',
+        label: 'app.header.menu.jobs',
+        path: '/makers/jobs',
+        icon: 'lucideBriefcase'
+      },
+    ],
   };
 
   // ---------------------------
@@ -88,9 +95,10 @@ export class MainLayout implements OnInit {
     let baseMenu = this.menus['landing'];
 
     if (isAuthenticated) {
-      if (user?.userType === 'Client') {
+      const userType = user?.userType?.toUpperCase();
+      if (userType === 'CLIENT') {
         baseMenu = this.menus['customer'];
-      } else if (user?.userType === 'MAKER') {
+      } else if (userType === 'MAKER') {
         baseMenu = this.menus['maker'];
       }
     }
@@ -103,12 +111,12 @@ export class MainLayout implements OnInit {
         children: this.categories().map(cat => ({
           id: cat.slug,
           label: cat.name,
-          path: `/designs/${cat.slug}`,
+          path: `/customers/designs/${cat.slug}`,
           children:
             cat.childCategory?.map(child => ({
               id: child.slug,
               label: child.name,
-              path: `/designs/${child.slug}`,
+              path: `/customers/designs/${child.slug}`,
             })) || [],
         })),
       };
@@ -131,10 +139,10 @@ export class MainLayout implements OnInit {
       while (activeRoute.firstChild) {
         activeRoute = activeRoute.firstChild;
       }
-      
-      const variant = activeRoute.snapshot.data['layoutVariant'] || 
-                     this.route.snapshot.data['layoutVariant'] || 
-                     'plain';
+
+      const variant = activeRoute.snapshot.data['layoutVariant'] ||
+        this.route.snapshot.data['layoutVariant'] ||
+        'plain';
       this.layoutVariant.set(variant);
     });
 
@@ -152,7 +160,7 @@ export class MainLayout implements OnInit {
   private getDeepestData(snapshot: any, key: string): any {
     let current = snapshot;
     let value = current.data ? current.data[key] : undefined;
-    
+
     while (current.firstChild) {
       current = current.firstChild;
       if (current.data && current.data[key]) {

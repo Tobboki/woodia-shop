@@ -31,6 +31,7 @@ import { AuthService } from '@woodia-core/services/auth.service';
 import { isImage } from '@woodia-shared/utils/helpers';
 import { ZardCarouselImports } from '@shared-components/carousel';
 import { ZardInputDirective } from '@shared-components/input/input.directive';
+import { ZardInputGroupComponent } from "shared-lib/components/input-group/input-group.component";
 
 @Component({
   selector: 'woodia-design-studio',
@@ -47,7 +48,8 @@ import { ZardInputDirective } from '@shared-components/input/input.directive';
     ZardSkeletonComponent,
     ZardCarouselImports,
     ZardInputDirective,
-    NgOptimizedImage
+    NgOptimizedImage,
+    ZardInputGroupComponent
   ],
 
   templateUrl: './design-studio.html',

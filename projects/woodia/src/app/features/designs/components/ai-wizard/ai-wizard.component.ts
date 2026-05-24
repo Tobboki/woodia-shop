@@ -10,6 +10,7 @@ import { ZardButtonComponent } from '@shared-components/button/button.component'
 import { ZardDialogRef } from '@shared-components/dialog/dialog-ref';
 import { ProductService } from '@woodia-core/services/product.service';
 import { toast } from 'ngx-sonner';
+import { AuthService } from '@woodia-core/services/auth.service';
 
 @Component({
   selector: 'woodia-ai-wizard',
@@ -25,7 +26,7 @@ import { toast } from 'ngx-sonner';
       <div class="z-10 w-full max-w-2xl mx-auto flex flex-col h-full justify-center">
 
         <!-- Step 1: Product Selection -->
-        @if (step() === 1) {
+        @if (!loading() && step() === 1) {
           <div class="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500 w-full">
             <div class="text-center space-y-2">
               <h3 class="text-xl md:text-3xl font-bold">{{ t('step1.title') }}</h3>
@@ -58,9 +59,9 @@ import { toast } from 'ngx-sonner';
         }
 
         <!-- Step 2: Questionnaire -->
-        @if (step() === 2) {
-          <div class="space-y-6 animate-in fade-in slide-in-from-right-8 duration-500 w-full max-h-[60vh] overflow-y-auto custom-scrollbar">
-            <div class="text-center space-y-2 pb-4 pt-4 bg-background/98 backdrop-blur-md z-20 rounded-lg  mb-6 px-6">
+        @if (!loading() && step() === 2) {
+          <div class="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500 w-full max-h-[60vh] overflow-y-auto custom-scrollbar">
+            <div class="text-center space-y-2 pb-4 pt-4 bg-background/98 backdrop-blur-md z-20 rounded-lg mb-6 px-6">
               <h3 class="text-xl md:text-2xl font-bold">{{ t('step2.title') }}</h3>
               @if (selectedProduct(); as productId) {
                 <p class="text-foreground/60 text-sm md:text-base">
@@ -261,6 +262,7 @@ import { toast } from 'ngx-sonner';
 })
 export class AiWizardComponent {
   aiService = inject(AiDesignService);
+  authService = inject(AuthService);
   dialogRef = inject(ZardDialogRef, { optional: true });
   router = inject(Router);
   productService = inject(ProductService);
@@ -356,6 +358,9 @@ export class AiWizardComponent {
 
     this.close();
     toast.success(this.translocoService.translate('features.aiWizard.messages.success'));
-    this.router.navigate(['/designs/model', 'ai']);
+
+    const isCustomer = this.authService.getCurrentUser()?.userType === 'CLIENT';
+
+    this.router.navigate([isCustomer ? '/customers/designs/model' : '/designs/model', 'ai']);
   }
 }
