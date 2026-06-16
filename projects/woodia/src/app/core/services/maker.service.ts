@@ -74,22 +74,35 @@ export class MakerService {
       .pipe(catchError(err => throwError(() => err)));
   }
 
+  // Profile Image
+  addProfileImage(photoUrl: string): Observable<any> {
+    return this.http
+      .post(`${environment.apiUrl}${environment.endpoints.maker.settings.account.addProfileImage}`, { photoUrl }, this.headers)
+      .pipe(catchError(err => throwError(() => err)));
+  }
+
+  updateProfileImage(photoUrl: string): Observable<any> {
+    return this.http
+      .put(`${environment.apiUrl}${environment.endpoints.maker.settings.account.updateProfileImage}`, { photoUrl }, this.headers)
+      .pipe(catchError(err => throwError(() => err)));
+  }
+
   // Contact Info
   getContactInfo(): Observable<IContactInfo> {
     return this.http
-      .get<IContactInfo>(`${environment.apiUrl}${environment.endpoints.customer.settings.shipping.getShippingDetails}`, this.headers)
+      .get<IContactInfo>(`${environment.apiUrl}${environment.endpoints.maker.settings.contactInfo.getContactInfo}`, this.headers)
       .pipe(catchError(err => throwError(() => err)));
   }
 
   createContactInfo(body: IContactInfo): Observable<any> {
     return this.http
-      .post(`${environment.apiUrl}${environment.endpoints.customer.settings.shipping.createShippingDetails}`, body, this.headers)
+      .post(`${environment.apiUrl}${environment.endpoints.maker.settings.contactInfo.createContactInfo}`, body, this.headers)
       .pipe(catchError(err => throwError(() => err)));
   }
 
   updateContactInfo(body: IContactInfo): Observable<any> {
     return this.http
-      .put(`${environment.apiUrl}${environment.endpoints.customer.settings.shipping.updateShippingDetails}`, body, this.headers)
+      .put(`${environment.apiUrl}${environment.endpoints.maker.settings.contactInfo.updateContactInfo}`, body, this.headers)
       .pipe(catchError(err => throwError(() => err)));
   }
 }

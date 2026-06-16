@@ -78,12 +78,12 @@
 
         <!-- Status Badge -->
         <div class="flex items-center gap-1" (click)="$event.stopPropagation()">
-          <z-badge zShape="pill" [class]="getStatusColor(job.status)"
+          <z-badge zShape="pill" [class]="getStatusColor(job.jobStatus)"
             class="!text-xs !font-bold !tracking-wider !uppercase !px-2.5 !py-1 !border">
-            {{ globalT('features.customers.jobs.jobStatus.' + (job.status)) }}
+            {{ globalT('features.customers.jobs.jobStatus.' + (job.jobStatus)) }}
           </z-badge>
 
-          @if (job.status !== 'Completed' && job.status !== 'Canceled') {
+          @if (job.jobStatus !== 'Completed' && job.jobStatus !== 'Canceled') {
           <button z-button zType="ghost" zSize="icon-lg" class="hover:!bg-muted" (click)="handleStatusChange(job)"
             [zTooltip]="globalT('features.customers.jobs.changeStatus')">
             <ng-icon name="lucideSettings" class="size-4" />

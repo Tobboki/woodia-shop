@@ -6,9 +6,8 @@ import { TranslocoDirective } from '@jsverse/transloco';
 import { NgIcon } from '@ng-icons/core';
 import { ZardButtonComponent } from '@shared-components/button';
 import { LanguageService } from '@woodia-core/services/language.service';
-import { getTextDir } from '@woodia-shared/utils/helpers';
+import { getTextDir, localizeDimensionTitle } from '@woodia-shared/utils/helpers';
 import { Router } from '@angular/router';
-import { ZardTooltipDirective } from '@shared-components/tooltip';
 import { ZardDialogService } from '@shared-components/dialog/dialog.service';
 import { JobService } from '@woodia-core/services/job.service';
 import { toast } from 'ngx-sonner';
@@ -16,7 +15,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { FormsModule } from '@angular/forms';
 import { ZardBadgeComponent } from '@shared-components/badge/badge.component';
 import { JobStatusDialogComponent } from '../job-status-dialog.component';
-import { ZardDividerComponent } from "shared-lib/components/divider/divider.component";
+import { ZardTooltipImports } from '@shared-components/tooltip/';
 
 @Component({
   selector: 'woodia-jobs-list',
@@ -28,7 +27,7 @@ import { ZardDividerComponent } from "shared-lib/components/divider/divider.comp
     ZardButtonComponent,
     FormsModule,
     ZardBadgeComponent,
-    ZardTooltipDirective,
+    ZardTooltipImports,
   ],
   templateUrl: './jobs-list.view.html',
   styleUrl: './jobs-list.view.scss',
@@ -39,20 +38,20 @@ export class JobsListView {
     private router: Router,
     private jobService: JobService,
     private dialogService: ZardDialogService,
-    private translocoService: TranslocoService
+    protected translocoService: TranslocoService
   ) { }
 
   handleStatusChange(job: IJob) {
     const dialogRef = this.dialogService.create({
       zTitle: this.translocoService.translate('features.customers.jobs.confirmStatusChangeTitle'),
       zContent: JobStatusDialogComponent,
-      zData: { status: job.status },
+      zData: { status: job.jobStatus },
       zWidth: '400px',
       zHideFooter: true // We use the component's footer
     });
 
     dialogRef.afterClosed().subscribe((newStatus) => {
-      if (newStatus && newStatus !== job.status) {
+      if (newStatus && newStatus !== job.jobStatus) {
         this.updateStatus(job, newStatus);
       }
     });
@@ -76,7 +75,7 @@ export class JobsListView {
 
     obs$.subscribe({
       next: () => {
-        job.status = newStatus;
+        job.jobStatus = newStatus;
         toast.success(this.translocoService.translate('features.customers.jobs.statusUpdatedSuccess'));
       },
       error: (err: HttpErrorResponse) => {
@@ -98,6 +97,10 @@ export class JobsListView {
     this.router.navigate(['/customers/jobs', jobId]);
   }
 
+  navigateToJobOffers(jobId: number) {
+    this.router.navigate(['/customers/jobs', jobId, 'offers']);
+  }
+
   navigateToModel(event: Event, productId: number) {
     event.stopPropagation();
     if (productId) {
@@ -106,19 +109,20 @@ export class JobsListView {
   }
 
   protected readonly getTextDir = getTextDir;
+  protected localizeDimensionTitle = localizeDimensionTitle;
 
   @Input() jobs: IJob[] = [];
 
   getStatusColor(status: TJobStatus) {
     switch (status) {
       case "Canceled":
-        return '!bg-desructive !text-red-600 dark:!bg-red-950/30 dark:!text-red-400 border-red-100 dark:border-red-900/30';
+        return '!bg-destructive !text-red-600 dark:!bg-red-950/30 dark:!text-red-400 border-red-100 dark:border-red-900/30';
       case "Completed":
         return '!bg-success !text-green-600 dark:!bg-green-950/30 dark:!text-green-400 border-green-100 dark:border-green-900/30';
-      case "Pending":
-        return '!bg-orange-50 !text-orange-600 dark:!bg-orange-950/30 dark:!text-orange-400 border-orange-100 dark:border-orange-900/30';
       case "InProgress":
         return '!bg-blue-50 !text-blue-600 dark:!bg-blue-950/30 dark:!text-blue-400 border-blue-100 dark:border-blue-900/30';
+      case "Open":
+        return '!bg-purple-50 !text-purple-600 dark:!bg-purple-950/30 dark:!text-purple-400 border-purple-100 dark:border-purple-900/30';
       default:
         return '!bg-gray-50 !text-gray-600 dark:!bg-gray-800/30 dark:!text-gray-400 border-gray-100 dark:border-gray-700/30';
     }
@@ -130,10 +134,10 @@ export class JobsListView {
         return 'bg-red-500';
       case "Completed":
         return 'bg-green-500';
-      case "Pending":
-        return 'bg-orange-500';
       case "InProgress":
         return 'bg-blue-500';
+      case "Open":
+        return 'bg-purple-500';
       default:
         return 'bg-gray-500';
     }

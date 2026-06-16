@@ -43,7 +43,7 @@
         class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
         <a z-button [routerLink]="['/designs']" zSize="xl" class="group">
           {{ t('features.home.hero.ctaPrimary') }}
-          <ng-icon [name]="langService.isRtl() ? 'lucideArrowRight' : 'lucideArrowLeft'" class="ml-2"></ng-icon>
+          <ng-icon [name]="langService.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'" class="ml-2"></ng-icon>
         </a>
         <a z-button zType="outline" [routerLink]="['/our-story']" zSize="xl">
           {{ t('features.home.hero.ctaSecondary') }}

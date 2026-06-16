@@ -70,6 +70,17 @@ export const environment = {
         myOffers: '/api/carpenter/Offers',
         offerDetails: (id: number) => `/api/carpenter/Offers/${id}`,
         withdrawOffer: (id: number) => `/api/carpenter/Offers/${id}/withdraw`,
+      },
+      settings: {
+        account: {
+          addProfileImage: '/me/profile-image',
+          updateProfileImage: '/me/profile-image',
+        },
+        contactInfo: {
+          getContactInfo: '/me/contact-info',
+          createContactInfo: '/me/contact-info',
+          updateContactInfo: '/me/contact-info',
+        }
       }
     },
   },

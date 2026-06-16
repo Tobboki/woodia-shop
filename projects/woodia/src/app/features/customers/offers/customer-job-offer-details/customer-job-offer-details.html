@@ -1,0 +1,345 @@
+<div class="min-h-screen pb-28" *transloco="let t; read: 'features.customers.jobOfferDetails'">
+
+    <!-- ── SKELETON ── -->
+    @if (isLoading()) {
+    <div class="flex flex-col gap-6 animate-pulse">
+        <div class="flex items-start justify-between">
+            <div class="space-y-2">
+                <z-skeleton class="h-10 w-52 rounded-xl" />
+                <z-skeleton class="h-4 w-40 rounded" />
+            </div>
+            <z-skeleton class="h-8 w-24 rounded-full" />
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 space-y-5">
+                <div class="bg-card rounded-2xl border border-border p-6 space-y-5">
+                    <div class="flex items-center gap-3">
+                        <z-skeleton class="size-14 rounded-full" />
+                        <div class="space-y-2">
+                            <z-skeleton class="h-5 w-36 rounded" />
+                            <z-skeleton class="h-3 w-24 rounded" />
+                        </div>
+                    </div>
+                    <div class="flex gap-8">
+                        <z-skeleton class="h-10 w-24 rounded" />
+                        <z-skeleton class="h-10 w-24 rounded" />
+                    </div>
+                    <z-skeleton class="h-28 w-full rounded-xl" />
+                </div>
+            </div>
+            <div class="space-y-4">
+                <z-skeleton class="h-12 w-full rounded-2xl" />
+                <z-skeleton class="h-12 w-full rounded-2xl" />
+                <div class="bg-card rounded-2xl border border-border p-5 space-y-4">
+                    <z-skeleton class="h-4 w-20 rounded" />
+                    @for (i of [1,2,3]; track i) {
+                    <div class="flex gap-3">
+                        <z-skeleton class="size-8 rounded-full" />
+                        <div class="space-y-1 flex-1">
+                            <z-skeleton class="h-4 w-20 rounded" />
+                            <z-skeleton class="h-3 w-32 rounded" />
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+
+    <!-- ── ERROR ── -->
+    @else if (isError()) {
+    <div class="py-20 text-center space-y-4">
+        <div class="p-6 rounded-full bg-destructive/10 text-destructive inline-flex">
+            <ng-icon name="lucideAlertCircle" size="40" />
+        </div>
+        <p class="font-bold text-lg">{{ t('errors.loadFailed') }}</p>
+        <z-button zType="default" (click)="loadData(jobId()!, offerId()!)">
+            <ng-icon name="lucideRefreshCw" class="mr-2" />
+            {{ t('actions.retry') }}
+        </z-button>
+    </div>
+    }
+
+    <!-- ── CONTENT ── -->
+    @else if (offer(); as offer) {
+
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider mb-6">
+        <button class="text-muted-foreground hover:text-foreground transition-colors" (click)="goToJob()">
+            {{ t('breadcrumb.jobDetails') }}
+        </button>
+        <ng-icon name="lucideChevronRight" class="size-3 text-muted-foreground/50" />
+        <button class="text-muted-foreground hover:text-foreground transition-colors" (click)="goBack()">
+            {{ t('breadcrumb.offers') }}
+        </button>
+        <ng-icon name="lucideChevronRight" class="size-3 text-muted-foreground/50" />
+        <span class="text-primary">{{ t('breadcrumb.offerDetails') }}</span>
+    </div>
+
+    <!-- Page title row -->
+    <div class="flex items-start justify-between gap-4 mb-8">
+        <div class="space-y-1">
+            <h1 class="font-h1 font-black">{{ t('title') }} #{{ offer.id }}</h1>
+            <p class="text-muted-foreground text-sm">
+                {{ t('labels.submitted') }}
+                {{ submittedDateTime()?.date }} • {{ submittedDateTime()?.time }}
+            </p>
+        </div>
+
+        <!-- Status pill -->
+        <div class="flex items-center gap-2 px-4 py-2 rounded-full border bg-card shrink-0"
+            [ngClass]="getStatusColor(offer.status)">
+            <span class="size-2 rounded-full" [ngClass]="getStatusDotColor(offer.status)"></span>
+            <span class="text-xs font-black uppercase tracking-wider">
+                {{ t('statusOptions.' + offer.status) }}
+            </span>
+        </div>
+    </div>
+
+    <!-- ── TWO COLUMN LAYOUT ── -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- LEFT: main content -->
+        <div class="lg:col-span-2 flex flex-col gap-6">
+
+            <!-- CARPENTER OFFER card -->
+            <div class="bg-card rounded-2xl border border-border p-6 space-y-5">
+
+                <!-- Carpenter avatar + name -->
+                <div class="flex items-center gap-4 cursor-pointer" (click)="goToMakerProfile()" role="button">
+                    <div
+                        class="size-14 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-black text-lg shrink-0">
+                        {{ getCarpenterInitials() }}
+                    </div>
+                    <div>
+                        <p class="font-black text-lg text-foreground">{{
+                            offer.carpenterName }}</p>
+                        <p class="text-xs text-muted-foreground">{{ t('labels.craftsman') }}</p>
+                    </div>
+                </div>
+
+                <!-- Stats: Price + Delivery -->
+                <div class="flex flex-wrap gap-x-8 gap-y-4 py-4 border-y border-border/50">
+                    <div class="flex flex-col gap-0.5">
+                        <span class="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+                            {{ t('labels.offerPrice') }}
+                        </span>
+                        <span class="text-2xl font-black text-primary">
+                            {{ offer.price | currency:'EGP':'symbol':'1.0-0' }}
+                        </span>
+                    </div>
+
+                    <div class="hidden sm:block h-10 w-px bg-border/60 self-center"></div>
+
+                    <div class="flex flex-col gap-0.5">
+                        <span class="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+                            {{ t('labels.delivery') }}
+                        </span>
+                        <span class="text-2xl font-black text-foreground">
+                            {{ offer.deliveryDay }}
+                            <span class="text-sm font-semibold text-muted-foreground">{{ t('labels.days') }}</span>
+                        </span>
+                    </div>
+
+                    @if (deliveryTarget()) {
+                    <div class="hidden sm:block h-10 w-px bg-border/60 self-center"></div>
+                    <div class="flex flex-col gap-0.5">
+                        <span class="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+                            {{ t('labels.completionTarget') }}
+                        </span>
+                        <span class="text-base font-black text-foreground">{{ deliveryTarget() }}</span>
+                    </div>
+                    }
+                </div>
+
+                <!-- Proposal message -->
+                @if (offer.description) {
+                <div class="space-y-2">
+                    <p class="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                        {{ t('sections.proposalMessage') }}
+                    </p>
+                    <div class="bg-muted/30 rounded-xl p-4 border border-border/50">
+                        <p class="text-sm text-foreground leading-relaxed break-words">
+                            {{ offer.description }}
+                        </p>
+                    </div>
+                </div>
+                }
+            </div>
+
+            <!-- JOB SUMMARY card -->
+            @if (job(); as job) {
+            <div class="bg-card rounded-2xl border border-border p-6 space-y-3">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                    {{ t('sections.jobSummary') }}
+                </p>
+                <div class="flex items-center justify-between gap-3 flex-wrap">
+                    <h3 class="text-lg font-black text-foreground">{{ job.title }}</h3>
+                    <span
+                        class="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border
+            !bg-blue-50 !text-blue-600 dark:!bg-blue-950/30 dark:!text-blue-400 !border-blue-200 dark:!border-blue-800/40">
+                        {{ t('labels.jobStatus.' + job.jobStatus) }}
+                    </span>
+                </div>
+                @if (job.expectedBudget) {
+                <div class="flex items-center gap-2 text-sm text-muted-foreground">
+                    <ng-icon name="lucideDollarSign" class="size-4 shrink-0" />
+                    <span>{{ t('labels.clientBudget') }}:
+                        <span class="font-semibold text-foreground">
+                            {{ job.expectedBudget | currency:'EGP':'symbol':'1.0-0' }}
+                        </span>
+                    </span>
+                </div>
+                }
+                <button z-button zType="ghost" class="!w-fit !px-0 gap-1 text-primary font-bold text-sm"
+                    (click)="goToJob()">
+                    {{ t('actions.viewJob') }}
+                    <ng-icon name="lucideArrowRight" class="size-4" />
+                </button>
+            </div>
+            }
+
+            <!-- Timeline (mobile) -->
+            <div class="lg:hidden bg-card rounded-2xl border border-border p-5 space-y-4">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                    {{ t('sections.timeline') }}
+                </p>
+                <ng-container *ngTemplateOutlet="timelineBlock"></ng-container>
+            </div>
+
+        </div>
+
+        <!-- RIGHT SIDEBAR (desktop) -->
+        <div class="hidden lg:flex flex-col gap-4">
+
+            <!-- Action buttons -->
+            @if (canAct()) {
+            <z-button zType="default" zSize="lg" class="w-full !rounded-2xl gap-2" [zLoading]="isAccepting()"
+                [zDisabled]="isRejecting()" (click)="acceptOffer()">
+                <ng-icon name="lucideCheck" class="size-4" />
+                {{ t('actions.accept') }}
+            </z-button>
+
+            <z-button zType="outline" zSize="lg"
+                class="w-full !rounded-2xl gap-2 text-destructive hover:text-destructive" [zLoading]="isRejecting()"
+                [zDisabled]="isAccepting()" (click)="rejectOffer()">
+                <ng-icon name="lucideX" class="size-4" />
+                {{ t('actions.reject') }}
+            </z-button>
+            }
+
+            @if (offer.status === 'Accepted') {
+            <div
+                class="flex items-center gap-3 p-4 bg-emerald-50 dark:bg-emerald-950/20 rounded-2xl border border-emerald-200 dark:border-emerald-800/40">
+                <ng-icon name="lucideCheckCircle" class="size-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <p class="text-sm font-bold text-emerald-700 dark:text-emerald-300">{{ t('labels.offerAccepted') }}</p>
+            </div>
+            }
+
+            @if (offer.status === 'Rejected') {
+            <div
+                class="flex items-center gap-3 p-4 bg-red-50 dark:bg-red-950/20 rounded-2xl border border-red-200 dark:border-red-800/40">
+                <ng-icon name="lucideXCircle" class="size-5 text-red-500 shrink-0" />
+                <p class="text-sm font-bold text-red-600 dark:text-red-400">{{ t('labels.offerRejected') }}</p>
+            </div>
+            }
+
+            <!-- Timeline -->
+            <div class="bg-card rounded-2xl border border-border p-5 space-y-4">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                    {{ t('sections.timeline') }}
+                </p>
+                <ng-container *ngTemplateOutlet="timelineBlock"></ng-container>
+            </div>
+
+        </div>
+    </div>
+
+    }
+
+    <!-- ── MOBILE BOTTOM BAR ── -->
+    @if (!isLoading() && !isError() && canAct()) {
+    <div class="fixed bottom-0 left-0 right-0 lg:hidden p-4 border-t bg-background/95 backdrop-blur-sm z-50">
+        <div class="flex items-center gap-3">
+            <z-button zType="outline" zSize="lg" class="flex-1 text-destructive hover:text-destructive"
+                [zLoading]="isRejecting()" [zDisabled]="isAccepting()" (click)="rejectOffer()">
+                <ng-icon name="lucideX" class="mr-1.5 size-4" />
+                {{ t('actions.reject') }}
+            </z-button>
+            <z-button zType="default" zSize="lg" class="flex-1 !rounded-full" [zLoading]="isAccepting()"
+                [zDisabled]="isRejecting()" (click)="acceptOffer()">
+                <ng-icon name="lucideCheck" class="mr-1.5 size-4" />
+                {{ t('actions.accept') }}
+            </z-button>
+        </div>
+    </div>
+    }
+
+    <ng-template #timelineBlock>
+        <div class="flex flex-col gap-0">
+
+            <!-- Submitted -->
+            <div class="flex gap-3">
+                <div class="flex flex-col items-center">
+                    <div class="size-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+                        <ng-icon name="lucideCheck" class="size-4 text-primary-foreground" />
+                    </div>
+                    <div class="w-px flex-1 bg-border/50 my-1 min-h-[20px]"></div>
+                </div>
+                <div class="pb-4 pt-0.5">
+                    <p class="text-sm font-bold text-foreground">{{ t('timeline.submitted') }}</p>
+                    <p class="text-xs text-muted-foreground">
+                        {{ submittedDateTime()?.date }} • {{ submittedDateTime()?.time }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Reviewing -->
+            <div class="flex gap-3">
+                <div class="flex flex-col items-center">
+                    <div class="size-8 rounded-full border-2 flex items-center justify-center shrink-0" [ngClass]="offer()?.status === 'Pending'
+            ? 'border-primary bg-primary/10'
+            : offer()?.status === 'Accepted' ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/20'
+            : 'border-red-400 bg-red-50 dark:bg-red-950/20'">
+                        <ng-icon name="lucideEye" class="size-4" [ngClass]="offer()?.status === 'Pending' ? 'text-primary'
+              : offer()?.status === 'Accepted' ? 'text-emerald-500' : 'text-red-400'" />
+                    </div>
+                    <div class="w-px flex-1 bg-border/50 my-1 min-h-[20px]"></div>
+                </div>
+                <div class="pb-4 pt-0.5">
+                    <p class="text-sm font-bold text-foreground">
+                        {{ offer()?.status === 'Accepted' ? t('timeline.accepted')
+                        : offer()?.status === 'Rejected' ? t('timeline.rejected')
+                        : t('timeline.reviewing') }}
+                    </p>
+                    <p class="text-xs text-muted-foreground">
+                        {{ offer()?.status === 'Pending' ? t('timeline.reviewingDesc') : '' }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Delivery -->
+            <div class="flex gap-3">
+                <div class="flex flex-col items-center">
+                    <div
+                        class="size-8 rounded-full border-2 border-border bg-muted/20 flex items-center justify-center shrink-0">
+                        <ng-icon name="lucideTruck" class="size-4 text-muted-foreground" />
+                    </div>
+                </div>
+                <div class="pt-0.5">
+                    <p class="text-sm font-bold text-muted-foreground">{{ t('timeline.delivery') }}</p>
+                    @if (deliveryTarget()) {
+                    <p class="text-xs text-muted-foreground">
+                        {{ t('timeline.deliveryTarget') }} {{ deliveryTarget() }}
+                    </p>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </ng-template>
+
+</div>
+
+<!-- Timeline template -->

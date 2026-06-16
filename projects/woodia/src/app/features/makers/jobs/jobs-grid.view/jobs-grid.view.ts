@@ -1,11 +1,11 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { IJob } from '@woodia-types/job.types';
 import { CommonModule, DatePipe } from '@angular/common';
-import { TranslocoDirective } from '@jsverse/transloco';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { NgIcon } from '@ng-icons/core';
 import { ZardButtonComponent } from '@shared-components/button';
 import { ZardBadgeComponent } from '@shared-components/badge/badge.component';
-import { getTextDir } from '@woodia-shared/utils/helpers';
+import { getPostedTime, getTextDir, localizeDimensionTitle } from '@woodia-shared/utils/helpers';
 import { Router } from '@angular/router';
 
 @Component({
@@ -29,6 +29,10 @@ export class MakerJobsGridView {
     private datePipe: DatePipe,
   ) { }
 
+  protected translocoService = inject(TranslocoService)
+  protected localizeDimensionTitle = localizeDimensionTitle
+  protected getPostedTime = getPostedTime;
+
   navigateToDetails(jobId: number) {
     this.router.navigate(['/makers/jobs', jobId]);
   }
@@ -36,19 +40,6 @@ export class MakerJobsGridView {
   isNew(createdAt: string): boolean {
     if (!createdAt) return false;
     return Date.now() - new Date(createdAt).getTime() < 24 * 60 * 60 * 1000;
-  }
-
-  getPostedTime(createdAt: string): string {
-    if (!createdAt) return '';
-    const diffMs = Date.now() - new Date(createdAt).getTime();
-    const mins = Math.floor(diffMs / 60000);
-    const hours = Math.floor(mins / 60);
-    const days = Math.floor(hours / 24);
-
-    if (mins < 60) return `${mins}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    if (days < 7) return `${days}d ago`;
-    return this.datePipe.transform(createdAt, 'mediumDate') ?? '';
   }
 
   protected readonly getTextDir = getTextDir;

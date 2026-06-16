@@ -1,0 +1,130 @@
+<section class="space-y-[24px]" *transloco="let t">
+  <div>
+    <h3 class="font-h3">
+      {{ t('features.makers.settings.contactInfo') }}
+    </h3>
+
+    <z-divider class="bg-black/25 mt-[8px]"></z-divider>
+  </div>
+  @if(contactInfoLoading()) {
+  <div class="space-y-[24px] my-[40px]">
+    <div class="grid grid-cols-2 max-sm:grid-cols-1 gap-[20px]">
+      <div class="space-y-2">
+        <z-skeleton class="h-5 w-[100px]" />
+        <z-skeleton class="h-[48px] w-full" />
+      </div>
+      <div class="space-y-2">
+        <z-skeleton class="h-5 w-[100px]" />
+        <z-skeleton class="h-[48px] w-full" />
+      </div>
+    </div>
+    <div class="space-y-2">
+      <z-skeleton class="h-5 w-[100px]" />
+      <z-skeleton class="h-[48px] w-full" />
+    </div>
+    <div class="space-y-2">
+      <z-skeleton class="h-5 w-[100px]" />
+      <z-skeleton class="h-[48px] w-full" />
+    </div>
+    <div class="flex flex-row justify-end gap-[12px]">
+      <z-skeleton class="h-10 w-[80px]" />
+      <z-skeleton class="h-10 w-[120px]" />
+    </div>
+  </div>
+  }
+  @else if (!haveContactInfo()) {
+  <button z-button type="button" (click)="handleAddDetails()">
+    {{ t('features.makers.settings.addDetails') }}
+  </button>
+  }
+  @else {
+  <div>
+    <form [formGroup]="contactForm" (ngSubmit)="handleContactSubmit()" class="space-y-[24px] my-[40px]">
+      <div class="grid grid-cols-2 max-sm:grid-cols-1 gap-[20px] items-start">
+        <!-- Governorate Selector -->
+        <z-form-field>
+          <label class="font-label" z-form-label zRequired for="governorate">{{
+            t('features.makers.settings.governorate') }}</label>
+          <z-form-control>
+            <z-select id="governorate" formControlName="governorate"
+              [zPlaceholder]="'features.makers.settings.governoratePlaceholder' | transloco">
+              @for (Governorate of Governorates(); track Governorate) {
+              <z-select-item [zValue]="Governorate.id.toString()">{{ Governorate.nameEn }}</z-select-item>
+              }
+            </z-select>
+          </z-form-control>
+          @if (governorateControl.hasError('required') && governorateControl.touched) {
+          <z-form-message class="font-caption break-all" zType="error">
+            <span>{{ t('features.makers.settings.errors.governorateRequired') }}</span>
+          </z-form-message>
+          }
+        </z-form-field>
+
+        <z-form-field>
+          <label class="font-label" z-form-label zRequired>
+            {{ t('features.makers.settings.phone') }}
+          </label>
+          <z-form-control>
+            <input z-input type="text" [placeholder]="t('features.makers.settings.phonePlaceholder')"
+              formControlName="phone" />
+          </z-form-control>
+          @if (phoneControl.hasError('required') && phoneControl.touched) {
+          <z-form-message class="font-caption break-all" zType="error">
+            <span>{{ t('features.makers.settings.errors.phoneRequired') }}</span>
+          </z-form-message>
+          } @else if (phoneControl.hasError('pattern') && phoneControl.touched) {
+          <z-form-message class="font-caption break-all" zType="error">
+            <span>{{ t('features.makers.settings.errors.phonePattern') }}</span>
+          </z-form-message>
+          }
+        </z-form-field>
+      </div>
+
+      <z-form-field>
+        <label class="font-label" z-form-label zRequired>
+          {{ t('features.makers.settings.addressLine') }}
+        </label>
+        <z-form-control>
+          <input z-input type="text" [placeholder]="t('features.makers.settings.addressLinePlaceholder')"
+            formControlName="addressLine" />
+        </z-form-control>
+        @if (addressLineControl.hasError('required') && addressLineControl.touched) {
+        <z-form-message class="font-caption break-all" zType="error">
+          <span>{{ t('features.makers.settings.errors.addressLineRequired') }}</span>
+        </z-form-message>
+        } @else if (addressLineControl.hasError('minlength') && addressLineControl.touched) {
+        <z-form-message class="font-caption break-all" zType="error">
+          <span>{{ t('features.makers.settings.errors.addressLineMinLength') }}</span>
+        </z-form-message>
+        }
+      </z-form-field>
+
+      <z-form-field>
+        <label class="font-label" z-form-label zRequired>
+          {{ t('features.makers.settings.additionalDetails') }}
+        </label>
+        <z-form-control>
+          <input z-input type="text" [placeholder]="t('features.makers.settings.additionalDetailsPlaceholder')"
+            formControlName="additionalDetails" />
+        </z-form-control>
+        @if (additionalDetailsControl.hasError('minlength') && additionalDetailsControl.touched) {
+        <z-form-message class="font-caption break-all" zType="error">
+          <span>{{ t('features.makers.settings.errors.additionalDetailsMinLength') }}</span>
+        </z-form-message>
+        }
+      </z-form-field>
+
+      <div class="flex flex-row justify-end gap-[12px]">
+        <button z-button zType="outline" type="button" [disabled]="!contactForm.dirty || contactInfoFormLoading()"
+          (click)="resetForm()">
+          {{ t('features.makers.settings.reset') }}
+        </button>
+        <button z-button zType="default" type="submit" [disabled]="contactForm.invalid"
+          [zLoading]="contactInfoFormLoading()">
+          {{ t('features.makers.settings.saveChanges') }}
+        </button>
+      </div>
+    </form>
+  </div>
+  }
+</section>

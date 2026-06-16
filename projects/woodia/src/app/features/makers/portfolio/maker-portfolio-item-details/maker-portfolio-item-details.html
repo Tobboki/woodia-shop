@@ -1,0 +1,223 @@
+<div class="min-h-screen pb-28" *transloco="let t; read: 'features.makers.portfolio'">
+
+    <!-- ── SKELETON ── -->
+    @if (isLoading()) {
+    <div class="flex flex-col gap-6 animate-pulse">
+        <z-skeleton class="h-5 w-32 rounded" />
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="space-y-3">
+                <z-skeleton class="aspect-square w-full rounded-2xl" />
+                <div class="grid grid-cols-4 gap-2">
+                    @for (i of [1,2,3,4]; track i) { <z-skeleton class="aspect-square rounded-xl" /> }
+                </div>
+            </div>
+            <div class="space-y-5">
+                <z-skeleton class="h-4 w-16 rounded" />
+                <z-skeleton class="h-12 w-full rounded-xl" />
+                <z-skeleton class="h-4 w-16 rounded" />
+                <z-skeleton class="h-32 w-full rounded-xl" />
+            </div>
+        </div>
+    </div>
+    }
+
+    <!-- ── ERROR ── -->
+    @else if (isError()) {
+    <div class="py-20 text-center space-y-4">
+        <div class="p-6 rounded-full bg-destructive/10 text-destructive inline-flex">
+            <ng-icon name="lucideAlertCircle" size="40" />
+        </div>
+        <h2 class="font-bold text-xl">{{ t('errors.notFound') }}</h2>
+        <p class="text-muted-foreground">{{ t('errors.notFoundDesc') }}</p>
+        <z-button zType="default" (click)="goBack()">
+            <ng-icon name="lucideArrowLeft" class="mr-2" />
+            {{ t('actions.backToPortfolio') }}
+        </z-button>
+    </div>
+    }
+
+    <!-- ── CONTENT ── -->
+    @else if (item(); as item) {
+
+    <!-- Back -->
+    <button z-button zType="ghost" class="!w-fit !px-0 gap-2 text-muted-foreground hover:text-foreground mb-6"
+        (click)="goBack()">
+        <ng-icon name="lucideArrowLeft" class="size-4" />
+        <span class="text-sm font-semibold">{{ t('actions.backToPortfolio') }}</span>
+    </button>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+
+        <!-- ── LEFT: image gallery editor ── -->
+        <div class="flex flex-col gap-3">
+
+            <!-- Main selected image (read-only preview, click to lightbox) -->
+            @if (imageSlots().length > 0 && imageSlots()[selectedIndex()]?.url) {
+            <div class="relative aspect-square rounded-2xl overflow-hidden bg-muted border border-border shadow-md cursor-zoom-in group"
+                (click)="openLightbox(selectedIndex())">
+                <img [src]="imageSlots()[selectedIndex()].url!" [alt]="draftTitle()"
+                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                <div
+                    class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                    <div
+                        class="opacity-0 group-hover:opacity-100 bg-white/80 dark:bg-black/60 rounded-full p-3 transition-opacity">
+                        <ng-icon name="lucideZoomIn" class="size-5 text-foreground" />
+                    </div>
+                </div>
+            </div>
+            } @else {
+            <div
+                class="aspect-square rounded-2xl bg-muted/30 border-2 border-dashed border-border flex items-center justify-center">
+                <ng-icon name="lucideImage" class="size-16 text-muted-foreground/20" />
+            </div>
+            }
+
+            <!-- Editable image slots grid -->
+            <div>
+                <label class="text-[10px] font-black uppercase tracking-wider text-muted-foreground block mb-2">
+                    {{ t('details.photos') }}
+                    <span class="normal-case font-normal opacity-60 ml-1">
+                        ({{ imageSlots().length }}/{{ MAX_IMAGES }})
+                    </span>
+                </label>
+                <div class="grid grid-cols-4 gap-2">
+                    @for (slot of imageSlots(); track $index) {
+                    <div class="aspect-square cursor-pointer" (click)="selectedIndex.set($index)">
+                        <app-image-dropzone [imageUrl]="slot.url" [uploading]="slot.uploading" [hasError]="!!slot.error"
+                            placeholder="" (fileDropped)="onSlotFileDropped($event, $index)"
+                            (remove)="removeImageSlot($index)" />
+                    </div>
+                    }
+
+                    <!-- Add more slot -->
+                    @if (imageSlots().length < MAX_IMAGES) { <div class="aspect-square">
+                        <app-image-dropzone [imageUrl]="null" [placeholder]="t('dialog.addPhoto')"
+                            (fileDropped)="addNewImageSlot($event)" />
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- ── RIGHT: editable fields ── -->
+    <div class="flex flex-col gap-6">
+
+        <!-- Title -->
+        <z-form-field>
+            <label z-form-label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                {{ t('dialog.title') }}
+            </label>
+            <z-form-control>
+                <input z-input type="text" [ngModel]="draftTitle()" (ngModelChange)="draftTitle.set($event)"
+                    [placeholder]="t('dialog.titlePlaceholder')" maxlength="80"
+                    [class.text-left]="getTextDir(draftTitle()) === 'ltr'"
+                    [class.text-right]="getTextDir(draftTitle()) === 'rtl'" [dir]="getTextDir(draftTitle())" />
+            </z-form-control>
+        </z-form-field>
+
+        <!-- Description -->
+        <z-form-field>
+            <label z-form-label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                {{ t('dialog.description') }}
+            </label>
+            <z-form-control>
+                <textarea z-input zType="textarea" [ngModel]="draftDescription()"
+                    (ngModelChange)="draftDescription.set($event)" [placeholder]="t('dialog.descriptionPlaceholder')"
+                    rows="6" [class.text-left]="getTextDir(draftDescription()) === 'ltr'"
+                    [class.text-right]="getTextDir(draftDescription()) === 'rtl'"
+                    [dir]="getTextDir(draftDescription())"></textarea>
+            </z-form-control>
+        </z-form-field>
+
+        <!-- Date (read-only) -->
+        @if (item.createdAt) {
+        <div class="flex items-center gap-2 text-sm text-muted-foreground">
+            <ng-icon name="lucideCalendar" class="size-4 shrink-0" />
+            <span>{{ t('details.addedOn') }} {{ item.createdAt | date:'mediumDate' }}</span>
+        </div>
+        }
+
+        <div class="h-px bg-border/50"></div>
+
+        <!-- Delete -->
+        <z-button zType="outline" class="!w-fit gap-2 text-destructive hover:text-destructive hover:border-destructive"
+            [zLoading]="isDeleting()" (click)="deleteItem()">
+            <ng-icon name="lucideTrash2" class="size-4" />
+            {{ t('actions.delete') }}
+        </z-button>
+
+    </div>
+</div>
+
+<!-- ── LIGHTBOX ── -->
+@if (lightboxOpen()) {
+<div class="fixed inset-0 z-50 bg-black/95 flex items-center justify-center animate-in fade-in duration-200"
+    (click)="lightboxOpen.set(false)">
+    <button
+        class="absolute top-4 right-4 size-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors z-10"
+        (click)="lightboxOpen.set(false)">
+        <ng-icon name="lucideX" class="size-5" />
+    </button>
+    @if (imageSlots().length > 1) {
+    <button
+        class="absolute left-4 size-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors z-10"
+        (click)="$event.stopPropagation(); prevImage(imageSlots().length)">
+        <ng-icon name="lucideChevronLeft" class="size-5" />
+    </button>
+    <button
+        class="absolute right-4 size-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors z-10"
+        (click)="$event.stopPropagation(); nextImage(imageSlots().length)">
+        <ng-icon name="lucideChevronRight" class="size-5" />
+    </button>
+    }
+    @if (imageSlots()[selectedIndex()]?.url) {
+    <img [src]="imageSlots()[selectedIndex()].url!" [alt]="draftTitle()"
+        class="max-w-[90vw] max-h-[90vh] object-contain rounded-xl shadow-2xl" (click)="$event.stopPropagation()" />
+    }
+    @if (imageSlots().length > 1) {
+    <div class="absolute bottom-6 flex gap-2">
+        @for (slot of imageSlots(); track $index) {
+        <button class="size-2 rounded-full transition-all" [class.bg-white]="selectedIndex() === $index"
+            [class.bg-white]="selectedIndex() !== $index" (click)="$event.stopPropagation(); selectedIndex.set($index)">
+        </button>
+        }
+    </div>
+    }
+</div>
+}
+
+}
+
+</div>
+
+<!-- ── DIRTY STATE FLOATING BAR ── -->
+<div class="fixed bottom-0 left-0 right-0 p-3 md:p-4 border-t bg-background/95 backdrop-blur-sm z-50 transition-all duration-500"
+    [class.translate-y-0]="isDirty()" [class.opacity-100]="isDirty()" [class.translate-y-full]="!isDirty()"
+    [class.opacity-0]="!isDirty()" *transloco="let t; read: 'features.makers.portfolio'">
+    <div class="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+
+        <div class="flex items-center gap-3 w-full md:w-auto">
+            <div class="flex items-center justify-center size-9 rounded-full bg-primary/10 text-primary shrink-0">
+                <ng-icon name="lucideRotateCw" class="size-4 animate-spin-slow" />
+            </div>
+            <div class="flex flex-col">
+                <span class="text-sm font-bold text-foreground">{{ t('edit.unsavedChanges') }}</span>
+                <span class="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">
+                    {{ t('edit.changesDetected') }}
+                </span>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3 w-full md:w-auto">
+            <z-button zType="outline" zSize="lg" class="flex-1 md:flex-none" [zDisabled]="isSaving()"
+                (click)="discardChanges()">
+                {{ t('edit.discard') }}
+            </z-button>
+            <z-button zType="default" zSize="lg" class="flex-1 md:flex-none" [zDisabled]="!canSave()"
+                [zLoading]="isSaving()" (click)="saveChanges()">
+                <ng-icon name="lucideCheck" class="mr-2 size-4" />
+                {{ t('edit.save') }}
+            </z-button>
+        </div>
+    </div>
+</div>

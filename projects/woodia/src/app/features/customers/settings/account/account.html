@@ -22,12 +22,12 @@
 
     <div class="grid grid-cols-2 max-md:grid-cols-1 gap-[20px] mb-[20px]">
       <div class="space-y-2">
-          <z-skeleton class="h-5 w-[100px]" />
-          <z-skeleton class="h-[48px] w-full" />
+        <z-skeleton class="h-5 w-[100px]" />
+        <z-skeleton class="h-[48px] w-full" />
       </div>
       <div class="space-y-2">
-          <z-skeleton class="h-5 w-[100px]" />
-          <z-skeleton class="h-[48px] w-full" />
+        <z-skeleton class="h-5 w-[100px]" />
+        <z-skeleton class="h-[48px] w-full" />
       </div>
     </div>
 
@@ -75,30 +75,71 @@
       <button z-button zType="default" zSize="lg" class="max-md:w-full"
         (click)="hasPreview ? onSavePicture() : fileInput.click()" [zDisabled]="profilePictureLoading()"
         [zLoading]="profilePictureLoading()">
-        {{ hasPreview ? t('features.customers.settings.save') : (userDataHolder.photoUrl ? t('features.customers.settings.changePicture') : t('features.customers.settings.addPicture')) }}
+        {{ hasPreview ? t('features.customers.settings.save') : (userDataHolder.photoUrl ?
+        t('features.customers.settings.changePicture') : t('features.customers.settings.addPicture')) }}
       </button>
     </div>
 
     <div>
       <!-- Form -->
-      <form [formGroup]="infoForm" (ngSubmit)="handleInfoSubmit()" class="space-y-6 my-[40px]">
-        <div class="grid grid-cols-2 max-md:grid-cols-1 gap-[20px]">
-          <z-form-field>
+      <form [formGroup]="infoForm" (ngSubmit)="handleInfoSubmit()" class="space-y-6 my-8">
+        <div class="grid grid-cols-2 max-md:grid-cols-1 gap-4 items-start">
+          <z-form-field class="w-full">
             <label class="font-label" z-form-label zRequired>
               {{ t('features.customers.settings.firstName') }}
             </label>
             <z-form-control>
-              <input z-input type="text" [placeholder]="t('features.customers.settings.firstNamePlaceholder')" formControlName="firstName" />
+              <input z-input type="text" [placeholder]="t('features.customers.settings.firstNamePlaceholder')"
+                formControlName="firstName" />
             </z-form-control>
+            @if (firstNameControl.hasError('required') && firstNameControl.touched) {
+            <z-form-message class="font-caption break-all" zType="error">
+              <span>
+                {{ t('features.customers.settings.errors.firstNameRequired') }}
+              </span>
+            </z-form-message>
+            } @else if (firstNameControl.hasError('minlength') && firstNameControl.touched) {
+            <z-form-message class="font-caption break-all" zType="error">
+              <span>
+                {{ t('features.customers.settings.errors.firstNameMinLength') }}
+              </span>
+            </z-form-message>
+            } @else if (firstNameControl.hasError('maxlength') && firstNameControl.touched) {
+            <z-form-message class="font-caption break-all" zType="error">
+              <span>
+                {{ t('features.customers.settings.errors.firstNameMaxLength') }}
+              </span>
+            </z-form-message>
+            }
           </z-form-field>
 
-          <z-form-field>
+          <z-form-field class="w-full">
             <label class="font-label" z-form-label zRequired>
               {{ t('features.customers.settings.lastName') }}
             </label>
             <z-form-control>
-              <input z-input type="text" [placeholder]="t('features.customers.settings.lastNamePlaceholder')" formControlName="lastName" />
+              <input z-input type="text" [placeholder]="t('features.customers.settings.lastNamePlaceholder')"
+                formControlName="lastName" />
             </z-form-control>
+            @if (lastNameControl.hasError('required') && lastNameControl.touched) {
+            <z-form-message class="font-caption break-all" zType="error">
+              <span>
+                {{ t('features.customers.settings.errors.lastNameRequired') }}
+              </span>
+            </z-form-message>
+            } @else if (lastNameControl.hasError('minlength') && lastNameControl.touched) {
+            <z-form-message class="font-caption break-all" zType="error">
+              <span>
+                {{ t('features.customers.settings.errors.lastNameMinLength') }}
+              </span>
+            </z-form-message>
+            } @else if (lastNameControl.hasError('maxlength') && lastNameControl.touched) {
+            <z-form-message class="font-caption break-all" zType="error">
+              <span>
+                {{ t('features.customers.settings.errors.lastNameMaxLength') }}
+              </span>
+            </z-form-message>
+            }
           </z-form-field>
         </div>
 
@@ -129,8 +170,8 @@
     @if(infoLoading()) {
     <div class="flex flex-col flex-nowrap gap-[24px]">
       <div class="space-y-2 w-[60%] max-sm:w-full">
-          <z-skeleton class="h-5 w-[100px]" />
-          <z-skeleton class="h-[48px] w-full" />
+        <z-skeleton class="h-5 w-[100px]" />
+        <z-skeleton class="h-[48px] w-full" />
       </div>
       <div class="w-full flex gap-[12px] max-sm:flex-col">
         <z-skeleton class="h-10 w-[120px]" />
@@ -145,8 +186,8 @@
           {{ t('features.customers.settings.email') }}
         </label>
         <z-form-control>
-          <input z-input type="email" [placeholder]="t('features.customers.settings.emailPlaceholder')" formControlName="email"
-            [zStatus]="emailControl.invalid && emailControl.touched ? 'error' : undefined" />
+          <input z-input type="email" [placeholder]="t('features.customers.settings.emailPlaceholder')"
+            formControlName="email" [zStatus]="emailControl.invalid && emailControl.touched ? 'error' : undefined" />
         </z-form-control>
         @if (emailControl.hasError('duplicated')) {
         <z-form-message class="font-caption" zType="error">
@@ -168,8 +209,7 @@
           [zLoading]="emailFormLoading()">
           {{ t('features.customers.settings.saveChanges') }}
         </button>
-        <button z-button zType="outline" type="button" [disabled]="!emailForm.dirty"
-          (click)="cancelEmailUpdate()">
+        <button z-button zType="outline" type="button" [disabled]="!emailForm.dirty" (click)="cancelEmailUpdate()">
           {{ t('features.customers.settings.cancel') }}
         </button>
       </div>

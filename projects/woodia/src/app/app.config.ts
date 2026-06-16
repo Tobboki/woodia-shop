@@ -101,7 +101,18 @@ import {
   lucideInfo,
   lucideLamp,
   lucideSend,
-  lucideWrench
+  lucideWrench,
+  lucideHandshake,
+  lucideSearch,
+  lucideXCircle,
+  lucideLightbulb,
+  lucideUser,
+  lucidePhone,
+  lucidePlus,
+  lucideTrash2,
+  lucideLoader,
+  lucideImages,
+  lucideZoomIn,
 } from '@ng-icons/lucide';
 
 export const appConfig: ApplicationConfig = {
@@ -182,7 +193,18 @@ export const appConfig: ApplicationConfig = {
       lucideInfo,
       lucideLamp,
       lucideSend,
-      lucideWrench
+      lucideWrench,
+      lucideHandshake,
+      lucideSearch,
+      lucideXCircle,
+      lucideLightbulb,
+      lucideUser,
+      lucidePhone,
+      lucidePlus,
+      lucideTrash2,
+      lucideLoader,
+      lucideImages,
+      lucideZoomIn
     }),
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),

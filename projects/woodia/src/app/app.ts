@@ -177,7 +177,11 @@ export class App implements OnInit {
   tryRefreshTokenIfNeeded() {
     if (!this.authService.isAuthenticated()) return;
 
+    console.log(this.authService.isAccessTokenExpired());
+
     if (this.authService.isAccessTokenExpired()) {
+      console.log('Access token is expired, refreshing...');
+
       this.authService.refreshToken()
         .subscribe({
           next: () => {
@@ -200,14 +204,16 @@ export class App implements OnInit {
   scheduleAutoRefresh() {
     if (!this.authService.isAuthenticated()) return;
 
-    const expiresAt = this.authService.getAccessTokenExpiration();
+    const expiresAt = this.authService.getAccessTokenExpiration()
+
     if (!expiresAt) return;
 
     const now = Date.now();
     // Refresh 1 minute before token expiry
     const refreshIn = expiresAt - now - 60_000;
+    console.log('refresh in: ', refreshIn / 1000 / 60 / 60, ' hours');
 
-    if (refreshIn <= 0) {
+    if (refreshIn <= 5 * 1000 * 60) {
       this.tryRefreshTokenIfNeeded();
       return;
     }

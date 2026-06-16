@@ -1,0 +1,193 @@
+<div class="flex flex-col gap-4 my-4" *transloco="let t; read: 'features.makers.offers'">
+
+    <!-- Header -->
+    <div class="flex flex-col gap-1">
+        <h1 class="font-h1">{{ t('title') }}</h1>
+        <p class="text-muted-foreground max-md:hidden">{{ t('description') }}</p>
+    </div>
+
+    <!-- Status Filter Tabs -->
+    <div>
+        <!-- Desktop -->
+        <div class="max-sm:hidden flex gap-2 flex-wrap">
+            @for (option of statusOptions; track option) {
+            <z-button class="rounded-full px-4" [zType]="currentStatus() === option ? 'default' : 'outline'"
+                (click)="currentStatus.set(option)">
+                {{ t('statusOptions.' + option) }}
+            </z-button>
+            }
+        </div>
+
+        <!-- Mobile carousel -->
+        <z-carousel [zOptions]="zardCarouselOptions" zControls="none" class="sm:hidden">
+            <z-carousel-content>
+                @for (option of statusOptions; track option) {
+                <z-carousel-item class="px-1 basis-auto flex-shrink-0">
+                    <z-button class="rounded-full px-4" [zType]="currentStatus() === option ? 'default' : 'outline'"
+                        (click)="currentStatus.set(option)">
+                        {{ t('statusOptions.' + option) }}
+                    </z-button>
+                </z-carousel-item>
+                }
+            </z-carousel-content>
+        </z-carousel>
+    </div>
+
+    <!-- Content -->
+    <div class="flex flex-col gap-4">
+
+        <!-- Loading skeletons -->
+        @if (isLoading()) {
+        <div class="flex flex-col gap-4">
+            @for (i of [1,2,3]; track i) {
+            <div class="bg-card rounded-2xl border border-border p-6 space-y-5">
+                <div class="flex items-start justify-between">
+                    <z-skeleton class="h-6 w-2/3 rounded" />
+                    <z-skeleton class="h-6 w-24 rounded-full" />
+                </div>
+                <z-skeleton class="h-4 w-full rounded" />
+                <z-skeleton class="h-4 w-3/4 rounded" />
+                <div class="flex gap-8 pt-2">
+                    <div class="space-y-1">
+                        <z-skeleton class="h-3 w-16 rounded" />
+                        <z-skeleton class="h-6 w-20 rounded" />
+                    </div>
+                    <div class="space-y-1">
+                        <z-skeleton class="h-3 w-16 rounded" />
+                        <z-skeleton class="h-6 w-20 rounded" />
+                    </div>
+                    <div class="space-y-1">
+                        <z-skeleton class="h-3 w-16 rounded" />
+                        <z-skeleton class="h-6 w-20 rounded" />
+                    </div>
+                </div>
+                <div class="flex gap-3 pt-2 border-t border-border/50">
+                    <z-skeleton class="h-10 w-32 rounded-full" />
+                    <z-skeleton class="h-10 w-28 rounded" />
+                </div>
+            </div>
+            }
+        </div>
+        }
+
+        <!-- Empty state -->
+        @else if (offers().length === 0) {
+        <div class="flex flex-col items-center justify-center py-20 text-center gap-4">
+            <div class="text-6xl">📋</div>
+            <h2 class="text-2xl font-bold text-foreground">{{ t('empty.title') }}</h2>
+            <p class="text-muted-foreground max-w-sm">{{ t('empty.description') }}</p>
+            <z-button zType="default" zSize="lg" class="!rounded-full px-8 mt-2" routerLink="/makers/jobs">
+                {{ t('empty.browseJobs') }}
+            </z-button>
+        </div>
+        }
+
+        <!-- Offers list -->
+        @else {
+        <div class="flex flex-col gap-4">
+            @for (offer of offers(); track offer.id) {
+            <div
+                class="group relative bg-card rounded-2xl border border-border shadow-sm transition-all duration-300 hover:shadow-lg hover:border-primary/10 overflow-hidden">
+
+                <!-- Left accent bar -->
+                <div class="absolute left-0 top-0 bottom-0 w-1.5 transition-all duration-300 group-hover:w-2"
+                    [ngClass]="getAccentColor(offer.status)"></div>
+
+                <div class="p-6 max-sm:p-5 space-y-5">
+
+                    <!-- Header: title + status badge -->
+                    <div class="flex items-start justify-between gap-3">
+                        <h3
+                            class="text-lg font-bold text-foreground group-hover:text-primary transition-colors leading-snug line-clamp-1">
+                            {{ localizeDimensionTitle(offer.jobTitle!, translocoService) }}
+                        </h3>
+                        <z-badge zShape="pill"
+                            class="!text-[10px] !font-black !tracking-wider !uppercase !px-2.5 !py-1 !border shrink-0"
+                            [class]="getStatusColor(offer.status)">
+                            {{ t('statusOptions.' + offer.status) }}
+                        </z-badge>
+                    </div>
+
+                    <!-- Description -->
+                    @if (offer.description) {
+                    <p class="text-sm text-muted-foreground line-clamp-2 leading-relaxed break-words">
+                        {{ offer.description }}
+                    </p>
+                    }
+
+                    <!-- Stats row -->
+                    <div class="flex flex-wrap items-end gap-x-6 gap-y-3 pt-1">
+
+                        <!-- Price -->
+                        <div class="flex flex-col gap-0.5">
+                            <span class="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+                                {{ t('labels.offerPrice') }}
+                            </span>
+                            <span class="text-xl font-black text-foreground" *transloco="let t;">
+                                {{ offer.price }} {{ t('app.currency')}}
+                            </span>
+                        </div>
+
+                        <!-- Divider -->
+                        <div class="hidden sm:block h-8 w-px bg-border/50"></div>
+
+                        <!-- Delivery -->
+                        <div class="flex flex-col gap-0.5">
+                            <span class="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+                                {{ t('labels.delivery') }}
+                            </span>
+                            <span class="text-xl font-black text-foreground">
+                                {{ offer.deliveryDay }}
+                                <span class="text-sm font-semibold text-muted-foreground">{{ t('labels.days') }}</span>
+                            </span>
+                        </div>
+
+                        <!-- Divider -->
+                        <div class="hidden sm:block h-8 w-px bg-border/50"></div>
+
+                        <!-- Submitted date -->
+                        <div class="flex flex-col gap-0.5">
+                            <span class="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+                                {{ t('labels.submitted') }}
+                            </span>
+                            <span class="text-xl font-black text-foreground">
+                                {{ getPostedDate(offer.createdAt, translocoService.getActiveLang()) }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex items-center gap-3 pt-2 border-t border-border/50">
+                        <z-button zType="default" class="!rounded-full px-6" (click)="navigateToDetails(offer)">
+                            {{ t('actions.viewDetails') }}
+                        </z-button>
+
+                        @if (canWithdraw(offer)) {
+                        <z-button zType="ghost" class="text-muted-foreground hover:text-destructive"
+                            [zLoading]="withdrawingId() === offer.id" [zDisabled]="withdrawingId() !== null"
+                            (click)="withdrawOffer(offer)">
+                            {{ t('actions.withdrawOffer') }}
+                        </z-button>
+                        }
+                    </div>
+
+                </div>
+            </div>
+            }
+        </div>
+        }
+
+        <!-- Load More -->
+        @if (offers().length > 0 && hasMore()) {
+        <div class="mx-auto mt-2">
+            <z-button zSize="xl" zType="outline" [zDisabled]="isLoadingMore()" [zLoading]="isLoadingMore()"
+                (click)="loadMore()">
+                {{ t('loadMore') }}
+                <ng-icon name="lucideRotateCw" [class]="isLoadingMore() ? 'hidden' : ''" />
+            </z-button>
+        </div>
+        }
+
+    </div>
+
+</div>

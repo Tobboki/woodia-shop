@@ -25,7 +25,7 @@
                 <!-- Card Header -->
                 <div class="flex items-start justify-between gap-2">
                     <!-- Category + New badge -->
-                    <div class="flex flex-col gap-1.5 flex-1 min-w-0">
+                    <div class="flex flex-row gap-1.5 flex-1 min-w-0">
                         <z-badge zShape="pill"
                             class="!bg-primary/10 !text-primary !border-primary/20 !text-[10px] !font-bold !tracking-wider !uppercase !px-2 !py-0.5 !border w-fit max-w-full truncate">
                             {{ job.categoryName ?? t('features.makers.jobs.uncategorized') }}
@@ -42,16 +42,15 @@
 
                     <!-- Posted time -->
                     <span class="text-[10px] text-muted-foreground font-medium whitespace-nowrap shrink-0 mt-0.5">
-                        {{ getPostedTime(job.createdAt) }}
+                        {{ getPostedTime(job.createdAt, translocoService.getActiveLang()) }}
                     </span>
                 </div>
 
                 <!-- Title & Description -->
                 <div class="space-y-2 flex-1 overflow-hidden">
-                    <h3 class="text-base font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1 break-words"
-                        [class.text-left]="getTextDir(job.title) === 'ltr'"
-                        [class.text-right]="getTextDir(job.title) === 'rtl'" [dir]="getTextDir(job.title)">
-                        {{ job.title.trim() ? job.title : t('features.makers.jobs.details.placeholders.noTitle') }}
+                    <h3
+                        class="text-base font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1 break-words">
+                        {{ localizeDimensionTitle(job.title!, translocoService) }}
                     </h3>
 
                     @if (job.description) {
@@ -101,7 +100,7 @@
                                 <div class="flex items-baseline gap-1">
                                     @if (job.expectedBudget) {
                                     <span class="text-xs font-bold text-foreground/90">
-                                        {{ job.expectedBudget | currency:'EGP':'symbol':'1.0-0' }}
+                                        {{ job.expectedBudget }} {{t('app.currency')}}
                                     </span>
                                     } @else {
                                     <span class="text-xs font-bold text-foreground/90">

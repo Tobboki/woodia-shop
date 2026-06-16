@@ -75,6 +75,18 @@ export class MainLayout implements OnInit {
         path: '/makers/jobs',
         icon: 'lucideBriefcase'
       },
+      {
+        id: 'offers',
+        label: 'app.header.menu.offers',
+        path: '/makers/offers',
+        icon: 'lucideHandshake'
+      },
+      {
+        id: 'portfolio',
+        label: 'app.header.menu.portfolio',
+        path: '/makers/portfolio',
+        icon: 'lucideUser'
+      }
     ],
   };
 
@@ -91,6 +103,8 @@ export class MainLayout implements OnInit {
   menu = computed<IMenuItem[]>(() => {
     const isAuthenticated = this.authService.isAuthenticated();
     const user = this.authService.getCurrentUser();
+
+    const isACustomer = this.authService.getCurrentUser()?.userType?.toUpperCase() === 'CLIENT';
 
     let baseMenu = this.menus['landing'];
 
@@ -111,12 +125,12 @@ export class MainLayout implements OnInit {
         children: this.categories().map(cat => ({
           id: cat.slug,
           label: cat.name,
-          path: `/customers/designs/${cat.slug}`,
+          path: isACustomer ? `/customers/designs/${cat.slug}` : `/designs/${cat.slug}`,
           children:
             cat.childCategory?.map(child => ({
               id: child.slug,
               label: child.name,
-              path: `/customers/designs/${child.slug}`,
+              path: isACustomer ? `/customers/designs/${child.slug}` : `/designs/${child.slug}`,
             })) || [],
         })),
       };

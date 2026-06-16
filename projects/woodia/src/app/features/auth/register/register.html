@@ -55,7 +55,7 @@
       <div class="flex flex-col gap-1">
         <button zFull z-button zSize="xl" (click)="setStepCredentials()">
           {{ t('features.auth.register.continueAs') }} {{ t('features.auth.register.' + userType()) }}
-          <ng-icon [name]="langService.isRtl() ? 'lucideArrowRight' : 'lucideArrowLeft'" />
+          <ng-icon [name]="langService.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'" />
         </button>
 
         <div class="flex flex-row justify-center items-center">

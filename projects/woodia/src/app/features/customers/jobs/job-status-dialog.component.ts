@@ -29,7 +29,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
         <z-select [(ngModel)]="selectedStatus" class="w-full" [zPlaceholder]="t('selectAnOption')">
           <z-select-item [zValue]="currentStatus">{{ t('jobStatus.' + currentStatus) }}</z-select-item>
           
-          @if (currentStatus === 'Pending') {
+          @if (currentStatus === 'Open') {
             <z-select-item zValue="InProgress">{{ t('jobStatus.InProgress') }}</z-select-item>
             <z-select-item zValue="Canceled">{{ t('jobStatus.Canceled') }}</z-select-item>
           } @else if (currentStatus === 'InProgress') {

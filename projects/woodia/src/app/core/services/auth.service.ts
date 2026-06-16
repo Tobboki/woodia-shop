@@ -298,7 +298,7 @@ export class AuthService {
     if (!exp) return true;
 
     // refresh 1 minute early
-    return Date.now() > exp - 60_000;
+    return Date.now() > exp - 60000;
   }
 
   /**
@@ -344,6 +344,9 @@ export class AuthService {
     const token = this.getToken()
     const refreshToken = this.getRefreshToken();
 
+    console.log('old token', token);
+    console.log('old refresh token', refreshToken);
+
     return this.http.post<AuthResponse>(
       `${environment.apiUrl}${environment.endpoints.auth.refreshToken}`,
       {
@@ -355,6 +358,10 @@ export class AuthService {
         this.isRefreshing = false;
         this.storeUser(response);
         this.refreshTokenSubject.next(response);
+
+        console.log('Auth Service: new response', response);
+        console.log('Auth Service: new token', this.getToken());
+        console.log('Auth Service: new refresh token', this.getRefreshToken());
       }),
       catchError(error => {
         this.isRefreshing = false;

@@ -190,9 +190,17 @@ export class Account implements OnInit {
   userDataHolder: IUserData = { firstName: '', lastName: '', email: '', photoUrl: '' };
 
   infoForm = new FormGroup({
-    firstName: new FormControl<string>('', [Validators.required]),
-    lastName: new FormControl<string>('', [Validators.required]),
+    firstName: new FormControl<string>('', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+    lastName: new FormControl<string>('', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
   });
+
+  get firstNameControl() {
+    return this.infoForm.get('firstName')!;
+  }
+
+  get lastNameControl() {
+    return this.infoForm.get('lastName')!;
+  }
 
   emailForm = new FormGroup({
     email: new FormControl<string>('', [Validators.required, Validators.email]),

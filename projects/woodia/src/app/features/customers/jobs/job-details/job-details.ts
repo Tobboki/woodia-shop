@@ -58,7 +58,7 @@ export class JobDetails implements OnInit {
 
   isJobOpen = computed(() => {
     const j = this.job();
-    return j?.status !== 'Completed' && j?.status !== 'Canceled';
+    return j?.jobStatus !== 'Completed' && j?.jobStatus !== 'Canceled';
   });
 
   // Error states for sections
@@ -137,11 +137,10 @@ export class JobDetails implements OnInit {
           let rawStatus = (job.status || job.jobStatus || 'Pending').toString();
           let status: TJobStatus;
           const s = rawStatus.toLowerCase().replace(/[\s-]/g, '');
-          if (s === 'open') status = 'Pending';
+          if (s === 'open') status = 'Open';
           else if (s === 'inprogress') status = 'InProgress';
           else if (s === 'completed') status = 'Completed';
           else if (s === 'canceled' || s === 'cancelled') status = 'Canceled';
-          else if (s === 'pending') status = 'Pending';
           else status = rawStatus as TJobStatus;
           job.status = status;
         }
@@ -229,13 +228,13 @@ export class JobDetails implements OnInit {
     const dialogRef = this.dialogService.create({
       zTitle: this.translocoService.translate('features.customers.jobs.confirmStatusChangeTitle'),
       zContent: JobStatusDialogComponent,
-      zData: { status: job.status },
+      zData: { status: job.jobStatus },
       zWidth: '400px',
       zHideFooter: true
     });
 
     dialogRef.afterClosed().subscribe((newStatus) => {
-      if (newStatus && newStatus !== job.status) {
+      if (newStatus && newStatus !== job.jobStatus) {
         this.updateStatus(job, newStatus);
       }
     });
@@ -284,8 +283,6 @@ export class JobDetails implements OnInit {
         return '!bg-desructive !text-red-600 dark:!bg-red-950/30 dark:!text-red-400 border-red-100 dark:border-red-900/30';
       case "Completed":
         return '!bg-success !text-green-600 dark:!bg-green-950/30 dark:!text-green-400 border-green-100 dark:border-green-900/30';
-      case "Pending":
-        return '!bg-orange-50 !text-orange-600 dark:!bg-orange-950/30 dark:!text-orange-400 border-orange-100 dark:border-orange-900/30';
       case "InProgress":
         return '!bg-blue-50 !text-blue-600 dark:!bg-blue-950/30 dark:!text-blue-400 border-blue-100 dark:border-blue-900/30';
       default:
@@ -299,8 +296,6 @@ export class JobDetails implements OnInit {
         return 'bg-red-500';
       case "Completed":
         return 'bg-green-500';
-      case "Pending":
-        return 'bg-orange-500';
       case "InProgress":
         return 'bg-blue-500';
       default:

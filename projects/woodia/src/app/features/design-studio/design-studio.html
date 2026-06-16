@@ -265,116 +265,129 @@
   } @else {
 
   <!--  STEP 2 (REACTIVE FORM) -->
-  <form [formGroup]="form" class="min-h-[calc(100vh-92px)] bg-muted/20 py-8 px-4 flex flex-col items-center">
+  <form [formGroup]="form"
+    class="flex flex-col items-center w-full bg-card rounded-2xl shadow-sm border p-4 lg:p-10 space-y-8">
 
     <!-- Top nav -->
-    <div class="w-full max-w-[600px] mb-6 flex items-center text-sm font-medium text-muted-foreground gap-2">
+    <div class="w-full mb-4 flex items-center text-sm font-medium text-muted-foreground gap-2">
       <button type="button" class="flex items-center gap-1 hover:text-foreground transition-colors"
         (click)="prevStep()">
-        <ng-icon [name]="langService.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'" class="size-4" />
+        <ng-icon [name]="langService.isRtl() ? 'lucideArrowRight' : 'lucideArrowLeft'" class="size-4" />
         {{ t('features.designStudio.backToConfigurator') }}
       </button>
-      <span class="text-foreground ml-4">{{ t('features.designStudio.postYourJob') }}</span>
     </div>
 
-    <div class="w-full max-w-[600px] bg-card rounded-2xl shadow-sm border p-8 lg:p-10 space-y-8">
 
-      <!-- Header -->
-      <div class="space-y-3">
-        <h1 class="text-4xl font-extrabold tracking-tight text-foreground">{{ t('features.designStudio.postYourJob') }}
-        </h1>
-      </div>
+    <!-- Header -->
+    <div class="space-y-3">
+      <h1 class="text-4xl font-extrabold tracking-tight text-foreground">{{ t('features.designStudio.postYourJob') }}
+      </h1>
+    </div>
 
-      <div class="space-y-6">
+    <div class="space-y-6">
+      <z-form-field>
+        <label z-form-label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">{{
+          t('features.designStudio.jobTitle') }}</label>
+        <z-form-control>
+          <input z-input type="text" formControlName="jobTitle" class="opacity-70 cursor-not-allowed"
+            [placeholder]="t('features.designStudio.jobTitlePlaceholder')" />
+        </z-form-control>
+      </z-form-field>
+
+      <!-- Description -->
+      <z-form-field>
+        <label z-form-label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">{{
+          t('features.designStudio.description') }}</label>
+        <z-form-control>
+          <textarea z-input zType="textarea" formControlName="jobDescription" rows="4"
+            [placeholder]="t('features.designStudio.descriptionPlaceholder')"></textarea>
+        </z-form-control>
+        @if(form.get('jobDescription')?.hasError('required')) {
+        <z-form-message zType="error">
+          {{ t('features.designStudio.errors.jobDescriptionRequired') }}
+        </z-form-message>
+        }
+        @if(form.get('jobDescription')?.hasError('minlength')) {
+        <z-form-message zType="error">
+          {{ t('features.designStudio.errors.jobDescriptionMinLength') }}
+        </z-form-message>
+        }
+        @if(form.get('jobDescription')?.hasError('maxlength')) {
+        <z-form-message zType="error">
+          {{ t('features.designStudio.errors.jobDescriptionMaxLength') }}
+        </z-form-message>
+        }
+      </z-form-field>
+
+      <!-- Budget + Delivery -->
+      <div class="grid grid-cols-2 max-lg:grid-cols-1 gap-4">
         <z-form-field>
           <label z-form-label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">{{
-            t('features.designStudio.jobTitle') }}</label>
+            t('features.designStudio.budget') }}</label>
           <z-form-control>
-            <input z-input type="text" formControlName="jobTitle" class="opacity-70 cursor-not-allowed"
-              [placeholder]="t('features.designStudio.jobTitlePlaceholder')" />
+            <z-input-group [zAddOnAfter]="t('app.currency')">
+              <input z-input type="number" formControlName="expectedBudget" placeholder="0.00"
+                [class.pl-12]="langService.lang() === 'en'" [class.pr-12]="langService.lang() === 'ar'" />
+            </z-input-group>
           </z-form-control>
         </z-form-field>
 
-        <!-- Description -->
         <z-form-field>
           <label z-form-label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">{{
-            t('features.designStudio.description') }}</label>
+            t('features.designStudio.deliveryDay') }}</label>
           <z-form-control>
-            <textarea z-input zType="textarea" formControlName="jobDescription" rows="4"
-              [placeholder]="t('features.designStudio.descriptionPlaceholder')"></textarea>
+            <z-input-group [zAddOnAfter]="t('features.customers.jobs.details.labels.days')">
+              <input z-input type="number" formControlName="deliveryDay" placeholder="7" min="1"
+                [class.pr-14]="langService.lang() === 'en'" [class.pl-14]="langService.lang() === 'ar'" />
+            </z-input-group>
           </z-form-control>
         </z-form-field>
-
-        <!-- Budget + Delivery -->
-        <div class="grid grid-cols-2 max-lg:grid-cols-1 gap-4">
-          <z-form-field>
-            <label z-form-label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">{{
-              t('features.designStudio.budget') }}</label>
-            <z-form-control>
-              <z-input-group [zAddOnAfter]="t('app.currency')">
-                <input z-input type="number" formControlName="expectedBudget" placeholder="0.00"
-                  [class.pl-12]="langService.lang() === 'en'" [class.pr-12]="langService.lang() === 'ar'" />
-              </z-input-group>
-            </z-form-control>
-          </z-form-field>
-
-          <z-form-field>
-            <label z-form-label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">{{
-              t('features.designStudio.deliveryDay') }}</label>
-            <z-form-control>
-              <z-input-group [zAddOnAfter]="t('features.customers.jobs.details.labels.days')">
-                <input z-input type="number" formControlName="deliveryDay" placeholder="7" min="1"
-                  [class.pr-14]="langService.lang() === 'en'" [class.pl-14]="langService.lang() === 'ar'" />
-              </z-input-group>
-            </z-form-control>
-          </z-form-field>
-        </div>
-
-        <!-- Included Configuration -->
-        <div class="bg-muted/30 border border-muted-foreground/10 rounded-xl p-4 space-y-3 -mx-2 lg:mx-0">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2 text-sm font-medium">
-              <ng-icon name="lucideClipboardList" class="size-4 text-blue-600" />
-              {{ t('features.designStudio.includedConfiguration') }}
-            </div>
-          </div>
-
-          <div class="flex gap-4">
-            <div class="relative size-20 bg-[#D4C3A3] rounded-lg overflow-hidden shrink-0 border border-muted/50">
-              @if (images.length > 0 && !imageErrors()[0]) {
-              <img [ngSrc]="getImageSrc(images[0])" (error)="onImageError(0)"
-                [alt]="t('features.designStudio.includedConfiguration')" fill
-                class="object-cover mix-blend-multiply opacity-80" />
-              }
-            </div>
-            <div class="flex flex-col justify-center space-y-1">
-              <p class="text-xs text-muted-foreground">
-                {{ t('features.designStudio.dimensions') }}: {{ dimensionString }}
-              </p>
-              <div
-                class="flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-white/60 dark:bg-black/20 w-fit px-1.5 py-0.5 rounded border border-muted-foreground/10">
-                <ng-icon name="lucideLink" class="size-3" />
-                {{ t('features.designStudio.attachedAsset') }}{{ product()?.id ?? '4321' }}.json
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Submit Button -->
-        <z-button (click)="submitJob()" zFull zSize="xl" [zDisabled]="submitting()">
-          {{ submitting() ? t('features.designStudio.submitting') : t('features.designStudio.submitJobRequest') }}
-        </z-button>
       </div>
 
-      <!-- Footer terms -->
-      <p class="text-center text-[11px] text-muted-foreground">
-        {{ t('features.designStudio.termsAgreement1') }}<a href="#"
-          class="italic hover:text-foreground transition-colors">{{ t('features.designStudio.termsAgreement2') }}</a>{{
-        t('features.designStudio.termsAgreement3') }}
-        <a href="#" class="italic hover:text-foreground transition-colors">{{ t('features.designStudio.termsAgreement4')
-          }}</a>
-      </p>
+      <!-- Included Configuration -->
+      <div class="bg-muted/30 border border-muted-foreground/10 rounded-xl p-4 space-y-3 -mx-2 lg:mx-0">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2 text-sm font-medium">
+            <ng-icon name="lucideClipboardList" class="size-4 text-blue-600" />
+            {{ t('features.designStudio.includedConfiguration') }}
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div class="relative size-20 bg-[#D4C3A3] rounded-lg overflow-hidden shrink-0 border border-muted/50">
+            @if (images.length > 0 && !imageErrors()[0]) {
+            <img [ngSrc]="getImageSrc(images[0])" (error)="onImageError(0)"
+              [alt]="t('features.designStudio.includedConfiguration')" fill
+              class="object-cover mix-blend-multiply opacity-80" />
+            }
+          </div>
+          <div class="flex flex-col justify-center space-y-1">
+            <p class="text-xs text-muted-foreground">
+              {{ t('features.designStudio.dimensions') }}: {{ dimensionString }}
+            </p>
+            <div
+              class="flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-white/60 dark:bg-black/20 w-fit px-1.5 py-0.5 rounded border border-muted-foreground/10">
+              <ng-icon name="lucideLink" class="size-3" />
+              {{ t('features.designStudio.attachedAsset') }}{{ product()?.id }}.json
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <z-button (click)="submitJob()" zFull zSize="xl" [zDisabled]="submitting()">
+        {{ submitting() ? t('features.designStudio.submitting') : t('features.designStudio.submitJobRequest') }}
+      </z-button>
     </div>
+
+    <!-- Footer terms -->
+    <p class="text-center text-[11px] text-muted-foreground">
+      {{ t('features.designStudio.termsAgreement1') }}<a href="#"
+        class="italic hover:text-foreground transition-colors">{{ t('features.designStudio.termsAgreement2') }}</a>{{
+      t('features.designStudio.termsAgreement3') }}
+      <a href="#" class="italic hover:text-foreground transition-colors">{{ t('features.designStudio.termsAgreement4')
+        }}</a>
+    </p>
   </form>
   }
 </ng-container>

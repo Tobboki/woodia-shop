@@ -2,7 +2,7 @@ import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { LanguageService } from '@woodia-core/services/language.service';
-import { catchError, switchMap, throwError } from 'rxjs';
+import { catchError, switchMap, tap, throwError } from 'rxjs';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
@@ -57,13 +57,22 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
             }
 
             // Attempt refresh
+            console.log('Auth Interceptor: old token', token)
+            console.log('Auth Interceptor: old refresh token', authService.getRefreshToken())
             const refreshToken = authService.getRefreshToken();
+            console.log('Auth Interceptor: new token', authService.getToken())
+            console.log('Auth Interceptor: new refresh token', refreshToken)
             if (!refreshToken) {
               authService.logout();
               return throwError(() => err);
             }
 
             return authService.refreshToken().pipe(
+              tap(response => {
+                console.log('Auth Interceptor: Refresh response:', response);
+                console.log('Auth Interceptor: Stored access token:', authService.getToken());
+                console.log('Auth Interceptor: Stored refresh token:', authService.getRefreshToken());
+              }),
               switchMap(newTokenRes => {
                 const retryReq = req.clone({
                   setHeaders: {

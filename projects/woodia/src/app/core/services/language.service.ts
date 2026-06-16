@@ -70,9 +70,11 @@ export class LanguageService {
     if (this.lang() === 'ar') {
       html.setAttribute('dir', 'rtl')
       html.setAttribute('lang', 'ar')
+      this.dirSignal.set('rtl')
     } else {
       html.setAttribute('dir', 'ltr')
       html.setAttribute('lang', 'en')
+      this.dirSignal.set('ltr')
     }
   }
 }

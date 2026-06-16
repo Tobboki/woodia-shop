@@ -23,7 +23,9 @@
         "messages": "Messages",
         "joinNow": "Join Now",
         "language": "Language",
-        "theme": "Theme"
+        "theme": "Theme",
+        "offers": "Offers",
+        "portfolio": "Portfolio"
       }
     },
     "footer": {
@@ -130,6 +132,13 @@
         "hugeCellDescription": "Removes internal horizontal shelves, making the column one tall opening.",
         "openCubbyLabel": "Open cubby (no shelves)",
         "openCubbyDescription": "One tall opening — ideal for books or a lamp."
+      },
+      "modelTypes": {
+        "bookcase": "Bookcase",
+        "desk": "Desk",
+        "tvStand": "TV Stand",
+        "shoeRack": "Shoe Rack",
+        "bedsideTable": "Bedside Table"
       },
       "errors": {
         "invalidConfig": "Invalid Configuration",
@@ -267,7 +276,10 @@
       },
       "errors": {
         "fillRequiredFields": "Please fill all required fields",
-        "jobPostFailed": "Failed to post job. Please try again."
+        "jobPostFailed": "Failed to post job. Please try again.",
+        "jobDescriptionMinLength": "Description must be at least 20 characters",
+        "jobDescriptionMaxLength": "Description must be at most 500 characters",
+        "jobDescriptionRequired": "Description is required"
       }
     },
     "designs": {
@@ -472,7 +484,8 @@
           "Pending": "Pending",
           "InProgress": "In Progress",
           "Completed": "Completed",
-          "Canceled": "Canceled"
+          "Canceled": "Canceled",
+          "Open": "Open"
         },
         "selectAnOption": "Select an option",
         "displayModeOptions": {
@@ -496,6 +509,7 @@
         "budget": "Budget",
         "notSpecified": "Not Specified",
         "viewDetails": "View Details",
+        "viewJobOffers": "View Job Offers",
         "expectedBudget": "Expected Budget",
         "toBeDetermined": "To Be Determined",
         "delivery": "Delivery",
@@ -607,6 +621,97 @@
           }
         }
       },
+      "jobOffers": {
+        "title": "Offers",
+        "subtitle": "Bids submitted for: ",
+        "breadcrumb": {
+          "jobs": "My Jobs",
+          "jobDetails": "Job Details",
+          "offers": "Offers"
+        },
+        "statusOptions": {
+          "Pending": "Pending",
+          "Accepted": "Accepted",
+          "Rejected": "Rejected"
+        },
+        "labels": {
+          "price": "Offer Price",
+          "delivery": "Delivery",
+          "days": "Days"
+        },
+        "actions": {
+          "viewDetails": "View Details",
+          "retry": "Retry"
+        },
+        "empty": {
+          "title": "No offers yet",
+          "description": "No makers have submitted a bid for this job yet. Check back soon!"
+        },
+        "loadMore": "Load More",
+        "errors": {
+          "loadFailed": "Failed to load offers. Please try again."
+        }
+      },
+      "jobOfferDetails": {
+        "title": "Offer",
+        "breadcrumb": {
+          "jobDetails": "Job Details",
+          "offers": "Offers",
+          "offerDetails": "Offer Details"
+        },
+        "statusOptions": {
+          "Pending": "Pending",
+          "Accepted": "Accepted",
+          "Rejected": "Rejected"
+        },
+        "sections": {
+          "proposalMessage": "Proposal Message",
+          "jobSummary": "Job Reference",
+          "timeline": "Timeline"
+        },
+        "labels": {
+          "submitted": "Submitted",
+          "craftsman": "Woodia Craftsman",
+          "offerPrice": "Offer Price",
+          "delivery": "Delivery",
+          "days": "Days",
+          "completionTarget": "Target Date",
+          "clientBudget": "Your Budget",
+          "offerAccepted": "You accepted this offer",
+          "offerRejected": "You rejected this offer",
+          "jobStatus": {
+            "Pending": "Open",
+            "InProgress": "In Progress",
+            "Completed": "Completed",
+            "Canceled": "Canceled",
+            "undefined": "Unknown"
+          }
+        },
+        "actions": {
+          "accept": "Accept Offer",
+          "reject": "Decline",
+          "viewJob": "View Full Job",
+          "retry": "Retry"
+        },
+        "timeline": {
+          "submitted": "Submitted",
+          "reviewing": "Under Review",
+          "reviewingDesc": "Awaiting your decision",
+          "accepted": "Accepted",
+          "rejected": "Declined",
+          "delivery": "Delivery",
+          "deliveryTarget": "Target:"
+        },
+        "messages": {
+          "accepted": "Offer accepted! The maker has been notified.",
+          "rejected": "Offer declined."
+        },
+        "errors": {
+          "loadFailed": "Failed to load offer details.",
+          "acceptFailed": "Failed to accept offer. Please try again.",
+          "rejectFailed": "Failed to decline offer. Please try again."
+        }
+      },
       "settings": {
         "title": "Settings",
         "backToSettings": "Back to settings",
@@ -641,7 +746,9 @@
         "resendFailed": "Resending confirmation code failed",
         "messages": {
           "profilePictureSaved": "Profile picture saved",
-          "nameUpdateSuccess": "Name updated successful"
+          "nameUpdateSuccess": "Name updated successful",
+          "addSuccess": "shipping details added successful",
+          "updateSuccess": "shipping details updated successful"
         },
         "errors": {
           "fetchUserDataFailed": "Error fetching user data",
@@ -650,7 +757,22 @@
           "savePictureFailed": "Failed to save picture",
           "uploadFailed": "Upload failed",
           "nameUpdateFailed": "Name update was not successful",
-          "emailUpdateFailed": "Email update was not successful"
+          "emailUpdateFailed": "Email update was not successful",
+          "firstNameRequired": "First name is required",
+          "firstNameMinLength": "First name must be at least 2 characters",
+          "firstNameMaxLength": "First name must be at most 50 characters",
+          "lastNameRequired": "Last name is required",
+          "lastNameMinLength": "Last name must be at least 2 characters",
+          "addFailed": "shipping detail add failed",
+          "updateFailed": "shipping details update failed",
+          "phoneRequired": "Phone number is required",
+          "phonePattern": "Phone number is invalid",
+          "phoneMinLength": "Phone number must be at least 11 digits",
+          "governorateRequired": "Governorate is required",
+          "addressLineRequired": "Address line is required",
+          "addressLineMinLength": "Address line must be at least 5 characters",
+          "additionalDetailsRequired": "Additional details are required",
+          "additionalDetailsMinLength": "Additional details must be at least 5 characters"
         },
         "shippingDetails": "Shipping Details",
         "addDetails": "Add Details",
@@ -663,59 +785,27 @@
         "additionalDetails": "Additional Details",
         "additionalDetailsPlaceholder": "Ex: Tawheed Tower by Kafr Saad's Train Station",
         "reset": "Reset",
-        "messages": {
-          "addSuccess": "shipping details added successful",
-          "updateSuccess": "shipping details updated successful"
-        },
-        "errors": {
-          "addFailed": "shipping detail add failed",
-          "updateFailed": "shipping details update failed"
-        },
         "menu": {
           "account": "Account",
           "shipping": "Shipping"
         }
       },
-      "makers": {
-        "onboarding": {
-          "success": "Onboarding completed successfully! Welcome to Woodia.",
-          "error": "Failed to save profile. Please try again.",
-          "steps": {
-            "1": {
-              "title": "Welcome to Woodia",
-              "subtitle": "Let's set up your professional maker profile.",
-              "welcome": "Ready to Start Crafting?",
-              "description": "Woodia connects you with customers looking for custom furniture. To start bidding on jobs, we need to know a bit more about your skills and professional rates."
-            },
-            "2": {
-              "title": "Professional Profile",
-              "subtitle": "This information will be visible to potential clients.",
-              "uploadPhoto": "Professional Photo",
-              "hourlyRate": "Hourly Rate ($)",
-              "hourlyRatePlaceholder": "e.g. 50",
-              "overview": "Profile Overview",
-              "overviewPlaceholder": "Describe your experience, specialty, and workshop...",
-              "overviewHint": "Minimum 20 characters.",
-              "fillAllFields": "All fields are required to continue."
-            },
-            "3": {
-              "title": "Contact Information",
-              "subtitle": "We'll use this for business communications.",
-              "phoneNumber": "Phone Number",
-              "phonePlaceholder": "e.g. +1234567890",
-              "governorate": "Governorate",
-              "selectGov": "Select Governorate",
-              "address": "Workshop Address",
-              "addressPlaceholder": "Street, Building, etc.",
-              "additional": "Additional Info (Optional)",
-              "additionalPlaceholder": "Floor, landmarks, etc."
-            }
-          },
-          "common": {
-            "back": "Back",
-            "continue": "Continue",
-            "finish": "Finish & Join"
-          }
+      "makerProfile": {
+        "labels": {
+          "verifiedMaker": "Verified Maker",
+          "hour": "hr",
+          "portfolioItems": "portfolio items"
+        },
+        "sections": {
+          "portfolio": "Portfolio",
+          "noPortfolio": "This maker hasn't added any portfolio items yet."
+        },
+        "actions": {
+          "back": "Back",
+          "retry": "Retry"
+        },
+        "errors": {
+          "loadFailed": "Failed to load maker profile. Please try again."
         }
       }
     },
@@ -871,6 +961,7 @@
           "businessDays": "Business Days",
           "message": "Detailed Proposal Message",
           "messagePlaceholder": "Describe your approach, materials selection, and any specific custom details you'll include in this build...",
+          "messageHint": "Minimum 20 characters. A strong message increases your chances.",
           "days": "days",
           "timeline": "timeline",
           "termsHint": "By sending this offer, you agree to furnish ",
@@ -890,7 +981,226 @@
         },
         "errors": {
           "loadFailed": "Failed to load job details.",
-          "submitFailed": "Failed to send offer. Please try again."
+          "submitFailed": "Failed to send offer. Please try again.",
+          "priceRequired": "يرجى إدخال سعر العرض.",
+          "priceMin": "يجب أن يكون السعر أكبر من صفر.",
+          "deliveryRequired": "يرجى إدخال مدة التسليم.",
+          "deliveryMin": "يجب أن تكون مدة التسليم يومًا واحدًا على الأقل.",
+          "messageRequired": "يرجى كتابة رسالة العرض.",
+          "messageMinLength": "يجب أن تحتوي رسالة العرض على 10 أحرف على الأقل.",
+          "messageMaxLength": "يجب ألا تتجاوز رسالة العرض 500 حرف."
+        }
+      },
+      "offers": {
+        "title": "My Offers",
+        "description": "Track and manage your submitted bids.",
+        "statusOptions": {
+          "all": "All",
+          "Pending": "Pending",
+          "Accepted": "Accepted",
+          "Rejected": "Rejected",
+          "Withdrawn": "Withdrawn"
+        },
+        "labels": {
+          "offerPrice": "Offer Price",
+          "delivery": "Delivery",
+          "days": "Days",
+          "submitted": "Submitted"
+        },
+        "actions": {
+          "viewDetails": "View Details",
+          "withdrawOffer": "Withdraw Offer"
+        },
+        "empty": {
+          "title": "No offers yet",
+          "description": "You haven't submitted any offers yet. Browse available jobs and start bidding!",
+          "browseJobs": "Browse Jobs"
+        },
+        "loadMore": "Load More Offers",
+        "messages": {
+          "withdrawn": "Offer withdrawn successfully."
+        },
+        "errors": {
+          "loadFailed": "Failed to load offers.",
+          "withdrawFailed": "Failed to withdraw offer. Please try again."
+        }
+      },
+      "offerDetails": {
+        "title": "Offer",
+        "actions": {
+          "backToOffers": "Back to My Offers",
+          "withdrawOffer": "Withdraw Offer",
+          "viewFullJob": "View Full Job",
+          "retry": "Retry",
+          "termsHint": "By submitting, you agree to our ",
+          "termsLink": "Terms and Conditions"
+        },
+        "sections": {
+          "yourOffer": "Your Offer",
+          "proposalMessage": "Proposal Message",
+          "jobReference": "Job Reference",
+          "timeline": "Timeline"
+        },
+        "labels": {
+          "submitted": "Submitted",
+          "price": "Price",
+          "delivery": "Delivery",
+          "days": "Days",
+          "status": "Status",
+          "open": "Open",
+          "budget": "Budget",
+          "negotiable": "Negotiable"
+        },
+        "timeline": {
+          "submitted": "Submitted",
+          "reviewing": "Reviewing",
+          "reviewingDesc": "Expected response in 2 days",
+          "delivery": "Delivery",
+          "deliveryTarget": "Target:"
+        },
+        "quickTip": {
+          "label": "Quick Tip",
+          "message": "Most clients respond within 48 hours. Keep your inbox active to receive direct messages."
+        },
+        "messages": {
+          "withdrawn": "Offer withdrawn successfully."
+        },
+        "errors": {
+          "loadFailed": "Failed to load offer details. Please try again.",
+          "withdrawFailed": "Failed to withdraw offer. Please try again."
+        }
+      },
+      "settings": {
+        "title": "Settings",
+        "backToSettings": "Back to settings",
+        "myProfile": "My Profile",
+        "profilePicture": "Profile Picture",
+        "profilePictureDesc": "PNG, JPEG, JPG under 10MB",
+        "change": "Change",
+        "changePicture": "Change Picture",
+        "addPicture": "Add Picture",
+        "save": "Save",
+        "firstName": "First Name",
+        "firstNamePlaceholder": "Your first name",
+        "lastName": "Last Name",
+        "lastNamePlaceholder": "Your last name",
+        "saveChanges": "Save Changes",
+        "cancel": "Cancel",
+        "accountSecurity": "Account Security",
+        "actionDisabled": "this action is currently disabled",
+        "email": "Email",
+        "emailPlaceholder": "Your email",
+        "emailVerificationTitle": "Email Verification",
+        "emailVerificationDesc": "We have sent a verification code to {{email}}. Please enter it below.",
+        "emailVerificationCode": "Code",
+        "emailVerificationCodePlaceholder": "max 6 chars or digits",
+        "verifyEmail": "Verify Email",
+        "didntReceiveCode": "Didn't receive code?",
+        "resend": "Resend",
+        "emailChangedSuccess": "Email changed successfully",
+        "codeMismatch": "Code does not match",
+        "emailDuplicated": "Another user with the same email already exists",
+        "resendSuccess": "Code resent successfully",
+        "resendFailed": "Resending confirmation code failed",
+        "messages": {
+          "profilePictureSaved": "Profile picture saved",
+          "nameUpdateSuccess": "Name updated successful",
+          "addSuccess": "Contact details added successfully",
+          "updateSuccess": "Contact details updated successfully"
+        },
+        "errors": {
+          "fetchUserDataFailed": "Error fetching user data",
+          "invalidFileType": "Invalid file type",
+          "fileTooLarge": "File is too large",
+          "savePictureFailed": "Failed to save picture",
+          "uploadFailed": "Upload failed",
+          "nameUpdateFailed": "Name update was not successful",
+          "emailUpdateFailed": "Email update was not successful",
+          "addFailed": "Contact details add failed",
+          "updateFailed": "Contact details update failed",
+          "firstNameRequired": "First name is required",
+          "firstNameMinLength": "First name must be at least 2 characters",
+          "firstNameMaxLength": "First name must be at most 50 characters",
+          "lastNameRequired": "Last name is required",
+          "lastNameMinLength": "Last name must be at least 2 characters",
+          "lastNameMaxLength": "Last name must be at most 50 characters",
+          "phoneRequired": "Phone number is required",
+          "phonePattern": "Phone number must be between 10 and 15 digits (can start with +)",
+          "governorateRequired": "Governorate is required",
+          "addressLineRequired": "Address line is required",
+          "addressLineMinLength": "Address line must be at least 5 characters",
+          "additionalDetailsRequired": "Additional details are required",
+          "additionalDetailsMinLength": "Additional details must be at least 5 characters"
+        },
+        "maker": "Maker",
+        "contactInfo": "Contact Information",
+        "governorate": "Governorate",
+        "governoratePlaceholder": "Select your Governorate",
+        "phone": "Phone",
+        "phonePlaceholder": "Your phone number",
+        "addressLine": "Address Line",
+        "addressLinePlaceholder": "Ex: Kafr Saad, Nasr Street",
+        "additionalDetails": "Additional Details",
+        "additionalDetailsPlaceholder": "Ex: Tawheed Tower by Kafr Saad's Train Station",
+        "reset": "Reset",
+        "addDetails": "Add Details",
+        "menu": {
+          "account": "Account",
+          "contact-info": "Contact Info"
+        }
+      },
+      "portfolio": {
+        "title": "My Portfolio",
+        "description": "Showcase your best work to attract more clients.",
+        "addItem": "Add Work",
+        "confirmDelete": "Are you sure you want to delete this portfolio item?",
+        "empty": {
+          "title": "Your portfolio is empty",
+          "description": "Add photos of your best work to stand out and attract more clients."
+        },
+        "actions": {
+          "backToPortfolio": "Back to Portfolio",
+          "delete": "Delete Item",
+          "retry": "Retry"
+        },
+        "details": {
+          "about": "About this piece",
+          "addedOn": "Added on",
+          "photos": "photos"
+        },
+        "dialog": {
+          "addTitle": "Add Portfolio Item",
+          "images": "Photos",
+          "addPhoto": "Add Photo",
+          "title": "Title",
+          "titlePlaceholder": "e.g. Custom Walnut Dining Table",
+          "description": "Description",
+          "descriptionPlaceholder": "Describe the piece, materials used, and techniques applied...",
+          "cancel": "Cancel",
+          "save": "Add to Portfolio",
+          "errors": {
+            "fileTooLarge": "File is too large. Max size is 10MB.",
+            "uploadFailed": "Failed to upload image. Please try again.",
+            "saveFailed": "Failed to save portfolio item. Please try again."
+          }
+        },
+        "messages": {
+          "added": "Portfolio item added successfully!",
+          "deleted": "Portfolio item deleted.",
+          "saved": "Portfolio item updated successfully!"
+        },
+        "errors": {
+          "loadFailed": "Failed to load portfolio.",
+          "deleteFailed": "Failed to delete item. Please try again.",
+          "notFound": "Item Not Found",
+          "notFoundDesc": "This portfolio item may have been deleted or doesn't exist.",
+          "saveFailed": "Failed to save changes. Please try again."
+        },
+        "edit": {
+          "unsavedChanges": "Unsaved Changes",
+          "changesDetected": "You have unsaved edits",
+          "discard": "Discard",
+          "save": "Save Changes"
         }
       }
     }

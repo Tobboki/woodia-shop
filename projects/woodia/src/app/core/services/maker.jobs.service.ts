@@ -3,39 +3,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@woodia-environments/environment';
 import { IJob } from '@woodia-types/job.types';
-
-export interface IMakerJobsParams {
-  pageNumber: number;
-  pageSize: number;
-  searchValue?: string;
-}
-
-export interface IMakerJobsResponse {
-  items: IJob[];
-  totalCount: number;
-  pageNumber: number;
-  pageSize: number;
-}
-
-export interface ISubmitOfferPayload {
-  price: number;
-  estimatedDays: number;
-  message: string;
-}
-
-export interface IOffer {
-  id: number;
-  jobId: number;
-  jobTitle?: string;
-  price: number;
-  estimatedDays: number;
-  message: string;
-  status: TOfferStatus;
-  createdAt: string;
-  job?: IJob;
-}
-
-export type TOfferStatus = 'Pending' | 'Accepted' | 'Rejected' | 'Withdrawn';
+import { IMakerJobsParams, IMakerJobsResponse } from '@woodia-types/job.types';
+import { IOffer, ISubmitOfferPayload } from '@woodia-types/offer.types';
 
 @Injectable({
   providedIn: 'root'

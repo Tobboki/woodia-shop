@@ -80,13 +80,38 @@ export class Shipping implements OnInit {
     });
   }
 
+  get phoneControl() {
+    return this.shippingForm.get('phone') as FormControl;
+  }
+
+  get governorateControl() {
+    return this.shippingForm.get('governorate') as FormControl;
+  }
+
+  get addressLineControl() {
+    return this.shippingForm.get('addressLine') as FormControl;
+  }
+
+  get additionalDetailsControl() {
+    return this.shippingForm.get('additionalDetails') as FormControl;
+  }
+
   Governorates = signal<IGovernorate[]>([])
 
   shippingForm = new FormGroup({
-    phone: new FormControl<string>('', [Validators.required]),
+    phone: new FormControl<string>('', [
+      Validators.required,
+      Validators.pattern(/^(01\d{9}|\+201\d{9})$/),
+      Validators.minLength(11)
+    ]),
     governorate: new FormControl<string>('', [Validators.required]),
-    addressLine: new FormControl<string>('', [Validators.required]),
-    additionalDetails: new FormControl<string>('', [Validators.required]),
+    addressLine: new FormControl<string>('', [
+      Validators.required,
+      Validators.minLength(5)
+    ]),
+    additionalDetails: new FormControl<string>('', [
+      Validators.minLength(5)
+    ]),
   });
 
   handleShippingSubmit() {

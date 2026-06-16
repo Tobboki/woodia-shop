@@ -1,0 +1,65 @@
+<section *transloco="let t">
+  @if (!showMobileSettings()) {
+    <a
+      z-button
+      zSize="sm"
+      zType="link"
+      class="text-primary lg:hidden gap-[4px] mt-[8px] mb-[16px]"
+      (click)="toggleMobileSettings()"
+    >
+      <ng-icon name="lucideArrowLeft" />
+      {{ t('features.makers.settings.backToSettings') }}
+    </a>
+  }
+  @if (showMobileSettings()) {
+    <nav class="lg:hidden flex h-full flex-col overflow-hidden gap-[8px] px-[8px] pb-[16px] my-[16px] rounded-[12px] border">
+      <h1 class="font-h1">{{ t('features.makers.settings.title') }}</h1>
+
+      @for (item of mainMenuItems; track item.label) {
+        <div
+          class="px-[8px] py-[4px] flex flex-nowrap items-center justify-between hover:bg-primary-50 rounded-[12px]"
+          routerLinkActive="active-label"
+          [routerLink]="[`/makers/settings/${item.link}`]"
+          [routerLinkActiveOptions]="{ exact: false }"
+          (click)="toggleMobileSettings()"
+        >
+          <div class="flex flex-nowrap items-center gap-[8px]">
+            <ng-icon [name]="item.icon" class="size[42px]" />
+            <h4 class="font-h4 font-thin">{{ t('features.makers.settings.menu.' + item.link) }}</h4>
+          </div>
+
+          <ng-icon name="lucideArrowLeft" class="size-8" />
+        </div>
+      }
+    </nav>
+  }
+  <z-layout class="overflow-hidden rounded-lg border-2">
+    <z-sidebar
+      [zWidth]="200"
+      class="p-0! max-lg:hidden"
+    >
+      <nav class="flex h-full flex-col overflow-hidden gap-2 p-2">
+          <h1 class="font-h3">{{ t('features.makers.settings.title') }}</h1>
+
+          @for (item of mainMenuItems; track item.label) {
+            <a
+              z-button
+              zType="ghost"
+              zSize="lg"
+              class="justify-start"
+              routerLinkActive="bg-primary"
+              [routerLink]="[`/makers/settings/${item.link}`]"
+              [routerLinkActiveOptions]="{ exact: false }"
+            >
+              <ng-icon [name]="item.icon" class="size-4" />
+              {{ t('features.makers.settings.menu.' + item.link) }}
+            </a>
+          }
+      </nav>
+    </z-sidebar>
+
+    <z-content class="min-h-[200px] px-[24px] max-sm:px-[12px]">
+      <router-outlet></router-outlet>
+    </z-content>
+  </z-layout>
+</section>

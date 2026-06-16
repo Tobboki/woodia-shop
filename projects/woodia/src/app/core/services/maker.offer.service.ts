@@ -2,30 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@woodia-environments/environment';
-
-export type TOfferStatus = 'Pending' | 'Accepted' | 'Rejected' | 'Withdrawn';
-
-export interface ISubmitOfferPayload {
-  price: number;
-  deliveryDay: number;
-  description: string;
-}
-
-export interface IOffer {
-  id: number;
-  jobId: number;
-  jobTitle?: string;
-  price: number;
-  estimatedDays: number;
-  message: string;
-  status: TOfferStatus;
-  createdAt: string;
-}
-
-export interface IMyOffersResponse {
-  items: IOffer[];
-  totalCount: number;
-}
+import { IOffer, IMyOffersResponse, ISubmitOfferPayload } from '../../shared/types/offer.types';
 
 @Injectable({
   providedIn: 'root'

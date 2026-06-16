@@ -1,0 +1,136 @@
+<div class="flex flex-col gap-6 my-4" *transloco="let t; read: 'features.makers.portfolio'">
+
+  <!-- Header -->
+  <div class="flex items-end justify-between gap-4">
+    <div class="flex flex-col gap-1">
+      <h1 class="font-h1">{{ t('title') }}</h1>
+      <p class="text-muted-foreground max-md:hidden">{{ t('description') }}</p>
+    </div>
+    <z-button zType="default" class="shrink-0" (click)="openAddDialog()">
+      <ng-icon name="lucidePlus" class="mr-2 size-4" />
+      {{ t('addItem') }}
+    </z-button>
+  </div>
+
+  <!-- Loading -->
+  @if (isLoading()) {
+  <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    @for (i of [1,2,3,4,5,6,7,8]; track i) {
+    <div class="bg-card rounded-2xl border border-border overflow-hidden animate-pulse">
+      <div class="aspect-square bg-muted"></div>
+      <div class="p-4 space-y-2">
+        <z-skeleton class="h-5 w-3/4 rounded" />
+        <z-skeleton class="h-3 w-full rounded" />
+        <z-skeleton class="h-3 w-2/3 rounded" />
+        <z-skeleton class="h-5 w-20 rounded-full mt-3" />
+      </div>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Error -->
+  @else if (isError()) {
+  <div class="py-20 text-center space-y-4">
+    <div class="p-6 rounded-full bg-destructive/10 text-destructive inline-flex">
+      <ng-icon name="lucideAlertCircle" size="40" />
+    </div>
+    <p class="font-bold text-lg">{{ t('errors.loadFailed') }}</p>
+    <z-button zType="default" (click)="loadItems()">
+      <ng-icon name="lucideRefreshCw" class="mr-2" />
+      {{ t('actions.retry') }}
+    </z-button>
+  </div>
+  }
+
+  <!-- Empty -->
+  @else if (items().length === 0) {
+  <div
+    class="flex flex-col items-center justify-center py-24 text-center gap-5 border-2 border-dashed border-border rounded-2xl">
+    <div class="p-6 rounded-full bg-muted/30 text-muted-foreground">
+      <ng-icon name="lucideLayoutGrid" size="40" />
+    </div>
+    <div class="space-y-2">
+      <h2 class="text-xl font-bold text-foreground">{{ t('empty.title') }}</h2>
+      <p class="text-muted-foreground max-w-sm mx-auto text-sm">{{ t('empty.description') }}</p>
+    </div>
+    <z-button zType="default" zSize="lg" class="!rounded-full px-8 mt-2" (click)="openAddDialog()">
+      <ng-icon name="lucidePlus" class="mr-2 size-4" />
+      {{ t('addItem') }}
+    </z-button>
+  </div>
+  }
+
+  <!-- Grid -->
+  @else {
+  <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    @for (item of items(); track item.id) {
+    <div
+      class="group relative bg-card rounded-2xl border border-border overflow-hidden shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
+      (click)="navigateToDetails(item)">
+
+      <!-- Image -->
+      <div class="aspect-square overflow-hidden bg-muted relative">
+        @if (item.portfolioImageUrls.length) {
+        <img [src]="item.portfolioImageUrls[0]" [alt]="item.title"
+          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+        } @else {
+        <div class="w-full h-full flex items-center justify-center bg-muted/50">
+          <ng-icon name="lucideImage" class="size-12 text-muted-foreground/30" />
+        </div>
+        }
+
+        <!-- Delete overlay button -->
+        <button
+          class="absolute top-3 right-3 size-8 rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center justify-center hover:bg-destructive z-10"
+          [class.opacity-100]="deletingId() === item.id" (click)="deleteItem(item, $event)"
+          [disabled]="deletingId() === item.id">
+          @if (deletingId() === item.id) {
+          <ng-icon name="lucideLoader" class="size-4 animate-spin" />
+          } @else {
+          <ng-icon name="lucideTrash2" class="size-4" />
+          }
+        </button>
+
+        <!-- Image count badge -->
+        @if (item.portfolioImageUrls.length! > 1) {
+        <div class="absolute bottom-3 left-3">
+          <span
+            class="text-[10px] font-black bg-black/60 text-white px-2.5 py-1 rounded-full backdrop-blur-sm flex items-center gap-1">
+            <ng-icon name="lucideImages" class="size-3" />
+            {{ item.portfolioImageUrls.length }}
+          </span>
+        </div>
+        }
+      </div>
+
+      <!-- Info -->
+      <div class="p-4 space-y-1.5">
+        <h3
+          class="font-bold text-foreground text-sm leading-snug line-clamp-1 group-hover:text-primary transition-colors">
+          {{ item.title }}
+        </h3>
+        @if (item.description) {
+        <p class="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+          {{ item.description }}
+        </p>
+        }
+      </div>
+
+    </div>
+    }
+
+    <!-- Add new card -->
+    <button
+      class="group aspect-auto min-h-[200px] h-full rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-3 text-muted-foreground hover:border-primary/50 hover:text-primary hover:bg-primary/5 transition-all duration-300"
+      (click)="openAddDialog()">
+      <div
+        class="size-12 rounded-full border-2 border-dashed border-current flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+        <ng-icon name="lucidePlus" class="size-5" />
+      </div>
+      <p class="text-xs font-bold uppercase tracking-wider">{{ t('addItem') }}</p>
+    </button>
+  </div>
+  }
+
+</div>

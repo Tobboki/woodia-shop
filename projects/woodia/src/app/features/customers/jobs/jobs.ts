@@ -104,7 +104,7 @@ export class Jobs implements OnInit {
     ];
   }
 
-  statusOptions: TJobStatusFilter[] = ['all', 'Pending', 'InProgress', 'Completed', 'Canceled']
+  statusOptions: TJobStatusFilter[] = ['all', 'InProgress', 'Completed', 'Canceled']
 
   onDisplayModeChange(value: any) {
     this.displayMode.set(value);
@@ -182,6 +182,8 @@ export class Jobs implements OnInit {
         // Discard results if the status has changed since we started this request
         if (requestedStatus !== this.currentStatus()) return;
 
+        console.log('data', data)
+
 
         if (data && Array.isArray(data.items)) {
           const current = this.jobs();
@@ -191,11 +193,10 @@ export class Jobs implements OnInit {
 
             // Normalize common variations to PascalCase
             const s = rawStatus.toLowerCase().replace(/[\s-]/g, '');
-            if (s === 'open') status = 'Pending';
+            if (s === 'open') status = 'Open';
             else if (s === 'inprogress') status = 'InProgress';
             else if (s === 'completed') status = 'Completed';
             else if (s === 'canceled' || s === 'cancelled') status = 'Canceled';
-            else if (s === 'pending') status = 'Pending';
             else status = rawStatus as TJobStatus;
 
             return {

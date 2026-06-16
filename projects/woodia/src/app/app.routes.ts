@@ -10,6 +10,9 @@ import { googleAuthGuard } from './core/guards/google-auth.guard';
 import { Settings as CustomerSettings } from './features/customers/settings/settings'
 import { Account as CustomerAccountSettings } from './features/customers/settings/account/account'
 import { Shipping as CustomerShippingSettings } from './features/customers/settings/shipping/shipping'
+import { MakerSettings } from './features/makers/settings/settings';
+import { Account as MakerAccountSettings } from './features/makers/settings/account/account';
+import { ContactInfo as MakerContactInfoSettings } from './features/makers/settings/contact-info/contact-info';
 import { ErrorPage } from './features/error-page/error-page';
 import { Designs } from './features/designs/designs';
 import { OurStory } from './features/our-story/our-story';
@@ -91,6 +94,22 @@ export const routes: Routes = [
                 .then(m => m.JobDetails)
           },
           {
+            path: 'jobs/:id/offers',
+            loadComponent: () =>
+              import('./features/customers/offers/customer-job-offers/customer-job-offers')
+                .then(m => m.CustomerJobOffers)
+          },
+          {
+            path: 'jobs/:id/offers/:offerId',
+            loadComponent: () =>
+              import('./features/customers/offers/customer-job-offer-details/customer-job-offer-details')
+                .then(m => m.CustomerJobOfferDetails)
+          },
+          {
+            path: 'makers/profile/:carpenterId',
+            loadComponent: () => import('./features/customers/offers/maker-profile/maker-profile').then(m => m.MakerProfile)
+          },
+          {
             path: 'settings',
             component: CustomerSettings,
             children: [
@@ -142,6 +161,41 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./features/makers/offers/maker-submit-offer/maker-submit-offer')
                 .then(m => m.MakerSubmitOffer)
+          },
+          {
+            path: 'offers',
+            loadComponent: () => import('./features/makers/offers/maker-offers/maker-offers').then(m => m.MakerOffers)
+          },
+          {
+            path: 'offers/:id',
+            loadComponent: () => import('./features/makers/offers/maker-offer-details/maker-offer-details').then(m => m.MakerOfferDetails)
+          },
+          {
+            path: 'portfolio',
+            loadComponent: () => import('./features/makers/portfolio/maker-portofolio/maker-portfolio').then(m => m.MakerPortfolio)
+          },
+          {
+            path: 'portfolio/:itemId',
+            loadComponent: () => import('./features/makers/portfolio/maker-portfolio-item-details/maker-portfolio-item-details').then(m => m.MakerPortfolioItemDetails)
+          },
+          {
+            path: 'settings',
+            component: MakerSettings,
+            children: [
+              {
+                path: '',
+                redirectTo: 'account',
+                pathMatch: 'full',
+              },
+              {
+                path: 'account',
+                component: MakerAccountSettings,
+              },
+              {
+                path: 'contact-info',
+                component: MakerContactInfoSettings,
+              },
+            ]
           }
         ]
       },

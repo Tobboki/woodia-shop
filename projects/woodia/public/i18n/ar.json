@@ -2,7 +2,7 @@
   "app": {
     "appTitle": "ووديا",
     "currentYear": "٢٠٢٦",
-    "currency": "جنيه مصري",
+    "currency": "ج.م",
     "dialogs": {
       "loginPrompt": {
         "title": "تسجيل الدخول مطلوب",
@@ -23,7 +23,9 @@
         "messages": "الرسائل",
         "joinNow": "انضم الآن",
         "language": "اللغة",
-        "theme": "المظهر"
+        "theme": "المظهر",
+        "offers": "العروض",
+        "portfolio": "معرض الأعمال"
       }
     },
     "footer": {
@@ -130,6 +132,13 @@
         "hugeCellDescription": "يزيل الرفوف الأفقية الداخلية، مما يجعل العمود فتحة واحدة طويلة.",
         "openCubbyLabel": "حجرة مفتوحة (بدون رفوف)",
         "openCubbyDescription": "فتحة واحدة طويلة — مثالية للكتب أو مصباح."
+      },
+      "modelTypes": {
+        "bookcase": "مكتبة",
+        "desk": "مكتب",
+        "tvStand": "وحدة تلفاز",
+        "shoeRack": "خزانة أحذية",
+        "bedsideTable": "طاولة جانبية"
       },
       "errors": {
         "invalidConfig": "شكل غير صالح",
@@ -267,7 +276,10 @@
       },
       "errors": {
         "fillRequiredFields": "يرجى ملء جميع الحقول المطلوبة",
-        "jobPostFailed": "فشل في نشر الطلب. يرجى المحاولة مرة أخرى."
+        "jobPostFailed": "فشل في نشر الطلب. يرجى المحاولة مرة أخرى.",
+        "jobDescriptionMinLength": "الوصف يجب أن يكون على الأقل 20 حرفاً",
+        "jobDescriptionMaxLength": "الوصف يجب أن يكون على الأكثر 500 حرف",
+        "jobDescriptionRequired": "الوصف مطلوب"
       }
     },
     "designs": {
@@ -472,7 +484,8 @@
           "Pending": "قيد الانتظار",
           "InProgress": "قيد التنفيذ",
           "Completed": "مكتمل",
-          "Canceled": "ملغي"
+          "Canceled": "ملغي",
+          "Open": "مفتوح"
         },
         "selectAnOption": "اختر خياراً",
         "displayModeOptions": {
@@ -496,6 +509,7 @@
         "budget": "الميزانية",
         "notSpecified": "غير محدد",
         "viewDetails": "عرض التفاصيل",
+        "viewJobOffers": "عروض الحرفيين",
         "expectedBudget": "الميزانية المتوقعة",
         "toBeDetermined": "سيتم تحديده",
         "delivery": "التسليم",
@@ -607,6 +621,97 @@
           }
         }
       },
+      "jobOffers": {
+        "title": "العروض",
+        "subtitle": "العروض المقدمة على: ",
+        "breadcrumb": {
+          "jobs": "طلباتي",
+          "jobDetails": "تفاصيل الطلب",
+          "offers": "العروض"
+        },
+        "statusOptions": {
+          "Pending": "قيد الانتظار",
+          "Accepted": "مقبول",
+          "Rejected": "مرفوض"
+        },
+        "labels": {
+          "price": "سعر العرض",
+          "delivery": "التسليم",
+          "days": "أيام"
+        },
+        "actions": {
+          "viewDetails": "عرض التفاصيل",
+          "retry": "إعادة المحاولة"
+        },
+        "empty": {
+          "title": "لا توجد عروض بعد",
+          "description": "لم يقدم أي حرفي عرضاً على هذا الطلب حتى الآن. تحقق مرة أخرى قريباً!"
+        },
+        "loadMore": "تحميل المزيد",
+        "errors": {
+          "loadFailed": "فشل تحميل العروض. يرجى المحاولة مرة أخرى."
+        }
+      },
+      "jobOfferDetails": {
+        "title": "العرض",
+        "breadcrumb": {
+          "jobDetails": "تفاصيل الطلب",
+          "offers": "العروض",
+          "offerDetails": "تفاصيل العرض"
+        },
+        "statusOptions": {
+          "Pending": "قيد الانتظار",
+          "Accepted": "مقبول",
+          "Rejected": "مرفوض"
+        },
+        "sections": {
+          "proposalMessage": "رسالة العرض",
+          "jobSummary": "الطلب المرجعي",
+          "timeline": "المراحل"
+        },
+        "labels": {
+          "submitted": "تاريخ التقديم",
+          "craftsman": "حرفي ووديا",
+          "offerPrice": "سعر العرض",
+          "delivery": "التسليم",
+          "days": "أيام",
+          "completionTarget": "الموعد المستهدف",
+          "clientBudget": "ميزانيتك",
+          "offerAccepted": "لقد قبلت هذا العرض",
+          "offerRejected": "لقد رفضت هذا العرض",
+          "jobStatus": {
+            "Pending": "مفتوح",
+            "InProgress": "قيد التنفيذ",
+            "Completed": "مكتمل",
+            "Canceled": "ملغي",
+            "undefined": "غير محدد"
+          }
+        },
+        "actions": {
+          "accept": "قبول العرض",
+          "reject": "رفض",
+          "viewJob": "عرض الطلب كاملاً",
+          "retry": "إعادة المحاولة"
+        },
+        "timeline": {
+          "submitted": "تم التقديم",
+          "reviewing": "قيد المراجعة",
+          "reviewingDesc": "في انتظار قرارك",
+          "accepted": "تم القبول",
+          "rejected": "تم الرفض",
+          "delivery": "التسليم",
+          "deliveryTarget": "الموعد المستهدف:"
+        },
+        "messages": {
+          "accepted": "تم قبول العرض! تم إخطار الحرفي.",
+          "rejected": "تم رفض العرض."
+        },
+        "errors": {
+          "loadFailed": "فشل تحميل تفاصيل العرض.",
+          "acceptFailed": "فشل قبول العرض. يرجى المحاولة مرة أخرى.",
+          "rejectFailed": "فشل رفض العرض. يرجى المحاولة مرة أخرى."
+        }
+      },
       "settings": {
         "title": "الإعدادات",
         "backToSettings": "العودة إلى الإعدادات",
@@ -641,7 +746,9 @@
         "resendFailed": "فشل إعادة إرسال رمز التأكيد",
         "messages": {
           "profilePictureSaved": "تم حفظ صورة الملف الشخصي",
-          "nameUpdateSuccess": "تم تحديث الاسم بنجاح"
+          "nameUpdateSuccess": "تم تحديث الاسم بنجاح",
+          "addSuccess": "تم إضافة تفاصيل الشحن بنجاح",
+          "updateSuccess": "تم تحديث تفاصيل الشحن بنجاح"
         },
         "errors": {
           "fetchUserDataFailed": "خطأ في جلب بيانات المستخدم",
@@ -650,7 +757,22 @@
           "savePictureFailed": "فشل في حفظ الصورة",
           "uploadFailed": "فشل التحميل",
           "nameUpdateFailed": "لم ينجح تحديث الاسم",
-          "emailUpdateFailed": "لم ينجح تحديث البريد الإلكتروني"
+          "emailUpdateFailed": "لم ينجح تحديث البريد الإلكتروني",
+          "firstNameRequired": "الاسم الأول مطلوب",
+          "firstNameMinLength": "يجب أن يتكون الاسم الأول من حرفين على الأقل",
+          "firstNameMaxLength": "يجب ألا يتجاوز الاسم الأول 50 حرفًا",
+          "lastNameRequired": "الاسم الأخير مطلوب",
+          "lastNameMinLength": "يجب أن يتكون اسم العائلة من حرفين على الأقل",
+          "addFailed": "فشل إضافة تفاصيل الشحن",
+          "updateFailed": "فشل تحديث تفاصيل الشحن",
+          "phoneRequired": "رقم الهاتف مطلوب",
+          "phonePattern": "رقم الهاتف غير صحيح",
+          "phoneMinLength": "يجب أن يتكون رقم الهاتف من 11 رقمًا",
+          "governorateRequired": "المحافظة مطلوبة",
+          "addressLineRequired": "العنوان مطلوب",
+          "addressLineMinLength": "يجب أن يتكون العنوان من 5 أحرف على الأقل",
+          "additionalDetailsRequired": "التفاصيل الإضافية مطلوبة",
+          "additionalDetailsMinLength": "يجب أن تتكون التفاصيل الإضافية من 5 أحرف على الأقل"
         },
         "shippingDetails": "تفاصيل الشحن",
         "addDetails": "إضافة تفاصيل",
@@ -663,59 +785,27 @@
         "additionalDetails": "تفاصيل إضافية",
         "additionalDetailsPlaceholder": "مثال: برج التوحيد بجوار محطة قطار كفر سعد",
         "reset": "إعادة ضبط",
-        "messages": {
-          "addSuccess": "تم إضافة تفاصيل الشحن بنجاح",
-          "updateSuccess": "تم تحديث تفاصيل الشحن بنجاح"
-        },
-        "errors": {
-          "addFailed": "فشل إضافة تفاصيل الشحن",
-          "updateFailed": "فشل تحديث تفاصيل الشحن"
-        },
         "menu": {
           "account": "الحساب",
           "shipping": "الشحن"
         }
       },
-      "makers": {
-        "onboarding": {
-          "success": "تم إكمال ملفك الشخصي بنجاح! مرحباً بك في ووديا.",
-          "error": "فشل حفظ الملف الشخصي. يرجى المحاولة مرة أخرى.",
-          "steps": {
-            "1": {
-              "title": "مرحباً بك في ووديا",
-              "subtitle": "لنقم بإعداد ملفك الشخصي الاحترافي.",
-              "welcome": "هل أنت مستعد للبدء في الصناعة؟",
-              "description": "تصلك ووديا بالعملاء الذين يبحثون عن أثاث مخصص. للبدء في تقديم العروض على الوظائف، نحتاج إلى معرفة المزيد عن مهاراتك وأسعارك الاحترافية."
-            },
-            "2": {
-              "title": "الملف الشخصي الاحترافي",
-              "subtitle": "ستكون هذه المعلومات مرئية للعملاء المحتملين.",
-              "uploadPhoto": "الصورة الاحترافية",
-              "hourlyRate": "سعر الساعة ($)",
-              "hourlyRatePlaceholder": "مثال: 50",
-              "overview": "نبذة عنك",
-              "overviewPlaceholder": "صف خبرتك وتخصصك وورشتك...",
-              "overviewHint": "20 حرفاً كحد أدنى.",
-              "fillAllFields": "جميع الحقول مطلوبة للمتابعة."
-            },
-            "3": {
-              "title": "معلومات الاتصال",
-              "subtitle": "سنستخدم هذه المعلومات للتواصل التجاري.",
-              "phoneNumber": "رقم الهاتف",
-              "phonePlaceholder": "مثال: +1234567890",
-              "governorate": "المحافظة",
-              "selectGov": "اختر المحافظة",
-              "address": "عنوان الورشة",
-              "addressPlaceholder": "الشارع، المبنى، إلخ.",
-              "additional": "معلومات إضافية (اختياري)",
-              "additionalPlaceholder": "الطابق، علامات مميزة، إلخ."
-            }
-          },
-          "common": {
-            "back": "رجوع",
-            "continue": "متابعة",
-            "finish": "إنهاء والانضمام"
-          }
+      "makerProfile": {
+        "labels": {
+          "verifiedMaker": "حرفي موثق",
+          "hour": "ساعة",
+          "portfolioItems": "عنصر في المعرض"
+        },
+        "sections": {
+          "portfolio": "معرض الأعمال",
+          "noPortfolio": "لم يضف هذا الحرفي أي أعمال بعد."
+        },
+        "actions": {
+          "back": "رجوع",
+          "retry": "إعادة المحاولة"
+        },
+        "errors": {
+          "loadFailed": "فشل تحميل الملف الشخصي. يرجى المحاولة مرة أخرى."
         }
       }
     },
@@ -871,6 +961,7 @@
           "businessDays": "أيام عمل",
           "message": "رسالة العرض التفصيلية",
           "messagePlaceholder": "صف أسلوبك في التنفيذ، واختيار المواد، وأي تفاصيل مخصصة ستشملها في هذا المشروع...",
+          "messageHint": "20 أحرف كحد أدنى. الرسالة القوية تزيد من فرص قبولك.",
           "days": "يوم",
           "timeline": "مدة",
           "termsHint": "بإرسال هذا العرض، أنت توافق على ",
@@ -890,7 +981,225 @@
         },
         "errors": {
           "loadFailed": "فشل تحميل تفاصيل الطلب.",
-          "submitFailed": "فشل إرسال العرض. يرجى المحاولة مرة أخرى."
+          "submitFailed": "فشل إرسال العرض. يرجى المحاولة مرة أخرى.",
+          "priceRequired": "السعر مطلوب",
+          "priceMin": "السعر يجب أن يكون على الأقل 1 جنيه",
+          "deliveryRequired": "مدة التسليم مطلوبة",
+          "deliveryMin": "مدة التسليم يجب أن تكون على الأقل 1 يوم",
+          "messageRequired": "الرسالة مطلوبة",
+          "messageMinLength": "الرسالة يجب أن تكون على الأقل 10 أحرف",
+          "messageMaxLength": "الرسالة يجب أن تكون أقل من 500 حرف"
+        }
+      },
+      "offers": {
+        "title": "عروضي",
+        "description": "تتبع وإدارة عروضك المقدمة.",
+        "statusOptions": {
+          "all": "الكل",
+          "Pending": "قيد الانتظار",
+          "Accepted": "مقبول",
+          "Rejected": "مرفوض",
+          "Withdrawn": "مسحوب"
+        },
+        "labels": {
+          "offerPrice": "سعر العرض",
+          "delivery": "التسليم",
+          "days": "أيام",
+          "submitted": "تاريخ التقديم"
+        },
+        "actions": {
+          "viewDetails": "عرض التفاصيل",
+          "withdrawOffer": "سحب العرض"
+        },
+        "empty": {
+          "title": "لا توجد عروض بعد",
+          "description": "لم تقدم أي عروض حتى الآن. تصفح الطلبات المتاحة وابدأ بتقديم عروضك!",
+          "browseJobs": "تصفح الطلبات"
+        },
+        "loadMore": "تحميل المزيد",
+        "messages": {
+          "withdrawn": "تم سحب العرض بنجاح."
+        },
+        "errors": {
+          "loadFailed": "فشل تحميل العروض.",
+          "withdrawFailed": "فشل سحب العرض. يرجى المحاولة مرة أخرى."
+        }
+      },
+      "offerDetails": {
+        "title": "العرض",
+        "actions": {
+          "backToOffers": "العودة إلى عروضي",
+          "withdrawOffer": "سحب العرض",
+          "viewFullJob": "عرض الطلب كاملاً",
+          "retry": "إعادة المحاولة",
+          "termsHint": "بالتقديم، أنت توافق على ",
+          "termsLink": "الشروط والأحكام"
+        },
+        "sections": {
+          "yourOffer": "عرضك",
+          "proposalMessage": "رسالة العرض",
+          "jobReference": "الطلب المرجعي",
+          "timeline": "المراحل"
+        },
+        "labels": {
+          "submitted": "تاريخ التقديم",
+          "price": "السعر",
+          "delivery": "التسليم",
+          "days": "أيام",
+          "status": "الحالة",
+          "open": "مفتوح",
+          "budget": "الميزانية",
+          "negotiable": "قابل للتفاوض"
+        },
+        "timeline": {
+          "submitted": "تم التقديم",
+          "reviewing": "قيد المراجعة",
+          "reviewingDesc": "الرد المتوقع خلال يومين",
+          "delivery": "التسليم",
+          "deliveryTarget": "الموعد المستهدف:"
+        },
+        "quickTip": {
+          "label": "نصيحة سريعة",
+          "message": "معظم العملاء يردون خلال 48 ساعة. حافظ على صندوق بريدك نشطاً لاستقبال الرسائل المباشرة."
+        },
+        "messages": {
+          "withdrawn": "تم سحب العرض بنجاح."
+        },
+        "errors": {
+          "loadFailed": "فشل تحميل تفاصيل العرض. يرجى المحاولة مرة أخرى.",
+          "withdrawFailed": "فشل سحب العرض. يرجى المحاولة مرة أخرى."
+        }
+      },
+      "settings": {
+        "title": "الإعدادات",
+        "backToSettings": "العودة إلى الإعدادات",
+        "myProfile": "ملفي الشخصي",
+        "profilePicture": "صورة الملف الشخصي",
+        "profilePictureDesc": "PNG، JPEG، JPG بحجم أقل من 10MB",
+        "change": "تغيير",
+        "changePicture": "تغيير الصورة",
+        "addPicture": "إضافة صورة",
+        "save": "حفظ",
+        "firstName": "الاسم الأول",
+        "firstNamePlaceholder": "اسمك الأول",
+        "lastName": "اسم العائلة",
+        "lastNamePlaceholder": "اسم العائلة",
+        "saveChanges": "حفظ التغييرات",
+        "cancel": "إلغاء",
+        "accountSecurity": "أمان الحساب",
+        "actionDisabled": "هذا الإجراء معطل حالياً",
+        "email": "البريد الإلكتروني",
+        "emailPlaceholder": "بريدك الإلكتروني",
+        "emailVerificationTitle": "التحقق من البريد الإلكتروني",
+        "emailVerificationDesc": "لقد أرسلنا رمز التحقق إلى {{email}}. يرجى إدخاله أدناه.",
+        "emailVerificationCode": "الرمز",
+        "emailVerificationCodePlaceholder": "بحد أقصى 6 أرقام أو أحرف",
+        "verifyEmail": "التحقق من البريد",
+        "didntReceiveCode": "لم تستلم الرمز؟",
+        "resend": "إعادة إرسال",
+        "emailChangedSuccess": "تم تغيير البريد الإلكتروني بنجاح",
+        "codeMismatch": "الرمز غير متطابق",
+        "emailDuplicated": "هذا البريد الإلكتروني مستخدم بالفعل من قبل مستخدم آخر",
+        "resendSuccess": "تم إعادة إرسال الرمز بنجاح",
+        "resendFailed": "فشل إعادة إرسال رمز التأكيد",
+        "messages": {
+          "profilePictureSaved": "تم حفظ صورة الملف الشخصي",
+          "nameUpdateSuccess": "تم تحديث الاسم بنجاح",
+          "addSuccess": "تم إضافة تفاصيل الاتصال بنجاح",
+          "updateSuccess": "تم تحديث تفاصيل الاتصال بنجاح"
+        },
+        "errors": {
+          "fetchUserDataFailed": "خطأ في جلب بيانات المستخدم",
+          "invalidFileType": "نوع الملف غير صالح",
+          "fileTooLarge": "الملف كبير جداً",
+          "savePictureFailed": "فشل في حفظ الصورة",
+          "uploadFailed": "فشل التحميل",
+          "nameUpdateFailed": "لم ينجح تحديث الاسم",
+          "emailUpdateFailed": "لم ينجح تحديث البريد الإلكتروني",
+          "addFailed": "فشل إضافة تفاصيل الاتصال",
+          "updateFailed": "فشل تحديث تفاصيل الاتصال",
+          "firstNameRequired": "الاسم الأول مطلوب",
+          "firstNameMinLength": "يجب أن يتكون الاسم الأول من حرفين على الأقل",
+          "firstNameMaxLength": "يجب ألا يتجاوز الاسم الأول 50 حرفًا",
+          "lastNameRequired": "الاسم الأخير مطلوب",
+          "lastNameMinLength": "يجب أن يتكون اسم العائلة من حرفين على الأقل",
+          "lastNameMaxLength": "يجب ألا يتجاوز اسم العائلة 50 حرفًا",
+          "phoneRequired": "رقم الهاتف مطلوب",
+          "phonePattern": "يجب أن يتكون رقم الهاتف من 10 إلى 15 رقمًا (يمكن أن يبدأ بـ +)",
+          "governorateRequired": "المحافظة مطلوبة",
+          "addressLineRequired": "العنوان مطلوب",
+          "addressLineMinLength": "يجب أن يتكون العنوان من 5 أحرف على الأقل",
+          "additionalDetailsRequired": "التفاصيل الإضافية مطلوبة",
+          "additionalDetailsMinLength": "يجب أن تتكون التفاصيل الإضافية من 5 أحرف على الأقل"
+        },
+        "maker": "حرفي",
+        "contactInfo": "معلومات الاتصال",
+        "governorate": "المحافظة",
+        "governoratePlaceholder": "اختر المحافظة",
+        "phone": "رقم الهاتف",
+        "phonePlaceholder": "أدخل رقم الهاتف",
+        "addressLine": "العنوان",
+        "addressLinePlaceholder": "مثال: كفر سعد، شارع النصر",
+        "additionalDetails": "تفاصيل إضافية",
+        "additionalDetailsPlaceholder": "مثال: برج التوحيد بجوار محطة قطار كفر سعد",
+        "reset": "إعادة ضبط",
+        "addDetails": "إضافة تفاصيل",
+        "menu": {
+          "account": "الحساب",
+          "contact-info": "معلومات الاتصال"
+        }
+      },
+      "portfolio": {
+        "title": "معرض أعمالي",
+        "description": "اعرض أفضل أعمالك لجذب المزيد من العملاء.",
+        "addItem": "إضافة عمل",
+        "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا العنصر؟",
+        "empty": {
+          "title": "معرض أعمالك فارغ",
+          "description": "أضف صور لأفضل أعمالك لتبرز وتجذب المزيد من العملاء."
+        },
+        "actions": {
+          "backToPortfolio": "العودة إلى المعرض",
+          "delete": "حذف العنصر",
+          "retry": "إعادة المحاولة"
+        },
+        "details": {
+          "about": "عن هذه القطعة",
+          "addedOn": "تمت الإضافة في",
+          "photos": "صور"
+        },
+        "dialog": {
+          "addTitle": "إضافة عنصر للمعرض",
+          "images": "الصور",
+          "addPhoto": "إضافة صورة",
+          "title": "العنوان",
+          "titlePlaceholder": "مثال: طاولة طعام جوز مخصصة",
+          "description": "الوصف",
+          "descriptionPlaceholder": "صف القطعة والمواد المستخدمة والتقنيات المطبقة...",
+          "cancel": "إلغاء",
+          "save": "إضافة إلى المعرض",
+          "errors": {
+            "fileTooLarge": "الملف كبير جداً. الحجم الأقصى 10 ميغا.",
+            "uploadFailed": "فشل رفع الصورة. يرجى المحاولة مرة أخرى.",
+            "saveFailed": "فشل حفظ العنصر. يرجى المحاولة مرة أخرى."
+          }
+        },
+        "messages": {
+          "added": "تمت إضافة العنصر بنجاح!",
+          "deleted": "تم حذف العنصر."
+        },
+        "errors": {
+          "loadFailed": "فشل تحميل المعرض.",
+          "deleteFailed": "فشل حذف العنصر. يرجى المحاولة مرة أخرى.",
+          "notFound": "العنصر غير موجود",
+          "notFoundDesc": "قد يكون هذا العنصر قد حُذف أو غير موجود.",
+          "saveFailed": "فشل حفظ التعديلات. يرجى المحاولة مرة أخرى."
+        },
+        "edit": {
+          "unsavedChanges": "تعديلات غير محفوظة",
+          "changesDetected": "لديك تعديلات لم يتم حفظها",
+          "discard": "تجاهل",
+          "save": "حفظ التعديلات"
         }
       }
     }

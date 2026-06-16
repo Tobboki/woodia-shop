@@ -181,9 +181,16 @@ export class DesignStudio implements OnInit {
   private initForm() {
     this.form = this.fb.group({
       jobTitle: [{ value: '', disabled: true }, Validators.required],
-      jobDescription: [''],
-      expectedBudget: [null, Validators.required],
-      deliveryDay: [7, [Validators.required, Validators.min(1)]],
+      jobDescription: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(20),
+          Validators.maxLength(500)
+        ]
+      ],
+      expectedBudget: [null, [Validators.required, Validators.min(1), Validators.max(100000)]],
+      deliveryDay: [7, [Validators.required, Validators.min(1), Validators.max(365)]],
     });
   }
 
