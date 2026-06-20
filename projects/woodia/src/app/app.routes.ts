@@ -110,6 +110,21 @@ export const routes: Routes = [
             loadComponent: () => import('./features/customers/offers/maker-profile/maker-profile').then(m => m.MakerProfile)
           },
           {
+            path: 'messages',
+            loadComponent: () =>
+              import('./features/chat/chat-shell/chat-shell').then(m => m.ChatShell),
+            data: {
+              layoutVariant: 'chat'
+            },
+            children: [
+              {
+                path: ':roomId',
+                loadComponent: () =>
+                  import('./features/chat/chat-shell/chat-shell').then(m => m.ChatShell),
+              }
+            ]
+          },
+          {
             path: 'settings',
             component: CustomerSettings,
             children: [
@@ -161,6 +176,21 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./features/makers/offers/maker-submit-offer/maker-submit-offer')
                 .then(m => m.MakerSubmitOffer)
+          },
+          {
+            path: 'messages',
+            loadComponent: () =>
+              import('./features/chat/chat-shell/chat-shell').then(m => m.ChatShell),
+            data: {
+              layoutVariant: 'chat'
+            },
+            children: [
+              {
+                path: ':roomId',
+                loadComponent: () =>
+                  import('./features/chat/chat-shell/chat-shell').then(m => m.ChatShell),
+              }
+            ]
           },
           {
             path: 'offers',

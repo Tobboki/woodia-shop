@@ -1,0 +1,27 @@
+<div class="flex items-center gap-2.5 min-w-[220px]">
+
+    <!-- Play / pause button -->
+    <button class="size-9 rounded-full flex items-center justify-center shrink-0 transition-colors"
+        [class.bg-white/20]="isOwnMessage" [class.text-white]="isOwnMessage" [class.bg-primary/10]="!isOwnMessage"
+        [class.text-primary]="!isOwnMessage" [disabled]="isLoading()" (click)="togglePlay()">
+        @if (isLoading()) {
+        <ng-icon name="lucideLoader" class="size-4 animate-spin" />
+        } @else {
+        @if (isPlaying()) {
+        <ng-icon name="lucidePause" class="size-4" />
+        } @else {
+        <ng-icon name="lucidePlay" class="size-4" />
+        }
+        }
+    </button>
+
+    <!-- Waveform -->
+    <div class="flex-1 min-w-0">
+        <div #waveformEl class="w-full h-12"></div>
+    </div>
+
+    <!-- Time -->
+    <span class="text-[10px] font-bold tabular-nums shrink-0 opacity-70">
+        {{ formatTime(isPlaying() || currentTime() > 0 ? currentTime() : duration()) }}
+    </span>
+</div>

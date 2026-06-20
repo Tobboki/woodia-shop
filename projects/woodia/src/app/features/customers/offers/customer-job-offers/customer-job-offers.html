@@ -119,11 +119,13 @@
                         </z-badge>
                     </div>
 
-                    <div class="hidden md:flex items-center justify-center gap-3 border-l border-border/50 ps-3"
-                        (click)="$event.stopPropagation()">
-                        <z-button zType="default" zFull class="!rounded-full px-6"
-                            (click)="navigateToOfferDetails(offer)">
+                    <div class="hidden md:flex items-center justify-center gap-3 border-s border-border/50 ps-3">
+                        <z-button zType="default" class="!rounded-full px-6" (click)="navigateToOfferDetails(offer)">
                             {{ t('actions.viewDetails') }}
+                        </z-button>
+
+                        <z-button zType="secondary" class="!rounded-full px-6" (click)="startNegotiation(offer)">
+                            {{ t('actions.negotiate') }}
                         </z-button>
                     </div>
                 </div>

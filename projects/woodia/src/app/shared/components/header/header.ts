@@ -49,7 +49,7 @@ import { CustomerSettingsService } from '@woodia-core/services/customer-settings
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })
-export class Header implements OnInit, AfterViewInit {
+export class Header implements AfterViewInit {
 
   @Input() menu: IMenuItem[] = [];
 
@@ -95,10 +95,6 @@ export class Header implements OnInit, AfterViewInit {
 
   readonly isRtl = computed(() => this.langService.lang() === 'ar');
 
-  ngOnInit() {
-  }
-
-
   isHeaderHidden = signal(false);
 
   readonly landingRef = viewChild<TemplateRef<any>>('landingActions');
@@ -106,6 +102,12 @@ export class Header implements OnInit, AfterViewInit {
   readonly currentActions = computed(() => {
     const isAuthenticated = this.authService.isAuthenticated()
     return isAuthenticated ? this.customerRef() : this.landingRef();
+  });
+
+  readonly messagesPath = computed(() => {
+    const user = this.authService.getCurrentUser();
+    if (user?.userType?.toUpperCase() === 'MAKER') return '/makers/messages';
+    return '/customers/messages';
   });
 
   readonly settingsPath = computed(() => {
@@ -116,8 +118,9 @@ export class Header implements OnInit, AfterViewInit {
 
 
   isMenuOpen = signal(false);
+  isBackdropVisible = signal(false);
   readonly mobileView = signal<'main' | 'designs' | 'language' | 'theme'>('main');
-  
+
   toggleMenu(open: boolean) {
     this.isMenuOpen.set(open);
     if (!open) {

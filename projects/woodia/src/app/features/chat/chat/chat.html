@@ -1,0 +1,296 @@
+<div class="flex flex-col h-full" *transloco="let t; read: 'features.chat'">
+
+    <!-- ── HEADER ── -->
+    <!-- <div class="flex items-center gap-3 p-4 border-b border-border/50 bg-card shrink-0">
+        <div
+            class="size-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-black text-sm shrink-0">
+            {{ roomName ? roomName[0].toUpperCase() : '?' }}
+        </div>
+        <div class="flex flex-col min-w-0">
+            <p class="font-bold text-sm text-foreground truncate">{{ roomName }}</p>
+            @if (jobTitle) {
+            <p class="text-xs text-muted-foreground truncate">{{ jobTitle }}</p>
+            }
+        </div>
+    </div> -->
+
+    <!-- ── MESSAGES ── -->
+    <div #scrollContainer class="flex-1 overflow-y-auto p-4 space-y-1 flex flex-col">
+
+        <!-- Load more -->
+        @if (hasMore()) {
+        <div class="flex justify-center pb-2 shrink-0">
+            <button class="text-xs text-primary font-bold hover:underline flex items-center gap-1.5"
+                [disabled]="isLoadingMore()" (click)="loadMoreMessages()">
+                @if (isLoadingMore()) {
+                <ng-icon name="lucideLoader" class="size-3.5 animate-spin" />
+                }
+                {{ t('loadMore') }}
+            </button>
+        </div>
+        }
+
+        <!-- Loading skeleton -->
+        @if (isLoading()) {
+        <div class="flex flex-col gap-3 flex-1 justify-end">
+            @for (i of [1,2,3,4,5]; track i) {
+            <div class="flex items-end gap-2" [class.flex-row-reverse]="i % 2 === 0">
+                <div class="size-7 rounded-full bg-muted shrink-0 animate-pulse"></div>
+                <div class="rounded-2xl animate-pulse bg-muted" [class.w-48]="i % 3 === 0" [class.w-64]="i % 3 !== 0"
+                    [style.height.px]="i % 2 === 0 ? 40 : 60">
+                </div>
+            </div>
+            }
+        </div>
+        }
+
+        <!-- Messages list -->
+        @else {
+        <div class="flex flex-col gap-1 flex-1 justify-end">
+            @for (message of messages(); track message.id; let i = $index) {
+
+            <!-- Date separator -->
+            @if (shouldShowDateSeparator(messages(), i)) {
+            <div class="flex items-center gap-3 py-3">
+                <div class="flex-1 h-px bg-border/40"></div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground px-2">
+                    {{ formatDate(message.sentAt) }}
+                </span>
+                <div class="flex-1 h-px bg-border/40"></div>
+            </div>
+            }
+
+            <!-- System message -->
+            @if (message.messageType === 'System') {
+            <div class="flex justify-center py-1">
+                <div class="px-4 py-2 rounded-full bg-muted/50 border border-border/40 text-center">
+                    <p class="text-xs text-muted-foreground italic">{{ message.content }}</p>
+                </div>
+            </div>
+            }
+
+            <!-- Normal message bubble -->
+            @else {
+            <div class="flex items-end gap-2 max-w-[80%]" [class.self-end]="isOwnMessage(message)"
+                [class.flex-row-reverse]="isOwnMessage(message)">
+
+                <!-- Avatar (others only) -->
+                @if (!isOwnMessage(message)) {
+                <div class="size-7 rounded-full bg-muted flex items-center justify-center shrink-0 mb-1">
+                    <ng-icon name="lucideUser" class="size-3.5 text-muted-foreground" />
+                </div>
+                }
+
+                <div class="flex flex-col gap-1" [class.items-end]="isOwnMessage(message)"
+                    [class.items-start]="!isOwnMessage(message)">
+
+                    <!-- ── ATTACHMENTS — each rendered by its own type ── -->
+                    @if (message.attachments.length > 0) {
+
+                    <!-- Images: collected into a grid -->
+                    @let images = getImageAttachments(message);
+
+                    @if (images.length > 0) {
+                    <div class="rounded-2xl overflow-hidden cursor-pointer"
+                        [class.rounded-br-sm]="isOwnMessage(message)" [class.rounded-bl-sm]="!isOwnMessage(message)"
+                        [class.grid]="images.length > 1" [class.grid-cols-2]="images.length > 1"
+                        [class.gap-0.5]="images.length > 1" [style.max-width]="images.length > 1 ? '280px' : '240px'">
+
+                        @for (att of images; track att.id; let last = $last) {
+                        <img [src]="att.fileUrl" alt="Image" class="w-full object-cover"
+                            [class.max-h-60]="images.length === 1" [class.h-32]="images.length > 1"
+                            [class.col-span-2]="last && images.length % 2 === 1"
+                            (click)="openLightbox(att.fileUrl, 'image')" />
+                        }
+                    </div>
+                    }
+
+                    <!-- Non-image attachments: each rendered individually -->
+                    @for (att of message.attachments; track att.id) {
+                    @if (getAttachmentType(att) !== 'Image') {
+
+                    <!-- Video -->
+                    @if (getAttachmentType(att) === 'Video') {
+                    <div class="relative rounded-2xl overflow-hidden cursor-pointer max-w-[280px]"
+                        (click)="openLightbox(att.fileUrl, 'video')">
+                        <video [src]="att.fileUrl" class="w-full max-h-52 object-cover" muted></video>
+                        <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
+                            <div
+                                class="size-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                                <ng-icon name="lucidePlay" class="size-5 text-white ml-0.5" />
+                            </div>
+                        </div>
+                    </div>
+                    }
+
+                    <!-- Audio -->
+                    @else if (getAttachmentType(att) === 'Audio') {
+                    <div class="px-3 py-2.5 rounded-2xl min-w-[260px] max-w-[320px]"
+                        [class.bg-primary]="isOwnMessage(message)" [class.bg-muted]="!isOwnMessage(message)">
+                        <woodia-audio-message [fileUrl]="att.fileUrl" [isOwnMessage]="isOwnMessage(message)">
+                        </woodia-audio-message>
+                    </div>
+                    }
+
+                    <!-- File -->
+                    @else {
+                    <a [href]="att.fileUrl" target="_blank"
+                        class="flex items-center gap-2.5 px-4 py-3 rounded-2xl border transition-colors max-w-[280px]"
+                        [class.bg-primary]="isOwnMessage(message)" [class.border-primary]="isOwnMessage(message)"
+                        [class.text-primary-foreground]="isOwnMessage(message)"
+                        [class.bg-muted/60]="!isOwnMessage(message)" [class.border-border]="!isOwnMessage(message)"
+                        (click)="$event.stopPropagation()">
+                        <ng-icon name="lucideFile" class="size-5 shrink-0 opacity-70" />
+                        <span class="text-sm font-medium truncate flex-1">{{ getFileName(att.fileUrl) }}</span>
+                        <ng-icon name="lucideDownload" class="size-4 shrink-0 opacity-60 ml-auto" />
+                    </a>
+                    }
+
+                    }
+                    }
+
+                    <!-- Shared caption (= message.content) shown below all attachments -->
+                    @if (message.content) {
+                    <div class="px-3 py-2 rounded-2xl text-sm" [class.rounded-br-sm]="isOwnMessage(message)"
+                        [class.rounded-bl-sm]="!isOwnMessage(message)" [class.bg-primary]="isOwnMessage(message)"
+                        [class.text-primary-foreground]="isOwnMessage(message)"
+                        [class.bg-muted/60]="!isOwnMessage(message)" [class.text-foreground]="!isOwnMessage(message)">
+                        {{ message.content }}
+                    </div>
+                    }
+                    }
+
+                    <!-- ── PLAIN TEXT ── -->
+                    @else {
+                    <div class="px-3 py-2 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap break-words"
+                        [class.bg-primary]="isOwnMessage(message)"
+                        [class.text-primary-foreground]="isOwnMessage(message)"
+                        [class.bg-muted/60]="!isOwnMessage(message)" [class.border]="!isOwnMessage(message)"
+                        [class.border-border/40]="!isOwnMessage(message)"
+                        [class.text-foreground]="!isOwnMessage(message)" [class.rounded-br-sm]="isOwnMessage(message)"
+                        [class.rounded-bl-sm]="!isOwnMessage(message)">
+                        {{ message.content }}
+                    </div>
+                    }
+
+                    <!-- Timestamp + read receipt -->
+                    <div class="flex items-center gap-1 px-1" [class.flex-row-reverse]="!isOwnMessage(message)">
+                        <span class="text-[10px] text-muted-foreground">{{ formatTime(message.sentAt) }}</span>
+                        @if (isOwnMessage(message)) {
+                        <ng-icon [name]="message.isRead ? 'lucideCheckCheck' : 'lucideCheck'" class="size-3"
+                            [class.text-primary]="message.isRead" [class.text-muted-foreground]="!message.isRead" />
+                        }
+                    </div>
+                </div>
+            </div>
+            }
+            }
+
+            <!-- Empty state -->
+            @if (messages().length === 0) {
+            <div class="flex flex-col items-center justify-center flex-1 gap-3 text-muted-foreground py-16">
+                <ng-icon name="lucideMessageSquareDashed" class="size-12 opacity-20" />
+                <p class="text-sm font-medium">{{ t('startConversation') }}</p>
+            </div>
+            }
+
+            <!-- Scroll anchor -->
+            <div #messagesEnd></div>
+        </div>
+        }
+    </div>
+
+    <!-- ── LIGHTBOX ── -->
+    @if (lightboxUrl()) {
+    <div class="fixed inset-0 z-50 bg-black/90 flex items-center justify-center" (click)="closeLightbox()">
+        <button
+            class="absolute top-4 right-4 size-9 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+            (click)="closeLightbox()">
+            <ng-icon name="lucideX" class="size-5" />
+        </button>
+
+        @if (lightboxType() === 'image') {
+        <img [src]="lightboxUrl()" class="max-w-full max-h-full object-contain rounded-lg"
+            (click)="$event.stopPropagation()" />
+        }
+        @else if (lightboxType() === 'video') {
+        <video [src]="lightboxUrl()" controls autoplay class="max-w-full max-h-full rounded-lg"
+            (click)="$event.stopPropagation()">
+        </video>
+        }
+    </div>
+    }
+
+    <!-- ── INPUT BAR ── -->
+    <div class="p-3 border-t border-border/50 bg-card shrink-0">
+
+        <!-- Attachment staging strip -->
+        @if (stagedAttachments().length > 0) {
+        <woodia-attachment-staging [attachments]="stagedAttachments()" [caption]="messageText()"
+            (remove)="removeStagedAttachment($event)" (captionChange)="messageText.set($event)" (send)="sendMessage()">
+        </woodia-attachment-staging>
+        }
+
+        <!-- Upload progress bar -->
+        @if (isAnyAttachmentUploading()) {
+        <div
+            class="flex items-center gap-2 px-3 py-2 mb-2 rounded-xl bg-primary/5 border border-primary/20 text-primary text-xs font-medium">
+            <ng-icon name="lucideLoader" class="size-3.5 animate-spin shrink-0" />
+            {{ t('uploading') }}
+        </div>
+        }
+
+        <div class="flex items-center gap-2">
+
+            <!-- File attach button — accepts all common types + multi-select -->
+            <label
+                class="size-9 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer shrink-0 mb-0.5">
+                <ng-icon name="lucidePaperclip" class="size-4" />
+                <input #fileInput type="file" class="sr-only" multiple
+                    accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx" (change)="onFilesSelected($event)" />
+            </label>
+
+            <!-- Voice recorder toggle (hidden when attachments are staged) -->
+            @if (stagedAttachments().length === 0) {
+            <button
+                class="size-9 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0 mb-0.5"
+                (click)="openRecorder()">
+                <ng-icon name="lucideMic" class="size-4" />
+            </button>
+            }
+
+            <!-- Text input — hidden when recorder is open, used as caption when attachments exist -->
+            @if (!isRecorderOpen()) {
+            <div class="flex-1 relative">
+                <textarea z-input zType="textarea" [ngModel]="messageText()" (ngModelChange)="messageText.set($event)"
+                    (keydown)="onEnterKey($event)"
+                    [placeholder]="stagedAttachments().length > 0 ? t('composer.captionPlaceholder') : t('inputPlaceholder')"
+                    rows="1"
+                    class="!rounded-lg !resize-none !min-h-[40px] !max-h-32 !py-2.5 !pr-4 !text-sm overflow-y-auto">
+                </textarea>
+            </div>
+            }
+
+            <!-- Voice recorder widget -->
+            @if (isRecorderOpen()) {
+            <div class="flex-1">
+                <woodia-voice-recorder (recorded)="onVoiceRecorded($event)" (cancelled)="onVoiceCancelled()">
+                </woodia-voice-recorder>
+            </div>
+            }
+
+            <!-- Send button -->
+            @if (!isRecorderOpen()) {
+            <z-button zType="default" class="!rounded-full !size-9 !p-0 shrink-0 mb-0.5" [zDisabled]="!canSend()"
+                (click)="sendMessage()">
+                @if (isSending()) {
+                <ng-icon name="lucideLoader" class="size-4 animate-spin" />
+                } @else {
+                <ng-icon name="lucideSend" class="size-4" />
+                }
+            </z-button>
+            }
+        </div>
+    </div>
+
+</div>

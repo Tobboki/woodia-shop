@@ -1,4 +1,4 @@
-export type TLayoutVariant = 'default' | 'plain';
+export type TLayoutVariant = 'default' | 'plain' | 'chat';
 
 export type TMenuKey = 'landing' | 'customer' | 'maker';
 

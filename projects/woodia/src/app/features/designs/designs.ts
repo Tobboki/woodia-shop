@@ -16,6 +16,7 @@ import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { NgIcon } from '@ng-icons/core';
 import { ZardDialogService } from '@shared-components/dialog/dialog.service';
 import { AiWizardComponent } from './components/ai-wizard/ai-wizard.component';
+import { AuthService } from '@woodia-core/services/auth.service';
 
 @Component({
   selector: 'woodia-designs',
@@ -44,6 +45,8 @@ export class Designs implements OnInit {
   isLoadingCategories = signal<boolean>(false);
   isLoadingProducts = signal<boolean>(false);
 
+  protected readonly isACustomer = signal<boolean>(false);
+
   // Pagination
   pageNumber = 1;
   pageSize = 10;
@@ -56,7 +59,8 @@ export class Designs implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private translocoService: TranslocoService,
-    private dialogService: ZardDialogService
+    private dialogService: ZardDialogService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -68,6 +72,8 @@ export class Designs implements OnInit {
     this.translocoService.langChanges$.pipe(skip(1)).subscribe(() => {
       this.resetAndLoad();
     });
+
+    this.isACustomer.set(this.authService.getCurrentUser()?.userType?.toUpperCase() === 'CLIENT');
   }
 
   private resetAndLoad(): void {

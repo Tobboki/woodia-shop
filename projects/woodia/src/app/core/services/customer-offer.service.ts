@@ -51,16 +51,9 @@ export class CustomerOfferService {
     );
   }
 
-  acceptOffer(jobId: number, offerId: number): Observable<void> {
-    return this.http.post<void>(
-      `${this.baseUrl}/api/client/jobs/${jobId}/offers/${offerId}/accept`,
-      {}
-    );
-  }
-
-  rejectOffer(jobId: number, offerId: number): Observable<void> {
-    return this.http.post<void>(
-      `${this.baseUrl}/api/client/jobs/${jobId}/offers/${offerId}/reject`,
+  negotiateOffer(offerId: number): Observable<{ id: number }> {
+    return this.http.post<{ id: number }>(
+      `${this.baseUrl}/api/jobs/${offerId}/negotiate`,
       {}
     );
   }

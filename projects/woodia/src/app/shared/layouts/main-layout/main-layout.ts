@@ -86,7 +86,7 @@ export class MainLayout implements OnInit {
         label: 'app.header.menu.portfolio',
         path: '/makers/portfolio',
         icon: 'lucideUser'
-      }
+      },
     ],
   };
 

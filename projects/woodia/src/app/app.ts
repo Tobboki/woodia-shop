@@ -8,6 +8,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { authConfig } from './features/auth/google-auth.config';
 import { ThemeService } from './core/services/theme.service';
 import { LanguageService } from './core/services/language.service';
+import { ChathubService } from '@woodia-core/services/chathub.service';
 
 @Component({
   selector: 'app-root',
@@ -29,6 +30,7 @@ export class App implements OnInit {
     private router: Router,
     private themeService: ThemeService,
     private langService: LanguageService,
+    private chatHub: ChathubService,
   ) { }
 
   async ngOnInit() {
@@ -76,6 +78,14 @@ export class App implements OnInit {
 
     if (this.authService.isAuthenticated()) {
       this.scheduleAutoRefresh();
+
+      // const token = this.authService.getToken();
+
+      // if (token) {
+      //   this.chatHub.startConnection(token)
+      //     .then(() => console.log('[APP] Chat connected'))
+      //     .catch(err => console.error('[APP] Chat failed', err));
+      // }
     }
   }
 
@@ -156,6 +166,7 @@ export class App implements OnInit {
           toast.error(this.langService.translate('features.auth.login.errors.googleAuthFailed'), {
             position: 'bottom-center',
           });
+          this.router.navigate(['/auth/login']);
           console.error('Google Auth error', error);
         }
       }

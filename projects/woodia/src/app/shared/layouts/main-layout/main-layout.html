@@ -12,6 +12,8 @@
       <router-outlet></router-outlet>
     </div>
 
+    @if (layoutVariant() !== 'chat') {
     <woodia-footer [menu]="menu()" />
+    }
   </div>
 </div>

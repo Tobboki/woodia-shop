@@ -1,3 +1,7 @@
+<div class="fixed inset-0 bg-foreground/50 backdrop-blur-sm transition-opacity duration-300 pointer-events-none"
+     style="z-index: 40;"
+     [class.opacity-0]="!isBackdropVisible()">
+</div>
 <header id="app-header" class="container mx-auto sticky top-4 z-50 transition-transform duration-300 ease-out px-4"
   [style.transform]="isHeaderHidden() ? 'translateY(-150%)' : 'translateY(0)'" *transloco="let t">
   <nav
@@ -16,7 +20,9 @@
         <div class="relative px-4">
           <a z-button zType="ghost" [routerLink]="menuItem.path" routerLinkActive="text-primary"
             [routerLinkActiveOptions]="{ exact: false }" z-menu zPlacement="bottomCenter" zTrigger="hover"
-            [zMenuTriggerFor]="designsCategories">
+            [zMenuTriggerFor]="designsCategories"
+            (cdkMenuOpened)="isBackdropVisible.set(true)"
+            (cdkMenuClosed)="isBackdropVisible.set(false)">
             {{ t(menuItem.label) }}
             <ng-icon name="lucideChevronDown" />
           </a>
@@ -59,6 +65,11 @@
         </a>
         }
         }
+
+        <button z-button zType="ghost" class="text-sm font-medium ms-4" zSize="lg" [routerLink]="[messagesPath()]">
+          {{ t('app.header.menu.messages') }}
+        </button>
+
       </div>
 
       <!-- Actions -->
@@ -142,14 +153,6 @@
       <!-- Customer Actions -->
       <ng-template #customerActions>
         <div class="flex items-center gap-1">
-          <!-- Notification Button -->
-          <button z-button zType="ghost" zSize="icon">
-            <ng-icon name="lucideBell" />
-          </button>
-
-          <button z-button zType="ghost" zSize="icon">
-            <ng-icon name="lucideMessageSquare" />
-          </button>
 
           <z-divider zOrientation="vertical" class="h-8" />
 

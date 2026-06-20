@@ -32,6 +32,7 @@ export class CustomerJobOffers implements OnInit {
   private router = inject(Router);
   private customerOfferService = inject(CustomerOfferService);
   private jobService = inject(JobService);
+  private offerService = inject(CustomerOfferService);
   protected translocoService = inject(TranslocoService);
 
   protected readonly getTextDir = getTextDir;
@@ -116,6 +117,18 @@ export class CustomerJobOffers implements OnInit {
 
   navigateToMakerProfile(offer: ICustomerOffer): void {
     this.router.navigate(['/customers/makers/profile', offer.carpenterId]);
+  }
+
+  startNegotiation(offer: ICustomerOffer): void {
+    this.customerOfferService.negotiateOffer(offer.id).subscribe({
+      next: (res) => {
+        toast.success(this.translocoService.translate('features.customers.jobOffers.success.negotiationStarted'));
+        this.router.navigate(['/customers/messages', res.id]);
+      },
+      error: () => {
+        toast.error(this.translocoService.translate('features.customers.jobOffers.errors.negotiationFailed'));
+      }
+    });
   }
 
   goBack(): void {

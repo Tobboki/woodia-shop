@@ -1,0 +1,51 @@
+<div class="flex items-center gap-3 px-3 py-2 rounded-2xl bg-primary/5 border border-primary/20 w-full"
+    *transloco="let t; read: 'features.chat.recorder'">
+
+    @if (hasError()) {
+    <!-- Error state -->
+    <div class="flex items-center gap-2 flex-1 text-destructive text-xs font-medium">
+        <ng-icon name="lucideMicOff" class="size-4 shrink-0" />
+        {{ t('micError') }}
+    </div>
+    <button
+        class="size-8 rounded-full flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors shrink-0"
+        (click)="cancel()">
+        <ng-icon name="lucideX" class="size-4" />
+    </button>
+    }
+
+    @else {
+    <!-- Recording indicator dot -->
+    <div class="flex items-center gap-1.5 shrink-0">
+        <span class="size-2.5 rounded-full bg-red-500" [class.animate-pulse]="isRecording() && !isPaused()"></span>
+        <span class="text-xs font-bold text-foreground tabular-nums w-10">
+            {{ formatDuration(elapsedSec()) }}
+        </span>
+    </div>
+
+    <!-- Waveform -->
+    <div #waveformEl class="flex-1 h-9 min-w-0"></div>
+
+    <!-- Pause / resume -->
+    <button
+        class="size-8 rounded-full flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors shrink-0"
+        [disabled]="!isReady()" (click)="togglePause()">
+        <ng-icon [name]="isPaused() ? 'lucidePlay' : 'lucidePause'" class="size-4" />
+    </button>
+
+    <!-- Cancel -->
+    <button
+        class="size-8 rounded-full flex items-center justify-center text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors shrink-0"
+        (click)="cancel()">
+        <ng-icon name="lucideTrash2" class="size-4" />
+    </button>
+
+    <!-- Confirm / send -->
+    <button
+        class="size-8 rounded-full flex items-center justify-center bg-primary text-primary-foreground hover:opacity-90 transition-opacity shrink-0"
+        [disabled]="!isReady()" (click)="confirmRecording()">
+        <ng-icon name="lucideCheck" class="size-4" />
+    </button>
+    }
+
+</div>

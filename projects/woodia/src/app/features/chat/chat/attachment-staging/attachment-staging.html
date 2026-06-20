@@ -1,0 +1,80 @@
+<div class="flex flex-col gap-2 p-2 rounded-2xl bg-muted/30 border border-border/50 mb-2"
+    *transloco="let t; read: 'features.chat.composer'">
+
+    <!-- Attachment thumbnails -->
+    <div class="flex gap-2 overflow-x-auto pb-1">
+        @for (att of attachments; track att.localId) {
+        <div class="relative shrink-0">
+
+            <!-- Thumbnail / icon tile -->
+            <div
+                class="relative size-20 rounded-xl overflow-hidden border border-border bg-background flex items-center justify-center">
+
+                @if (att.fileType === FileType.Image) {
+                <img [src]="att.previewUrl" class="w-full h-full object-cover" alt="" />
+                }
+                @else if (att.fileType === FileType.Video) {
+                <video [src]="att.previewUrl" class="w-full h-full object-cover" muted></video>
+                <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
+                    <ng-icon name="lucidePlay" class="size-6 text-white" />
+                </div>
+                }
+                @else if (att.fileType === FileType.Audio) {
+                <div class="flex flex-col items-center gap-1 text-primary">
+                    <ng-icon name="lucideMic" class="size-7" />
+                    <span class="text-[8px] font-medium text-muted-foreground truncate w-full text-center px-1">
+                        {{ att.file.name }}
+                    </span>
+                </div>
+                }
+                @else {
+                <div class="flex flex-col items-center gap-1 text-muted-foreground p-1">
+                    <ng-icon [name]="getIconForType(att.fileType)" class="size-6" />
+                    <span class="text-[8px] font-bold truncate w-full text-center">{{ att.file.name }}</span>
+                </div>
+                }
+
+                <!-- Upload overlay -->
+                @if (att.uploading) {
+                <div class="absolute inset-0 bg-black/50 flex items-center justify-center">
+                    <ng-icon name="lucideLoader" class="size-5 text-white animate-spin" />
+                </div>
+                }
+
+                <!-- Error overlay -->
+                @if (att.error) {
+                <div class="absolute inset-0 bg-destructive/80 flex flex-col items-center justify-center gap-1 p-1">
+                    <ng-icon name="lucideAlertTriangle" class="size-5 text-white" />
+                    <span class="text-[8px] text-white text-center leading-tight">{{ att.error }}</span>
+                </div>
+                }
+
+                <!-- Success check -->
+                @if (att.uploadedUrl && !att.uploading) {
+                <div
+                    class="absolute bottom-1 right-1 size-4 rounded-full bg-emerald-500 flex items-center justify-center">
+                    <ng-icon name="lucideCheck" class="size-2.5 text-white" />
+                </div>
+                }
+            </div>
+
+            <!-- Remove button -->
+            <button
+                class="absolute -top-1.5 -right-1.5 size-5 rounded-full bg-foreground text-background flex items-center justify-center shadow-sm hover:scale-110 transition-transform"
+                (click)="remove.emit(att.localId)">
+                <ng-icon name="lucideX" class="size-3" />
+            </button>
+
+        </div>
+        }
+    </div>
+
+    <!-- Single shared caption input (maps to message content) -->
+    <div class="flex items-center gap-2 px-1">
+        <ng-icon name="lucideMessageSquare" class="size-3.5 text-muted-foreground shrink-0" />
+        <input type="text" [ngModel]="caption" (ngModelChange)="captionChange.emit($event)"
+            (keydown.enter)="send.emit()" [placeholder]="t('captionPlaceholder')" maxlength="500"
+            class="flex-1 text-xs px-3 py-1.5 rounded-lg border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/60" />
+    </div>
+
+</div>

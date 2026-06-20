@@ -170,7 +170,7 @@ export class Onboarding implements OnInit {
       }
 
       toast.success(this.transloco.translate('features.makers.onboarding.messages.onboardingSuccess'));
-      this.authService.setIsPofileComplete(true);
+      this.authService.setIsProfileComplete(true);
       this.router.navigate(['/makers/jobs']);
     } catch (error) {
       console.error('Onboarding failed', error);

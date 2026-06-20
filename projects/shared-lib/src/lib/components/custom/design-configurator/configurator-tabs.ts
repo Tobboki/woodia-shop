@@ -42,7 +42,7 @@ export const MODEL_TABS: Record<ProductCategory, {
       { id: 'width', label: 'width' },
       { id: 'height', label: 'height' },
       { id: 'depth', label: 'depth' },
-      { id: 'legroom', label: 'legroom' },
+      { id: 'legroom', label: 'legroomPosition' },
       { id: 'overhang', label: 'overhang' },
     ],
   },

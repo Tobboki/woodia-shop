@@ -1,6 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, tap, catchError, throwError, firstValueFrom, BehaviorSubject, filter, take, switchMap, of } from 'rxjs';
+import { Observable, tap, catchError, throwError, firstValueFrom, BehaviorSubject, filter, take, switchMap, of, share } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '@woodia-environments/environment';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -78,36 +78,61 @@ export class AuthService {
   }
 
 
-  setIsPofileComplete(isProfileComplete: boolean) {
-    const user = this.user();
-    if (!user) return;
-    user.isProfileComplete = isProfileComplete;
-    this.user.set(user);
+  setIsProfileComplete(isProfileComplete: boolean) {
+    this.user.update(user => {
+      if (!user) return null;
+
+      const updated = {
+        ...user,
+        isProfileComplete,
+      };
+
+      const storage = localStorage.getItem('user')
+        ? localStorage
+        : sessionStorage;
+
+      storage.setItem('user', JSON.stringify(updated));
+
+      return updated;
+    });
+  }
+
+  isRememberMe(): boolean {
+    return typeof window !== 'undefined' && localStorage.getItem('auth_token') !== null;
   }
 
   storeUser(response: AuthResponse, rememberMe: boolean = true) {
+    if (typeof window === 'undefined') return;
     const storage = rememberMe ? localStorage : sessionStorage;
 
-    storage.setItem('auth_token', response.token);
-    storage.setItem('refresh_token', response.refreshToken);
-    storage.setItem('refresh_token_expiration', response.refreshTokenExpiration);
+    if (response.token) storage.setItem('auth_token', response.token);
+    if (response.refreshToken) storage.setItem('refresh_token', response.refreshToken);
+    if (response.refreshTokenExpiration) storage.setItem('refresh_token_expiration', response.refreshTokenExpiration);
 
-    const expiresAt = Date.now() + (response.expiresIn * 60 * 1000);
-    storage.setItem('expires_at', expiresAt.toString());
+    if (response.expiresIn) {
+      // Assuming expiresIn might be in seconds if it's a small number, but typical Woodia API seems to use minutes?
+      // Let's assume it's in minutes if < 1000000, or seconds? We'll multiply by 60000 assuming minutes as before.
+      const expiresAt = Date.now() + (response.expiresIn * 60 * 1000);
+      storage.setItem('expires_at', expiresAt.toString());
+    } else if ((response as any).expiration) {
+      storage.setItem('expires_at', new Date((response as any).expiration).getTime().toString());
+    }
 
-    const user = {
-      id: response.id,
-      email: response.email,
-      firstName: response.firstName,
-      lastName: response.lastName,
-      userType: this.mapUserType(response.userType),
-      isProfileComplete: response.isProfileComplete,
-    };
+    // Only update user object if the response actually contains user data
+    if (response.id && response.email) {
+      const user = {
+        id: response.id,
+        email: response.email,
+        firstName: response.firstName,
+        lastName: response.lastName,
+        userType: this.mapUserType(response.userType),
+        isProfileComplete: response.isProfileComplete,
+      };
 
-    storage.setItem('user', JSON.stringify(user));
-    this.user.set(user);
+      storage.setItem('user', JSON.stringify(user));
+      this.user.set(user);
+    }
   }
-
 
   /**
    * Google Login logic
@@ -119,7 +144,7 @@ export class AuthService {
         { idToken }
       )
     ).then(response => {
-      this.storeUser(response);
+      this.storeUser(response, true);
     });
   }
 
@@ -140,7 +165,7 @@ export class AuthService {
         { idToken, userType }
       )
     ).then(response => {
-      this.storeUser(response);
+      this.storeUser(response, true);
     });
   }
 
@@ -156,7 +181,7 @@ export class AuthService {
       )
     );
 
-    this.storeUser(response);
+    this.storeUser(response, true);
 
     return response;
   }
@@ -221,11 +246,9 @@ export class AuthService {
     );
   }
 
-
   /**
    * Confirm user email
   */
-
   confirmEmail(verificationData: IEmailVerificationData): any {
     return this.http.post<AuthResponse>(
       `${environment.apiUrl}${environment.endpoints.auth.confirmEmail}`,
@@ -262,6 +285,7 @@ export class AuthService {
    * Logout user and clear storage
    */
   logout(): void {
+    if (typeof window === 'undefined') return;
     const items = ['auth_token', 'refresh_token', 'user', 'expires_at', 'remember_me', 'google_auth_intent']
 
     for (let item of items) {
@@ -273,19 +297,21 @@ export class AuthService {
     this.router.navigate(['/']);
   }
 
-
   /**
    * Get stored access token
    */
   getToken(): string | null {
+    if (typeof window === 'undefined') return null;
     return localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
   }
 
-  getExpirationDate(): string | Date | null {
-    return localStorage.getItem('refresh_token_expiration')
+  getExpirationDate(): string | null {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('refresh_token_expiration') || sessionStorage.getItem('refresh_token_expiration');
   }
 
   getAccessTokenExpiration(): number | null {
+    if (typeof window === 'undefined') return null;
     const exp =
       localStorage.getItem('expires_at') ||
       sessionStorage.getItem('expires_at');
@@ -295,7 +321,7 @@ export class AuthService {
 
   isAccessTokenExpired(): boolean {
     const exp = this.getAccessTokenExpiration();
-    if (!exp) return true;
+    if (!exp || isNaN(exp)) return true;
 
     // refresh 1 minute early
     return Date.now() > exp - 60000;
@@ -305,9 +331,9 @@ export class AuthService {
    * Get stored refresh token
    */
   getRefreshToken(): string | null {
+    if (typeof window === 'undefined') return null;
     return localStorage.getItem('refresh_token') || sessionStorage.getItem('refresh_token');
   }
-
 
   getCurrentUser(): IUserData | null {
     return this.user();
@@ -326,48 +352,44 @@ export class AuthService {
     }
   }
 
+  private refreshToken$: Observable<AuthResponse> | null = null;
 
   /**
    * Refresh authentication token
    */
   refreshToken(): Observable<AuthResponse> {
-    if (this.isRefreshing) {
-      return this.refreshTokenSubject.pipe(
-        filter(res => res !== null),
-        take(1)
-      ) as Observable<AuthResponse>;
+    if (this.refreshToken$) {
+      return this.refreshToken$;
     }
 
-    this.isRefreshing = true;
-    this.refreshTokenSubject.next(null);
-
-    const token = this.getToken()
+    const token = this.getToken();
     const refreshToken = this.getRefreshToken();
 
-    console.log('old token', token);
-    console.log('old refresh token', refreshToken);
+    if (!token || !refreshToken) {
+      this.logout();
+      return throwError(() => new Error('No tokens available to refresh'));
+    }
 
-    return this.http.post<AuthResponse>(
+    this.refreshToken$ = this.http.post<AuthResponse>(
       `${environment.apiUrl}${environment.endpoints.auth.refreshToken}`,
       {
         token,
         refreshToken
-      },
+      }
     ).pipe(
       tap(response => {
-        this.isRefreshing = false;
-        this.storeUser(response);
-        this.refreshTokenSubject.next(response);
-
-        console.log('Auth Service: new response', response);
-        console.log('Auth Service: new token', this.getToken());
-        console.log('Auth Service: new refresh token', this.getRefreshToken());
+        this.storeUser(response, this.isRememberMe());
+        this.refreshToken$ = null;
       }),
       catchError(error => {
-        this.isRefreshing = false;
+        this.refreshToken$ = null;
         this.logout();
         return throwError(() => error);
-      })
+      }),
+      share()
     );
+
+    return this.refreshToken$;
   }
+
 }

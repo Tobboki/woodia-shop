@@ -1,0 +1,118 @@
+<div class="flex flex-col h-full" *transloco="let t; read: 'features.chat'">
+
+    <!-- Header -->
+    <div class="p-4 border-b border-border/50 space-y-3 shrink-0">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <h2 class="font-black text-lg text-foreground">{{ t('title') }}</h2>
+                @if (totalUnread() > 0) {
+                <span
+                    class="size-5 rounded-full bg-primary text-primary-foreground text-[10px] font-black flex items-center justify-center">
+                    {{ totalUnread() > 9 ? '9+' : totalUnread() }}
+                </span>
+                }
+            </div>
+            <button
+                class="size-8 rounded-full hover:bg-muted flex items-center justify-center transition-colors text-muted-foreground hover:text-foreground"
+                (click)="loadRooms()">
+                <ng-icon name="lucideRefreshCw" class="size-4" />
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="relative">
+            <ng-icon name="lucideSearch"
+                class="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+            <input z-input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"
+                [placeholder]="t('searchPlaceholder')" class="!pl-9 !h-9 !text-sm" />
+        </div>
+    </div>
+
+    <!-- List -->
+    <div class="flex-1 overflow-y-auto">
+
+        @if (isLoading()) {
+        <div class="flex flex-col gap-0 p-2">
+            @for (i of [1,2,3,4,5]; track i) {
+            <div class="flex items-center gap-3 p-3 rounded-xl animate-pulse">
+                <z-skeleton class="size-11 rounded-full shrink-0" />
+                <div class="flex-1 space-y-1.5">
+                    <z-skeleton class="h-4 w-28 rounded" />
+                    <z-skeleton class="h-3 w-full rounded" />
+                </div>
+                <z-skeleton class="h-3 w-8 rounded" />
+            </div>
+            }
+        </div>
+        }
+
+        @else if (connectionFailed()) {
+        <div class="flex flex-col items-center justify-center h-full py-16 gap-3 text-muted-foreground">
+            <ng-icon name="lucideWifiOff" class="size-10 opacity-30" />
+            <p class="text-sm font-medium">{{ t('connectionFailed') }}</p>
+            <button class="text-xs font-bold text-primary hover:underline flex items-center gap-1.5"
+                (click)="retryConnection()">
+                <ng-icon name="lucideRefreshCw" class="size-3.5" />
+                {{ t('retry') }}
+            </button>
+        </div>
+        }
+
+        @else if (filteredRooms().length === 0) {
+        <div class="flex flex-col items-center justify-center h-full py-16 gap-3 text-muted-foreground">
+            <ng-icon name="lucideMessageSquare" class="size-10 opacity-20" />
+            <p class="text-sm font-medium">
+                {{ searchQuery() ? t('noResults') : t('noConversations') }}
+            </p>
+        </div>
+        }
+
+        @else {
+        <div class="p-2 flex flex-col gap-0.5">
+
+            @for (room of filteredRooms(); track room.roomId) {
+            <button class="w-full flex items-center gap-3 p-3 rounded-xl text-left transition-all duration-150 group"
+                [class.bg-primary/10]="selectedRoomId() === room.roomId"
+                [class.hover:bg-muted/60]="selectedRoomId() !== room.roomId" (click)="selectRoom(room)">
+
+                <!-- Avatar -->
+                <div class="relative shrink-0">
+                    <div
+                        class="size-11 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-black text-sm">
+                        {{ getInitials(room.name) }}
+                    </div>
+                    @if (room.unreadMessageCount > 0) {
+                    <span
+                        class="absolute -top-0.5 -right-0.5 size-4 rounded-full bg-primary text-primary-foreground text-[9px] font-black flex items-center justify-center border-2 border-background">
+                        {{ room.unreadMessageCount > 9 ? '9+' : room.unreadMessageCount }}
+                    </span>
+                    }
+                </div>
+
+                <!-- Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between gap-2">
+                        <p class="font-bold text-sm text-foreground truncate"
+                            [class.text-primary]="selectedRoomId() === room.roomId">
+                            {{ room.name }}
+                        </p>
+                        <span class="text-[10px] text-muted-foreground shrink-0">
+                            {{ getRelativeTime(room.lastMessageDate) }}
+                        </span>
+                    </div>
+                    <p class="text-xs text-muted-foreground truncate leading-relaxed">
+                        {{ room.jobTitle }}
+                    </p>
+                    <p class="text-xs text-muted-foreground truncate"
+                        [class.font-semibold]="room.unreadMessageCount > 0"
+                        [class.text-foreground]="room.unreadMessageCount > 0">
+                        {{ room.lastMessageContent || t('noMessages') }}
+                    </p>
+                </div>
+            </button>
+            }
+        </div>
+        }
+    </div>
+
+</div>

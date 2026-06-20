@@ -24,7 +24,12 @@
     ]
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "../woodia/src/app/shared/types/chat.types.ts",
+    "../woodia/src/app/core/services/chat.service.spec.ts",
+    "../woodia/src/app/core/services/chat.service.ts",
+    "../woodia/src/app/core/services/chathub.service.spec.ts",
+    "../woodia/src/app/core/services/chathub.service.ts"
   ],
   "exclude": [
     "**/*.spec.ts"

@@ -104,7 +104,7 @@ export class Jobs implements OnInit {
     ];
   }
 
-  statusOptions: TJobStatusFilter[] = ['all', 'InProgress', 'Completed', 'Canceled']
+  statusOptions: TJobStatusFilter[] = ['all', 'Open', 'InProgress', 'Completed', 'Canceled']
 
   onDisplayModeChange(value: any) {
     this.displayMode.set(value);

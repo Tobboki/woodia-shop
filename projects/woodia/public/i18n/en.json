@@ -475,6 +475,39 @@
       "p18Desc": "Your design, your materials, your dimensions. No compromises.",
       "p19Desc": "Talk directly with the artisan crafting your future heritage."
     },
+    "chat": {
+      "title": "Messages",
+      "searchPlaceholder": "Search conversations...",
+      "noConversations": "No conversations yet",
+      "noResults": "No conversations found",
+      "noMessages": "No messages yet",
+      "startConversation": "Send a message to start the conversation",
+      "selectConversation": "Select a conversation",
+      "selectConversationDesc": "Choose a conversation from the list to start chatting",
+      "backToChats": "Back",
+      "loadMore": "Load older messages",
+      "inputPlaceholder": "Type a message..",
+      "uploading": "Uploading file...",
+      "connecting": "Reconnecting...",
+      "disconnected": "Connection lost — messages may be delayed",
+      "connectionFailed": "Could not connect to chat",
+      "retry": "Retry",
+      "mediaLimitReached": "Maximum number of files reached. You can send up to 10 files per message.",
+      "mediaTooLarge": "File size exceeds the 20MB limit per file.",
+      "mediaError": "An error occurred while processing the file. Please try again.",
+      "composer": {
+        "captionPlaceholder": "Add a caption..."
+      },
+      "recorder": {
+        "micError": "Failed to access the microphone. Please check permissions and try again."
+      },
+      "errors": {
+        "sendFailed": "Failed to send message. Please try again.",
+        "uploadFailed": "Failed to upload file. Please try again.",
+        "fileTooLarge": "File size exceeds the 25MB limit per file.",
+        "tooManyAttachments": "Maximum number of files reached. You can send up to 10 files per message."
+      }
+    },
     "customers": {
       "jobs": {
         "title": "My Jobs",
@@ -641,15 +674,20 @@
         },
         "actions": {
           "viewDetails": "View Details",
-          "retry": "Retry"
+          "retry": "Retry",
+          "negotiate": "Negotiate"
         },
         "empty": {
           "title": "No offers yet",
           "description": "No makers have submitted a bid for this job yet. Check back soon!"
         },
+        "success": {
+          "negotiationStarted": "Negotiation started successfully"
+        },
         "loadMore": "Load More",
         "errors": {
-          "loadFailed": "Failed to load offers. Please try again."
+          "loadFailed": "Failed to load offers. Please try again.",
+          "negotiationFailed": "Failed to start negotiation. Please try again."
         }
       },
       "jobOfferDetails": {

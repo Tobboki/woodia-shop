@@ -113,6 +113,12 @@ import {
   lucideLoader,
   lucideImages,
   lucideZoomIn,
+  lucideFile,
+  lucidePaperclip,
+  lucideDownload,
+  lucideMic,
+  lucidePlay,
+  lucidePause,
 } from '@ng-icons/lucide';
 
 export const appConfig: ApplicationConfig = {
@@ -204,7 +210,13 @@ export const appConfig: ApplicationConfig = {
       lucideTrash2,
       lucideLoader,
       lucideImages,
-      lucideZoomIn
+      lucideZoomIn,
+      lucideFile,
+      lucidePaperclip,
+      lucideDownload,
+      lucideMic,
+      lucidePlay,
+      lucidePause
     }),
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),

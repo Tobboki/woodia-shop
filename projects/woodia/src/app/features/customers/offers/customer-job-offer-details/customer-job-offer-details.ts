@@ -141,44 +141,6 @@ export class CustomerJobOfferDetails implements OnInit {
     });
   }
 
-  acceptOffer(): void {
-    const jobId = this.jobId();
-    const offerId = this.offerId();
-    if (!jobId || !offerId) return;
-
-    this.isAccepting.set(true);
-    this.customerOfferService.acceptOffer(jobId, offerId).subscribe({
-      next: () => {
-        this.isAccepting.set(false);
-        this.offer.update(o => o ? { ...o, status: 'Accepted' as TCustomerOfferStatus } : o);
-        toast.success(this.translocoService.translate('features.customers.jobOfferDetails.messages.accepted'));
-      },
-      error: () => {
-        this.isAccepting.set(false);
-        toast.error(this.translocoService.translate('features.customers.jobOfferDetails.errors.acceptFailed'));
-      }
-    });
-  }
-
-  rejectOffer(): void {
-    const jobId = this.jobId();
-    const offerId = this.offerId();
-    if (!jobId || !offerId) return;
-
-    this.isRejecting.set(true);
-    this.customerOfferService.rejectOffer(jobId, offerId).subscribe({
-      next: () => {
-        this.isRejecting.set(false);
-        this.offer.update(o => o ? { ...o, status: 'Rejected' as TCustomerOfferStatus } : o);
-        toast.success(this.translocoService.translate('features.customers.jobOfferDetails.messages.rejected'));
-      },
-      error: () => {
-        this.isRejecting.set(false);
-        toast.error(this.translocoService.translate('features.customers.jobOfferDetails.errors.rejectFailed'));
-      }
-    });
-  }
-
   goBack(): void {
     this.router.navigate(['/customers/jobs', this.jobId(), 'offers']);
   }

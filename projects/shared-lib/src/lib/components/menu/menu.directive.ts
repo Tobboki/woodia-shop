@@ -38,6 +38,7 @@ export type ZardMenuTrigger = 'click' | 'hover';
     {
       directive: CdkMenuTrigger,
       inputs: ['cdkMenuTriggerFor: zMenuTriggerFor'],
+      outputs: ['cdkMenuOpened', 'cdkMenuClosed'],
     },
   ],
 })
