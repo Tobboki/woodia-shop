@@ -3,7 +3,6 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { catchError, Observable, tap, throwError, BehaviorSubject, filter, take } from 'rxjs';
 import { environment } from '@admin-environments/environment';
-import { ChathubService } from '@woodia-core/services/chathub.service';
 
 export interface LoginCredentials {
   email: string;
@@ -40,7 +39,6 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private chatHub: ChathubService,
   ) { }
 
   private isRefreshing = false;
@@ -148,13 +146,6 @@ export class AuthService {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' })
       }
     ).pipe(
-      tap(async response => {
-        console.log('Login response:', response);
-
-        this.storeUser(response, credentials.rememberMe);
-
-        await this.chatHub.startConnection(response.token);
-      }),
       catchError(error => {
         console.error('Login failed:', error);
         return throwError(() => error);
