@@ -126,33 +126,66 @@ export class DesignStudio implements OnInit {
 
     if (Number.isNaN(id)) {
       if (idStr === 'ai' && this.savedModelConfig) {
-        const categoryName = 'category' in this.savedModelConfig ? (this.savedModelConfig as any).category : 'Design';
-        const config = (this.savedModelConfig as any).modelConfig || this.savedModelConfig;
+        const categoryName =
+          'category' in this.savedModelConfig
+            ? (this.savedModelConfig as any).category
+            : 'Design';
+
+        const config =
+          (this.savedModelConfig as any).modelConfig || this.savedModelConfig;
 
         this.productLoading.set(true);
+
         this.categoryService.getAllCategories().subscribe({
-          next: (catObj: any) => {
-            let catId = 1; // Fallback
-            const children = catObj?.childCategory || [];
-            const matched = children.find((c: any) => c.name.toLowerCase() === categoryName.toLowerCase() || c.slug === categoryName.toLowerCase());
-            if (matched) {
-              catId = matched.id;
-            }
+          next: (categories: any) => {
+            const categorySlugMap: Record<string, string> = {
+              Desk: 'desks',
+              Bookcase: 'bookcases',
+              TvStand: 'tv-stands',
+              ShoeRack: 'shoe-racks',
+              BedsideTable: 'bedside-tables',
+            };
+
+            const targetSlug =
+              categorySlugMap[categoryName] ??
+              categoryName.toLowerCase();
+
+            const allChildren = categories.flatMap(
+              (parent: any) => parent.childCategory ?? []
+            );
+
+            const matched = allChildren.find(
+              (c: any) =>
+                c.slug?.toLowerCase() === targetSlug.toLowerCase()
+            );
+
+            const catId = matched?.id ?? 1;
+
+            console.log('categoryName', categoryName);
+            console.log('targetSlug', targetSlug);
+            console.log('matched', matched);
+            console.log('catId', catId);
 
             this.product.set({
-              id: 0, // 0 signifies custom AI model
-              category: { id: catId, name: categoryName, slug: categoryName.toLowerCase() } as any,
+              id: 0,
+              category: {
+                id: catId,
+                name: matched?.name ?? categoryName,
+                slug: matched?.slug ?? targetSlug,
+              } as any,
               images: [],
-              modelConfig: config
+              modelConfig: config,
             } as Product);
+
             this.imageErrors.set([]);
             this.productLoading.set(false);
           },
           error: () => {
             this.productError.set(true);
             this.productLoading.set(false);
-          }
+          },
         });
+
         return;
       }
       this.productLoading.set(false);
@@ -307,6 +340,8 @@ export class DesignStudio implements OnInit {
       expectedBudget: value.expectedBudget,
       categoryId: parseInt(catId, 10)
     };
+
+    console.log('DTO:', dto);
 
     this.jobService.create(dto).subscribe({
       next: () => {
