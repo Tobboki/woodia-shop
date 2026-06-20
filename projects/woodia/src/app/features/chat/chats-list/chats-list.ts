@@ -5,13 +5,14 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
-import { TranslocoDirective } from '@jsverse/transloco';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { NgIcon } from '@ng-icons/core';
 import { ZardSkeletonComponent } from '@shared-components/skeleton';
 import { ZardInputDirective } from '@shared-components/input/input.directive';
 import { ChathubService } from '@woodia-core/services/chathub.service';
 import { ChatRoomListResponse } from '@woodia-types/chat.types';
 import { ActivatedRoute } from '@angular/router';
+import { localizeDimensionTitle } from '@woodia-shared/utils/helpers';
 
 @Component({
   selector: 'woodia-chats-list',
@@ -32,6 +33,8 @@ export class ChatsList implements OnInit, OnDestroy {
   private chatHub = inject(ChathubService);
   private destroy$ = new Subject<void>();
   private route = inject(ActivatedRoute);
+  protected readonly transloco = inject(TranslocoService);
+  protected readonly localizeDimensionTitle = localizeDimensionTitle;
 
   rooms = signal<ChatRoomListResponse[]>([]);
   isLoading = signal(true);
@@ -107,7 +110,7 @@ export class ChatsList implements OnInit, OnDestroy {
       .subscribe(message => {
         const anyMsg = message as any;
         const incomingRoomId = anyMsg.roomId ?? anyMsg.RoomId ?? anyMsg.chatRoomId ?? anyMsg.ChatRoomId;
-        
+
         // Use loose equality in case types don't match (number vs string)
         // eslint-disable-next-line eqeqeq
         const exists = incomingRoomId != null && this.rooms().some(r => r.roomId == incomingRoomId);

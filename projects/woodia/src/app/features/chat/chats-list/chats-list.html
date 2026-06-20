@@ -101,7 +101,7 @@
                         </span>
                     </div>
                     <p class="text-xs text-muted-foreground truncate leading-relaxed">
-                        {{ room.jobTitle }}
+                        {{ localizeDimensionTitle(room.jobTitle, transloco) }}
                     </p>
                     <p class="text-xs text-muted-foreground truncate"
                         [class.font-semibold]="room.unreadMessageCount > 0"

@@ -1,6 +1,5 @@
 <div class="fixed inset-0 bg-foreground/50 backdrop-blur-sm transition-opacity duration-300 pointer-events-none"
-     style="z-index: 40;"
-     [class.opacity-0]="!isBackdropVisible()">
+  style="z-index: 40;" [class.opacity-0]="!isBackdropVisible()">
 </div>
 <header id="app-header" class="container mx-auto sticky top-4 z-50 transition-transform duration-300 ease-out px-4"
   [style.transform]="isHeaderHidden() ? 'translateY(-150%)' : 'translateY(0)'" *transloco="let t">
@@ -20,8 +19,7 @@
         <div class="relative px-4">
           <a z-button zType="ghost" [routerLink]="menuItem.path" routerLinkActive="text-primary"
             [routerLinkActiveOptions]="{ exact: false }" z-menu zPlacement="bottomCenter" zTrigger="hover"
-            [zMenuTriggerFor]="designsCategories"
-            (cdkMenuOpened)="isBackdropVisible.set(true)"
+            [zMenuTriggerFor]="designsCategories" (cdkMenuOpened)="isBackdropVisible.set(true)"
             (cdkMenuClosed)="isBackdropVisible.set(false)">
             {{ t(menuItem.label) }}
             <ng-icon name="lucideChevronDown" />
@@ -436,11 +434,17 @@
         t('app.header.menu.theme') }}</span>
       <ng-icon [name]="isRtl() ? 'lucideChevronLeft' : 'lucideChevronRight'"></ng-icon>
     </button>
+
     <button z-button zType="ghost" zSize="xl" class="justify-between w-full" (click)="setMobileView('language')">
       <span class="flex items-center gap-2"><ng-icon name="lucideGlobe"></ng-icon> {{ t('app.header.menu.language')
         }}</span>
       <ng-icon [name]="isRtl() ? 'lucideChevronLeft' : 'lucideChevronRight'"></ng-icon>
     </button>
+
+    <button z-button zType="ghost" class="justify-start w-full" zSize="xl" [routerLink]="[messagesPath()]">
+      <ng-icon name="lucideMessageSquare"></ng-icon> {{ t('app.header.menu.messages') }}
+    </button>
+
     <z-divider class="my-2"></z-divider>
     <button z-button zSize="xl" zType="destructive" class="justify-start w-full"
       (click)="handleLogout(); toggleMenu(false)">

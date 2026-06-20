@@ -148,7 +148,7 @@ export class Chat implements OnInit, OnChanges, OnDestroy {
     this.chatHub.getMessages(this.roomId, this.pageNumber, this.pageSize).subscribe({
       next: res => {
         this.messages.set(this.normalizeMessages(res.items ?? []).reverse());
-        this.hasMore.set(res.hasPreviousPage ?? false);
+        this.hasMore.set(res.hasNextPage ?? false);
         this.isLoading.set(false);
         this.pageNumber++;
         this.scrollTrigger.update(n => n + 1);
@@ -167,7 +167,7 @@ export class Chat implements OnInit, OnChanges, OnDestroy {
       next: res => {
         const older = this.normalizeMessages(res.items ?? []).reverse();
         this.messages.update(list => [...older, ...list]);
-        this.hasMore.set(res.hasPreviousPage ?? false);
+        this.hasMore.set(res.hasNextPage ?? false);
         this.isLoadingMore.set(false);
         this.pageNumber++;
         requestAnimationFrame(() => {
