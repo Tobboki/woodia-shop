@@ -215,6 +215,8 @@
     "searchIn": "البحث في {{model}}...",
     "addModel": "إضافة {{model}}",
     "editModel": "تعديل {{model}}",
+    "deleteConfirmTitle": "تأكيد الحذف",
+    "deleteConfirmMessage": "هل أنت متأكد من حذف؟",
     "headers": {
       "id": "المعرف",
       "nameEn": "الاسم (EN)",
@@ -226,7 +228,11 @@
       "productLine": "خط التصميم",
       "category": "الفئة",
       "productStatus": "الحالة",
-      "imageThumbnail": "الصورة المصغرة"
+      "imageThumbnail": "الصورة المصغرة",
+      "parentCategory": "الفئة الأم",
+      "slugEn": "السلاغ (EN)",
+      "slugAr": "السلاغ (AR)",
+      "isActive": "الحالة"
     }
   }
 }

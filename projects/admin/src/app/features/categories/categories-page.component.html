@@ -6,43 +6,109 @@
     (queryParamsChanged)="loadCategories($event)">
   </app-crud-server-data-table>
 
-  <!-- Sidebar Form for Add/Edit -->
   <app-cu-form-sidebar [isOpen]="sidebarOpen()" [mode]="sidebarMode()" modelName="Category" [isLoading]="submitting()"
     [disableSubmit]="categoryForm.invalid" [disableReset]="false" (closeSidebar)="closeSidebar()"
     (submitForm)="onSubmitForm()" (resetForm)="onResetForm()">
 
-    <form [formGroup]="categoryForm" class="space-y-6">
+    <form [formGroup]="categoryForm" class="space-y-5">
+
       <!-- Name EN -->
-      <div class="space-y-2">
+      <div class="space-y-1.5">
         <label class="text-sm font-medium" for="nameEn">{{ t('crud.headers.nameEn') }}</label>
-        <input z-input id="nameEn" formControlName="nameEn" [placeholder]="t('crud.headers.nameEn')" class="w-full">
-        <p *ngIf="categoryForm.get('nameEn')?.touched && categoryForm.get('nameEn')?.hasError('required')"
-          class="text-xs text-destructive">
-          Field is required
-        </p>
+        <input z-input id="nameEn" formControlName="nameEn" [placeholder]="t('crud.headers.nameEn')" class="w-full"
+          (input)="autoSlug('en')" />
+        @if (categoryForm.get('nameEn')?.touched && categoryForm.get('nameEn')?.hasError('required')) {
+        <p class="text-xs text-destructive">Field is required</p>
+        }
+      </div>
+
+      <!-- Slug EN -->
+      <div class="space-y-1.5">
+        <label class="text-sm font-medium" for="slugEn">Slug (EN)</label>
+        <input z-input id="slugEn" formControlName="slugEn" placeholder="e.g. living-room-furniture"
+          class="w-full font-mono text-sm" />
+        @if (categoryForm.get('slugEn')?.touched && categoryForm.get('slugEn')?.hasError('required')) {
+        <p class="text-xs text-destructive">Field is required</p>
+        }
       </div>
 
       <!-- Name AR -->
-      <div class="space-y-2">
+      <div class="space-y-1.5">
         <label class="text-sm font-medium" for="nameAr">{{ t('crud.headers.nameAr') }}</label>
         <input z-input id="nameAr" formControlName="nameAr" [placeholder]="t('crud.headers.nameAr')"
-          class="w-full text-right" dir="rtl">
-        <p *ngIf="categoryForm.get('nameAr')?.touched && categoryForm.get('nameAr')?.hasError('required')"
-          class="text-xs text-destructive">
-          Field is required
-        </p>
+          class="w-full text-right" dir="rtl" (input)="autoSlug('ar')" />
+        @if (categoryForm.get('nameAr')?.touched && categoryForm.get('nameAr')?.hasError('required')) {
+        <p class="text-xs text-destructive">Field is required</p>
+        }
+      </div>
+
+      <!-- Slug AR -->
+      <div class="space-y-1.5">
+        <label class="text-sm font-medium" for="slugAr">Slug (AR)</label>
+        <input z-input id="slugAr" formControlName="slugAr" placeholder="e.g. اثاث-غرفة-المعيشة"
+          class="w-full font-mono text-sm text-right" dir="rtl" />
+        @if (categoryForm.get('slugAr')?.touched && categoryForm.get('slugAr')?.hasError('required')) {
+        <p class="text-xs text-destructive">Field is required</p>
+        }
+      </div>
+
+      <!-- Image Thumbnail -->
+      <div class="space-y-1.5">
+        <label class="text-sm font-medium">Image Thumbnail</label>
+
+        <!-- Upload drop zone -->
+        <label
+          class="flex flex-col items-center justify-center w-full h-32 rounded-xl border-2 border-dashed border-border cursor-pointer hover:border-primary/50 hover:bg-muted/20 transition-colors relative overflow-hidden"
+          [class.border-primary]="categoryForm.get('imageThumbnail')?.value">
+
+          @if (categoryForm.get('imageThumbnail')?.value) {
+          <img [src]="categoryForm.get('imageThumbnail')?.value" class="absolute inset-0 w-full h-full object-cover" />
+          <div
+            class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+            <span class="text-white text-xs font-bold">Change Image</span>
+          </div>
+          } @else if (isUploadingImage()) {
+          <div class="flex flex-col items-center gap-2 text-primary">
+            <ng-icon name="lucideLoader" class="size-6 animate-spin" />
+            <span class="text-xs font-medium">Uploading...</span>
+          </div>
+          } @else {
+          <div class="flex flex-col items-center gap-1.5 text-muted-foreground">
+            <ng-icon name="lucideImagePlus" class="size-8 opacity-40" />
+            <span class="text-xs font-medium">Click to upload</span>
+            <span class="text-[10px] opacity-60">PNG, JPG, WEBP</span>
+          </div>
+          }
+
+          <input type="file" class="sr-only" accept="image/*" (change)="onImageSelected($event)" />
+        </label>
+
+        <!-- Or paste URL directly -->
+        <input z-input formControlName="imageThumbnail" placeholder="Or paste image URL" class="w-full text-sm" />
+
+        @if (categoryForm.get('imageThumbnail')?.touched && categoryForm.get('imageThumbnail')?.hasError('required')) {
+        <p class="text-xs text-destructive">Image is required</p>
+        }
       </div>
 
       <!-- Parent Category -->
-      <div class="space-y-2">
-        <label class="text-sm font-medium" for="parentId">{{ t('modules.designStudio.step2.category') }}</label>
-        <z-select formControlName="parentId" class="w-full" [zPlaceholder]="'Select Parent (Optional)'">
+      <div class="space-y-1.5">
+        <label class="text-sm font-medium">
+          Parent Category
+          <span class="text-muted-foreground font-normal">(optional)</span>
+        </label>
+        <z-select class="w-full" [zValue]="selectedParentId()" [zPlaceholder]="'None (top-level)'"
+          (zSelectionChange)="onParentSelected($event)">
+          <!-- CRITICAL: zValue must be a non-null string — use '' not null -->
           <z-select-item zValue="">None</z-select-item>
-          <z-select-item *ngFor="let parent of parentCategories()" [zValue]="parent.id.toString()">
-            {{ t('dir') === 'rtl' ? parent.nameAr : parent.nameEn }}
+          @for (parent of parentCategories(); track parent.id) {
+          <z-select-item [zValue]="parent.id?.toString() ?? ''">
+            {{ parent.nameEn || parent.nameAr || parent.id }}
           </z-select-item>
+          }
         </z-select>
       </div>
+
     </form>
   </app-cu-form-sidebar>
 </div>

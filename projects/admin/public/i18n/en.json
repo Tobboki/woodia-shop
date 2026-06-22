@@ -225,7 +225,13 @@
       "productLine": "Design Line",
       "category": "Category",
       "productStatus": "Status",
-      "imageThumbnail": "Thumbnail"
-    }
+      "imageThumbnail": "Thumbnail",
+      "parentCategory": "Parent Category",
+      "slugEn": "Slug (EN)",
+      "slugAr": "Slug (AR)",
+      "isActive": "Status"
+    },
+    "deleteConfirmTitle": "Confirm Delete",
+    "deleteConfirmMessage": "Are you sure you want to delete?"
   }
 }

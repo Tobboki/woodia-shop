@@ -137,7 +137,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@ngx-env/builder:application",
+          "builder": "@angular/build:application",
           "options": {
             "browser": "projects/admin/src/main.ts",
             "tsConfig": "projects/admin/tsconfig.app.json",
