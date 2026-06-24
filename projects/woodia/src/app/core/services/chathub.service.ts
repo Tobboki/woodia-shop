@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import * as signalR from '@microsoft/signalr';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, firstValueFrom, timeout, filter, race, throwError } from 'rxjs';
 
 import {
   ChatRoomListResponse,
@@ -30,6 +30,15 @@ export class ChathubService implements OnDestroy {
   private connection: signalR.HubConnection | null = null;
   private lastToken: string | null = null;
   private connectingPromise: Promise<void> | null = null;
+
+  /** Rooms this client has successfully joined — re-joined automatically on reconnect. */
+  private joinedRooms = new Set<number>();
+
+  /** Monotonic counter for request IDs — makes log lines uniquely traceable. */
+  private reqCounter = 0;
+  private nextReqId(): string {
+    return `#${++this.reqCounter}`;
+  }
 
   private messageReceivedSubject = new Subject<MessageResponse>();
   readonly messageReceived$ = this.messageReceivedSubject.asObservable();
@@ -101,25 +110,51 @@ export class ChathubService implements OnDestroy {
       .build();
 
     this.connection.on('ReceiveMessage', (message: MessageResponse) => {
+      const anyMsg = message as any;
+      const roomId = anyMsg.roomId ?? anyMsg.RoomId ?? anyMsg.chatRoomId ?? anyMsg.ChatRoomId ?? '?';
+      console.log(`[ChathubService] ReceiveMessage — roomId=${roomId} msgId=${message.id} senderId=${message.senderId}`);
       this.messageReceivedSubject.next(message);
     });
 
-    this.connection.onreconnecting(() => {
+    this.connection.onreconnecting((err) => {
+      console.warn('[ChathubService] Reconnecting…', err);
       this.connectionStateSubject.next('connecting');
     });
 
-    this.connection.onreconnected(() => {
+    // ─── KEY FIX ────────────────────────────────────────────────────────────
+    // When SignalR auto-reconnects, the server creates a brand-new connection
+    // and all SignalR group memberships are lost. We must re-join every room
+    // the client was in, otherwise that chat goes silent until the user
+    // manually triggers a rejoin (e.g. by sending a message).
+    this.connection.onreconnected(async (connectionId) => {
+      console.log(`[ChathubService] Reconnected (connId=${connectionId}). Re-joining ${this.joinedRooms.size} room(s): [${[...this.joinedRooms].join(', ')}]`);
       this.connectionStateSubject.next('connected');
+
+      for (const roomId of this.joinedRooms) {
+        const reqId = this.nextReqId();
+        try {
+          console.log(`[ChathubService] ${reqId} rejoinRoom(roomId=${roomId}) — start`);
+          await this.connection!.invoke('JoinGroup', roomId);
+          console.log(`[ChathubService] ${reqId} rejoinRoom(roomId=${roomId}) — success`);
+        } catch (err) {
+          console.error(`[ChathubService] ${reqId} rejoinRoom(roomId=${roomId}) — error`, err);
+        }
+      }
     });
 
-    this.connection.onclose(() => {
+    this.connection.onclose((err) => {
+      if (err) {
+        console.error('[ChathubService] Connection closed with error:', err);
+      } else {
+        console.log('[ChathubService] Connection closed cleanly.');
+      }
       this.connectionStateSubject.next('disconnected');
     });
 
     try {
       this.connectionStateSubject.next('connecting');
       await this.connection.start();
-
+      console.log(`[ChathubService] Connected (connId=${this.connection.connectionId})`);
       this.connectionStateSubject.next('connected');
     } catch (error) {
       this.connectionStateSubject.next('disconnected');
@@ -141,34 +176,100 @@ export class ChathubService implements OnDestroy {
     }
   }
 
+  /**
+   * Waits until the SignalR connection reaches the 'connected' state.
+   * - Returns immediately if already connected.
+   * - Fails fast if the state transitions to 'disconnected' (e.g. connection attempt failed).
+   * - Times out after `timeoutMs` milliseconds if neither state is reached.
+   */
+  private waitUntilConnected(timeoutMs = 15_000): Promise<void> {
+    if (this.connectionState === 'connected') return Promise.resolve();
+
+    const connected$ = this.connectionState$.pipe(
+      filter(state => state === 'connected')
+    );
+
+    const disconnected$ = this.connectionState$.pipe(
+      filter(state => state === 'disconnected'),
+      // Map to an error so race() propagates it
+      // (using mergeMap to throw inside the stream)
+      filter(() => { throw new Error('[ChathubService] Connection attempt failed — state is disconnected'); })
+    );
+
+    return firstValueFrom(
+      race(connected$, disconnected$).pipe(
+        timeout({
+          each: timeoutMs,
+          with: () => throwError(() =>
+            new Error(`[ChathubService] Timed out waiting for SignalR connection after ${timeoutMs}ms`)
+          ),
+        })
+      )
+    ).then(() => undefined);
+  }
+
+  /**
+   * Invokes a SignalR hub method, retrying up to `maxAttempts` times with
+   * exponential backoff if the connection drops in the narrow window between
+   * the readiness check and the actual send.
+   */
+  private async invokeWithRetry(
+    method: string,
+    arg: unknown,
+    reqId: string,
+    maxAttempts = 3
+  ): Promise<void> {
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      await this.ensureConnected();
+      await this.waitUntilConnected();
+      try {
+        await this.connection!.invoke(method, arg);
+        return; // success
+      } catch (err: any) {
+        const isNotConnected = err?.message?.includes("not in the 'Connected' State");
+        if (isNotConnected && attempt < maxAttempts) {
+          const delay = 300 * attempt;
+          console.warn(`[ChathubService] ${reqId} invoke '${method}' attempt ${attempt}/${maxAttempts} failed (not connected) — retrying in ${delay}ms`);
+          await new Promise(r => setTimeout(r, delay));
+          continue;
+        }
+        throw err;
+      }
+    }
+  }
+
   async joinRoom(roomId: number): Promise<void> {
-    await this.ensureConnected();
+    const reqId = this.nextReqId();
+    console.log(`[ChathubService] ${reqId} joinRoom(roomId=${roomId}) — start`);
 
-    await this.connection!.invoke('JoinGroup', roomId);
-
+    try {
+      await this.invokeWithRetry('JoinGroup', roomId, reqId);
+      this.joinedRooms.add(roomId);
+      console.log(`[ChathubService] ${reqId} joinRoom(roomId=${roomId}) — success (tracking ${this.joinedRooms.size} room(s))`);
+    } catch (err) {
+      console.error(`[ChathubService] ${reqId} joinRoom(roomId=${roomId}) — error`, err);
+      throw err;
+    }
   }
 
   async sendMessage(request: SendMessageRequest): Promise<void> {
-    await this.ensureConnected();
-
-    if (
-      !this.connection ||
-      this.connection.state !== signalR.HubConnectionState.Connected
-    ) {
-      throw new Error('Unable to connect to chat');
-    }
+    const reqId = this.nextReqId();
+    const preview = request.content?.slice(0, 40) ?? '';
+    const attachCount = request.attachments?.length ?? 0;
+    console.log(`[ChathubService] ${reqId} sendMessage(roomId=${request.roomId}, content="${preview}${preview.length < (request.content?.length ?? 0) ? '…' : ''}", attachments=${attachCount}) — start`);
 
     try {
-      await this.connection!.invoke('SendMessage', request);
-      console.log('Sent successfully');
+      await this.invokeWithRetry('SendMessage', request, reqId);
+      console.log(`[ChathubService] ${reqId} sendMessage(roomId=${request.roomId}) — success`);
     } catch (err) {
-      console.error('SendMessage failed', err);
+      console.error(`[ChathubService] ${reqId} sendMessage(roomId=${request.roomId}) — error`, err);
       throw err;
     }
   }
 
   async stopConnection(): Promise<void> {
     if (!this.connection) return;
+    this.joinedRooms.clear();
     await this.connection.stop();
     this.connection = null;
     this.connectionStateSubject.next('disconnected');
@@ -183,14 +284,32 @@ export class ChathubService implements OnDestroy {
     pageNumber = 1,
     pageSize = 10
   ): Observable<PaginatedList<ChatRoomListResponse>> {
+    const reqId = this.nextReqId();
+    console.log(`[ChathubService] ${reqId} getAllRooms(page=${pageNumber}, size=${pageSize}) — start`);
+
     const params = new HttpParams()
       .set('pageNumber', pageNumber)
       .set('pageSize', pageSize);
 
-    return this.http.get<PaginatedList<ChatRoomListResponse>>(
+    const obs = this.http.get<PaginatedList<ChatRoomListResponse>>(
       `${this.apiBaseUrl}/Chat`,
       { params, ...this.withConnectionId() }
     );
+
+    // Wrap in a new observable that logs the outcome
+    return new Observable(observer => {
+      obs.subscribe({
+        next: res => {
+          console.log(`[ChathubService] ${reqId} getAllRooms(page=${pageNumber}) — success (${res.items?.length ?? 0} rooms, hasNext=${res.hasNextPage})`);
+          observer.next(res);
+        },
+        error: err => {
+          console.error(`[ChathubService] ${reqId} getAllRooms(page=${pageNumber}) — error`, err);
+          observer.error(err);
+        },
+        complete: () => observer.complete(),
+      });
+    });
   }
 
   getMessages(
@@ -198,14 +317,31 @@ export class ChathubService implements OnDestroy {
     pageNumber = 1,
     pageSize = 20
   ): Observable<PaginatedList<MessageResponse>> {
+    const reqId = this.nextReqId();
+    console.log(`[ChathubService] ${reqId} getMessages(roomId=${roomId}, page=${pageNumber}, size=${pageSize}) — start`);
+
     const params = new HttpParams()
       .set('pageNumber', pageNumber)
       .set('pageSize', pageSize);
 
-    return this.http.get<PaginatedList<MessageResponse>>(
+    const obs = this.http.get<PaginatedList<MessageResponse>>(
       `${this.apiBaseUrl}/Chat/${roomId}`,
       { params, ...this.withConnectionId() }
     );
+
+    return new Observable(observer => {
+      obs.subscribe({
+        next: res => {
+          console.log(`[ChathubService] ${reqId} getMessages(roomId=${roomId}, page=${pageNumber}) — success (${res.items?.length ?? 0} msgs, hasNext=${res.hasNextPage})`);
+          observer.next(res);
+        },
+        error: err => {
+          console.error(`[ChathubService] ${reqId} getMessages(roomId=${roomId}, page=${pageNumber}) — error`, err);
+          observer.error(err);
+        },
+        complete: () => observer.complete(),
+      });
+    });
   }
 
   ngOnDestroy(): void {

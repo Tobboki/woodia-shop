@@ -119,6 +119,8 @@ import {
   lucideMic,
   lucidePlay,
   lucidePause,
+  lucideCheckCheck,
+  lucideMessageSquareDashed
 } from '@ng-icons/lucide';
 
 export const appConfig: ApplicationConfig = {
@@ -216,7 +218,9 @@ export const appConfig: ApplicationConfig = {
       lucideDownload,
       lucideMic,
       lucidePlay,
-      lucidePause
+      lucidePause,
+      lucideCheckCheck,
+      lucideMessageSquareDashed
     }),
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
