@@ -24,6 +24,6 @@ export const DRAWER_SLIDE = 26 * CM
 export const HOVER_ANIM_SPEED = 0.18
 
 export function defaultDeskColumnConfig(): DeskColumnConfig {
-  return { doors: 'none', drawers: 'none', density: 50, hugeCell: false, hugeCellDoor: false }
+  return { doors: 'none', drawers: 'none', density: 50, hugeCell: false, hugeCellDoor: false, doorHinge: 'auto' }
 }
 

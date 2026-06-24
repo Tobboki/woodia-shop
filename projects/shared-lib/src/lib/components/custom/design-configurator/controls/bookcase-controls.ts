@@ -277,7 +277,7 @@ import {TranslocoDirective} from '@jsverse/transloco';
               </div>
             }
           } @else {
-            <p class="font-caption text-foreground/50 text-sm">{{ t('sharedLib.designConfigurator.controls.noRowsAvailable') }}</p>
+            <p class="text-sm text-foreground/50">{{ t('sharedLib.designConfigurator.controls.noRowsAvailable') }}</p>
           }
         </div>
       }

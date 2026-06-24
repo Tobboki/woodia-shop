@@ -57,7 +57,7 @@ import { TranslocoDirective } from '@jsverse/transloco'
                   zShape="circle" 
                   zSize="lg">{{ t(hugeCellLabel) }}</z-checkbox>
               </z-form-control>
-              <p class="font-caption text-foreground/50 mt-1">{{ t(hugeCellDescription) }}</p>
+              <p class="text-sm text-foreground/50 mt-1">{{ t(hugeCellDescription) }}</p>
             </z-form-field>
 
             @if (!config.hugeCell) {
@@ -65,7 +65,7 @@ import { TranslocoDirective } from '@jsverse/transloco'
                 <label class="font-label" z-form-label>{{ t('sharedLib.designConfigurator.controls.Compartments.doors') }}</label>
                 <z-form-control>
                   <z-select 
-                    [zPlaceholder]="'Doors'" 
+                     [zPlaceholder]="'Doors'" 
                     [zValue]="config.doors" 
                     (zSelectionChange)="doorsChange.emit($event)">
                     <z-select-item zValue="none">{{ t('sharedLib.designConfigurator.controls.Compartments.none') }}</z-select-item>
@@ -73,7 +73,7 @@ import { TranslocoDirective } from '@jsverse/transloco'
                     <z-select-item zValue="all">{{ t('sharedLib.designConfigurator.controls.Compartments.max') }}</z-select-item>
                   </z-select>
                 </z-form-control>
-                <p class="font-caption text-foreground/50 mt-1">{{ t('sharedLib.designConfigurator.controls.maxDoorsHint') }}</p>
+                <p class="text-sm text-foreground/50 mt-1">{{ t('sharedLib.designConfigurator.controls.maxDoorsHint') }}</p>
               </z-form-field>
 
               <z-form-field>
@@ -82,13 +82,34 @@ import { TranslocoDirective } from '@jsverse/transloco'
                   <z-select 
                     [zPlaceholder]="'Drawers'" 
                     [zValue]="config.drawers" 
+                    [zDisabled]="config.density === 0"
                     (zSelectionChange)="drawersChange.emit($event)">
                     <z-select-item zValue="none">{{ t('sharedLib.designConfigurator.controls.Compartments.none') }}</z-select-item>
                     <z-select-item zValue="some">{{ t('sharedLib.designConfigurator.controls.Compartments.some') }}</z-select-item>
                     <z-select-item zValue="all">{{ t('sharedLib.designConfigurator.controls.Compartments.max') }}</z-select-item>
                   </z-select>
                 </z-form-control>
+                @if (config.density === 0) {
+                  <p class="text-sm text-amber-500/80 mt-1">{{ t('sharedLib.designConfigurator.controls.drawersDisabledDensityHint') }}</p>
+                }
               </z-form-field>
+
+              @if (config.doors !== 'none') {
+                <z-form-field>
+                  <label class="font-label" z-form-label>{{ t('sharedLib.designConfigurator.controls.doorHinge') }}</label>
+                  <z-form-control>
+                    <z-select
+                      [zPlaceholder]="'Door Hinge'"
+                      [zValue]="config.doorHinge ?? 'auto'"
+                      (zSelectionChange)="doorHingeChange.emit($event)">
+                      <z-select-item zValue="auto">{{ t('sharedLib.designConfigurator.controls.doorHingeAuto') }}</z-select-item>
+                      <z-select-item zValue="left">{{ t('sharedLib.designConfigurator.controls.doorHingeLeft') }}</z-select-item>
+                      <z-select-item zValue="right">{{ t('sharedLib.designConfigurator.controls.doorHingeRight') }}</z-select-item>
+                    </z-select>
+                  </z-form-control>
+                  <p class="text-sm text-foreground/50 mt-1">{{ t('sharedLib.designConfigurator.controls.doorHingeHint') }}</p>
+                </z-form-field>
+              }
             }
 
             @if (config.hugeCell) {
@@ -100,13 +121,13 @@ import { TranslocoDirective } from '@jsverse/transloco'
                     zShape="circle" 
                     zSize="lg">{{ t('sharedLib.designConfigurator.controls.hugeCellDoor') }}</z-checkbox>
                 </z-form-control>
-                <p class="font-caption text-foreground/50 mt-1">{{ t('sharedLib.designConfigurator.controls.hugeCellDoorHint') }}</p>
+                <p class="text-sm text-foreground/50 mt-1">{{ t('sharedLib.designConfigurator.controls.hugeCellDoorHint') }}</p>
               </z-form-field>
             }
           </div>
         }
       } @else {
-        <p class="font-caption text-foreground/50 text-sm">{{ emptyMessage ? t(emptyMessage) : t('sharedLib.designConfigurator.controls.noColumnsAvailable') }}</p>
+        <p class="text-sm text-foreground/50">{{ emptyMessage ? t(emptyMessage) : t('sharedLib.designConfigurator.controls.noColumnsAvailable') }}</p>
       }
     </div>
   `
@@ -125,6 +146,7 @@ export class ColumnConfigPanel {
   @Output() hugeCellDoorChange = new EventEmitter<boolean>()
   @Output() doorsChange = new EventEmitter<string | string[]>()
   @Output() drawersChange = new EventEmitter<string | string[]>()
+  @Output() doorHingeChange = new EventEmitter<string | string[]>()
 
   onSelect(idx: number) {
     this.selectColumn.emit(idx)

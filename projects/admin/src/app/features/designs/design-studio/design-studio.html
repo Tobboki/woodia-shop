@@ -172,7 +172,7 @@
               <z-select [zPlaceholder]="t('step2.categoryPlaceholder')" [zValue]="form.get('categoryId')?.value"
                 (zSelectionChange)="form.get('categoryId')?.setValue($event?.toString() || '')" class="w-full">
                 @for (child of childCategories(); track $index) {
-                <z-select-item [zValue]="child.id?.toString() || ''">
+                <z-select-item [zValue]="child.id.toString() || ''">
                   {{ $any(child).name }}
                 </z-select-item>
                 }

@@ -157,7 +157,12 @@
         "hugeCellLabel": "خلية كبيرة (بدون رفوف)",
         "hugeCellDescription": "يزيل الرفوف الأفقية الداخلية، مما يجعل العمود فتحة واحدة طويلة.",
         "openCubbyLabel": "حجرة مفتوحة (بدون رفوف)",
-        "openCubbyDescription": "فتحة واحدة طويلة — مثالية للكتب أو مصباح."
+        "openCubbyDescription": "فتحة واحدة طويلة — مثالية للكتب أو مصباح.",
+        "doorHinge": "جانب مفصل الباب",
+        "doorHingeAuto": "تلقائي (بعيداً عن مساحة الأرجل)",
+        "doorHingeLeft": "يسار",
+        "doorHingeRight": "يمين",
+        "doorHingeHint": "التلقائي يفتح الباب بعيداً عن مساحة الأرجل لسهولة الوصول."
       },
       "errors": {
         "invalidConfig": "شكل غير صالح",

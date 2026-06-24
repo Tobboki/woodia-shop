@@ -126,12 +126,18 @@
         "hugeCellDoor": "Huge cell door",
         "hugeCellDoorHint": "Adds a full-height door covering the entire opening.",
         "maxDoorsHint": "Max doors cannot be combined with max drawers.",
+        "drawersDisabledDensityHint": "Drawers cannot be used when the column is configured as a single open space (density 0).",
         "noColumnsAvailable": "No columns available. Adjust the width to add columns.",
         "noRowsAvailable": "No rows available. Adjust the bookcase height to add rows.",
         "hugeCellLabel": "Huge cell (no shelves)",
         "hugeCellDescription": "Removes internal horizontal shelves, making the column one tall opening.",
         "openCubbyLabel": "Open cubby (no shelves)",
-        "openCubbyDescription": "One tall opening — ideal for books or a lamp."
+        "openCubbyDescription": "One tall opening — ideal for books or a lamp.",
+        "doorHinge": "Door hinge side",
+        "doorHingeAuto": "Auto (away from legroom)",
+        "doorHingeLeft": "Left",
+        "doorHingeRight": "Right",
+        "doorHingeHint": "Auto swings the door away from the legroom for easy access."
       },
       "modelTypes": {
         "bookcase": "Bookcase",

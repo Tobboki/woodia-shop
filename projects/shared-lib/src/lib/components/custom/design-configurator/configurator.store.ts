@@ -536,6 +536,7 @@ export class ConfiguratorStore {
     const cur = this.desk.getColumnConfig(c)
     const next: Partial<DeskColumnConfig> = { doors: v }
     if (v === 'all') next.drawers = 'none'
+    else if (v === 'some' && cur.drawers === 'all') next.drawers = 'none'
     this.desk.setColumnConfig(c, { ...cur, ...next })
   }
 
@@ -546,6 +547,7 @@ export class ConfiguratorStore {
     const cur = this.desk.getColumnConfig(c)
     const next: Partial<DeskColumnConfig> = { drawers: v }
     if (v === 'all') next.doors = 'none'
+    else if (v === 'some' && cur.doors === 'all') next.doors = 'none'
     this.desk.setColumnConfig(c, { ...cur, ...next })
   }
 
@@ -553,7 +555,9 @@ export class ConfiguratorStore {
     if (!this.desk) return
     const c = this.selectedColumnIndex()
     const cur = this.desk.getColumnConfig(c)
-    this.desk.setColumnConfig(c, { ...cur, density: value })
+    const next: Partial<DeskColumnConfig> = { density: value }
+    if (value === 0) next.drawers = 'none'
+    this.desk.setColumnConfig(c, { ...cur, ...next })
   }
 
   onDeskColumnHugeCellChange(value: boolean) {
@@ -568,6 +572,14 @@ export class ConfiguratorStore {
     const c = this.selectedColumnIndex()
     const cur = this.desk.getColumnConfig(c)
     this.desk.setColumnConfig(c, { ...cur, hugeCellDoor: value })
+  }
+
+  onDeskColumnDoorHingeChange(value: string | string[]) {
+    const v = (Array.isArray(value) ? value[0] : value) as 'left' | 'right' | 'auto'
+    if (!this.desk || (v !== 'left' && v !== 'right' && v !== 'auto')) return
+    const c = this.selectedColumnIndex()
+    const cur = this.desk.getColumnConfig(c)
+    this.desk.setColumnConfig(c, { ...cur, doorHinge: v })
   }
 
   // --- Handlers: Bookcase ---
@@ -682,6 +694,7 @@ export class ConfiguratorStore {
     const cur = this.bookcase.getRowConfig(r)
     const next: Partial<ShelfRowConfig> = { doors: v }
     if (v === 'all') next.drawers = 'none'
+    else if (v === 'some' && cur.drawers === 'all') next.drawers = 'none'
     this.bookcase.setRowConfig(r, { ...cur, ...next })
   }
 
@@ -692,6 +705,7 @@ export class ConfiguratorStore {
     const cur = this.bookcase.getRowConfig(r)
     const next: Partial<ShelfRowConfig> = { drawers: v }
     if (v === 'all') next.doors = 'none'
+    else if (v === 'some' && cur.doors === 'all') next.doors = 'none'
     this.bookcase.setRowConfig(r, { ...cur, ...next })
   }
 
@@ -785,6 +799,7 @@ export class ConfiguratorStore {
     const cur = this.tvStand.getColumnConfig(c)
     const next: Partial<TvColumnConfig> = { doors: v }
     if (v === 'all') next.drawers = 'none'
+    else if (v === 'some' && cur.drawers === 'all') next.drawers = 'none'
     this.tvStand.setColumnConfig(c, { ...cur, ...next })
   }
 
@@ -795,6 +810,7 @@ export class ConfiguratorStore {
     const cur = this.tvStand.getColumnConfig(c)
     const next: Partial<TvColumnConfig> = { drawers: v }
     if (v === 'all') next.doors = 'none'
+    else if (v === 'some' && cur.doors === 'all') next.doors = 'none'
     this.tvStand.setColumnConfig(c, { ...cur, ...next })
   }
 
@@ -878,6 +894,7 @@ export class ConfiguratorStore {
     const cur = this.shoeRack.getColumnConfig(c)
     const next: Partial<ShoeColumnConfig> = { doors: v }
     if (v === 'all') next.drawers = 'none'
+    else if (v === 'some' && cur.drawers === 'all') next.drawers = 'none'
     this.shoeRack.setColumnConfig(c, { ...cur, ...next })
   }
 
@@ -888,6 +905,7 @@ export class ConfiguratorStore {
     const cur = this.shoeRack.getColumnConfig(c)
     const next: Partial<ShoeColumnConfig> = { drawers: v }
     if (v === 'all') next.doors = 'none'
+    else if (v === 'some' && cur.doors === 'all') next.doors = 'none'
     this.shoeRack.setColumnConfig(c, { ...cur, ...next })
   }
 
@@ -986,6 +1004,7 @@ export class ConfiguratorStore {
     const cur = this.bedsideTable.getColumnConfig(c)
     const next: Partial<BedsideColumnConfig> = { doors: v }
     if (v === 'all') next.drawers = 'none'
+    else if (v === 'some' && cur.drawers === 'all') next.drawers = 'none'
     this.bedsideTable.setColumnConfig(c, { ...cur, ...next })
   }
 
@@ -996,6 +1015,7 @@ export class ConfiguratorStore {
     const cur = this.bedsideTable.getColumnConfig(c)
     const next: Partial<BedsideColumnConfig> = { drawers: v }
     if (v === 'all') next.doors = 'none'
+    else if (v === 'some' && cur.doors === 'all') next.doors = 'none'
     this.bedsideTable.setColumnConfig(c, { ...cur, ...next })
   }
 

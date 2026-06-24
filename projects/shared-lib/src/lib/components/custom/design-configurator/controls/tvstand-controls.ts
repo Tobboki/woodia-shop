@@ -127,7 +127,7 @@ import { TranslocoDirective } from '@jsverse/transloco'
                 <z-checkbox [ngModel]="store.tvStandWithLegs()" (ngModelChange)="store.onTvStandWithLegsChange($event)"
                   zShape="circle" zSize="lg">{{ t('sharedLib.designConfigurator.controls.legs') }}</z-checkbox>
               </z-form-control>
-              <p class="font-caption text-foreground/50 mt-1">{{ t('sharedLib.designConfigurator.controls.legsHint') }}</p>
+              <p class="text-sm text-foreground/50 mt-1">{{ t('sharedLib.designConfigurator.controls.legsHint') }}</p>
           </z-form-field>
         </div>
       </div>

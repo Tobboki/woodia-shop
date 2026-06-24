@@ -98,7 +98,7 @@ import { TranslocoDirective } from '@jsverse/transloco'
                 <z-slider [zMin]="0" [zMax]="10" [zDefault]="store.deskTopOverhangCm()" [zValue]="store.deskTopOverhangCm()"
                   [zStep]="1" (zSlideIndexChange)="store.onDeskTopOverhangChange($event)"></z-slider>
               </z-form-control>
-              <p class="font-caption text-foreground/50 mt-1">{{ t('sharedLib.designConfigurator.controls.overhangHint') }}</p>
+              <p class="text-sm text-foreground/50 mt-1">{{ t('sharedLib.designConfigurator.controls.overhangHint') }}</p>
             </z-form-field>
           </div>
         </div>
@@ -110,7 +110,7 @@ import { TranslocoDirective } from '@jsverse/transloco'
               <z-slider [zMin]="0" [zMax]="store.columnCount()" [zDefault]="store.legroomPosition()" [zValue]="store.legroomPosition()"
                 [zStep]="1" (zSlideIndexChange)="store.onLegroomPositionChange($event)"></z-slider>
             </z-form-control>
-            <p class="font-caption text-foreground/50 mt-1">{{ t('sharedLib.designConfigurator.controls.legroomPositionHint', {max: store.columnCount()}) }}</p>
+            <p class="text-sm text-foreground/50 mt-1">{{ t('sharedLib.designConfigurator.controls.legroomPositionHint', {max: store.columnCount()}) }}</p>
           </z-form-field>
         </div>
       </div>
@@ -125,7 +125,8 @@ import { TranslocoDirective } from '@jsverse/transloco'
           (hugeCellChange)="store.onDeskColumnHugeCellChange($event)"
           (hugeCellDoorChange)="store.onDeskColumnHugeCellDoorChange($event)"
           (doorsChange)="store.onDeskColumnDoorsChange($event)"
-          (drawersChange)="store.onDeskColumnDrawersChange($event)">
+          (drawersChange)="store.onDeskColumnDrawersChange($event)"
+          (doorHingeChange)="store.onDeskColumnDoorHingeChange($event)">
           
           @let cfg = store.selectedDeskColumnConfig();
           @if (cfg && !cfg.hugeCell) {
@@ -135,7 +136,7 @@ import { TranslocoDirective } from '@jsverse/transloco'
                 <z-slider [zMin]="0" [zMax]="100" [zDefault]="cfg.density" [zValue]="cfg.density" [zStep]="10"
                   (zSlideIndexChange)="store.onDeskColumnDensityChange($event)"></z-slider>
               </z-form-control>
-              <p class="font-caption text-foreground/50 mt-1">{{ t('sharedLib.designConfigurator.controls.deskDensityHint') }}</p>
+              <p class="text-sm text-foreground/50 mt-1">{{ t('sharedLib.designConfigurator.controls.deskDensityHint') }}</p>
             </z-form-field>
           }
         </woodia-column-config-panel>

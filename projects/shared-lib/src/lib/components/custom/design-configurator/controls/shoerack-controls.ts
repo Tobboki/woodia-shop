@@ -90,7 +90,7 @@ import { TranslocoDirective } from '@jsverse/transloco'
                   [zValue]="store.shoeRackDefaultHeightCm()" [zStep]="1"
                   (zSlideIndexChange)="store.onShoeRackDefaultHeightChange($event)"></z-slider>
               </z-form-control>
-              <p class="font-caption text-foreground/50 mt-1">{{ t('sharedLib.designConfigurator.controls.defaultColumnHeightHint') }}</p>
+              <p class="text-sm text-foreground/50 mt-1">{{ t('sharedLib.designConfigurator.controls.defaultColumnHeightHint') }}</p>
             </z-form-field>
           </div>
         </div>
@@ -123,7 +123,7 @@ import { TranslocoDirective } from '@jsverse/transloco'
               <z-slider [zMin]="20" [zMax]="200" [zDefault]="cfg.heightCm" [zValue]="cfg.heightCm" [zStep]="1"
                 (zSlideIndexChange)="store.onShoeColumnHeightChange($event)"></z-slider>
             </z-form-control>
-            <p class="font-caption text-foreground/50 mt-1">{{ t('sharedLib.designConfigurator.controls.columnHeightHint') }}</p>
+            <p class="text-sm text-foreground/50 mt-1">{{ t('sharedLib.designConfigurator.controls.columnHeightHint') }}</p>
           </z-form-field>
         }
       </woodia-column-config-panel>

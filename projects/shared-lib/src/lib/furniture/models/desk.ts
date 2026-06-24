@@ -57,6 +57,11 @@ export class Desk {
   private dimensionOverlayData: DimensionOverlayData | null = null
   /** How much the tabletop extends beyond the left/right outer walls (in scene units). */
   private topOverhang: number = 0
+  /**
+   * Per-column threshold: for a bothSet column, the cell index where drawers begin.
+   * Cells below this index share the merged door; cells at or above are individual drawers.
+   */
+  private columnDrawerThreshold: Map<number, number> = new Map()
 
   constructor(
     width: number = 180 * CM,
@@ -251,6 +256,7 @@ export class Desk {
     this.depth = this.targetDepth
     this.group.clear()
     this.columnsGroup = []
+    this.columnDrawerThreshold.clear()
     this.ensureColumnConfigs()
     const idRef = { id: this.meshIdStart }
     const { width, height, depth, thickness, columns, origin, material } = this
@@ -389,6 +395,15 @@ export class Desk {
     totalColumns: number,
     needsLeftWall: boolean
   ): THREE.Group {
+    // Resolve door hinge direction for this column.
+    // 'auto' = swing away from legroom:
+    //   legroomPosition <= colIndex → legroom is to the left  → door opens right (hinge on right)
+    //   legroomPosition >  colIndex → legroom is to the right → door opens left  (hinge on left)
+    const colCfgHinge = (this.columnConfigs[colIndex] ?? defaultDeskColumnConfig()).doorHinge
+    const effectiveHinge: 'left' | 'right' =
+      colCfgHinge === 'auto'
+        ? (this.legroomPosition <= colIndex ? 'right' : 'left')
+        : colCfgHinge
     const columnGroup = new THREE.Group()
     columnGroup.userData['columnIndex'] = colIndex
 
@@ -442,21 +457,32 @@ export class Desk {
         if (doorW > 0 && doorH > 0) {
           const doorThickness = thickness * 0.5
           const doorGroup = new THREE.Group()
-          doorGroup.position.set(x + thickness + clear, thickness + clear, depth - doorThickness)
+          if (effectiveHinge === 'right') {
+            doorGroup.position.set(x + width - thickness - clear, thickness + clear, depth - doorThickness)
+            doorGroup.userData['doorTargetAngle'] = Math.abs(DOOR_OPEN_ANGLE)
+            const doorMesh = new Blank(
+              -doorW, 0, 0, 0, doorH, doorThickness,
+              { x: 0, y: 0, z: 0 }, material.clone(), idRef.id++
+            ).build()
+            doorMesh.userData['door'] = true
+            doorMesh.userData['columnIndex'] = colIndex
+            doorMesh.userData['cellIndex'] = 0
+            doorGroup.add(doorMesh)
+          } else {
+            doorGroup.position.set(x + thickness + clear, thickness + clear, depth - doorThickness)
+            doorGroup.userData['doorTargetAngle'] = DOOR_OPEN_ANGLE
+            const doorMesh = new Blank(
+              0, 0, 0, doorW, doorH, doorThickness,
+              { x: 0, y: 0, z: 0 }, material.clone(), idRef.id++
+            ).build()
+            doorMesh.userData['door'] = true
+            doorMesh.userData['columnIndex'] = colIndex
+            doorMesh.userData['cellIndex'] = 0
+            doorGroup.add(doorMesh)
+          }
           doorGroup.userData['door'] = true
           doorGroup.userData['columnIndex'] = colIndex
           doorGroup.userData['cellIndex'] = 0
-          const doorMesh = new Blank(
-            0, 0, 0,
-            doorW, doorH, doorThickness,
-            { x: 0, y: 0, z: 0 },
-            material.clone(),
-            idRef.id++
-          ).build()
-          doorMesh.userData['door'] = true
-          doorMesh.userData['columnIndex'] = colIndex
-          doorMesh.userData['cellIndex'] = 0
-          doorGroup.add(doorMesh)
           columnGroup.add(doorGroup)
         }
       }
@@ -524,8 +550,52 @@ export class Desk {
     ).build()
     bp.name = 'back-panel'
     columnGroup.add(bp)
+    // Doors and drawers logic (Unified)
+    const clear = DOOR_DRAWER_CLEARANCE
+    const doorFill = colCfg.doors
+    const drawerFill = colCfg.drawers
+
+    let drawerCellCount = 0
+    let doorCellCount = 0
+
+    if (drawerFill === 'all') {
+      drawerCellCount = cells
+      doorCellCount = 0
+    } else if (doorFill === 'all') {
+      doorCellCount = cells
+      drawerCellCount = 0
+    } else if (drawerFill === 'some' && doorFill === 'some') {
+      drawerCellCount = Math.max(1, Math.ceil(cells / 3))
+      doorCellCount = Math.max(0, cells - drawerCellCount)
+    } else if (drawerFill === 'some' && doorFill === 'none') {
+      drawerCellCount = 1
+      doorCellCount = 0
+    } else if (doorFill === 'some' && drawerFill === 'none') {
+      drawerCellCount = 0
+      const topOpenCount = Math.max(1, Math.ceil(cells / 3))
+      doorCellCount = Math.max(0, cells - topOpenCount)
+    }
+
+    // Identify shelves to skip to maintain max 2 rows inside the door section
+    const hiddenShelfIndices = new Set<number>()
+    if (doorFill === 'some' && doorCellCount > 2) {
+      // The shelves inside the door section are at indices 1 to doorCellCount - 1.
+      // We keep only 1 shelf to create exactly 2 rows.
+      const keptShelfIndex = Math.ceil(doorCellCount / 2)
+      for (let i = 1; i < doorCellCount; i++) {
+        if (i !== keptShelfIndex) {
+          hiddenShelfIndices.add(i)
+        }
+      }
+    }
+
+    // Record where drawers begin (used by cellHasDrawer hover detection)
+    this.columnDrawerThreshold.set(colIndex, cells - drawerCellCount)
+
     // Horizontal shelves
     for (let i = 0; i <= cells; i++) {
+      if (hiddenShelfIndices.has(i)) continue
+
       const y = i * (cellHeight + thickness)
       columnGroup.add(
         new Blank(
@@ -536,72 +606,74 @@ export class Desk {
       )
     }
 
-    // Doors and drawers for each cell
-    const clear = DOOR_DRAWER_CLEARANCE
-    const doorFill = colCfg.doors
-    const drawerFill = colCfg.drawers
-    const bothSet = doorFill !== 'none' && drawerFill !== 'none'
+    const cellW = width - thickness * 2
+    const cellD = depth - thickness * 2
+    const doorThickness = thickness * 0.5
 
+    // ── Merged door spanning all bottom doorCellCount cells ──
+    if (doorCellCount > 0) {
+      const doorYBottom = thickness  // bottom of cell 0
+      const doorYTop = doorCellCount * thickness + doorCellCount * cellHeight  // top of cell (doorCellCount-1)
+      const mergedDoorH = Math.max(0, doorYTop - doorYBottom - 2 * clear)
+      const doorW = Math.max(0, cellW - 2 * clear)
+
+      if (doorW > 0 && mergedDoorH > 0) {
+        const doorGroup = new THREE.Group()
+        if (effectiveHinge === 'right') {
+          doorGroup.position.set(x + width - thickness - clear, doorYBottom + clear, depth - doorThickness)
+          doorGroup.userData['doorTargetAngle'] = Math.abs(DOOR_OPEN_ANGLE)
+          const doorMesh = new Blank(
+            -doorW, 0, 0, 0, mergedDoorH, doorThickness,
+            { x: 0, y: 0, z: 0 }, material.clone(), idRef.id++
+          ).build()
+          doorMesh.userData['door'] = true
+          doorMesh.userData['columnIndex'] = colIndex
+          doorMesh.userData['cellIndex'] = 0
+          doorGroup.add(doorMesh)
+        } else {
+          doorGroup.position.set(x + thickness + clear, doorYBottom + clear, depth - doorThickness)
+          doorGroup.userData['doorTargetAngle'] = DOOR_OPEN_ANGLE
+          const doorMesh = new Blank(
+            0, 0, 0, doorW, mergedDoorH, doorThickness,
+            { x: 0, y: 0, z: 0 }, material.clone(), idRef.id++
+          ).build()
+          doorMesh.userData['door'] = true
+          doorMesh.userData['columnIndex'] = colIndex
+          doorMesh.userData['cellIndex'] = 0
+          doorGroup.add(doorMesh)
+        }
+        doorGroup.userData['door'] = true
+        doorGroup.userData['columnIndex'] = colIndex
+        // cellIndex 0 is the sentinel for the merged door
+        doorGroup.userData['cellIndex'] = 0
+        columnGroup.add(doorGroup)
+      }
+    }
+
+    // ── Per-cell: hitboxes + drawers ──
     for (let cell = 0; cell < cells; cell++) {
       const yBottom = (cell + 1) * thickness + cell * cellHeight
       const yTop = yBottom + cellHeight
-      const cellW = width - thickness * 2
-      const cellD = depth - thickness * 2
-      const doorW = Math.max(0, cellW - 2 * clear)
-      const doorH = Math.max(0, cellHeight - 2 * clear)
       const drawerW = Math.max(0, cellW - 2 * clear)
       const drawerH = Math.max(0, cellHeight - 2 * clear)
       const drawerD = Math.max(0, cellD - 2 * clear)
 
-      const addDoor =
-        doorFill !== 'none' &&
-        (bothSet ? cell % 2 === 0 : doorFill === 'all' || (doorFill === 'some' && cell % 2 === 0))
-      const addDrawer =
-        drawerFill !== 'none' &&
-        (bothSet ? cell % 2 !== 0 : drawerFill === 'all' || (drawerFill === 'some' && cell % 2 !== 0))
-
+      // Hitbox: bottom cells map to the merged door (cellIndex 0); top cells have their real index
+      const isDoorCell = cell < doorCellCount
+      const hitboxCellIndex = isDoorCell ? 0 : cell
       const hitbox = new Blank(
-        x + thickness,
-        yBottom,
-        0,
-        x + width - thickness,
-        yTop,
-        depth,
-        origin,
-        this.invisibleHitboxMaterial,
-        idRef.id++
+        x + thickness, yBottom, 0,
+        x + width - thickness, yTop, depth,
+        origin, this.invisibleHitboxMaterial, idRef.id++
       ).build()
       hitbox.userData['columnIndex'] = colIndex
-      hitbox.userData['cellIndex'] = cell
+      hitbox.userData['cellIndex'] = hitboxCellIndex
       hitbox.name = 'invisible-hitbox'
       columnGroup.add(hitbox)
 
-      if (addDoor && doorW > 0 && doorH > 0) {
-        const doorThickness = thickness * 0.5
-        const doorGroup = new THREE.Group()
-        doorGroup.position.set(x + thickness + clear, yBottom + clear, depth - doorThickness)
-        doorGroup.userData['door'] = true
-        doorGroup.userData['columnIndex'] = colIndex
-        doorGroup.userData['cellIndex'] = cell
-        const doorMesh = new Blank(
-          0,
-          0,
-          0,
-          doorW,
-          doorH,
-          doorThickness,
-          { x: 0, y: 0, z: 0 },
-          material.clone(),
-          idRef.id++
-        ).build()
-        doorMesh.userData['door'] = true
-        doorMesh.userData['columnIndex'] = colIndex
-        doorMesh.userData['cellIndex'] = cell
-        doorGroup.add(doorMesh)
-        columnGroup.add(doorGroup)
-      }
-
-      if (addDrawer && drawerW > 0 && drawerH > 0 && drawerD > 0) {
+      // Drawer cells: top drawerCellCount cells
+      const isDrawerCell = cell >= (cells - drawerCellCount)
+      if (isDrawerCell && drawerW > 0 && drawerH > 0 && drawerD > 0) {
         const drawerGroup = new THREE.Group()
         drawerGroup.position.set(x + thickness + clear, yBottom + clear, thickness)
         drawerGroup.userData['drawer'] = true
@@ -609,13 +681,8 @@ export class Desk {
         drawerGroup.userData['cellIndex'] = cell
         drawerGroup.userData['baseZ'] = thickness
         const drawer = new Drawer(
-          drawerW,
-          drawerH,
-          drawerD,
-          thickness * 0.5,
-          origin,
-          material.clone(),
-          idRef.id
+          drawerW, drawerH, drawerD,
+          thickness * 0.5, origin, material.clone(), idRef.id
         )
         idRef.id += 5
         const drawerBuilt = drawer.build()
@@ -695,8 +762,11 @@ export class Desk {
     if (columnIndex === null || cellIndex === null) return false
     this.ensureColumnConfigs()
     const cfg = this.columnConfigs[columnIndex]
-    if (!cfg || cfg.doors === 'none') return false
-    return cfg.doors === 'all' || (cfg.doors === 'some' && cellIndex % 2 === 0)
+    if (!cfg) return false
+    if (cfg.hugeCell) return cfg.hugeCellDoor === true && cellIndex === 0
+    if (cfg.doors === 'none') return false
+    // Under unified logic, any active door generation starts at cell 0 and spans upwards as a single door
+    return cellIndex === 0
   }
 
   private cellHasDrawer(columnIndex: number | null, cellIndex: number | null): boolean {
@@ -704,7 +774,10 @@ export class Desk {
     this.ensureColumnConfigs()
     const cfg = this.columnConfigs[columnIndex]
     if (!cfg || cfg.drawers === 'none') return false
-    return cfg.drawers === 'all' || (cfg.drawers === 'some' && cellIndex % 2 !== 0)
+    // Drawers are generated starting from columnDrawerThreshold
+    const threshold = this.columnDrawerThreshold.get(columnIndex)
+    if (threshold === undefined) return false
+    return cellIndex >= threshold
   }
 
   private columnHasDoorsOrDrawers(col: number | null): boolean {
@@ -736,12 +809,13 @@ export class Desk {
     const t = 1 - Math.exp(-HOVER_ANIM_SPEED * (dt / SMOOTHING))
     this.group.traverse((obj) => {
       if (obj.userData['door'] && !(obj as THREE.Mesh).isMesh) {
-        const target =
-          this.hoveredDoor &&
+        const isHovered =
+          this.hoveredDoor != null &&
           this.hoveredDoor.col === obj.userData['columnIndex'] &&
           this.hoveredDoor.cell === obj.userData['cellIndex']
-            ? DOOR_OPEN_ANGLE
-            : 0
+        // Each door group stores its own open angle (positive = right-opening, negative = left-opening)
+        const openAngle = (obj.userData['doorTargetAngle'] as number | undefined) ?? DOOR_OPEN_ANGLE
+        const target = isHovered ? openAngle : 0
         obj.rotation.y = THREE.MathUtils.lerp(obj.rotation.y, target, t)
       }
       if (obj.userData['drawer'] && !(obj as THREE.Mesh).isMesh) {

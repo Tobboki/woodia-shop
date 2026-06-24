@@ -98,7 +98,7 @@ import { TranslocoDirective } from '@jsverse/transloco'
                 <z-slider [zMin]="0" [zMax]="100" [zDefault]="store.bedsideDensity()" [zValue]="store.bedsideDensity()" [zStep]="5"
                   (zSlideIndexChange)="store.onBedsideDensityChange($event)"></z-slider>
               </z-form-control>
-              <p class="font-caption text-foreground/50 mt-1">{{ t('sharedLib.designConfigurator.controls.bedsideDensityHint') }}</p>
+              <p class="text-sm text-foreground/50 mt-1">{{ t('sharedLib.designConfigurator.controls.bedsideDensityHint') }}</p>
             </z-form-field>
           </div>
         </div>

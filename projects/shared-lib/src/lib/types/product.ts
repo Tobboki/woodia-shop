@@ -93,6 +93,13 @@ export interface DeskColumnConfig {
   hugeCell: boolean
   /** When true (and hugeCell is true) a full-height door is added to the column opening. */
   hugeCellDoor: boolean
+  /**
+   * Which side the door is hinged on:
+   * - 'left'  – hinge on the left edge, door swings left
+   * - 'right' – hinge on the right edge, door swings right
+   * - 'auto'  – automatically swings away from the legroom (default)
+   */
+  doorHinge: 'left' | 'right' | 'auto'
 }
 
 /** JSON-serializable config for a desk (e.g. for API or persistence). Lengths in cm. */

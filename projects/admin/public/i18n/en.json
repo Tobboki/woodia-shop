@@ -156,7 +156,12 @@
         "hugeCellLabel": "Huge cell (no shelves)",
         "hugeCellDescription": "Removes internal horizontal shelves, making the column one tall opening.",
         "openCubbyLabel": "Open cubby (no shelves)",
-        "openCubbyDescription": "One tall opening — ideal for books or a lamp."
+        "openCubbyDescription": "One tall opening — ideal for books or a lamp.",
+        "doorHinge": "Door hinge side",
+        "doorHingeAuto": "Auto (away from legroom)",
+        "doorHingeLeft": "Left",
+        "doorHingeRight": "Right",
+        "doorHingeHint": "Auto swings the door away from the legroom for easy access."
       },
       "errors": {
         "invalidConfig": "Invalid Configuration",
