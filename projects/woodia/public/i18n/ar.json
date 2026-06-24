@@ -722,7 +722,8 @@
             "InProgress": "قيد التنفيذ",
             "Completed": "مكتمل",
             "Canceled": "ملغي",
-            "undefined": "غير محدد"
+            "undefined": "غير محدد",
+            "Open": "مفتوح"
           }
         },
         "actions": {
@@ -864,7 +865,15 @@
             "hourlyRatePlaceholder": "أدخل السعر بالساعة",
             "overview": "نبذة تعريفية",
             "overviewPlaceholder": "اكتب وصفًا عن خبراتك وتخصصاتك والخدمات التي تقدمها...",
-            "overviewHint": "النبذة الجيدة تساعد العملاء على الثقة بخبراتك ومهاراتك."
+            "overviewHint": "النبذة الجيدة تساعد العملاء على الثقة بخبراتك ومهاراتك.",
+            "errors": {
+              "hourlyRateRequired": "السعر بالساعة مطلوب.",
+              "hourlyRateMin": "يجب أن يكون السعر بالساعة 20 على الأقل.",
+              "hourlyRateMax": "يجب أن يكون السعر بالساعة 1000 على الأكثر.",
+              "overviewRequired": "نبذة الملف الشخصي مطلوبة.",
+              "overviewMinLength": "يجب أن تكون النبذة 50 حرفاً على الأقل.",
+              "overviewMaxLength": "يجب ألا تتجاوز النبذة 1000 حرف."
+            }
           },
           "3": {
             "title": "معلومات التواصل",
@@ -876,7 +885,14 @@
             "address": "العنوان",
             "addressPlaceholder": "أدخل عنوانك",
             "additional": "معلومات إضافية",
-            "additionalPlaceholder": "أي تفاصيل إضافية ترغب بمشاركتها"
+            "additionalPlaceholder": "أي تفاصيل إضافية ترغب بمشاركتها",
+            "errors": {
+              "phoneRequired": "رقم الهاتف مطلوب.",
+              "phoneInvalid": "أدخل رقم هاتف صحيح (11 رقماً، يمكن أن يبدأ بـ +).",
+              "addressRequired": "العنوان مطلوب.",
+              "governorateRequired": "الرجاء اختيار المحافظة.",
+              "duplicatedPhone": "رقم الهاتف مستخدم بالفعل."
+            }
           }
         },
         "lang": "ar",

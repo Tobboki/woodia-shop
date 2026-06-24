@@ -1,135 +1,174 @@
 <div class="min-h-[80vh] flex flex-col items-center justify-center p-4 md:p-8"
   *transloco="let t; read: 'features.makers.onboarding'">
+
   <div class="w-full max-w-2xl bg-background border border-border/50 rounded-3xl shadow-2xl overflow-hidden relative">
-    <!-- Header -->
+
+    <!-- ── HEADER / STEP INDICATOR ── -->
     <div class="p-8 text-center border-b border-border/50 bg-muted/30">
       <div class="flex justify-center gap-2 mb-6">
+        @for (step of [1,2,3]; track step) {
         <div class="h-3 rounded-full transition-all duration-300"
-          [class]="currentStep() === 1 ? 'bg-primary w-8' : (currentStep() > 1 ? 'bg-primary/60 w-3' : 'bg-border w-3')">
+          [class]="currentStep() === step ? 'bg-primary w-8' : (currentStep() > step ? 'bg-primary/60 w-3' : 'bg-border w-3')">
         </div>
-        <div class="h-3 rounded-full transition-all duration-300"
-          [class]="currentStep() === 2 ? 'bg-primary w-8' : (currentStep() > 2 ? 'bg-primary/60 w-3' : 'bg-border w-3')">
-        </div>
-        <div class="h-3 rounded-full transition-all duration-300"
-          [class]="currentStep() === 3 ? 'bg-primary w-8' : 'bg-border w-3'"></div>
+        }
       </div>
-
-      <h2 class="text-3xl font-bold mb-2">
-        {{ t('steps.' + currentStep() + '.title') }}
-      </h2>
-      <p class="text-foreground/60">
-        {{ t('steps.' + currentStep() + '.subtitle') }}
-      </p>
+      <h2 class="text-3xl font-bold mb-2">{{ t('steps.' + currentStep() + '.title') }}</h2>
+      <p class="text-foreground/60">{{ t('steps.' + currentStep() + '.subtitle') }}</p>
     </div>
 
-    <!-- Content -->
+    <!-- ── CONTENT ── -->
     <div class="p-8">
 
       <!-- Step 1: Welcome -->
-      <div *ngIf="currentStep() === 1"
+      @if (currentStep() === 1) {
+      <div
         class="animate-in fade-in slide-in-from-right-5 duration-500 flex flex-col items-center text-center space-y-6 py-8">
         <div class="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center text-primary mb-4">
-          <ng-icon name="lucideHammer" size="48"></ng-icon>
+          <ng-icon name="lucideHammer" size="48" />
         </div>
         <h3 class="text-2xl font-semibold">{{ t('steps.1.welcome') }}</h3>
-        <p class="max-w-md mx-auto">
-          {{ t('steps.1.description') }}
-        </p>
+        <p class="max-w-md mx-auto">{{ t('steps.1.description') }}</p>
       </div>
+      }
 
       <!-- Step 2: Professional Profile -->
-      <div *ngIf="currentStep() === 2" class="animate-in fade-in slide-in-from-right-5 duration-500"
-        [formGroup]="profForm">
-        <div class="flex flex-col items-center gap-4 mb-8">
+      @if (currentStep() === 2) {
+      <div class="animate-in fade-in slide-in-from-right-5 duration-500" [formGroup]="profForm">
+
+        <!-- Avatar upload -->
+        <div class="flex flex-col items-center gap-3 mb-8">
           <div class="relative cursor-pointer group" (click)="fileInput.click()">
-            <z-avatar [zSrc]="previewUrl() || '/images/placeholders/maker-avatar.png'" zSize="xl"></z-avatar>
+            <z-avatar [zSrc]="previewUrl()" zSize="xl" />
             <div
               class="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-              <ng-icon name="lucideCamera" size="24"></ng-icon>
+              <ng-icon name="lucideCamera" size="24" />
             </div>
-            <input #fileInput type="file" class="hidden" (change)="onFileSelected($event)" accept="image/*">
+            <input #fileInput type="file" class="hidden" accept="image/*" (change)="onFileSelected($event)" />
           </div>
           <span class="text-sm font-medium">{{ t('steps.2.uploadPhoto') }}</span>
         </div>
 
+        <!-- Hourly Rate -->
         <z-form-field>
           <label z-form-label zRequired>{{ t('steps.2.hourlyRate') }}</label>
           <z-form-control>
-            <div class="relative">
-              <z-input-group [zAddOnAfter]="t('common.currency')" class="mb-4">
-                <input z-input type="number" formControlName="hourlyRate"
-                  [placeholder]="t('steps.2.hourlyRatePlaceholder')">
-              </z-input-group>
-            </div>
+            <z-input-group [zAddOnAfter]="t('common.currency')" class="mb-1">
+              <input z-input type="number" formControlName="hourlyRate"
+                [placeholder]="t('steps.2.hourlyRatePlaceholder')" />
+            </z-input-group>
           </z-form-control>
+          @if (hourlyRateControl.touched && hourlyRateControl.hasError('required')) {
+          <p class="text-xs text-destructive mt-1">{{ t('steps.2.errors.hourlyRateRequired') }}</p>
+          } @else if (hourlyRateControl.touched && hourlyRateControl.hasError('min')) {
+          <p class="text-xs text-destructive mt-1">{{ t('steps.2.errors.hourlyRateMin') }}</p>
+          }
         </z-form-field>
 
+        <!-- Profile Overview -->
         <z-form-field class="mt-6">
           <label z-form-label zRequired>{{ t('steps.2.overview') }}</label>
           <z-form-control>
             <textarea z-input zType="textarea" rows="4" formControlName="profileOverview"
               [placeholder]="t('steps.2.overviewPlaceholder')"></textarea>
           </z-form-control>
+          @if (profileOverviewControl.touched && profileOverviewControl.hasError('required')) {
+          <p class="text-xs text-destructive mt-1">{{ t('steps.2.errors.overviewRequired') }}</p>
+          } @else if (profileOverviewControl.touched && profileOverviewControl.hasError('minlength')) {
+          <p class="text-xs text-destructive mt-1">{{ t('steps.2.errors.overviewMinLength') }}</p>
+          } @else {
           <p class="text-xs text-foreground/40 mt-1">{{ t('steps.2.overviewHint') }}</p>
+          }
         </z-form-field>
       </div>
+      }
 
       <!-- Step 3: Contact Info -->
-      <div *ngIf="currentStep() === 3" class="animate-in fade-in slide-in-from-right-5 duration-500"
-        [formGroup]="contactForm">
+      @if (currentStep() === 3) {
+      <div class="animate-in fade-in slide-in-from-right-5 duration-500" [formGroup]="contactForm">
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <!-- Phone -->
           <z-form-field>
             <label z-form-label zRequired>{{ t('steps.3.phoneNumber') }}</label>
             <z-form-control>
-              <input z-input type="tel" formControlName="phoneNumber" [placeholder]="t('steps.3.phonePlaceholder')">
+              <input z-input type="tel" formControlName="phoneNumber" [placeholder]="t('steps.3.phonePlaceholder')" />
             </z-form-control>
+            <!-- Fixed-height error slot so layout never shifts -->
+            <div class="min-h-[20px] mt-1">
+              @if (phoneControl.touched && phoneControl.hasError('required')) {
+              <p class="text-xs text-destructive">{{ t('steps.3.errors.phoneRequired') }}</p>
+              } @else if (phoneControl.touched && phoneControl.hasError('pattern')) {
+              <p class="text-xs text-destructive">{{ t('steps.3.errors.phoneInvalid') }}</p>
+              } @else if (serverErrors()['phoneNumber']) {
+              <p class="text-xs text-destructive">{{ serverErrors()['phoneNumber'] }}</p>
+              }
+            </div>
           </z-form-field>
 
+          <!-- Governorate -->
           <z-form-field>
             <label z-form-label zRequired>{{ t('steps.3.governorate') }}</label>
             <z-form-control>
               <z-select id="governateId" formControlName="governateId" [zPlaceholder]="t('steps.3.selectGov')">
-                @for (governate of governorates(); track governate.id) {
-                <z-select-item [zValue]="governate.id.toString()">{{ governate.nameEn }}</z-select-item>
+                @for (gov of governorates(); track gov.id) {
+                <z-select-item [zValue]="gov.id.toString()">{{ gov.nameEn }}</z-select-item>
                 }
               </z-select>
             </z-form-control>
+            <!-- Same reserved slot keeps both fields the same height always -->
+            <div class="min-h-[20px] mt-1">
+              @if (governorateControl.touched && governorateControl.hasError('required')) {
+              <p class="text-xs text-destructive">{{ t('steps.3.errors.governorateRequired') }}</p>
+              }
+            </div>
           </z-form-field>
         </div>
 
-        <z-form-field class="mt-6">
+        <!-- Address -->
+        <z-form-field class="mt-4">
           <label z-form-label zRequired>{{ t('steps.3.address') }}</label>
           <z-form-control>
-            <input z-input formControlName="addressLine" [placeholder]="t('steps.3.addressPlaceholder')">
+            <input z-input formControlName="addressLine" [placeholder]="t('steps.3.addressPlaceholder')" />
           </z-form-control>
+          @if (addressControl.touched && addressControl.hasError('required')) {
+          <p class="text-xs text-destructive mt-1">{{ t('steps.3.errors.addressRequired') }}</p>
+          }
         </z-form-field>
 
-        <z-form-field class="mt-6">
+        <!-- Additional info -->
+        <z-form-field class="mt-4">
           <label z-form-label>{{ t('steps.3.additional') }}</label>
           <z-form-control>
             <textarea z-input zType="textarea" rows="2" formControlName="additionalInfo"
               [placeholder]="t('steps.3.additionalPlaceholder')"></textarea>
           </z-form-control>
         </z-form-field>
+
       </div>
+      }
 
     </div>
 
-    <!-- Footer -->
+    <!-- ── FOOTER ── -->
     <div class="p-8 border-t border-border/50 flex justify-between items-center bg-muted/10">
-      <button *ngIf="currentStep() > 1" z-button zType="ghost" (click)="prevStep()">
-        {{ t('common.back') }}
-      </button>
-      <div *ngIf="currentStep() === 1"></div>
 
-      <button *ngIf="currentStep() < 3" z-button zType="default" zShape="circle" class="px-8" (click)="nextStep()">
+      @if (currentStep() > 1) {
+      <button z-button zType="ghost" (click)="prevStep()">{{ t('common.back') }}</button>
+      } @else {
+      <div></div>
+      }
+
+      @if (currentStep() < 3) { <button z-button zType="default" zShape="circle" class="px-8" (click)="nextStep()">
         {{ t('common.continue') }}
-      </button>
+        </button>
+        } @else {
+        <button z-button zType="default" zShape="circle" class="px-8" [zLoading]="submitting()"
+          (click)="completeOnboarding()">
+          {{ t('common.finish') }}
+        </button>
+        }
 
-      <button *ngIf="currentStep() === 3" z-button zType="default" zShape="circle" class="px-8"
-        [zLoading]="submitting()" (click)="completeOnboarding()">
-        {{ t('common.finish') }}
-      </button>
     </div>
   </div>
 </div>

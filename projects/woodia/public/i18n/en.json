@@ -722,7 +722,8 @@
             "InProgress": "In Progress",
             "Completed": "Completed",
             "Canceled": "Canceled",
-            "undefined": "Unknown"
+            "undefined": "Unknown",
+            "Open": "Open"
           }
         },
         "actions": {
@@ -870,7 +871,14 @@
             "hourlyRatePlaceholder": "Enter your hourly rate",
             "overview": "Profile Overview",
             "overviewPlaceholder": "Describe your experience, specialties, and services...",
-            "overviewHint": "A strong overview helps customers trust your skills and experience."
+            "overviewHint": "A strong overview helps customers trust your skills and experience.",
+            "errors": {
+              "hourlyRateRequired": "Hourly rate is required.",
+              "hourlyRateMin": "Hourly rate must be at least 20.",
+              "overviewRequired": "Profile overview is required.",
+              "overviewMinLength": "Overview must be at least 50 characters.",
+              "overviewMaxLength": "Overview must not exceed 1000 characters."
+            }
           },
           "3": {
             "title": "Contact Information",
@@ -882,7 +890,14 @@
             "address": "Address",
             "addressPlaceholder": "Enter your address",
             "additional": "Additional Information",
-            "additionalPlaceholder": "Any extra details you'd like to share"
+            "additionalPlaceholder": "Any extra details you'd like to share",
+            "errors": {
+              "phoneRequired": "Phone number is required.",
+              "phoneInvalid": "Enter a valid phone number (11 digits, may start with +).",
+              "addressRequired": "Address is required.",
+              "governorateRequired": "Please select a governorate.",
+              "duplicatedPhone": "Phone number is already used."
+            }
           }
         },
         "lang": "en",

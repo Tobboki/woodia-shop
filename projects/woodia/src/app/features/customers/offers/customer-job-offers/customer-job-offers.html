@@ -99,7 +99,7 @@
                 <!-- Header: carpenter info + status -->
                 <div class="flex items-start justify-between gap-3">
                     <div (click)="navigateToMakerProfile(offer)"
-                        class="flex items-start max-md:items-center max-md:justify-between gap-2">
+                        class="flex items-start max-md:items-center max-md:justify-between gap-2 min-w-0 flex-1">
                         <div class="flex items-center gap-3">
                             <!-- Avatar initials -->
                             <div
@@ -119,12 +119,15 @@
                         </z-badge>
                     </div>
 
-                    <div class="hidden md:flex items-center justify-center gap-3 border-s border-border/50 ps-3">
-                        <z-button zType="default" class="!rounded-full px-6" (click)="navigateToOfferDetails(offer)">
+                    <!-- Desktop actions: side by side, shrink-0 so they never stretch -->
+                    <div
+                        class="hidden md:flex items-center justify-center gap-3 border-s border-border/50 ps-3 shrink-0">
+                        <z-button zType="default" class="!rounded-full px-6"
+                            (click)="navigateToOfferDetails(offer); $event.stopPropagation()">
                             {{ t('actions.viewDetails') }}
                         </z-button>
-
-                        <z-button zType="secondary" class="!rounded-full px-6" (click)="startNegotiation(offer)">
+                        <z-button zType="secondary" class="!rounded-full px-6"
+                            (click)="startNegotiation(offer); $event.stopPropagation()">
                             {{ t('actions.negotiate') }}
                         </z-button>
                     </div>
@@ -166,8 +169,11 @@
                 <!-- Actions -->
                 <div class="hidden max-md:flex items-center gap-3 pt-3 border-t border-border/50"
                     (click)="$event.stopPropagation()">
-                    <z-button zType="default" zFull class="!rounded-full px-6" (click)="navigateToOfferDetails(offer)">
+                    <z-button zType="default" class="!rounded-full !flex-1" (click)="navigateToOfferDetails(offer)">
                         {{ t('actions.viewDetails') }}
+                    </z-button>
+                    <z-button zType="secondary" class="!rounded-full !flex-1" (click)="startNegotiation(offer)">
+                        {{ t('actions.negotiate') }}
                     </z-button>
                 </div>
 

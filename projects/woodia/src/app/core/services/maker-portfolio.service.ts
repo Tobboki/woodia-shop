@@ -51,7 +51,7 @@ export class MakerPortfolioService {
     );
   }
 
-  updatePortfolioItem(id: number, payload: IUpdatePortfolioItemPayload): Observable<IPortfolioItem> {
+  updatePortfolioItem(id: number, payload: IUpdatePortfolioItemPayload): Observable<IPortfolioItem | null> {
     return this.http.put<IPortfolioItem>(
       `${this.baseUrl}${environment.endpoints.maker.profile.portfolio}/${id}`,
       payload

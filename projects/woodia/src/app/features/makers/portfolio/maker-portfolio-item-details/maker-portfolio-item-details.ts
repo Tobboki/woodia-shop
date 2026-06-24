@@ -43,8 +43,7 @@ export class MakerPortfolioItemDetails implements OnInit {
   private portfolioService = inject(MakerPortfolioService);
   private uploadService = inject(UploadService);
   private translocoService = inject(TranslocoService);
-
-  protected readonly getTextDir = getTextDir;
+  protected getTextDir = getTextDir
 
   readonly MAX_IMAGES = 6;
 
@@ -187,8 +186,16 @@ export class MakerPortfolioItemDetails implements OnInit {
     this.portfolioService.updatePortfolioItem(orig.id, payload).subscribe({
       next: (updated) => {
         this.isSaving.set(false);
-        this.item.set(updated);
-        this.initDraft(updated);
+
+        // PUT may return 204 No Content (null/undefined body). If we get a
+        // real response object back, use it; otherwise build the updated
+        // item locally from the payload we just sent so the UI stays correct.
+        const merged: IPortfolioItem = (updated && updated.id)
+          ? updated
+          : { ...orig, ...payload };
+
+        this.item.set(merged);
+        this.initDraft(merged);
         toast.success(this.translocoService.translate('features.makers.portfolio.messages.saved'));
       },
       error: () => {
